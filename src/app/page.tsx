@@ -1,69 +1,118 @@
-import Image from "next/image";
+import Link from "next/link";
+
+const STATS = [
+  { label: "50 Creds = £1" },
+  { label: "Cricket tracked" },
+  { label: "Fitness rewarded" },
+  { label: "Real cash for coaches" },
+];
+
+const STEPS = [
+  {
+    title: "Earn Creds",
+    description:
+      "Score runs, take wickets, show up to training, or volunteer your time — every contribution earns Creds.",
+  },
+  {
+    title: "Stack your wallet",
+    description:
+      "Flexi Creds and Reward Creds build up in your wallet automatically as you play and help out.",
+  },
+  {
+    title: "Redeem rewards",
+    description:
+      "Cash out, unlock gear, or put Creds toward real rewards. 50 Creds is always worth £1.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#0B0B0B] text-white">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-primary font-bold">
+            C
+          </div>
+          <span className="text-lg font-semibold">Creds</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth/login"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-300 transition hover:text-white"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Sign in
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-primary-light"
           >
-            Documentation
-          </a>
+            Get started
+          </Link>
         </div>
-      </main>
+      </nav>
+
+      <section className="mx-auto max-w-4xl px-6 pb-20 pt-16 text-center sm:pt-24">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+          Stack your Creds.
+          <br />
+          Own your game.
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-400">
+          Earn Creds for every run scored, wicket taken, training session and
+          volunteer shift. Redeem for real rewards.
+        </p>
+
+        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Link
+            href="/auth/signup"
+            className="w-full rounded-lg bg-brand-primary px-6 py-3 text-center font-medium text-white transition hover:bg-brand-primary-light sm:w-auto"
+          >
+            Start earning Creds
+          </Link>
+          <Link
+            href="/auth/login"
+            className="w-full rounded-lg border border-neutral-700 px-6 py-3 text-center font-medium text-white transition hover:bg-neutral-900 sm:w-auto"
+          >
+            Sign in
+          </Link>
+        </div>
+      </section>
+
+      <section className="border-y border-neutral-800 bg-neutral-950/60">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-6 py-10 sm:grid-cols-4">
+          {STATS.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-sm font-medium text-brand-gold sm:text-base">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+          How it works
+        </h2>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {STEPS.map((step, index) => (
+            <div
+              key={step.title}
+              className="rounded-2xl border border-neutral-800 bg-neutral-950 p-6"
+            >
+              <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary/20 text-sm font-semibold text-brand-gold">
+                {index + 1}
+              </div>
+              <h3 className="text-lg font-semibold">{step.title}</h3>
+              <p className="mt-2 text-sm text-neutral-400">
+                {step.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
