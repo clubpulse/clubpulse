@@ -1,44 +1,29 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { redirectWithCookies, updateSession } from "@/lib/supabase/middleware";
 
-const PROTECTED_PATHS = ["/dashboard", "/wallet", "/marketplace", "/profile"];
+// Login-only gate. Role checks (club admin / merchant) live in the (admin) layout
+// and in each API route, never here.
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/admin",
+  "/profile",
+  "/marketplace",
+  "/companion",
+  "/wallet",
+];
 
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const { response, user } = await updateSession(request);
+  const { pathname } = request.nextUrl;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const isProtected = PROTECTED_PATHS.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+  const isProtected = PROTECTED_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
   );
 
   if (isProtected && !user) {
-    const loginUrl = new URL("/auth/login", request.url);
-    loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+    const signInUrl = new URL("/auth/sign-in", request.url);
+    signInUrl.searchParams.set("redirectTo", pathname);
+    return redirectWithCookies(signInUrl, response);
   }
 
   return response;

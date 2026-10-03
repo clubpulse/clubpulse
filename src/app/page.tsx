@@ -38,13 +38,13 @@ export default function Home() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/auth/login"
+            href="/auth/sign-in"
             className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-300 transition hover:text-white"
           >
             Sign in
           </Link>
           <Link
-            href="/auth/signup"
+            href="/auth/sign-up"
             className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-primary-light"
           >
             Get started
@@ -65,13 +65,13 @@ export default function Home() {
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/auth/signup"
+            href="/auth/sign-up"
             className="w-full rounded-lg bg-brand-primary px-6 py-3 text-center font-medium text-white transition hover:bg-brand-primary-light sm:w-auto"
           >
             Start earning Creds
           </Link>
           <Link
-            href="/auth/login"
+            href="/auth/sign-in"
             className="w-full rounded-lg border border-neutral-700 px-6 py-3 text-center font-medium text-white transition hover:bg-neutral-900 sm:w-auto"
           >
             Sign in

@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Creds",
+    "slug": "creds",
+    "scheme": "creds",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0A1128",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.creds.app",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "Creds reads your step count from Apple Health so you can earn Creds for staying active.",
+        "NSMotionUsageDescription": "Creds uses your phone's motion sensors to count your daily steps and reward you with Creds.",
+        "NSLocationWhenInUseUsageDescription": "Creds uses your location to confirm you are at your club ground when you check in to volunteer."
+      }
+    },
+    "android": {
+      "package": "com.creds.app",
+      "permissions": ["ACTIVITY_RECOGNITION", "ACCESS_FINE_LOCATION"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Creds uses your phone's motion sensors to count your daily steps and reward you with Creds."
+        }
+      ]
+    ]
+  }
+}

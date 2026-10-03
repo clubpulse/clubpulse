@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient as createServiceClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
@@ -38,19 +38,15 @@ export async function completeSignup({
     return { success: false, error: "Unauthorized" };
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !serviceRoleKey) {
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch (e) {
     return {
       success: false,
-      error: "Server is missing Supabase admin configuration",
+      error: e instanceof Error ? e.message : "Admin client unavailable",
     };
   }
-
-  const admin = createServiceClient(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 
   const displayName = fullName.split(" ")[0];
 
