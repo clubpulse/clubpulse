@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input';
 type Role = 'player' | 'volunteer' | 'parent' | 'coach';
 
 const ROLES: { value: Role; label: string; icon: string; desc: string }[] = [
-  { value: 'player',    label: 'Player',    icon: '🏏', desc: 'I play cricket and want to earn Creds' },
+  { value: 'player',    label: 'Player',    icon: '🏏', desc: 'I play cricket and want to earn Scores' },
   { value: 'volunteer', label: 'Volunteer', icon: '🙌', desc: 'I help run and support the game' },
   { value: 'parent',    label: 'Parent',    icon: '👨‍👧', desc: "I follow my child's progress" },
   { value: 'coach',     label: 'Coach',     icon: '🎯', desc: 'I coach a team or squad' },
@@ -87,7 +87,7 @@ export function SignUpForm() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-neutral-400">How will you use Creds? Select all that apply.</p>
+      <p className="text-sm text-neutral-400">How will you use ClubPulse? Select all that apply.</p>
       <div className="space-y-2">
         {ROLES.map((r) => {
           const selected = roles.includes(r.value);

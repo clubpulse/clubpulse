@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { formatCreds } from '@/lib/utils/format';
+import { formatScores } from '@/lib/utils/format';
 import type { Reward } from '@/lib/types/reward';
 
 export function RedemptionModal({ reward, balance }: { reward: Reward; balance: number }) {
@@ -40,7 +40,7 @@ export function RedemptionModal({ reward, balance }: { reward: Reward; balance: 
   return (
     <>
       <Button onClick={() => setOpen(true)} disabled={outOfStock || shortfall > 0} className="w-full sm:w-auto">
-        {outOfStock ? 'Out of stock' : shortfall > 0 ? `${formatCreds(shortfall)} more Creds needed` : 'Redeem'}
+        {outOfStock ? 'Out of stock' : shortfall > 0 ? `${formatScores(shortfall)} more Scores needed` : 'Redeem'}
       </Button>
 
       <Modal open={open} onClose={() => !loading && setOpen(false)} title={done ? 'Redeemed!' : 'Confirm redemption'}>
@@ -55,9 +55,9 @@ export function RedemptionModal({ reward, balance }: { reward: Reward; balance: 
         ) : (
           <>
             <p className="text-sm text-neutral-300">
-              Spend <span className="font-semibold text-brand-gold">{formatCreds(reward.creds_cost)} Creds</span> on{' '}
-              <span className="font-semibold text-white">{reward.title}</span>? You have {formatCreds(balance)}, so you&apos;ll
-              have {formatCreds(balance - reward.creds_cost)} left.
+              Spend <span className="font-semibold text-brand-gold">{formatScores(reward.creds_cost)} Scores</span> on{' '}
+              <span className="font-semibold text-white">{reward.title}</span>? You have {formatScores(balance)}, so you&apos;ll
+              have {formatScores(balance - reward.creds_cost)} left.
             </p>
             <div className="mt-6 flex gap-3">
               <Button variant="secondary" className="flex-1" onClick={() => setOpen(false)} disabled={loading}>Cancel</Button>

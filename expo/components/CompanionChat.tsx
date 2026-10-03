@@ -40,7 +40,7 @@ export function CompanionChat({ messages, sending, error, onSend, onReset }: Pro
         onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
         ListEmptyComponent={
           <Text style={[fonts.small, { textAlign: 'center', marginTop: spacing.xxl }]}>
-            Ask about your game, fitness or Creds.
+            Ask about your game, fitness or Scores.
           </Text>
         }
         renderItem={({ item }) => (

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Creds: Sporting Soul — Claude API Integration
+// ClubPulse: Sporting Soul — Claude API Integration
 // ─────────────────────────────────────────────
 
 import { getAnthropic } from '@/lib/ai/client';
@@ -15,7 +15,7 @@ export type SportingSoulResult = {
 
 function buildSeasonContext(performances: PerformanceWithSport[], athleteName: string): string {
   if (performances.length === 0) {
-    return 'This athlete is new to Creds — no season data yet.';
+    return 'This athlete is new to ClubPulse — no season data yet.';
   }
 
   const bySport = performances.reduce((acc, p) => {
@@ -28,7 +28,7 @@ function buildSeasonContext(performances: PerformanceWithSport[], athleteName: s
   const sections: string[] = [];
 
   for (const [sport, perfs] of Object.entries(bySport)) {
-    const totalCreds  = perfs.reduce((s, p) => s + p.creds_earned, 0);
+    const totalScores  = perfs.reduce((s, p) => s + p.creds_earned, 0);
     const matches     = perfs.filter(p => p.category === 'participation').length;
     const volunteered = perfs.filter(p => p.category === 'volunteering').length;
 
@@ -50,7 +50,7 @@ function buildSeasonContext(performances: PerformanceWithSport[], athleteName: s
 ${sport}:
 - ${matches} matches played, ${volunteered} volunteering sessions
 - Performance stats: ${statsStr || 'no performance stats yet'}
-- Total Creds earned: ${totalCreds}
+- Total Scores earned: ${totalScores}
     `.trim());
   }
 
@@ -68,13 +68,13 @@ export async function generateSportingSoul(
   const message = await getAnthropic().messages.create({
     model:      'claude-opus-4-5',
     max_tokens:  1024,
-    system: `You are the Creds Sporting Soul engine. You read grassroots athletes' season data and write heartfelt, personal sports narratives that make ordinary club players feel like heroes.
+    system: `You are the ClubPulse Sporting Soul engine. You read grassroots athletes' season data and write heartfelt, personal sports narratives that make ordinary club players feel like heroes.
 
 Your tone is warm, human, and specific — not generic. You find the story in the numbers. A scorer who turned up for 14 matches isn't just a statistic; they're the backbone of their club.
 
 You celebrate all contributions equally: the player who scored a century AND the groundskeeper who marked out the pitch for every match.
 
-Always end with a reward trigger — a specific Creds milestone reward that reflects the athlete's identity.`,
+Always end with a reward trigger — a specific Scores milestone reward that reflects the athlete's identity.`,
     messages: [{
       role:    'user',
       content: `Write a Sporting Soul for ${athleteName}'s ${season} season.
@@ -87,7 +87,7 @@ Return a JSON object with exactly these keys:
   "headline": "3-5 word evocative title for their season",
   "narrative": "2-3 paragraphs. Personal, specific, emotional. Reference their actual stats. Make them feel seen.",
   "achievement": "Their single most impressive feat this season in one sentence",
-  "rewardTrigger": "A specific Creds reward that fits their identity (e.g. 'Exclusive Castore batting gloves, unlocked for scoring 500+ runs')"
+  "rewardTrigger": "A specific Scores reward that fits their identity (e.g. 'Exclusive Castore batting gloves, unlocked for scoring 500+ runs')"
 }
 
 JSON only, no markdown fences.`,
@@ -104,7 +104,7 @@ JSON only, no markdown fences.`,
       headline:      `${athleteName}'s ${season} Season`,
       narrative:     text,
       achievement:   'A season to remember',
-      rewardTrigger: '50 Creds bonus reward',
+      rewardTrigger: '50 Scores bonus reward',
     };
   }
 
@@ -113,14 +113,14 @@ JSON only, no markdown fences.`,
 
 export async function predictNextReward(
   recentPerformances: PerformanceWithSport[],
-  currentCredsBalance: number
+  currentScoresBalance: number
 ): Promise<string> {
   if (recentPerformances.length === 0) {
-    return 'Earn your first 10 Creds to unlock the marketplace.';
+    return 'Earn your first 10 Scores to unlock the marketplace.';
   }
 
   const recentStr = recentPerformances.slice(0, 5)
-    .map(p => `${p.sport.display_name} ${p.category}: ${JSON.stringify(p.data)} (${p.creds_earned} Creds)`)
+    .map(p => `${p.sport.display_name} ${p.category}: ${JSON.stringify(p.data)} (${p.creds_earned} Scores)`)
     .join('\n');
 
   const message = await getAnthropic().messages.create({
@@ -128,7 +128,7 @@ export async function predictNextReward(
     max_tokens:  200,
     messages: [{
       role:    'user',
-      content: `Based on this athlete's recent activity and ${currentCredsBalance} Creds balance, suggest ONE specific reward in one sentence. Be specific to their sport and level.
+      content: `Based on this athlete's recent activity and ${currentScoresBalance} Scores balance, suggest ONE specific reward in one sentence. Be specific to their sport and level.
 
 Recent activity:
 ${recentStr}

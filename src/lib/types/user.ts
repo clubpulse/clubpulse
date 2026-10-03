@@ -1,4 +1,4 @@
-import type { CredsWallet } from '@/lib/types/creds';
+import type { ScoresWallet } from '@/lib/types/scores';
 
 export type UserProfile = {
   id:                  string;
@@ -13,5 +13,5 @@ export type UserProfile = {
 export type UserRole = 'player' | 'volunteer' | 'coach' | 'club_admin' | 'parent' | 'merchant';
 
 export type UserWithWallet = UserProfile & {
-  wallet: CredsWallet | null;
+  wallet: ScoresWallet | null;
 };

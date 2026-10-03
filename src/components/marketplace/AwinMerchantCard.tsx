@@ -17,7 +17,7 @@ export function AwinMerchantCard({ merchant, userId }: { merchant: AwinMerchant;
         <Badge tone="gold">{merchant.commission}% back</Badge>
       </div>
       <p className="text-sm text-neutral-400">{merchant.description}</p>
-      <span className="mt-1 text-xs font-medium text-brand-gold">Shop and earn Creds →</span>
+      <span className="mt-1 text-xs font-medium text-brand-gold">Shop and earn Scores →</span>
     </a>
   );
 }

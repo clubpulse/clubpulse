@@ -3,7 +3,7 @@ import { requireUser } from '@/lib/auth/server';
 import { getAdminContext } from '@/lib/auth/admin';
 import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
-import { totalBalance } from '@/lib/types/creds';
+import { totalBalance } from '@/lib/types/scores';
 import { Navbar } from '@/components/layout/Navbar';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';

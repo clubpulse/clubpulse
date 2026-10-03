@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
 import { getWalletHistory } from '@/lib/activity/service';
 import { ProfileCard } from '@/components/profile/ProfileCard';
-import { CredsHistoryTable } from '@/components/profile/CredsHistoryTable';
+import { ScoresHistoryTable } from '@/components/profile/ScoresHistoryTable';
 import { Card } from '@/components/ui/Card';
 
 export default async function ProfilePage() {
@@ -31,7 +31,7 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileCard profile={profile.data} wallet={wallet.success ? wallet.data : null} roles={roles} />
-      <CredsHistoryTable items={history} />
+      <ScoresHistoryTable items={history} />
     </div>
   );
 }

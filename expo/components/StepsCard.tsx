@@ -26,7 +26,7 @@ export function StepsCard({ steps, status, syncing, result, error, onSync }: Pro
         <Text style={fonts.small}>Step tracking isn&apos;t available on this device yet.</Text>
       )}
       {status === 'denied' && (
-        <Text style={fonts.small}>Allow motion access in Settings to earn Creds for your steps.</Text>
+        <Text style={fonts.small}>Allow motion access in Settings to earn Scores for your steps.</Text>
       )}
       {(status === 'ready' || status === 'loading') && (
         <>
@@ -37,8 +37,8 @@ export function StepsCard({ steps, status, syncing, result, error, onSync }: Pro
           <Text style={styles.hint}>
             {steps >= GOAL ? `Daily goal reached 🎉` : `${(GOAL - steps).toLocaleString('en-GB')} to your ${GOAL.toLocaleString('en-GB')} goal`}
           </Text>
-          {result && !!result.totalCredsToday && (
-            <Text style={styles.earned}>+{result.totalCredsToday} Creds earned today</Text>
+          {result && !!result.totalScoresToday && (
+            <Text style={styles.earned}>+{result.totalScoresToday} Scores earned today</Text>
           )}
         </>
       )}

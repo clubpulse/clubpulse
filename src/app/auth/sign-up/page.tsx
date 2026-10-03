@@ -6,7 +6,7 @@ export default function SignUpPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Start stacking Creds today"
+      subtitle="Start stacking Scores today"
       footer={
         <>
           Already have an account?{' '}

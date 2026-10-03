@@ -6,7 +6,7 @@ export type Merchant = {
 export type SpendPattern = {
   category:    string;
   redemptions: number;
-  creds_spent: number;
+  scores_spent: number;
 };
 
 export type PeakWindow = {

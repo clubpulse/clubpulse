@@ -43,7 +43,7 @@ export default function ProfileScreen() {
               <Text style={fonts.small}>{data.profile.email}</Text>
             </Card>
             <Card>
-              <Text style={fonts.small}>LIFETIME CREDS EARNED</Text>
+              <Text style={fonts.small}>LIFETIME SCORES EARNED</Text>
               <Text style={[fonts.title, { fontSize: 28, marginTop: spacing.xs }]}>
                 {(data.wallet?.lifetime_earned ?? 0).toLocaleString('en-GB')}
               </Text>

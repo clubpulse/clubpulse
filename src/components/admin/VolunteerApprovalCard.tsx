@@ -25,7 +25,7 @@ export function VolunteerApprovalCard({ session }: { session: VolunteerSessionWi
         toast.error(body.error ?? 'Could not approve');
         return;
       }
-      toast.success(body.credsAwarded > 0 ? `Approved: ${body.credsAwarded} Creds awarded` : 'Approved (no Creds: location not confirmed)');
+      toast.success(body.scoresAwarded > 0 ? `Approved: ${body.scoresAwarded} Scores awarded` : 'Approved (no Scores: location not confirmed)');
       router.refresh();
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isClubAdmin } from '@/lib/auth/admin';
-import { applyMultiplier, getActiveMultipliers } from '@/lib/ai/dynamic-creds';
+import { applyMultiplier, getActiveMultipliers } from '@/lib/ai/dynamic-scores';
 import { isUuid } from '@/lib/utils/validate';
 import type { ActionResult } from '@/lib/types/action';
 import type { EarningRules } from '@/lib/types/sport';
@@ -9,7 +9,7 @@ import type { EarningRules } from '@/lib/types/sport';
 // Safe to call repeatedly: creds_awarded is claimed with a compare-and-set, so it pays once.
 export async function awardVolunteerSessionIfEligible(
   sessionId: string
-): Promise<ActionResult<{ credsAwarded: number }>> {
+): Promise<ActionResult<{ scoresAwarded: number }>> {
   const admin = createAdminClient();
 
   const { data: session } = await admin
@@ -19,8 +19,8 @@ export async function awardVolunteerSessionIfEligible(
     .maybeSingle();
 
   if (!session) return { success: false, error: 'Session not found' };
-  if (!session.gps_confirmed || !session.club_confirmed) return { success: true, data: { credsAwarded: 0 } };
-  if (session.creds_awarded > 0) return { success: true, data: { credsAwarded: 0 } };
+  if (!session.gps_confirmed || !session.club_confirmed) return { success: true, data: { scoresAwarded: 0 } };
+  if (session.creds_awarded > 0) return { success: true, data: { scoresAwarded: 0 } };
 
   const { data: club } = await admin.from('clubs').select('sport').eq('id', session.club_id).maybeSingle();
   const { data: sport } = await admin
@@ -30,34 +30,34 @@ export async function awardVolunteerSessionIfEligible(
     .maybeSingle();
 
   const base = Number((sport?.earning_rules as EarningRules | undefined)?.volunteering?.[session.role] ?? 0);
-  const credits = applyMultiplier(base, await getActiveMultipliers(session.club_id));
-  if (credits <= 0) return { success: true, data: { credsAwarded: 0 } };
+  const scores = applyMultiplier(base, await getActiveMultipliers(session.club_id));
+  if (scores <= 0) return { success: true, data: { scoresAwarded: 0 } };
 
   const { data: claimed } = await admin
     .from('volunteer_sessions')
-    .update({ creds_awarded: credits })
+    .update({ creds_awarded: scores })
     .eq('id', sessionId)
     .eq('creds_awarded', 0)
     .select('id');
-  if (!claimed?.length) return { success: true, data: { credsAwarded: 0 } };
+  if (!claimed?.length) return { success: true, data: { scoresAwarded: 0 } };
 
   const { error } = await admin.rpc('increment_creds_balance', {
     p_user_id: session.user_id,
-    p_amount:  credits,
+    p_amount:  scores,
   });
   if (error) {
     await admin.from('volunteer_sessions').update({ creds_awarded: 0 }).eq('id', sessionId);
-    return { success: false, error: 'Failed to award Creds' };
+    return { success: false, error: 'Failed to award Scores' };
   }
 
-  return { success: true, data: { credsAwarded: credits } };
+  return { success: true, data: { scoresAwarded: scores } };
 }
 
 // approverId must be a verified user id. Only an admin of the session's club may approve.
 export async function approveVolunteerSession(
   approverId: string,
   sessionId: string
-): Promise<ActionResult<{ credsAwarded: number }>> {
+): Promise<ActionResult<{ scoresAwarded: number }>> {
   if (!isUuid(sessionId)) return { success: false, error: 'Session not found' };
 
   const admin = createAdminClient();

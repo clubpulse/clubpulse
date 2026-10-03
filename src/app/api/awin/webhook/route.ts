@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // GET + POST /api/awin/webhook
-// Awin postback URL — receives commission events and awards Creds.
+// Awin postback URL — receives commission events and awards Scores.
 // Register in Awin dashboard: https://yourdomain.com/api/awin/webhook?token=<AWIN_WEBHOOK_SECRET>
 // (or send the secret in an x-webhook-secret header)
 // ─────────────────────────────────────────────
@@ -8,7 +8,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { commissionToCreds, calcShoppingSplit } from '@/lib/awin';
+import { commissionToScores, calcShoppingSplit } from '@/lib/awin';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -79,19 +79,19 @@ async function handleWebhook(req: NextRequest) {
     .maybeSingle();
 
   if (existing) {
-    // Pending → confirmed/approved with nothing awarded yet: award the Creds now
-    const lateCreds = (status === 'confirmed' || status === 'approved') && existing.creds_awarded === 0
-      ? calcShoppingSplit(commissionToCreds(commissionGBP)).athleteCreds
+    // Pending → confirmed/approved with nothing awarded yet: award the Scores now
+    const lateScores = (status === 'confirmed' || status === 'approved') && existing.creds_awarded === 0
+      ? calcShoppingSplit(commissionToScores(commissionGBP)).athleteScores
       : 0;
 
-    if (lateCreds > 0) {
-      // Claim first: only the request that flips creds_awarded from 0 awards the Creds
+    if (lateScores > 0) {
+      // Claim first: only the request that flips creds_awarded from 0 awards the Scores
       const { data: claimed } = await supabase
         .from('awin_transactions')
         .update({
           status,
           commission_gbp: commissionGBP,
-          creds_awarded:  lateCreds,
+          creds_awarded:  lateScores,
           updated_at:     new Date().toISOString(),
         })
         .eq('awin_transaction_id', awinTransactionId)
@@ -102,7 +102,7 @@ async function handleWebhook(req: NextRequest) {
 
       const { error: lateAwardError } = await supabase.rpc('increment_creds_balance', {
         p_user_id: existing.user_id,
-        p_amount:  lateCreds,
+        p_amount:  lateScores,
       });
 
       if (lateAwardError) {
@@ -111,10 +111,10 @@ async function handleWebhook(req: NextRequest) {
           .from('awin_transactions')
           .update({ status: existing.status, creds_awarded: 0, updated_at: new Date().toISOString() })
           .eq('awin_transaction_id', awinTransactionId);
-        return NextResponse.json({ error: 'Failed to award Creds' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to award Scores' }, { status: 500 });
       }
 
-      return NextResponse.json({ ok: true, lateAward: true, athleteCreds: lateCreds, status });
+      return NextResponse.json({ ok: true, lateAward: true, athleteScores: lateScores, status });
     }
 
     // Otherwise just record a status change (e.g. pending → declined)
@@ -127,12 +127,12 @@ async function handleWebhook(req: NextRequest) {
     return NextResponse.json({ ok: true, duplicate: true });
   }
 
-  // Calculate Creds — only award on confirmed/approved transactions
-  const totalCreds = status === 'confirmed' || status === 'approved'
-    ? commissionToCreds(commissionGBP)
+  // Calculate Scores — only award on confirmed/approved transactions
+  const totalScores = status === 'confirmed' || status === 'approved'
+    ? commissionToScores(commissionGBP)
     : 0;
 
-  const { athleteCreds, clubCreds } = calcShoppingSplit(totalCreds);
+  const { athleteScores, clubScores } = calcShoppingSplit(totalScores);
 
   // Insert transaction record (token already stripped from the stored payload)
   const { error: insertError } = await supabase.from('awin_transactions').insert({
@@ -144,7 +144,7 @@ async function handleWebhook(req: NextRequest) {
     commission_gbp:      commissionGBP,
     currency,
     status,
-    creds_awarded:       athleteCreds,
+    creds_awarded:       athleteScores,
     raw_payload:         params,
   });
 
@@ -154,25 +154,25 @@ async function handleWebhook(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to record transaction' }, { status: 500 });
   }
 
-  // Award athlete Creds (club split handled separately when club wallet exists)
-  if (athleteCreds > 0) {
+  // Award athlete Scores (club split handled separately when club wallet exists)
+  if (athleteScores > 0) {
     const { error: awardError } = await supabase.rpc('increment_creds_balance', {
       p_user_id: userId,
-      p_amount:  athleteCreds,
+      p_amount:  athleteScores,
     });
 
     if (awardError) {
       // Roll back the record so Awin's retry is processed instead of treated as a duplicate
       await supabase.from('awin_transactions').delete().eq('awin_transaction_id', awinTransactionId);
-      return NextResponse.json({ error: 'Failed to award Creds' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to award Scores' }, { status: 500 });
     }
   }
 
   return NextResponse.json({
     ok:           true,
-    athleteCreds,
-    clubCreds,
-    totalCreds,
+    athleteScores,
+    clubScores,
+    totalScores,
     status,
   });
 }

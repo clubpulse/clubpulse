@@ -20,7 +20,7 @@ export type CheckInResult = {
   sessionId:      string;
   gpsConfirmed:   boolean;
   distanceMetres: number;
-  credsAwarded:   number;
+  scoresAwarded:   number;
 };
 
 const utcDate = (offsetDays = 0) =>
@@ -76,7 +76,7 @@ export async function checkInVolunteer(input: CheckInInput): Promise<ActionResul
       sessionId: session.id,
       gpsConfirmed,
       distanceMetres,
-      credsAwarded: award.success ? award.data.credsAwarded : 0,
+      scoresAwarded: award.success ? award.data.scoresAwarded : 0,
     },
   };
 }

@@ -37,7 +37,7 @@ export default function SignUpScreen() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={styles.logo}>Creds</Text>
+          <Text style={styles.logo}>ClubPulse</Text>
           <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Create your account</Text>
 
           <TextInput value={fullName} onChangeText={setFullName} placeholder="Full name" placeholderTextColor={colors.textMuted}

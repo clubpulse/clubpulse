@@ -61,7 +61,7 @@ export async function redeemRewardForUser(
       case 'out_of_stock':
         return { success: false, error: 'This reward is out of stock' };
       case 'insufficient_creds':
-        return { success: false, error: `Not enough Creds. Need ${result.cost}, have ${result.balance}.` };
+        return { success: false, error: `Not enough Scores. Need ${result.cost}, have ${result.balance}.` };
     }
   }
 
@@ -69,7 +69,7 @@ export async function redeemRewardForUser(
     success: true,
     data: {
       redemptionId: result.redemption_id,
-      credsSpent:   result.creds_spent,
+      scoresSpent:   result.creds_spent,
       balance:      result.balance,
     },
   };

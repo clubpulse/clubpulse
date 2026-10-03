@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ActionResult } from '@/lib/types/action';
-import type { CredsWallet } from '@/lib/types/creds';
+import type { ScoresWallet } from '@/lib/types/scores';
 import type { UserProfile } from '@/lib/types/user';
 
 export type ProfileUpdate = { full_name?: string; display_name?: string };
@@ -25,7 +25,7 @@ export async function fetchProfile(
 export async function fetchWallet(
   supabase: SupabaseClient,
   userId: string
-): Promise<ActionResult<CredsWallet | null>> {
+): Promise<ActionResult<ScoresWallet | null>> {
   const { data, error } = await supabase
     .from('creds_wallet')
     .select('*')
@@ -33,7 +33,7 @@ export async function fetchWallet(
     .maybeSingle();
 
   if (error) return { success: false, error: error.message };
-  return { success: true, data: (data as CredsWallet | null) ?? null };
+  return { success: true, data: (data as ScoresWallet | null) ?? null };
 }
 
 // Whitelist: only these two fields can ever be changed through the profile API

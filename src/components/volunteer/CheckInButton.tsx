@@ -52,7 +52,7 @@ export function CheckInButton() {
   }
 
   return (
-    <Card title="Volunteer check-in" description="Check in at your club ground to earn Creds once your club confirms">
+    <Card title="Volunteer check-in" description="Check in at your club ground to earn Scores once your club confirms">
       <div className="flex flex-col gap-3 sm:flex-row">
         <select
           value={role}

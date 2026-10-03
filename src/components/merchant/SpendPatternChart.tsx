@@ -1,4 +1,4 @@
-import { formatCreds } from '@/lib/utils/format';
+import { formatScores } from '@/lib/utils/format';
 import type { SpendPattern } from '@/lib/types/merchant';
 
 // Horizontal bars, one per category, sized by redemptions
@@ -13,7 +13,7 @@ export function SpendPatternChart({ patterns }: { patterns: SpendPattern[] }) {
           <div className="mb-1 flex justify-between text-sm">
             <span className="capitalize text-white">{p.category}</span>
             <span className="text-neutral-400">
-              {p.redemptions} redemptions · {formatCreds(p.creds_spent)} Creds
+              {p.redemptions} redemptions · {formatScores(p.scores_spent)} Scores
             </span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-neutral-800">

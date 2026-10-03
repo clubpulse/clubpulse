@@ -54,9 +54,9 @@ export async function getMerchantInsights(merchantId?: string): Promise<Redempti
     const category = reward?.category ?? 'uncategorised';
     const when = new Date(row.redeemed_at);
 
-    const c = categories.get(category) ?? { category, redemptions: 0, creds_spent: 0 };
+    const c = categories.get(category) ?? { category, redemptions: 0, scores_spent: 0 };
     c.redemptions += 1;
-    c.creds_spent += row.creds_spent;
+    c.scores_spent += row.creds_spent;
     categories.set(category, c);
 
     const key = `${when.getUTCDay()}-${when.getUTCHours()}`;

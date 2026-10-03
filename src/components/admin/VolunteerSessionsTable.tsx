@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/Badge';
-import { formatCreds, formatDate } from '@/lib/utils/format';
+import { formatScores, formatDate } from '@/lib/utils/format';
 import type { VolunteerSessionWithName } from '@/lib/types/volunteer';
 
 const yesNo = (value: boolean) => (value ? <Badge tone="green">Yes</Badge> : <Badge>No</Badge>);
@@ -17,7 +17,7 @@ export function VolunteerSessionsTable({ sessions }: { sessions: VolunteerSessio
             <th className="px-4 py-3 font-medium">Role</th>
             <th className="px-4 py-3 font-medium">GPS</th>
             <th className="px-4 py-3 font-medium">Club</th>
-            <th className="px-4 py-3 text-right font-medium">Creds</th>
+            <th className="px-4 py-3 text-right font-medium">Scores</th>
             <th className="px-4 py-3 font-medium">Status</th>
           </tr>
         </thead>
@@ -29,7 +29,7 @@ export function VolunteerSessionsTable({ sessions }: { sessions: VolunteerSessio
               <td className="px-4 py-3 capitalize text-neutral-300">{s.role.replace(/_/g, ' ')}</td>
               <td className="px-4 py-3">{yesNo(s.gps_confirmed)}</td>
               <td className="px-4 py-3">{yesNo(s.club_confirmed)}</td>
-              <td className="px-4 py-3 text-right tabular-nums text-white">{formatCreds(s.creds_awarded)}</td>
+              <td className="px-4 py-3 text-right tabular-nums text-white">{formatScores(s.creds_awarded)}</td>
               <td className="px-4 py-3"><Badge tone={s.status === 'approved' ? 'green' : s.status === 'rejected' ? 'red' : 'neutral'}>{s.status}</Badge></td>
             </tr>
           ))}

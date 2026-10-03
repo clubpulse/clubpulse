@@ -2,14 +2,14 @@
 // POST /api/steps/sync
 // Expo app calls this to log today's step count.
 // Auth: Bearer access token (Expo) or cookie session (web).
-// Calculates Creds + streak, writes steps_log, awards only the delta
+// Calculates Scores + streak, writes steps_log, awards only the delta
 // between the new total and what was already awarded for that day.
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { calcStepsCreds } from '@/lib/types/sport';
+import { calcStepsScores } from '@/lib/types/sport';
 
 export async function POST(req: NextRequest) {
   const { supabase, user } = await getRequestAuth(req);
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Only today or yesterday (UTC; allows for timezones and a late sync), and a believable count.
-  // Without this a client could sync every past date and farm the daily Creds.
+  // Without this a client could sync every past date and farm the daily Scores.
   const utcDate = (offsetDays: number) =>
     new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10);
   if (logDate !== utcDate(0) && logDate !== utcDate(-1)) {
@@ -76,17 +76,17 @@ export async function POST(req: NextRequest) {
 
   const streakDay = prevStreak + 1;
 
-  // 3. Calculate Creds (streak bonus fires on day 7, 14, 21…) and the delta
+  // 3. Calculate Scores (streak bonus fires on day 7, 14, 21…) and the delta
   //    over what this day has already been awarded
   const alreadyAwarded = existing?.creds_earned ?? 0;
-  const totalCredsToday = Math.max(calcStepsCreds(stepCount, prevStreak), alreadyAwarded);
-  const credsDelta = totalCredsToday - alreadyAwarded;
+  const totalScoresToday = Math.max(calcStepsScores(stepCount, prevStreak), alreadyAwarded);
+  const scoresDelta = totalScoresToday - alreadyAwarded;
 
   // 4. Write steps_log. The update is compare-and-set on the previous values, so two
   //    concurrent syncs can't both award the same delta.
   const row = {
     step_count:   stepCount,
-    creds_earned: totalCredsToday,
+    creds_earned: totalScoresToday,
     streak_day:   streakDay,
     source,
     synced_at:    new Date().toISOString(),
@@ -119,14 +119,14 @@ export async function POST(req: NextRequest) {
   }
 
   // 5. Award only the delta
-  if (credsDelta > 0) {
+  if (scoresDelta > 0) {
     const { error: awardError } = await createAdminClient().rpc('increment_creds_balance', {
       p_user_id: user.id,
-      p_amount:  credsDelta,
+      p_amount:  scoresDelta,
     });
 
     if (awardError) {
-      // Undo the write so a retry awards the Creds instead of seeing them as already given
+      // Undo the write so a retry awards the Scores instead of seeing them as already given
       if (existing) {
         await supabase
           .from('steps_log')
@@ -139,15 +139,15 @@ export async function POST(req: NextRequest) {
       } else {
         await supabase.from('steps_log').delete().eq('user_id', user.id).eq('log_date', logDate);
       }
-      return NextResponse.json({ error: 'Failed to award Creds' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to award Scores' }, { status: 500 });
     }
   }
 
   return NextResponse.json({
     ok:              true,
     stepCount,
-    credsEarned:     credsDelta,       // newly awarded by this sync
-    totalCredsToday,                   // total awarded for this day so far
+    scoresEarned:     scoresDelta,       // newly awarded by this sync
+    totalScoresToday,                   // total awarded for this day so far
     streakDay,
   });
 }

@@ -30,7 +30,7 @@ export async function api<T>(
       body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
     });
   } catch {
-    throw new ApiError('Could not reach Creds. Check your connection.', 0);
+    throw new ApiError('Could not reach ClubPulse. Check your connection.', 0);
   }
 
   const json = await res.json().catch(() => null);
@@ -66,8 +66,8 @@ export type Wallet = {
 export type StepsSyncResponse = {
   ok: true;
   stepCount: number;
-  credsEarned?: number;
-  totalCredsToday?: number;
+  scoresEarned?: number;
+  totalScoresToday?: number;
   streakDay: number;
   duplicate?: boolean;
 };

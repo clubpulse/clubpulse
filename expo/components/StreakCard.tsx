@@ -6,7 +6,7 @@ import { colors, fonts, radius, spacing } from '../constants/theme';
 
 const SHIELD_COST = 20;
 
-// streakDay comes from the last steps sync. The shield spends Creds to keep a streak alive on a
+// streakDay comes from the last steps sync. The shield spends Scores to keep a streak alive on a
 // day with no steps; the server decides whether it's allowed.
 export function StreakCard({ streakDay, onUsed }: { streakDay: number; onUsed: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ export function StreakCard({ streakDay, onUsed }: { streakDay: number; onUsed: (
         </View>
       </View>
       <Pressable onPress={useShield} disabled={loading} style={({ pressed }) => [styles.button, pressed && { opacity: 0.7 }]}>
-        {loading ? <ActivityIndicator color={colors.gold} /> : <Text style={styles.buttonText}>🛡️ Use streak shield ({SHIELD_COST} Creds)</Text>}
+        {loading ? <ActivityIndicator color={colors.gold} /> : <Text style={styles.buttonText}>🛡️ Use streak shield ({SHIELD_COST} Scores)</Text>}
       </Pressable>
     </Card>
   );

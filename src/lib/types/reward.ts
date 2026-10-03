@@ -15,6 +15,6 @@ export type Reward = {
 
 export type RedemptionResult = {
   redemptionId: string;
-  credsSpent:   number;
+  scoresSpent:   number;
   balance:      number;
 };

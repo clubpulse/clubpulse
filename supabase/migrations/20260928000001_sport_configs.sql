@@ -1,5 +1,5 @@
 -- =============================================================
--- Creds: Sport-Agnostic Schema Migration
+-- ClubPulse: Sport-Agnostic Schema Migration
 -- =============================================================
 
 CREATE TABLE IF NOT EXISTS sport_configs (

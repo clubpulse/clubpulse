@@ -4,8 +4,8 @@ import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { fetchWallet } from '@/lib/profile/service';
 import { fetchReward } from '@/lib/marketplace/service';
-import { totalBalance } from '@/lib/types/creds';
-import { formatCreds } from '@/lib/utils/format';
+import { totalBalance } from '@/lib/types/scores';
+import { formatScores } from '@/lib/utils/format';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { RedemptionModal } from '@/components/marketplace/RedemptionModal';
@@ -37,9 +37,9 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-3xl font-bold tabular-nums text-brand-gold">{formatCreds(r.creds_cost)} Creds</p>
+            <p className="text-3xl font-bold tabular-nums text-brand-gold">{formatScores(r.creds_cost)} Scores</p>
             <p className="text-xs text-neutral-500">
-              You have {formatCreds(balance)}
+              You have {formatScores(balance)}
               {r.stock_count !== null && ` · ${r.stock_count} left`}
             </p>
           </div>

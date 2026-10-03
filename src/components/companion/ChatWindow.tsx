@@ -62,7 +62,7 @@ export function ChatWindow({
     <div className="flex h-[calc(100dvh-11rem)] flex-col overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 md:h-[calc(100dvh-8rem)]">
       <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-3">
         <div>
-          <h1 className="font-semibold text-white">Your Creds Coach</h1>
+          <h1 className="font-semibold text-white">Your ClubPulse Coach</h1>
           <p className="text-xs text-neutral-500">Personal cricket coaching based on your stats</p>
         </div>
         {messages.length > 0 && <Button variant="ghost" size="sm" onClick={newChat} disabled={sending}>New chat</Button>}
@@ -71,7 +71,7 @@ export function ChatWindow({
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="mt-6 space-y-3 text-center">
-            <p className="text-sm text-neutral-400">Ask anything about your game, fitness or Creds.</p>
+            <p className="text-sm text-neutral-400">Ask anything about your game, fitness or Scores.</p>
             <div className="flex flex-wrap justify-center gap-2">
               {STARTERS.map((starter) => (
                 <button

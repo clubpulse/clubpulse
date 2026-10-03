@@ -31,13 +31,13 @@ export async function getActiveMultipliers(clubId?: string | null): Promise<Dyna
 }
 
 export function applyMultiplier(
-  baseCredits: number,
+  baseScores: number,
   multipliers: Pick<DynamicMultiplier, 'multiplier'>[]
 ): number {
-  if (!(baseCredits > 0)) return 0;
+  if (!(baseScores > 0)) return 0;
   const combined = Math.min(
     multipliers.reduce((total, m) => total * m.multiplier, 1),
     MAX_COMBINED_MULTIPLIER
   );
-  return Math.round(baseCredits * combined);
+  return Math.round(baseScores * combined);
 }

@@ -4,12 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
 import { listActiveRewards } from '@/lib/marketplace/service';
 import { getRecentActivity, getStreakInfo } from '@/lib/activity/service';
-import { totalBalance } from '@/lib/types/creds';
+import { totalBalance } from '@/lib/types/scores';
 import { WalletSummary } from '@/components/dashboard/WalletSummary';
 import { StreakCard } from '@/components/dashboard/StreakCard';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { UpcomingRewards } from '@/components/dashboard/UpcomingRewards';
-import { PredictiveCredsWidget } from '@/components/dashboard/PredictiveCredsWidget';
+import { PredictiveScoresWidget } from '@/components/dashboard/PredictiveScoresWidget';
 import { CheckInButton } from '@/components/volunteer/CheckInButton';
 
 export default async function DashboardPage() {
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <WalletSummary flexi={walletData?.flexi_balance ?? 0} reward={walletData?.reward_balance ?? 0} />
-          <PredictiveCredsWidget />
+          <PredictiveScoresWidget />
           <RecentActivity items={activity} />
         </div>
         <div className="space-y-6">

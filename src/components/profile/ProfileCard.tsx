@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { formatCreds } from '@/lib/utils/format';
-import type { CredsWallet } from '@/lib/types/creds';
+import { formatScores } from '@/lib/utils/format';
+import type { ScoresWallet } from '@/lib/types/scores';
 import type { UserProfile } from '@/lib/types/user';
 
 export function ProfileCard({
@@ -12,7 +12,7 @@ export function ProfileCard({
   roles,
 }: {
   profile: UserProfile;
-  wallet: CredsWallet | null;
+  wallet: ScoresWallet | null;
   roles: string[];
 }) {
   return (
@@ -40,7 +40,7 @@ export function ProfileCard({
       <dl className="mt-6 grid grid-cols-3 gap-3 text-center">
         <div className="rounded-xl bg-neutral-900/60 p-3">
           <dt className="text-xs text-neutral-500">Lifetime earned</dt>
-          <dd className="mt-1 text-lg font-semibold tabular-nums text-white">{formatCreds(wallet?.lifetime_earned ?? 0)}</dd>
+          <dd className="mt-1 text-lg font-semibold tabular-nums text-white">{formatScores(wallet?.lifetime_earned ?? 0)}</dd>
         </div>
         <div className="rounded-xl bg-neutral-900/60 p-3">
           <dt className="text-xs text-neutral-500">Sport</dt>

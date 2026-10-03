@@ -44,24 +44,24 @@ type LogPerformanceInput = {
 
 export async function logPerformance(
   input: LogPerformanceInput
-): Promise<{ success: true; data: Performance; credsEarned: number } | { success: false; error: string }> {
+): Promise<{ success: true; data: Performance; scoresEarned: number } | { success: false; error: string }> {
   const supabase = await createClient();
 
   // Auth check
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not authenticated' };
 
-  // Fetch sport config to calculate Creds
+  // Fetch sport config to calculate Scores
   const sportResult = await getSportByName(input.sportName);
   if (!sportResult.success) return { success: false, error: sportResult.error };
   const sport = sportResult.data;
 
-  // Calculate Creds from earning_rules
+  // Calculate Scores from earning_rules
   const rules = sport.earning_rules[input.category] ?? {};
-  let credsEarned = 0;
+  let scoresEarned = 0;
   for (const [metric, value] of Object.entries(input.data)) {
     const rate = rules[metric] ?? 0;
-    credsEarned += Math.floor((value as number) * rate);
+    scoresEarned += Math.floor((value as number) * rate);
   }
 
   // Insert performance row
@@ -72,7 +72,7 @@ export async function logPerformance(
       sport_id:        sport.id,
       category:        input.category,
       data:            input.data,
-      creds_earned:    credsEarned,
+      creds_earned:    scoresEarned,
       source:          input.source ?? 'manual',
       source_event_id: input.sourceEventId ?? null,
       performed_at:    input.performedAt ?? new Date().toISOString(),
@@ -82,16 +82,16 @@ export async function logPerformance(
 
   if (error) return { success: false, error: error.message };
 
-  // Award Creds atomically
-  if (credsEarned > 0) {
+  // Award Scores atomically
+  if (scoresEarned > 0) {
     const { error: awardError } = await createAdminClient().rpc('increment_creds_balance', {
       p_user_id: user.id,
-      p_amount:  credsEarned,
+      p_amount:  scoresEarned,
     });
-    if (awardError) return { success: false, error: `Performance saved but Creds award failed: ${awardError.message}` };
+    if (awardError) return { success: false, error: `Performance saved but Scores award failed: ${awardError.message}` };
   }
 
-  return { success: true, data: perf as Performance, credsEarned };
+  return { success: true, data: perf as Performance, scoresEarned };
 }
 
 // ── Performance queries ────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ export async function getUserPerformances(options?: {
   return { success: true, data: data as PerformanceWithSport[] };
 }
 
-export async function getPerformanceCreditTotal(since?: string): Promise<{ success: true; total: number } | { success: false; error: string }> {
+export async function getPerformanceScoreTotal(since?: string): Promise<{ success: true; total: number } | { success: false; error: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not authenticated' };

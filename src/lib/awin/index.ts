@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Creds: Awin Affiliate Integration
+// ClubPulse: Awin Affiliate Integration
 // Publisher ID: 3107853
 // ─────────────────────────────────────────────
 
@@ -58,22 +58,22 @@ export function buildAwinLink(
 }
 
 /**
- * Convert a raw Awin commission amount (in GBP pence or £) to Creds.
- * 50 Creds = £1, so commission × 50 = Creds (pass amount in pounds).
+ * Convert a raw Awin commission amount (in GBP pence or £) to Scores.
+ * 50 Scores = £1, so commission × 50 = Scores (pass amount in pounds).
  */
-export function commissionToCreds(commissionGBP: number): number {
+export function commissionToScores(commissionGBP: number): number {
   return Math.floor(commissionGBP * 50);
 }
 
 /**
- * Split a Creds award between the athlete (80%) and their club (20%).
+ * Split a Scores award between the athlete (80%) and their club (20%).
  * Returns integer values; club gets the remainder.
  */
-export function calcShoppingSplit(totalCreds: number): {
-  athleteCreds: number;
-  clubCreds:    number;
+export function calcShoppingSplit(totalScores: number): {
+  athleteScores: number;
+  clubScores:    number;
 } {
-  const athleteCreds = Math.floor(totalCreds * 0.8);
-  const clubCreds    = totalCreds - athleteCreds;
-  return { athleteCreds, clubCreds };
+  const athleteScores = Math.floor(totalScores * 0.8);
+  const clubScores    = totalScores - athleteScores;
+  return { athleteScores, clubScores };
 }

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { WalletTransaction } from '@/lib/types/creds';
+import type { WalletTransaction } from '@/lib/types/scores';
 
 export type StreakInfo = {
   streakDay:      number;
@@ -63,7 +63,7 @@ export async function getRecentActivity(
     .slice(0, limit);
 }
 
-// Union of every place Creds move. There is no ledger table, so this is assembled on read.
+// Union of every place Scores move. There is no ledger table, so this is assembled on read.
 // A source whose table doesn't exist yet (migration not run) is simply skipped.
 export async function getWalletHistory(
   supabase: SupabaseClient,

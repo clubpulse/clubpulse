@@ -5,7 +5,7 @@ import type { Wallet } from '../lib/api';
 
 // Reads creds_wallet directly (RLS lets a user read only their own row; balances are
 // changed only on the server)
-export function useCredsWallet() {
+export function useScoresWallet() {
   const { user } = useAuth();
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [loading, setLoading] = useState(true);

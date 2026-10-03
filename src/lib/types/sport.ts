@@ -47,7 +47,7 @@ export type StepsLog = {
   synced_at:        string;
 };
 
-export const STEPS_PER_CRED        = 1000;
+export const STEPS_PER_SCORE        = 1000;
 export const STEPS_DAILY_BONUS_AT  = 10000;
 export const STEPS_DAILY_BONUS     = 10;
 export const STEPS_STREAK_BONUS    = 50;
@@ -55,9 +55,9 @@ export const STEPS_DAILY_CAP       = 20;
 export const STREAK_SHIELD_COST    = 20;
 export const STREAK_BONUS_DAY      = 7;
 
-export function calcStepsCreds(stepCount: number, currentStreak: number): number {
-  let creds = Math.floor(stepCount / STEPS_PER_CRED);
-  if (stepCount >= STEPS_DAILY_BONUS_AT) creds += STEPS_DAILY_BONUS;
-  if (currentStreak > 0 && currentStreak % STREAK_BONUS_DAY === 0) creds += STEPS_STREAK_BONUS;
-  return Math.min(creds, STEPS_DAILY_CAP);
+export function calcStepsScores(stepCount: number, currentStreak: number): number {
+  let scores = Math.floor(stepCount / STEPS_PER_SCORE);
+  if (stepCount >= STEPS_DAILY_BONUS_AT) scores += STEPS_DAILY_BONUS;
+  if (currentStreak > 0 && currentStreak % STREAK_BONUS_DAY === 0) scores += STEPS_STREAK_BONUS;
+  return Math.min(scores, STEPS_DAILY_CAP);
 }

@@ -13,7 +13,7 @@ export function AuthShell({ title, subtitle, children, footer }: {
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-primary font-bold text-white">C</span>
-            <span className="text-2xl font-bold text-white">Creds</span>
+            <span className="text-2xl font-bold text-white">ClubPulse</span>
           </Link>
           <h1 className="mt-6 text-xl font-semibold text-white">{title}</h1>
           {subtitle && <p className="mt-1 text-sm text-neutral-400">{subtitle}</p>}

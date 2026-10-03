@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // POST /api/steps/streak-shield
-// Spend 20 Creds to protect a streak you're about to break.
+// Spend 20 Scores to protect a streak you're about to break.
 // The Duolingo mechanic — call before midnight if no steps logged.
 // Auth: Bearer access token (Expo) or cookie session (web).
 // All checks + the deduct + the steps_log write happen atomically in the
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     switch (result.error) {
       case 'insufficient_creds':
         return NextResponse.json(
-          { error: `Not enough Creds. Need ${result.cost}, have ${result.balance}.` },
+          { error: `Not enough Scores. Need ${result.cost}, have ${result.balance}.` },
           { status: 402 }
         );
       case 'already_protected':
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     success:         true,
-    credsCost:       result.cost,
+    scoresCost:       result.cost,
     streakProtected: result.streak_protected,
   });
 }

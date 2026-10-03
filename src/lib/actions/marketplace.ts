@@ -12,7 +12,7 @@ export async function getRewards(): Promise<ActionResult<Reward[]>> {
   return listActiveRewards(supabase);
 }
 
-// Deducts Creds, decrements stock and records the redemption atomically (redeem_reward RPC)
+// Deducts Scores, decrements stock and records the redemption atomically (redeem_reward RPC)
 export async function redeemReward(rewardId: string): Promise<ActionResult<RedemptionResult>> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

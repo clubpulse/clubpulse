@@ -75,7 +75,7 @@ export function SportConfigForm({ config, canEdit }: { config: SportConfig; canE
                   <input
                     type="number" min={0} max={1000} step={1} value={value}
                     onChange={(e) => setValue(category, metric, Math.max(0, Math.min(1000, Math.round(Number(e.target.value) || 0))))}
-                    aria-label={`${category} ${metric} Creds`}
+                    aria-label={`${category} ${metric} Scores`}
                     className="w-20 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-right text-sm text-white disabled:opacity-60"
                   />
                   {canEdit && (

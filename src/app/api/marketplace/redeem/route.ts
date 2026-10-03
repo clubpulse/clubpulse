@@ -1,4 +1,4 @@
-// POST /api/marketplace/redeem  { rewardId }  → { redemptionId, credsSpent, balance }
+// POST /api/marketplace/redeem  { rewardId }  → { redemptionId, scoresSpent, balance }
 // Deduct + stock + redemption row happen atomically in the redeem_reward SQL function.
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const result = await redeemRewardForUser(user.id, body.rewardId);
   if (!result.success) {
     // 402 for "can't afford" so clients can tell it apart from a bad request
-    return fail(result.error, /not enough creds/i.test(result.error) ? 402 : undefined);
+    return fail(result.error, /not enough scores/i.test(result.error) ? 402 : undefined);
   }
   return NextResponse.json(result.data);
 }

@@ -1,9 +1,9 @@
-// POST /api/ai/predictive-creds → { forecast, currentPace, nextTier, sessionsNeeded, message }
+// POST /api/ai/predictive-scores → { forecast, currentPace, nextTier, sessionsNeeded, message }
 // Auth: Bearer access token (Expo) or cookie session (web).
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
-import { predictSeasonCreds } from '@/lib/ai/predictive-creds';
+import { predictSeasonScores } from '@/lib/ai/predictive-scores';
 import { unauthorized } from '@/lib/utils/http';
 
 export async function POST(req: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   if (!user) return unauthorized();
 
   try {
-    return NextResponse.json(await predictSeasonCreds(user.id));
+    return NextResponse.json(await predictSeasonScores(user.id));
   } catch {
     return NextResponse.json({ error: 'Could not build your forecast' }, { status: 500 });
   }

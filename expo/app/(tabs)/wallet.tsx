@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WalletCard } from '../../components/WalletCard';
-import { useCredsWallet } from '../../hooks/useCredsWallet';
+import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
@@ -11,7 +11,7 @@ type HistoryItem = { id: string; title: string; amount: number; at: string };
 
 export default function WalletScreen() {
   const { user } = useAuth();
-  const { wallet, loading, refresh } = useCredsWallet();
+  const { wallet, loading, refresh } = useScoresWallet();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -64,7 +64,7 @@ export default function WalletScreen() {
             <Text style={[fonts.title, { marginTop: spacing.sm }]}>History</Text>
           </View>
         }
-        ListEmptyComponent={<Text style={fonts.small}>No Creds earned yet. Sync your steps to get started.</Text>}
+        ListEmptyComponent={<Text style={fonts.small}>No Scores earned yet. Sync your steps to get started.</Text>}
         renderItem={({ item }) => (
           <View style={styles.row}>
             <View style={{ flex: 1 }}>

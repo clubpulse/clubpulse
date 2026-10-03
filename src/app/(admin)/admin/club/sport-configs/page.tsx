@@ -13,7 +13,7 @@ export default async function SportConfigsPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Earning rules</h1>
         <p className="text-sm text-neutral-400">
-          How many Creds each action earns. These are shared by every club, so only platform admins can edit them.
+          How many Scores each action earns. These are shared by every club, so only platform admins can edit them.
         </p>
       </div>
       {result.data.map((config) => (

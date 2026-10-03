@@ -9,7 +9,7 @@ import {
   type MultiplierInput,
 } from '@/lib/admin/service';
 import { approveVolunteerSession } from '@/lib/volunteer/approve';
-import type { DynamicMultiplier } from '@/lib/ai/dynamic-creds';
+import type { DynamicMultiplier } from '@/lib/ai/dynamic-scores';
 import type { ActionResult } from '@/lib/types/action';
 import type { ClubMemberWithProfile } from '@/lib/types/club';
 import type { VolunteerSessionWithName, VolunteerStatus } from '@/lib/types/volunteer';
@@ -37,7 +37,7 @@ export async function getVolunteerSessions(
   return listVolunteerSessions(userId, clubId, status);
 }
 
-export async function approveVolunteer(sessionId: string): Promise<ActionResult<{ credsAwarded: number }>> {
+export async function approveVolunteer(sessionId: string): Promise<ActionResult<{ scoresAwarded: number }>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
   return approveVolunteerSession(userId, sessionId);

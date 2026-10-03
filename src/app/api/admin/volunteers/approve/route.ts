@@ -1,5 +1,5 @@
-// POST /api/admin/volunteers/approve  { sessionId } → { credsAwarded }
-// Sets club_confirmed = true; awards Creds only if gps_confirmed is also true. Pays once.
+// POST /api/admin/volunteers/approve  { sessionId } → { scoresAwarded }
+// Sets club_confirmed = true; awards Scores only if gps_confirmed is also true. Pays once.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';

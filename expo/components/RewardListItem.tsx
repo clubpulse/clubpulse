@@ -15,7 +15,7 @@ export function RewardListItem({ reward, balance, onPress }: { reward: Reward; b
       </View>
       <View style={{ alignItems: 'flex-end' }}>
         <Text style={[styles.cost, !affordable && { color: colors.textMuted }]}>{reward.creds_cost.toLocaleString('en-GB')}</Text>
-        <Text style={fonts.small}>{outOfStock ? 'Out of stock' : affordable ? 'Redeem' : 'Creds'}</Text>
+        <Text style={fonts.small}>{outOfStock ? 'Out of stock' : affordable ? 'Redeem' : 'Scores'}</Text>
       </View>
     </Pressable>
   );

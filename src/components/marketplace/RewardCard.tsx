@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
-import { formatCreds } from '@/lib/utils/format';
+import { formatScores } from '@/lib/utils/format';
 import type { Reward } from '@/lib/types/reward';
 
 export function RewardCard({ reward, balance }: { reward: Reward; balance: number }) {
@@ -27,7 +27,7 @@ export function RewardCard({ reward, balance }: { reward: Reward; balance: numbe
         </div>
         {reward.description && <p className="line-clamp-2 text-sm text-neutral-400">{reward.description}</p>}
         <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-lg font-bold tabular-nums text-brand-gold">{formatCreds(reward.creds_cost)} Creds</span>
+          <span className="text-lg font-bold tabular-nums text-brand-gold">{formatScores(reward.creds_cost)} Scores</span>
           {outOfStock ? <Badge tone="red">Out of stock</Badge> : affordable ? <Badge tone="green">You can afford this</Badge> : null}
         </div>
       </div>

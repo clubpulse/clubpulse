@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RewardListItem } from '../../components/RewardListItem';
-import { useCredsWallet } from '../../hooks/useCredsWallet';
+import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { api, ApiError, type Reward } from '../../lib/api';
 import { colors, fonts, spacing } from '../../constants/theme';
 
 export default function MarketplaceScreen() {
-  const { total, refresh: refreshWallet } = useCredsWallet();
+  const { total, refresh: refreshWallet } = useScoresWallet();
   const [rewards, setRewards] = useState<Reward[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -38,10 +38,10 @@ export default function MarketplaceScreen() {
 
   function confirmRedeem(reward: Reward) {
     if (total < reward.creds_cost) {
-      Alert.alert('Not enough Creds', `You need ${(reward.creds_cost - total).toLocaleString('en-GB')} more Creds for this.`);
+      Alert.alert('Not enough Scores', `You need ${(reward.creds_cost - total).toLocaleString('en-GB')} more Scores for this.`);
       return;
     }
-    Alert.alert('Redeem reward', `Spend ${reward.creds_cost.toLocaleString('en-GB')} Creds on ${reward.title}?`, [
+    Alert.alert('Redeem reward', `Spend ${reward.creds_cost.toLocaleString('en-GB')} Scores on ${reward.title}?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Redeem', onPress: () => redeem(reward) },
     ]);
@@ -63,7 +63,7 @@ export default function MarketplaceScreen() {
         ListHeaderComponent={
           <View style={{ marginBottom: spacing.sm }}>
             <Text style={fonts.heading}>Marketplace</Text>
-            <Text style={fonts.small}>You have {total.toLocaleString('en-GB')} Creds</Text>
+            <Text style={fonts.small}>You have {total.toLocaleString('en-GB')} Scores</Text>
           </View>
         }
         ListEmptyComponent={

@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS volunteer_sessions (
   creds_awarded   INTEGER NOT NULL DEFAULT 0,
   status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  -- one check-in per person, role and day at a club (stops repeat check-ins re-earning Creds)
+  -- one check-in per person, role and day at a club (stops repeat check-ins re-earning Scores)
   UNIQUE (user_id, club_id, role, session_date)
 );
 

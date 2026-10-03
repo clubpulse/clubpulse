@@ -99,6 +99,6 @@ BEGIN
 END;
 $$;
 
--- Service role only: this moves Creds, so users must not be able to call it with any user id.
+-- Service role only: this moves Scores, so users must not be able to call it with any user id.
 REVOKE ALL ON FUNCTION redeem_reward(UUID, UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION redeem_reward(UUID, UUID) TO service_role;

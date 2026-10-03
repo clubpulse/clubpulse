@@ -5,19 +5,19 @@ import { StepsCard } from '../../components/StepsCard';
 import { WalletCard } from '../../components/WalletCard';
 import { StreakCard } from '../../components/StreakCard';
 import { SportingSoulCard } from '../../components/SportingSoulCard';
-import { useCredsWallet } from '../../hooks/useCredsWallet';
+import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { useSteps } from '../../hooks/useSteps';
 import { colors, fonts, spacing } from '../../constants/theme';
 
 export default function HomeScreen() {
-  const { wallet, loading, refresh: refreshWallet } = useCredsWallet();
+  const { wallet, loading, refresh: refreshWallet } = useScoresWallet();
   const steps = useSteps();
   const [refreshing, setRefreshing] = useState(false);
 
   const refreshAll = useCallback(async () => {
     setRefreshing(true);
     await Promise.all([refreshWallet(), steps.refresh()]);
-    // A steps sync can award Creds, so read the wallet again afterwards
+    // A steps sync can award Scores, so read the wallet again afterwards
     await refreshWallet();
     setRefreshing(false);
   }, [refreshWallet, steps]);

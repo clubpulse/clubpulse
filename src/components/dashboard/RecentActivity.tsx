@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/Card';
-import { formatCreds, formatDate } from '@/lib/utils/format';
-import type { WalletTransaction } from '@/lib/types/creds';
+import { formatScores, formatDate } from '@/lib/utils/format';
+import type { WalletTransaction } from '@/lib/types/scores';
 
 export function RecentActivity({ items }: { items: WalletTransaction[] }) {
   return (
@@ -16,7 +16,7 @@ export function RecentActivity({ items }: { items: WalletTransaction[] }) {
                 <p className="text-xs text-neutral-500">{formatDate(item.occurred_at)}</p>
               </div>
               <span className={`shrink-0 text-sm font-semibold tabular-nums ${item.amount >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {item.amount >= 0 ? '+' : ''}{formatCreds(item.amount)}
+                {item.amount >= 0 ? '+' : ''}{formatScores(item.amount)}
               </span>
             </li>
           ))}

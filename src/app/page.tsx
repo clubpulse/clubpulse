@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const STATS = [
-  { label: "50 Creds = £1" },
+  { label: "50 Scores = £1" },
   { label: "Cricket tracked" },
   { label: "Fitness rewarded" },
   { label: "Real cash for coaches" },
@@ -9,19 +9,19 @@ const STATS = [
 
 const STEPS = [
   {
-    title: "Earn Creds",
+    title: "Earn Scores",
     description:
-      "Score runs, take wickets, show up to training, or volunteer your time — every contribution earns Creds.",
+      "Score runs, take wickets, show up to training, or volunteer your time — every contribution earns Scores.",
   },
   {
     title: "Stack your wallet",
     description:
-      "Flexi Creds and Reward Creds build up in your wallet automatically as you play and help out.",
+      "Flexi Scores and Reward Scores build up in your wallet automatically as you play and help out.",
   },
   {
     title: "Redeem rewards",
     description:
-      "Cash out, unlock gear, or put Creds toward real rewards. 50 Creds is always worth £1.",
+      "Cash out, unlock gear, or put Scores toward real rewards. 50 Scores is always worth £1.",
   },
 ];
 
@@ -33,7 +33,7 @@ export default function Home() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-primary font-bold">
             C
           </div>
-          <span className="text-lg font-semibold">Creds</span>
+          <span className="text-lg font-semibold">ClubPulse</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -54,12 +54,12 @@ export default function Home() {
 
       <section className="mx-auto max-w-4xl px-6 pb-20 pt-16 text-center sm:pt-24">
         <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-          Stack your Creds.
+          Stack your Scores.
           <br />
           Own your game.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-400">
-          Earn Creds for every run scored, wicket taken, training session and
+          Earn Scores for every run scored, wicket taken, training session and
           volunteer shift. Redeem for real rewards.
         </p>
 
@@ -68,7 +68,7 @@ export default function Home() {
             href="/auth/sign-up"
             className="w-full rounded-lg bg-brand-primary px-6 py-3 text-center font-medium text-white transition hover:bg-brand-primary-light sm:w-auto"
           >
-            Start earning Creds
+            Start earning Scores
           </Link>
           <Link
             href="/auth/sign-in"

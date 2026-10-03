@@ -73,6 +73,6 @@ BEGIN
 END;
 $$;
 
--- Service role only: this moves Creds, so users must not be able to call it directly with any user id.
+-- Service role only: this moves Scores, so users must not be able to call it directly with any user id.
 REVOKE ALL ON FUNCTION use_streak_shield(UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION use_streak_shield(UUID) TO service_role;

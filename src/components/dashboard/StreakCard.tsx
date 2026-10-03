@@ -50,7 +50,7 @@ export function StreakCard({ info }: { info: StreakInfo }) {
 
       {info.atRisk && (
         <Button onClick={useShield} loading={loading} variant="secondary" className="mt-4 w-full">
-          🛡️ Use streak shield ({STREAK_SHIELD_COST} Creds)
+          🛡️ Use streak shield ({STREAK_SHIELD_COST} Scores)
         </Button>
       )}
     </Card>

@@ -1,9 +1,9 @@
-// GET /api/ai/dynamic-creds/multipliers?clubId=<uuid> → { multipliers }
+// GET /api/ai/dynamic-scores/multipliers?clubId=<uuid> → { multipliers }
 // Multipliers currently in force: platform-wide, plus the club's own if clubId is given.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
-import { getActiveMultipliers } from '@/lib/ai/dynamic-creds';
+import { getActiveMultipliers } from '@/lib/ai/dynamic-scores';
 import { fail, unauthorized } from '@/lib/utils/http';
 import { isUuid } from '@/lib/utils/validate';
 

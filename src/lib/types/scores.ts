@@ -1,6 +1,6 @@
-export const CREDS_PER_GBP = 50;
+export const SCORES_PER_GBP = 50;
 
-export type CredsWallet = {
+export type ScoresWallet = {
   id:              string;
   user_id:         string;
   flexi_balance:   number;
@@ -26,6 +26,6 @@ export type WalletTransaction = {
   occurred_at: string;
 };
 
-export function totalBalance(wallet: Pick<CredsWallet, 'flexi_balance' | 'reward_balance'> | null): number {
+export function totalBalance(wallet: Pick<ScoresWallet, 'flexi_balance' | 'reward_balance'> | null): number {
   return (wallet?.flexi_balance ?? 0) + (wallet?.reward_balance ?? 0);
 }

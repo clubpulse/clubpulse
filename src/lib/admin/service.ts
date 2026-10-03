@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isClubAdmin, isPlatformAdmin } from '@/lib/auth/admin';
 import { isUuid } from '@/lib/utils/validate';
-import type { DynamicMultiplier } from '@/lib/ai/dynamic-creds';
+import type { DynamicMultiplier } from '@/lib/ai/dynamic-scores';
 import type { ActionResult } from '@/lib/types/action';
 import type { Club, ClubMember, ClubMemberRole, ClubMemberWithProfile } from '@/lib/types/club';
 import type { EarningRules, SportConfig } from '@/lib/types/sport';
@@ -296,17 +296,17 @@ export function validateEarningRules(value: unknown): ActionResult<EarningRules>
   for (const category of RULE_CATEGORIES) {
     const group = input[category] ?? {};
     if (typeof group !== 'object' || group === null || Array.isArray(group)) {
-      return { success: false, error: `${category} must be an object of metric: Creds` };
+      return { success: false, error: `${category} must be an object of metric: Scores` };
     }
     rules[category] = {};
-    for (const [metric, creds] of Object.entries(group)) {
+    for (const [metric, scores] of Object.entries(group)) {
       if (!/^[a-z0-9_]{1,40}$/.test(metric)) {
         return { success: false, error: `Invalid metric name "${metric}" (lowercase letters, numbers, _)` };
       }
-      if (typeof creds !== 'number' || !Number.isInteger(creds) || creds < 0 || creds > 1000) {
+      if (typeof scores !== 'number' || !Number.isInteger(scores) || scores < 0 || scores > 1000) {
         return { success: false, error: `${category}.${metric} must be a whole number from 0 to 1000` };
       }
-      rules[category][metric] = creds;
+      rules[category][metric] = scores;
     }
   }
   return { success: true, data: rules as EarningRules };

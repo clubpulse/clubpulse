@@ -1,4 +1,4 @@
-// Creds brand: dark navy, gold, white
+// ClubPulse brand: dark navy, gold, white
 export const colors = {
   navy:        '#0A1128',
   navyLight:   '#121B3A',

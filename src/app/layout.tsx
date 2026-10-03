@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Creds",
-  description: "The Creds platform",
+  title: "ClubPulse",
+  description: "The ClubPulse platform",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

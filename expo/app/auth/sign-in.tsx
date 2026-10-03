@@ -22,8 +22,8 @@ export default function SignInScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Text style={styles.logo}>Creds</Text>
-        <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Sign in to stack your Creds</Text>
+        <Text style={styles.logo}>ClubPulse</Text>
+        <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Sign in to stack your Scores</Text>
 
         <TextInput
           value={email} onChangeText={setEmail} placeholder="Email" placeholderTextColor={colors.textMuted}
@@ -39,7 +39,7 @@ export default function SignInScreen() {
         </Pressable>
 
         <View style={styles.footer}>
-          <Text style={fonts.small}>New to Creds? </Text>
+          <Text style={fonts.small}>New to ClubPulse? </Text>
           <Link href="/auth/sign-up" style={{ color: colors.gold, fontWeight: '600' }}>Create an account</Link>
         </View>
       </KeyboardAvoidingView>

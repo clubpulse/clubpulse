@@ -1,5 +1,5 @@
 // POST /api/volunteer/check-in  { role, sessionDate, lat, lng, clubId? }
-// → { sessionId, gpsConfirmed, distanceMetres, credsAwarded }
+// → { sessionId, gpsConfirmed, distanceMetres, scoresAwarded }
 // The user must be an active member of the club. The club ground location comes from the
 // clubs table (ground_lat / ground_lng), never from the client.
 

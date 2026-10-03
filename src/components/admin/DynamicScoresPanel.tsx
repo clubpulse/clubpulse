@@ -7,7 +7,7 @@ import { stopMultiplier } from '@/lib/actions/admin';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatDate } from '@/lib/utils/format';
-import type { DynamicMultiplier } from '@/lib/ai/dynamic-creds';
+import type { DynamicMultiplier } from '@/lib/ai/dynamic-scores';
 
 function statusOf(m: DynamicMultiplier, now: number): 'active' | 'scheduled' | 'ended' {
   if (Date.parse(m.active_from) > now) return 'scheduled';
@@ -15,7 +15,7 @@ function statusOf(m: DynamicMultiplier, now: number): 'active' | 'scheduled' | '
   return 'active';
 }
 
-export function DynamicCredsPanel({ multipliers }: { multipliers: DynamicMultiplier[] }) {
+export function DynamicScoresPanel({ multipliers }: { multipliers: DynamicMultiplier[] }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const now = Date.now();
@@ -33,7 +33,7 @@ export function DynamicCredsPanel({ multipliers }: { multipliers: DynamicMultipl
   }
 
   if (multipliers.length === 0) {
-    return <p className="text-sm text-neutral-500">No multipliers yet. Create one to boost Creds for a period.</p>;
+    return <p className="text-sm text-neutral-500">No multipliers yet. Create one to boost Scores for a period.</p>;
   }
 
   return (

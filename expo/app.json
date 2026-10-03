@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Creds",
-    "slug": "creds",
-    "scheme": "creds",
+    "name": "ClubPulse",
+    "slug": "clubpulse",
+    "scheme": "clubpulse",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
@@ -10,15 +10,15 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.creds.app",
+      "bundleIdentifier": "com.clubpulse.app",
       "infoPlist": {
-        "NSHealthShareUsageDescription": "Creds reads your step count from Apple Health so you can earn Creds for staying active.",
-        "NSMotionUsageDescription": "Creds uses your phone's motion sensors to count your daily steps and reward you with Creds.",
-        "NSLocationWhenInUseUsageDescription": "Creds uses your location to confirm you are at your club ground when you check in to volunteer."
+        "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health so you can earn Scores for staying active.",
+        "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
+        "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer."
       }
     },
     "android": {
-      "package": "com.creds.app",
+      "package": "com.clubpulse.app",
       "permissions": ["ACTIVITY_RECOGNITION", "ACCESS_FINE_LOCATION"]
     },
     "plugins": [
@@ -26,7 +26,7 @@
       [
         "expo-sensors",
         {
-          "motionPermission": "Creds uses your phone's motion sensors to count your daily steps and reward you with Creds."
+          "motionPermission": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores."
         }
       ]
     ]
