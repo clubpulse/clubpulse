@@ -25,7 +25,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
-      <Navbar name={name} balance={balance} />
+      <Navbar name={name} balance={balance} showAdmin={adminCtx.adminClubIds.length > 0} />
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-6 pb-24 md:pb-8">
         <Sidebar showAdmin={adminCtx.adminClubIds.length > 0} />
         <main className="min-w-0 flex-1">{children}</main>
