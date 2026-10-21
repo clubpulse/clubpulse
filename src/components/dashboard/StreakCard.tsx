@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { STREAK_SHIELD_COST } from '@/lib/types/sport';
 import type { StreakInfo } from '@/lib/activity/service';
 
@@ -28,15 +27,35 @@ export function StreakCard({ info }: { info: StreakInfo }) {
     }
   }
 
+  const isActive = info.streakDay > 0;
+
   return (
-    <Card title="Streak">
-      <div className="flex items-center gap-4">
-        <span className="text-4xl" aria-hidden>{info.streakDay > 0 ? '🔥' : '💤'}</span>
+    <div style={{
+      background: '#0f0f0f',
+      border: '1px solid rgba(255,255,255,0.07)',
+      borderRadius: '16px',
+      padding: '20px',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      <p style={{
+        fontFamily: "'Syne', sans-serif", fontWeight: 700,
+        fontSize: '13px', color: 'rgba(255,255,255,0.4)',
+        textTransform: 'uppercase', letterSpacing: '0.8px',
+        margin: '0 0 14px',
+      }}>Streak</p>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <span style={{ fontSize: '40px', lineHeight: 1 }} aria-hidden>
+          {isActive ? '🔥' : '💤'}
+        </span>
         <div>
-          <p className="text-3xl font-bold tabular-nums text-white">
-            {info.streakDay} <span className="text-base font-medium text-neutral-400">{info.streakDay === 1 ? 'day' : 'days'}</span>
+          <p style={{ margin: 0, fontSize: '36px', fontWeight: 700, color: '#fff', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+            {info.streakDay}{' '}
+            <span style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>
+              {info.streakDay === 1 ? 'day' : 'days'}
+            </span>
           </p>
-          <p className="text-xs text-neutral-500">
+          <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
             {info.protectedToday
               ? 'Protected by a streak shield today'
               : info.loggedToday
@@ -49,10 +68,12 @@ export function StreakCard({ info }: { info: StreakInfo }) {
       </div>
 
       {info.atRisk && (
-        <Button onClick={useShield} loading={loading} variant="secondary" className="mt-4 w-full">
-          🛡️ Use streak shield ({STREAK_SHIELD_COST} Scores)
-        </Button>
+        <div style={{ marginTop: '14px' }}>
+          <Button onClick={useShield} loading={loading} variant="secondary" className="w-full">
+            🛡️ Use streak shield ({STREAK_SHIELD_COST} Scores)
+          </Button>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }

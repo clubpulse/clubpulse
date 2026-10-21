@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 import { formatScores } from '@/lib/utils/format';
 import type { PredictiveScores } from '@/lib/ai/predictive-scores';
@@ -21,33 +20,63 @@ export function PredictiveScoresWidget() {
     return () => controller.abort();
   }, []);
 
-  // Bar: projected total against the next tier (or the top tier once they're past it all)
   const target = data ? data.nextTier ?? Math.max(data.forecast, 1) : 1;
   const width = data ? Math.min(100, Math.round((data.forecast / target) * 100)) : 0;
 
   return (
-    <Card title="Season forecast" description="Where your Scores are heading this season">
+    <div style={{
+      background: '#0f0f0f',
+      border: '1px solid rgba(255,255,255,0.07)',
+      borderRadius: '16px',
+      padding: '20px',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      <p style={{
+        fontFamily: "'Syne', sans-serif", fontWeight: 700,
+        fontSize: '13px', color: 'rgba(255,255,255,0.4)',
+        textTransform: 'uppercase', letterSpacing: '0.8px',
+        margin: '0 0 4px',
+      }}>Season forecast</p>
+      <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)', margin: '0 0 14px' }}>
+        Where your Scores are heading this season
+      </p>
+
       {error ? (
-        <p className="text-sm text-neutral-500">Forecast unavailable right now.</p>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>Forecast unavailable right now.</p>
       ) : !data ? (
-        <div className="flex items-center gap-2 text-sm text-neutral-500"><Spinner /> Working it out…</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
+          <Spinner /> Working it out…
+        </div>
       ) : (
         <>
-          <div className="flex items-end justify-between">
-            <p className="text-3xl font-bold tabular-nums text-white">{formatScores(data.forecast)}</p>
-            <p className="text-xs text-neutral-500">{formatScores(data.currentPace)} Scores / week lately</p>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+            <p style={{ margin: 0, fontSize: '32px', fontWeight: 700, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>
+              {formatScores(data.forecast)}
+            </p>
+            <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+              {formatScores(data.currentPace)} / week lately
+            </p>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-800">
-            <div className="h-full rounded-full bg-gradient-to-r from-brand-primary to-brand-gold" style={{ width: `${width}%` }} />
+
+          <div style={{ marginTop: '12px', height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: '999px',
+              background: 'linear-gradient(90deg, #9b1c1c, #c9a54c)',
+              width: `${width}%`, transition: 'width 0.8s ease',
+            }} />
           </div>
-          <p className="mt-2 text-xs text-neutral-500">
+
+          <p style={{ margin: '8px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
             {data.nextTier
-              ? `Next tier: ${formatScores(data.nextTier)}${data.sessionsNeeded ? ` · about ${data.sessionsNeeded} sessions away` : ''}`
-              : 'Top tier reached'}
+              ? `Next tier: ${formatScores(data.nextTier)}${data.sessionsNeeded ? ` · ~${data.sessionsNeeded} sessions away` : ''}`
+              : 'Top tier reached 🏆'}
           </p>
-          <p className="mt-3 text-sm text-neutral-300">{data.message}</p>
+
+          <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+            {data.message}
+          </p>
         </>
       )}
-    </Card>
+    </div>
   );
 }
