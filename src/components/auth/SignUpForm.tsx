@@ -57,7 +57,7 @@ export function SignUpForm() {
 
     // No session yet means email confirmation is on: the callback creates the profile later
     if (!data.session) {
-      router.push(`/auth/confirm?email=${encodeURIComponent(email)}`);
+      router.push(`/auth/email-sent?email=${encodeURIComponent(email)}`);
       return;
     }
 
