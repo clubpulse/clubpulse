@@ -12,26 +12,34 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = safeRedirect(searchParams.get("next"));
 
+  const failure = (detail: string) => {
+    console.error("[auth/callback] verification failed:", detail);
+    return NextResponse.redirect(
+      `${origin}/auth/sign-in?error=auth-code-error&detail=${encodeURIComponent(detail)}`
+    );
+  };
+
+  // Supabase's /verify endpoint forwards its own errors (e.g. otp_expired) as query params
+  const upstreamError = searchParams.get("error_description") ?? searchParams.get("error");
+  if (upstreamError) return failure(upstreamError);
+
   const supabase = await createClient();
-  let verified = false;
   let target = next;
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    verified = !error;
+    if (error) return failure(error.message);
   } else if (tokenHash && type) {
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
-    verified = !error;
-    if (verified && type === "recovery") target = "/auth/reset-password?mode=update";
+    if (error) return failure(error.message);
+    if (type === "recovery") target = "/auth/reset-password?mode=update";
+  } else {
+    return failure("Missing code or token_hash in auth link");
   }
 
-  if (verified) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) await ensureProfileAndRoles(user);
-    return NextResponse.redirect(`${origin}${target}`);
-  }
-
-  return NextResponse.redirect(`${origin}/auth/sign-in?error=auth-code-error`);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) await ensureProfileAndRoles(user);
+  return NextResponse.redirect(`${origin}${target}`);
 }

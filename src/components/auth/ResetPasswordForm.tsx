@@ -19,7 +19,8 @@ export function ResetPasswordForm({ mode }: { mode: 'request' | 'update' }) {
     event.preventDefault();
     setLoading(true);
     const { error } = await createClient().auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      // The PKCE ?code= exchange can't tell a recovery from a sign-in, so name the destination explicitly
+      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/auth/reset-password?mode=update')}`,
     });
     setLoading(false);
     // Supabase doesn't error for unknown emails, so this never reveals whether an account exists

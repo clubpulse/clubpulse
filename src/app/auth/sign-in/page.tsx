@@ -6,9 +6,9 @@ import { safeRedirect } from '@/lib/utils/redirect';
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirectTo?: string; error?: string }>;
+  searchParams: Promise<{ redirectTo?: string; error?: string; detail?: string }>;
 }) {
-  const { redirectTo, error } = await searchParams;
+  const { redirectTo, error, detail } = await searchParams;
 
   return (
     <AuthShell
@@ -23,6 +23,7 @@ export default async function SignInPage({
       {error && (
         <p className="mb-4 rounded-lg border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">
           That link is invalid or has expired. Please sign in or request a new one.
+          {detail && <span className="mt-1 block text-xs text-red-400/80">{detail}</span>}
         </p>
       )}
       <SignInForm redirectTo={safeRedirect(redirectTo)} />
