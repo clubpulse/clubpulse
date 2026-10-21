@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
 import { formatScores } from '@/lib/utils/format';
 import type { Reward } from '@/lib/types/reward';
 
@@ -10,25 +9,40 @@ export function RewardCard({ reward, balance }: { reward: Reward; balance: numbe
   return (
     <Link
       href={`/marketplace/${reward.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 transition hover:border-neutral-600"
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#0f0f0f', transition: 'border-color 0.15s' }}
     >
-      <div className="flex aspect-[4/3] items-center justify-center bg-neutral-900">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', background: '#161616', overflow: 'hidden' }}>
         {reward.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={reward.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+          <img src={reward.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
         ) : (
-          <span className="text-4xl" aria-hidden>🎁</span>
+          <span style={{ fontSize: '40px' }} aria-hidden>🎁</span>
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-white group-hover:text-brand-gold">{reward.title}</h3>
-          {reward.category && <Badge>{reward.category}</Badge>}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '14px', flex: 1, fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#fff' }}>{reward.title}</h3>
+          {reward.category && (
+            <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', borderRadius: '6px', padding: '2px 7px' }}>
+              {reward.category}
+            </span>
+          )}
         </div>
-        {reward.description && <p className="line-clamp-2 text-sm text-neutral-400">{reward.description}</p>}
-        <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-lg font-bold tabular-nums text-brand-gold">{formatScores(reward.creds_cost)} Scores</span>
-          {outOfStock ? <Badge tone="red">Out of stock</Badge> : affordable ? <Badge tone="green">You can afford this</Badge> : null}
+        {reward.description && (
+          <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {reward.description}
+          </p>
+        )}
+        <div style={{ marginTop: 'auto', paddingTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '16px', fontWeight: 700, color: '#c9a54c', fontVariantNumeric: 'tabular-nums' }}>
+            {formatScores(reward.creds_cost)} Scores
+          </span>
+          {outOfStock ? (
+            <span style={{ fontSize: '11px', color: '#f87171', fontWeight: 500 }}>Out of stock</span>
+          ) : affordable ? (
+            <span style={{ fontSize: '11px', color: '#34d399', fontWeight: 500 }}>✓ You can afford this</span>
+          ) : null}
         </div>
       </div>
     </Link>

@@ -14,28 +14,42 @@ export function RewardGrid({ rewards, balance }: { rewards: Reward[]; balance: n
   const visible = category === 'all' ? rewards : rewards.filter((r) => r.category === category);
 
   if (rewards.length === 0) {
-    return <p className="text-sm text-neutral-500">No rewards are available yet. Check back soon.</p>;
+    return (
+      <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0, fontFamily: "'Inter', sans-serif" }}>
+        No rewards are available yet. Check back soon.
+      </p>
+    );
   }
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {categories.length > 2 && (
-        <div className="flex flex-wrap gap-2">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {categories.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setCategory(c)}
-              className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition ${
-                category === c ? 'bg-brand-primary text-white' : 'bg-neutral-900 text-neutral-400 hover:text-white'
-              }`}
+              style={{
+                background: category === c ? '#9b1c1c' : 'rgba(255,255,255,0.05)',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '5px 14px',
+                fontSize: '12px',
+                fontWeight: 500,
+                textTransform: 'capitalize',
+                color: category === c ? '#fff' : 'rgba(255,255,255,0.45)',
+                cursor: 'pointer',
+                transition: 'background 0.15s, color 0.15s',
+                fontFamily: "'Inter', sans-serif",
+              }}
             >
               {c}
             </button>
           ))}
         </div>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
         {visible.map((reward) => (
           <RewardCard key={reward.id} reward={reward} balance={balance} />
         ))}

@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/auth/server';
 import { isMerchant, isPlatformAdmin } from '@/lib/auth/admin';
 import { getMerchantInsights } from '@/lib/ai/merchant-intelligence';
-import { Card } from '@/components/ui/Card';
 import { SpendPatternChart } from '@/components/merchant/SpendPatternChart';
 import { RedemptionHeatmap } from '@/components/merchant/RedemptionHeatmap';
 import { MIN_COHORT } from '@/lib/types/merchant';
@@ -12,41 +11,66 @@ export default async function MerchantPage() {
   const platformAdmin = isPlatformAdmin(user.id);
   if (!platformAdmin && !(await isMerchant(user.id))) redirect('/dashboard');
 
-  // Merchants see only their own rewards; platform admins see everything
   const insights = await getMerchantInsights(platformAdmin ? undefined : user.id);
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 className="text-2xl font-bold text-white">Merchant insights</h1>
-        <p className="text-sm text-neutral-400">
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+          Merchant insights
+        </h1>
+        <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
           Anonymised and aggregated. Groups with fewer than {MIN_COHORT} redemptions are hidden to protect privacy.
         </p>
       </div>
 
-      <Card title="Summary" action={<span className="text-sm text-neutral-500">{insights.totalRedemptions} redemptions</span>}>
-        <p className="text-neutral-200">{insights.summary}</p>
-      </Card>
+      {/* Summary */}
+      <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
+            Summary
+          </p>
+          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{insights.totalRedemptions} redemptions</span>
+        </div>
+        <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>{insights.summary}</p>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="Top categories"><SpendPatternChart patterns={insights.topCategories} /></Card>
-        <Card title="By role">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+        {/* Top categories */}
+        <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+            Top categories
+          </p>
+          <SpendPatternChart patterns={insights.topCategories} />
+        </div>
+
+        {/* By role */}
+        <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+            By role
+          </p>
           {insights.roleBreakdown.length === 0 ? (
-            <p className="text-sm text-neutral-500">Not enough data to show roles yet.</p>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>Not enough data to show roles yet.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {insights.roleBreakdown.map((r) => (
-                <li key={r.role} className="flex justify-between text-sm">
-                  <span className="capitalize text-white">{r.role.replace(/_/g, ' ')}</span>
-                  <span className="tabular-nums text-neutral-400">{r.redemptions}</span>
+                <li key={r.role} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                  <span style={{ textTransform: 'capitalize', color: 'rgba(255,255,255,0.7)' }}>{r.role.replace(/_/g, ' ')}</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums', color: 'rgba(255,255,255,0.35)' }}>{r.redemptions}</span>
                 </li>
               ))}
             </ul>
           )}
-        </Card>
+        </div>
       </div>
 
-      <Card title="Peak redemption times"><RedemptionHeatmap windows={insights.peakWindows} /></Card>
+      {/* Peak times */}
+      <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+          Peak redemption times
+        </p>
+        <RedemptionHeatmap windows={insights.peakWindows} />
+      </div>
     </div>
   );
 }

@@ -16,28 +16,42 @@ export default async function MarketplacePage() {
   const balance = totalBalance(wallet.success ? wallet.data : null);
 
   return (
-    <div className="space-y-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '36px', fontFamily: "'Inter', sans-serif" }}>
       <section>
-        <div className="mb-4 flex items-end justify-between">
-          <h1 className="text-2xl font-bold text-white">Marketplace</h1>
-          <p className="text-sm text-neutral-400">You have <span className="font-semibold text-brand-gold">{formatScores(balance)} Scores</span></p>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div>
+            <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+              Marketplace
+            </h1>
+            <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Redeem your Scores for rewards</p>
+          </div>
+          <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
+            You have{' '}
+            <span style={{ fontWeight: 700, color: '#c9a54c' }}>{formatScores(balance)} Scores</span>
+          </p>
         </div>
         {rewards.success ? (
           <RewardGrid rewards={rewards.data} balance={balance} />
         ) : (
-          <p className="text-sm text-red-400">Couldn&apos;t load rewards: {rewards.error}</p>
+          <p style={{ fontSize: '13px', color: '#f87171' }}>Couldn&apos;t load rewards: {rewards.error}</p>
         )}
       </section>
 
-      <section>
-        <h2 className="text-lg font-semibold text-white">Shop and earn Scores</h2>
-        <p className="mb-4 text-sm text-neutral-400">Buy kit from our partners through these links and earn Scores on every order.</p>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {SPORTS_MERCHANTS.map((merchant) => (
-            <AwinMerchantCard key={merchant.id} merchant={merchant} userId={user.id} />
-          ))}
-        </div>
-      </section>
+      {SPORTS_MERCHANTS.length > 0 && (
+        <section>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 4px' }}>
+            Shop and earn Scores
+          </h2>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: '0 0 14px' }}>
+            Buy kit from our partners through these links and earn Scores on every order.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+            {SPORTS_MERCHANTS.map((merchant) => (
+              <AwinMerchantCard key={merchant.id} merchant={merchant} userId={user.id} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

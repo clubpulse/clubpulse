@@ -1,6 +1,5 @@
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { listMultipliers } from '@/lib/admin/service';
-import { Card } from '@/components/ui/Card';
 import { DynamicScoresPanel } from '@/components/admin/DynamicScoresPanel';
 import { MultiplierForm } from '@/components/admin/MultiplierForm';
 
@@ -9,22 +8,35 @@ export default async function MultipliersPage() {
   const result = await listMultipliers(user.id, clubId);
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 className="text-2xl font-bold text-white">Dynamic Scores</h1>
-        <p className="text-sm text-neutral-400">
-          Multipliers boost the Scores paid for volunteer shifts at your club while they are active (for example when you are short of volunteers).
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+          Dynamic Scores
+        </h1>
+        <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+          Multipliers boost the Scores paid for volunteer shifts while active — useful when you&apos;re short of volunteers.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3">
-          {result.success ? <DynamicScoresPanel multipliers={result.data} /> : <p className="text-sm text-red-400">{result.error}</p>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+        <div>
+          {result.success ? (
+            <DynamicScoresPanel multipliers={result.data} />
+          ) : (
+            <p style={{ fontSize: '13px', color: '#f87171' }}>{result.error}</p>
+          )}
         </div>
-        <div className="lg:col-span-2">
-          <Card title="New multiplier">
-            <MultiplierForm clubId={clubId} />
-          </Card>
+
+        <div style={{
+          background: '#0f0f0f',
+          border: '1px solid rgba(255,255,255,0.07)',
+          borderRadius: '16px',
+          padding: '20px',
+        }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 16px' }}>
+            New multiplier
+          </p>
+          <MultiplierForm clubId={clubId} />
         </div>
       </div>
     </div>

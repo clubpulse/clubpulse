@@ -43,7 +43,7 @@ export function ChatWindow({
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
         toast.error(body.error ?? 'The coach is unavailable right now');
-        setMessages((current) => current.slice(0, -1));   // drop the unanswered message
+        setMessages((current) => current.slice(0, -1));
         return;
       }
       setConversationId(body.conversationId);
@@ -59,26 +59,60 @@ export function ChatWindow({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-11rem)] flex-col overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 md:h-[calc(100dvh-8rem)]">
-      <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-3">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: 'calc(100dvh - 11rem)',
+      overflow: 'hidden',
+      borderRadius: '20px',
+      border: '1px solid rgba(255,255,255,0.07)',
+      background: '#0a0a0a',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        padding: '14px 18px',
+      }}>
         <div>
-          <h1 className="font-semibold text-white">Your ClubPulse Coach</h1>
-          <p className="text-xs text-neutral-500">Personal cricket coaching based on your stats</p>
+          <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
+            Your ClubPulse Coach
+          </p>
+          <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+            Personal cricket coaching based on your stats
+          </p>
         </div>
-        {messages.length > 0 && <Button variant="ghost" size="sm" onClick={newChat} disabled={sending}>New chat</Button>}
+        {messages.length > 0 && (
+          <Button variant="ghost" size="sm" onClick={newChat} disabled={sending}>New chat</Button>
+        )}
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      {/* Messages */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {messages.length === 0 && (
-          <div className="mt-6 space-y-3 text-center">
-            <p className="text-sm text-neutral-400">Ask anything about your game, fitness or Scores.</p>
-            <div className="flex flex-wrap justify-center gap-2">
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: '0 0 16px' }}>
+              Ask anything about your game, fitness or Scores.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
               {STARTERS.map((starter) => (
                 <button
                   key={starter}
                   type="button"
                   onClick={() => send(starter)}
-                  className="rounded-full border border-neutral-700 px-3 py-1.5 text-xs text-neutral-300 hover:bg-neutral-800"
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '999px',
+                    padding: '6px 14px',
+                    fontSize: '12px',
+                    color: 'rgba(255,255,255,0.6)',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s, color 0.15s',
+                  }}
                 >
                   {starter}
                 </button>
@@ -90,7 +124,9 @@ export function ChatWindow({
           <ChatMessage key={i} role={m.role} content={m.content} />
         ))}
         {sending && (
-          <div className="flex items-center gap-2 text-sm text-neutral-500"><Spinner /> Coach is thinking…</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
+            <Spinner /> Coach is thinking…
+          </div>
         )}
         <div ref={bottomRef} />
       </div>

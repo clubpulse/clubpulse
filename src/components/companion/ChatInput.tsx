@@ -23,7 +23,16 @@ export function ChatInput({ onSend, disabled }: { onSend: (text: string) => void
   }
 
   return (
-    <form onSubmit={submit} className="flex items-end gap-2 border-t border-neutral-800 p-3">
+    <form
+      onSubmit={submit}
+      style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: '8px',
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        padding: '12px 14px',
+      }}
+    >
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -32,7 +41,20 @@ export function ChatInput({ onSend, disabled }: { onSend: (text: string) => void
         maxLength={MAX_MESSAGE_LENGTH}
         placeholder="Ask your coach anything…"
         aria-label="Message your coach"
-        className="max-h-32 min-h-[42px] flex-1 resize-none rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-brand-primary-light"
+        style={{
+          flex: 1,
+          resize: 'none',
+          minHeight: '42px',
+          maxHeight: '128px',
+          borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,0.1)',
+          background: '#161616',
+          padding: '10px 12px',
+          fontSize: '13px',
+          color: '#fff',
+          fontFamily: "'Inter', sans-serif",
+          outline: 'none',
+        }}
       />
       <Button type="submit" disabled={disabled || !text.trim()}>Send</Button>
     </form>
