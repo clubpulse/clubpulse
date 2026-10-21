@@ -9,10 +9,27 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-800 bg-[#0B0B0B]/95 backdrop-blur md:hidden"
+      style={{
+        position: 'fixed',
+        inset: 'auto 0 0 0',
+        zIndex: 40,
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(8,8,8,0.95)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        fontFamily: "'Inter', sans-serif",
+      }}
+      className="md:hidden"
       aria-label="Main"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-4">
+      <ul style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${NAV_LINKS.length}, 1fr)`,
+        maxWidth: '448px',
+        margin: '0 auto',
+        padding: 0,
+        listStyle: 'none',
+      }}>
         {NAV_LINKS.map((link) => {
           const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
@@ -20,11 +37,20 @@ export function BottomNav() {
               <Link
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${
-                  active ? 'text-brand-gold' : 'text-neutral-500'
-                }`}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px',
+                  padding: '8px 4px',
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  color: active ? '#c9a54c' : 'rgba(255,255,255,0.35)',
+                  transition: 'color 0.15s',
+                }}
               >
-                <span className="text-lg" aria-hidden>{link.icon}</span>
+                <span style={{ fontSize: '18px' }} aria-hidden>{link.icon}</span>
                 {link.label}
               </Link>
             </li>

@@ -16,7 +16,7 @@ export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
 
   return (
     <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
-      <ul className="sticky top-20 space-y-1">
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="sticky top-20 space-y-1">
         {links.map((link) => {
           const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
@@ -24,9 +24,20 @@ export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
               <Link
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  active ? 'bg-brand-primary/20 text-white' : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '8px 12px',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  transition: 'background 0.15s, color 0.15s',
+                  background: active ? 'rgba(155,28,28,0.15)' : 'transparent',
+                  color: active ? '#fff' : 'rgba(255,255,255,0.45)',
+                  fontFamily: "'Inter', sans-serif",
+                }}
               >
                 <span aria-hidden>{link.icon}</span>
                 {link.label}

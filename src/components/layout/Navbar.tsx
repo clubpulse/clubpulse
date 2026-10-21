@@ -5,29 +5,64 @@ import { formatScores } from '@/lib/utils/format';
 
 export function Navbar({ name, balance }: { name: string; balance: number }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-800 bg-[#0B0B0B]/90 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-primary text-sm font-bold text-white">C</span>
-          <span className="font-semibold text-white">ClubPulse</span>
-        </Link>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+      `}</style>
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 40,
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(8,8,8,0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <div style={{
+          maxWidth: '1152px', margin: '0 auto',
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '56px', padding: '0 16px',
+        }}>
+          <Link href="/dashboard" style={{
+            display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none',
+          }}>
+            <span style={{
+              width: '32px', height: '32px', background: '#9b1c1c',
+              borderRadius: '8px', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: '14px', fontWeight: 800,
+              color: '#fff', fontFamily: "'Syne', sans-serif",
+            }}>C</span>
+            <span style={{
+              fontFamily: "'Syne', sans-serif", fontWeight: 700,
+              fontSize: '17px', color: '#fff', letterSpacing: '-0.2px',
+            }}>ClubPulse</span>
+          </Link>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3 py-1 text-sm font-semibold text-brand-gold"
-            title="Your Scores balance"
-          >
-            {formatScores(balance)} Scores
-          </Link>
-          <Link href="/profile" aria-label="Your profile">
-            <Avatar name={name} size="sm" />
-          </Link>
-          <form action="/auth/signout" method="post">
-            <Button type="submit" variant="ghost" size="sm">Sign out</Button>
-          </form>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link
+              href="/dashboard"
+              title="Your Scores balance"
+              style={{
+                padding: '4px 12px',
+                borderRadius: '20px',
+                border: '1px solid rgba(201,165,76,0.35)',
+                background: 'rgba(201,165,76,0.08)',
+                fontSize: '13px', fontWeight: 600,
+                color: '#c9a54c', textDecoration: 'none',
+                letterSpacing: '0.1px',
+              }}
+            >
+              {formatScores(balance)} Scores
+            </Link>
+            <Link href="/profile" aria-label="Your profile">
+              <Avatar name={name} size="sm" />
+            </Link>
+            <form action="/auth/signout" method="post">
+              <Button type="submit" variant="ghost" size="sm">Sign out</Button>
+            </form>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
