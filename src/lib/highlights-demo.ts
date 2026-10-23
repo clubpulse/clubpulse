@@ -16,7 +16,14 @@ export const DEMO_CLIPS: HighlightClip[] = [
 export async function insertDemoHighlight(supabase: SupabaseClient, userId: string) {
   return supabase
     .from('highlights')
-    .insert({ user_id: userId, video_url: SAMPLE_VIDEO, clips: DEMO_CLIPS, top_clip_url: SAMPLE_VIDEO })
+    // Set explicitly: the deployed highlights table doesn't default session_date
+    .insert({
+      user_id: userId,
+      session_date: new Date().toISOString().split('T')[0],
+      video_url: SAMPLE_VIDEO,
+      clips: DEMO_CLIPS,
+      top_clip_url: SAMPLE_VIDEO,
+    })
     .select('id')
     .single();
 }
