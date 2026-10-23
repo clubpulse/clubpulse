@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { createClient } from '@/lib/supabase/client';
 import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
+import { seedDemoHighlights } from '@/app/analyse/actions';
 
 // Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
@@ -509,6 +510,14 @@ export function AnalyseClient() {
           best 3 clips are saved to your highlight reel, where anyone with a clip’s link can watch it.
         </p>
       </div>
+
+      {process.env.NODE_ENV === 'development' && (
+        <form action={seedDemoHighlights}
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-neutral-700 px-4 py-3 text-sm">
+          <span className="text-neutral-400">Dev only: add a sample reel without recording.</span>
+          <Button type="submit" variant="secondary" size="sm">Skip to highlights (dev)</Button>
+        </form>
+      )}
 
       {highlights === 'ready' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm"
