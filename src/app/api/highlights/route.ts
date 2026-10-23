@@ -33,7 +33,14 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from('highlights')
-    .insert({ user_id: user.id, video_url: clips[0].url, clips, top_clip_url: clips[0].url })
+    // The deployed table's session_date is a required DATE with no default
+    .insert({
+      user_id: user.id,
+      session_date: new Date().toISOString().split('T')[0],
+      video_url: clips[0].url,
+      clips,
+      top_clip_url: clips[0].url,
+    })
     .select('id')
     .single();
   if (error) return fail(error.message, 500);

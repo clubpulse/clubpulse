@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth/admin';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { formatDateTime, pageFromParam, pageRange, profilesById } from '@/lib/platform-admin';
+import { formatDate, pageFromParam, pageRange, profilesById } from '@/lib/platform-admin';
 import type { Highlight } from '@/lib/highlights';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 
@@ -37,7 +37,7 @@ export default async function AdminSessionsPage({ searchParams }: { searchParams
             return (
               <tr key={row.id}>
                 <Cell className="font-medium text-white">{profiles.get(row.user_id)?.email ?? row.user_id}</Cell>
-                <Cell className="whitespace-nowrap">{formatDateTime(row.session_date)}</Cell>
+                <Cell className="whitespace-nowrap">{formatDate(row.session_date)}</Cell>
                 <Cell>{row.clips.length}</Cell>
                 <Cell>
                   {top ? <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-bold text-white">{top.score}/100</span> : '—'}
