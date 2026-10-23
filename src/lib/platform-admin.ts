@@ -38,6 +38,38 @@ export function formatDate(value: string | null | undefined) {
   return new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+export type AdminStats = {
+  totalUsers: number;
+  analyseSessions: number;
+  highlightReels: number;
+  totalClips: number;
+  pointsIssued: number;
+  marketplaceClicks: number;
+  // null when the deployed admin_stats() doesn't return it
+  pointsInCirculation: number | null;
+};
+
+// Postgres bigints can arrive as strings, so every value goes through Number(); anything unparseable counts as 0
+function toCount(value: unknown): number {
+  const n = typeof value === 'string' ? Number.parseInt(value, 10) : Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// admin_stats() returns one JSON object; an array (a RETURNS TABLE version) is unwrapped to its first row
+export function parseAdminStats(data: unknown): AdminStats {
+  const row = (Array.isArray(data) ? data[0] : data) ?? {};
+  const stats = (typeof row === 'object' ? row : {}) as Record<string, unknown>;
+  return {
+    totalUsers: toCount(stats.total_users),
+    analyseSessions: toCount(stats.analyse_sessions),
+    highlightReels: toCount(stats.highlight_reels),
+    totalClips: toCount(stats.total_clips),
+    pointsIssued: toCount(stats.points_issued),
+    marketplaceClicks: toCount(stats.marketplace_clicks),
+    pointsInCirculation: 'points_in_circulation' in stats ? toCount(stats.points_in_circulation) : null,
+  };
+}
+
 // PostgREST reports a missing table as PGRST205 (schema cache) or Postgres 42P01
 export function isMissingTable(error: { code?: string } | null) {
   return error?.code === 'PGRST205' || error?.code === '42P01';

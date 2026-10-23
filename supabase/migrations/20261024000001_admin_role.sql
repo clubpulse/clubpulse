@@ -43,24 +43,20 @@ DROP POLICY IF EXISTS "affiliate_clicks: insert own" ON affiliate_clicks;
 CREATE POLICY "affiliate_clicks: insert own" ON affiliate_clicks
   FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
--- Dashboard totals in one round trip (PostgREST can't SUM). Service role only.
-CREATE OR REPLACE FUNCTION admin_stats()
-RETURNS TABLE (
-  users                  BIGINT,
-  highlight_sessions     BIGINT,
-  highlight_clips        BIGINT,
-  points_issued          BIGINT,
-  points_in_circulation  BIGINT,
-  marketplace_clicks     BIGINT
-)
+-- Dashboard totals in one round trip (PostgREST can't SUM), as one JSON object. Service role only.
+-- DROP first: CREATE OR REPLACE can't change a function's return type.
+DROP FUNCTION IF EXISTS admin_stats();
+CREATE FUNCTION admin_stats() RETURNS JSON
 LANGUAGE sql STABLE SET search_path = public AS $$
-  SELECT
-    (SELECT COUNT(*) FROM profiles),
-    (SELECT COUNT(*) FROM highlights),
-    (SELECT COALESCE(SUM(jsonb_array_length(clips)), 0) FROM highlights),
-    (SELECT COALESCE(SUM(lifetime_earned), 0) FROM creds_wallet),
-    (SELECT COALESCE(SUM(flexi_balance + reward_balance), 0) FROM creds_wallet),
-    (SELECT COUNT(*) FROM affiliate_clicks);
+  SELECT json_build_object(
+    'total_users',           (SELECT COUNT(*) FROM profiles),
+    'analyse_sessions',      (SELECT COUNT(*) FROM highlights),
+    'highlight_reels',       (SELECT COUNT(*) FROM highlights),
+    'total_clips',           (SELECT COALESCE(SUM(jsonb_array_length(clips)), 0) FROM highlights),
+    'points_issued',         (SELECT COALESCE(SUM(lifetime_earned), 0) FROM creds_wallet),
+    'points_in_circulation', (SELECT COALESCE(SUM(flexi_balance + reward_balance), 0) FROM creds_wallet),
+    'marketplace_clicks',    (SELECT COUNT(*) FROM affiliate_clicks)
+  );
 $$;
 
 REVOKE ALL ON FUNCTION admin_stats() FROM PUBLIC, anon, authenticated;

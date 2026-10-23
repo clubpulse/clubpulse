@@ -1,14 +1,12 @@
 import { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth/admin';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { displayName, formatDateTime, pageFromParam, pageRange, profilesById } from '@/lib/platform-admin';
+import { displayName, formatDateTime, pageFromParam, pageRange, parseAdminStats, profilesById } from '@/lib/platform-admin';
 import type { ScoresWallet } from '@/lib/types/scores';
 import { totalBalance } from '@/lib/types/scores';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, StatCard, Table } from '@/components/platform-admin/ui';
 
 export const metadata: Metadata = { title: 'Rewards | Admin | ClubPulse' };
-
-type Totals = { points_issued: number; points_in_circulation: number };
 
 export default async function AdminRewardsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   await requireAdmin();
@@ -17,8 +15,8 @@ export default async function AdminRewardsPage({ searchParams }: { searchParams:
 
   // creds_wallet is the source of truth for balances; there's no ledger table, so
   // "last activity" is the wallet's updated_at (bumped on every earn or spend).
-  const [{ data: totals }, { data, count, error }] = await Promise.all([
-    service.rpc('admin_stats').single<Totals>(),
+  const [{ data: statsData }, { data, count, error }] = await Promise.all([
+    service.rpc('admin_stats'),
     service
       .from('creds_wallet')
       .select('id, user_id, flexi_balance, reward_balance, lifetime_earned, updated_at', { count: 'exact' })
@@ -26,6 +24,7 @@ export default async function AdminRewardsPage({ searchParams }: { searchParams:
       .range(...pageRange(page))
       .returns<ScoresWallet[]>(),
   ]);
+  const totals = parseAdminStats(statsData);
   const wallets = data ?? [];
   const profiles = await profilesById(service, wallets.map((wallet) => wallet.user_id));
 
@@ -33,8 +32,12 @@ export default async function AdminRewardsPage({ searchParams }: { searchParams:
     <>
       <PageHeader title="Rewards" description="Points balances across all wallets, highest earners first." />
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <StatCard label="Points in circulation" value={Number(totals?.points_in_circulation ?? 0)} hint="Unspent flexi + reward balances" />
-        <StatCard label="Points issued all-time" value={Number(totals?.points_issued ?? 0)} accent="crimson" />
+        <StatCard
+          label="Points in circulation"
+          value={totals.pointsInCirculation ?? '—'}
+          hint={totals.pointsInCirculation === null ? 'Not returned by admin_stats()' : 'Unspent flexi + reward balances'}
+        />
+        <StatCard label="Points issued all-time" value={totals.pointsIssued} accent="crimson" />
       </div>
       {error && <ErrorNote message={`Couldn’t load wallets: ${error.message}`} />}
 
