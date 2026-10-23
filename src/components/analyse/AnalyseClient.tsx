@@ -1,9 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { toast } from 'sonner';
 import type { NormalizedLandmark, PoseLandmarker } from '@mediapipe/tasks-vision';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { createClient } from '@/lib/supabase/client';
+import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
 
 // Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
@@ -12,6 +16,8 @@ const MODEL_URL =
 
 const RECORD_MS = 5000;
 const MIN_FRAMES = 10;
+// Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
+const MIN_CLIP_SECONDS = 2;
 const MIN_VISIBILITY = 0.5;
 const GOLD = '#c9a54c';
 const CRIMSON = '#9b1c1c';
@@ -141,6 +147,71 @@ function analyse(frames: NormalizedLandmark[][], mode: Mode, hand: Hand, w: numb
   });
 }
 
+// Highlight score for one segment: technique score scaled by the share of frames with a clearly visible pose,
+// so a strong but mostly occluded clip ranks below a clean, fully visible one.
+function segmentScore(frames: NormalizedLandmark[][], totalFrames: number, mode: Mode, hand: Hand, w: number, h: number) {
+  if (totalFrames === 0) return 0;
+  const metrics = analyse(frames, mode, hand, w, h);
+  if (!metrics) return 0;
+  const usable = frames.filter((lm) => frameMetrics(lm, mode, hand, w, h) !== null).length;
+  return Math.round(mean(metrics.map((m) => m.score)) * Math.min(1, usable / totalFrames));
+}
+
+// Highlight recording: the camera stream is recorded in back-to-back 5-second segments, each its own playable
+// file. Each finished segment is scored from the landmarks seen while it recorded; only the top clips stay in memory.
+type ScoredClip = { blob: Blob; score: number; start_sec: number; end_sec: number };
+type Segment = { recorder: MediaRecorder; chunks: Blob[]; frames: NormalizedLandmark[][]; totalFrames: number; startedAt: number };
+type Session = {
+  stream: MediaStream; mimeType: string; width: number; height: number; startedAt: number;
+  current: Segment | null; pending: Promise<void>[]; best: ScoredClip[]; segments: number;
+};
+
+function pickMimeType() {
+  if (typeof MediaRecorder === 'undefined') return null;
+  // Safari records MP4 only
+  return ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4']
+    .find((type) => MediaRecorder.isTypeSupported(type)) ?? null;
+}
+
+function startSegment(session: Session, now: number): Segment {
+  const recorder = new MediaRecorder(session.stream, { mimeType: session.mimeType, videoBitsPerSecond: 2_500_000 });
+  const segment: Segment = { recorder, chunks: [], frames: [], totalFrames: 0, startedAt: now };
+  recorder.ondataavailable = (event) => {
+    if (event.data.size > 0) segment.chunks.push(event.data);
+  };
+  recorder.start();
+  return segment;
+}
+
+function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now()) {
+  const seconds = (now - segment.startedAt) / 1000;
+  const long = seconds >= MIN_CLIP_SECONDS;
+  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height) : 0;
+  if (long) session.segments += 1;
+  segment.frames = [];
+
+  const start_sec = Math.round((segment.startedAt - session.startedAt) / 100) / 10;
+  const keep = () => {
+    if (score <= 0) return;
+    const clip = { blob: new Blob(segment.chunks, { type: session.mimeType }), score, start_sec, end_sec: Math.round((start_sec + seconds) * 10) / 10 };
+    session.best = [...session.best, clip].sort((a, b) => b.score - a.score).slice(0, MAX_CLIPS);
+  };
+
+  // The final chunk arrives just before "stop", so the file is only complete once that fires
+  session.pending.push(new Promise<void>((resolve) => {
+    if (segment.recorder.state === 'inactive') {
+      keep();
+      resolve();
+      return;
+    }
+    segment.recorder.onstop = () => {
+      keep();
+      resolve();
+    };
+    segment.recorder.stop();
+  }));
+}
+
 function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], connections: { start: number; end: number }[]) {
   const { width: w, height: h } = ctx.canvas;
   // Skip the face mesh points (1–10); the nose alone marks the head
@@ -217,6 +288,7 @@ export function AnalyseClient() {
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][] } | null>(null);
+  const sessionRef = useRef<Session | null>(null);
 
   const [mode, setMode] = useState<Mode>('bowling');
   const [hand, setHand] = useState<Hand>('right');
@@ -225,6 +297,7 @@ export function AnalyseClient() {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [results, setResults] = useState<MetricResult[] | null>(null);
   const [frameCount, setFrameCount] = useState(0);
+  const [highlights, setHighlights] = useState<'idle' | 'uploading' | 'ready'>('idle');
 
   // Mode/hand are read when a recording finishes, from inside the rAF loop
   const settingsRef = useRef({ mode, hand });
@@ -232,9 +305,13 @@ export function AnalyseClient() {
     settingsRef.current = { mode, hand };
   }, [mode, hand]);
 
+  // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
+    const recorder = sessionRef.current?.current?.recorder;
+    if (recorder && recorder.state !== 'inactive') recorder.stop();
+    sessionRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     recordingRef.current = null;
@@ -292,6 +369,17 @@ export function AnalyseClient() {
           setSecondsLeft(Math.max(0, Math.ceil((recording.until - now) / 1000)));
           if (now >= recording.until) finishRecording();
         }
+
+        const session = sessionRef.current;
+        if (session?.current) {
+          session.current.totalFrames += 1;
+          if (pose) session.current.frames.push(pose);
+          if (now - session.current.startedAt >= SEGMENT_SECONDS * 1000) {
+            const { mode: m, hand: hd } = settingsRef.current;
+            finishSegment(session, session.current, m, hd, now);
+            session.current = startSegment(session, now);
+          }
+        }
       }
       rafRef.current = requestAnimationFrame(tick);
     };
@@ -323,6 +411,19 @@ export function AnalyseClient() {
       video.srcObject = stream;
       await video.play();
       lastVideoTimeRef.current = -1;
+
+      const mimeType = pickMimeType();
+      if (mimeType) {
+        const now = performance.now();
+        const session: Session = {
+          stream, mimeType, width: video.videoWidth, height: video.videoHeight, startedAt: now,
+          current: null, pending: [], best: [], segments: 0,
+        };
+        session.current = startSegment(session, now);
+        sessionRef.current = session;
+      }
+
+      setHighlights('idle');
       startLoop();
       setPhase('ready');
     } catch (err) {
@@ -344,10 +445,56 @@ export function AnalyseClient() {
   }
 
   function turnOff() {
+    const session = sessionRef.current;
+    sessionRef.current = null;
+    if (session?.current) {
+      finishSegment(session, session.current, mode, hand);
+      session.current = null;
+    }
     stopCamera();
     const canvas = canvasRef.current;
     canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
     setPhase('idle');
+    if (session) void saveHighlights(session);
+  }
+
+  async function saveHighlights(session: Session) {
+    await Promise.all(session.pending);
+    if (session.best.length === 0) {
+      if (session.segments > 0) toast('No highlight clips this time. Keep your whole body in frame to get a reel.');
+      return;
+    }
+
+    setHighlights('uploading');
+    const toastId = toast.loading('Uploading session… generating highlights');
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Sign in to save highlights');
+
+      const contentType = session.mimeType.split(';')[0];
+      const extension = contentType === 'video/mp4' ? 'mp4' : 'webm';
+      const folder = `${user.id}/${Date.now()}`;
+      const clips = await Promise.all(session.best.map(async (clip, i) => {
+        const path = `${folder}/clip-${i + 1}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from(HIGHLIGHTS_BUCKET).upload(path, clip.blob, { contentType });
+        if (uploadError) throw new Error(uploadError.message);
+        return { path, score: clip.score, start_sec: clip.start_sec, end_sec: clip.end_sec };
+      }));
+
+      const res = await fetch('/api/highlights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode, clips }),
+      });
+      if (!res.ok) throw new Error(((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? 'Couldn’t save highlights');
+
+      toast.success('Highlights ready', { id: toastId });
+      setHighlights('ready');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Couldn’t save highlights', { id: toastId });
+      setHighlights('idle');
+    }
   }
 
   const cameraOn = phase === 'ready' || phase === 'recording' || phase === 'done';
@@ -358,9 +505,18 @@ export function AnalyseClient() {
       <div>
         <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Analyse</h1>
         <p className="mt-1 text-sm text-neutral-400">
-          Record a 5-second clip and get instant feedback on your {mode} technique. Video stays on your device.
+          Record a 5-second clip and get instant feedback on your {mode} technique. When you stop the camera, your
+          best 3 clips are saved to your highlight reel, where anyone with a clip’s link can watch it.
         </p>
       </div>
+
+      {highlights === 'ready' && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm"
+          style={{ borderColor: 'rgba(201,165,76,0.3)', background: 'rgba(201,165,76,0.08)' }}>
+          <span className="font-medium text-white">✨ Highlights ready</span>
+          <Link href="/highlights" className="font-semibold hover:underline" style={{ color: GOLD }}>View your reel →</Link>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <Toggle label="Discipline" value={mode} onChange={(v) => { setMode(v); setResults(null); }}
