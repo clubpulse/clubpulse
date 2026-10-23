@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { NAV_LINKS } from '@/components/layout/Sidebar';
+import { navLinks } from '@/components/layout/Sidebar';
 
-export function BottomNav() {
+export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boolean }) {
   const pathname = usePathname();
+  const links = navLinks({ isPlatformAdmin });
 
   return (
     <nav
@@ -24,13 +25,13 @@ export function BottomNav() {
     >
       <ul style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${NAV_LINKS.length}, 1fr)`,
+        gridTemplateColumns: `repeat(${links.length}, 1fr)`,
         maxWidth: '448px',
         margin: '0 auto',
         padding: 0,
         listStyle: 'none',
       }}>
-        {NAV_LINKS.map((link) => {
+        {links.map((link) => {
           const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
             <li key={link.href}>

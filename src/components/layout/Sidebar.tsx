@@ -11,9 +11,18 @@ export const NAV_LINKS = [
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
 
-export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
+// showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
+export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
+  return [
+    ...NAV_LINKS,
+    ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
+    ...(isPlatformAdmin ? [{ href: '/admin', label: 'Admin', icon: '⚙️' }] : []),
+  ];
+}
+
+export function Sidebar({ showAdmin, isPlatformAdmin }: { showAdmin: boolean; isPlatformAdmin: boolean }) {
   const pathname = usePathname();
-  const links = showAdmin ? [...NAV_LINKS, { href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : NAV_LINKS;
+  const links = navLinks({ showAdmin, isPlatformAdmin });
 
   return (
     <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
