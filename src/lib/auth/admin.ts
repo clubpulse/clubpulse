@@ -1,4 +1,8 @@
+import { cache } from 'react';
+import { redirect } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getCurrentUser } from '@/lib/auth/server';
 
 // Authorisation lookups use the service role on purpose: they read only the caller's own
 // (already verified) user id, and don't depend on RLS policies being present on these tables.
@@ -62,4 +66,20 @@ export async function getAdminContext(userId: string): Promise<AdminContext> {
     isMerchant(userId),
   ]);
   return { adminClubIds, isMerchant: merchant, isPlatformAdmin: isPlatformAdmin(userId) };
+}
+
+// ClubPulse staff (profiles.role = 'admin') for the /admin dashboard. Separate from club admins
+// (club_members) and from PLATFORM_ADMIN_USER_IDS, which gates editing global config.
+export const getAdminSession = cache(async (): Promise<User | null> => {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const { data } = await createAdminClient().from('profiles').select('role').eq('id', user.id).maybeSingle();
+  return data?.role === 'admin' ? user : null;
+});
+
+// Call at the top of every /admin page and server action: layouts alone don't guard pages or actions.
+export async function requireAdmin(): Promise<User> {
+  const user = await getAdminSession();
+  if (!user) redirect('/');
+  return user;
 }
