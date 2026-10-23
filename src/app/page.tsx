@@ -11,6 +11,10 @@ export default function Home() {
         .cp-logo-mark{width:36px;height:36px;background:#9b1c1c;border-radius:8px;display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff}
         .cp-logo-name{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#f0ece4}
         .cp-nav-links{display:flex;align-items:center;gap:8px}
+        .cp-menu{display:flex;align-items:center;gap:28px}
+        .cp-menu a{font-size:14px;font-weight:500;color:#fff;text-decoration:none;opacity:0.7;transition:opacity 0.15s}
+        .cp-menu a:hover{opacity:1}
+        @media(max-width:767px){.cp-menu{display:none}}
         .cp-signin{padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;color:rgba(240,236,228,0.6);text-decoration:none}
         .cp-cta-sm{padding:8px 18px;border-radius:8px;background:#9b1c1c;font-size:14px;font-weight:600;color:#fff;text-decoration:none}
         .cp-hero{max-width:800px;margin:0 auto;padding:72px 24px 64px;text-align:center}
@@ -67,6 +71,11 @@ export default function Home() {
           <div className="cp-logo-mark">C</div>
           <span className="cp-logo-name">ClubPulse</span>
         </Link>
+        <div className="cp-menu">
+          <Link href="/analyse">Analyse</Link>
+          <Link href="/marketplace">Marketplace</Link>
+          <Link href="/companion">Companion</Link>
+        </div>
         <div className="cp-nav-links">
           <Link href="/auth/sign-in" className="cp-signin">Sign in</Link>
           <Link href="/auth/sign-up" className="cp-cta-sm">Get started</Link>
