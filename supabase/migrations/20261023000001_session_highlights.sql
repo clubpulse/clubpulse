@@ -19,15 +19,18 @@ CREATE POLICY "session-videos: read" ON storage.objects
   FOR SELECT TO anon, authenticated
   USING (bucket_id = 'session-videos');
 
+-- Columns match the deployed table (read from the PostgREST schema, 2026-10-24). session_date is a
+-- required DATE with no default, so inserts must set it. The foreign key, index and policies below
+-- aren't visible through that schema and haven't been checked against production.
 CREATE TABLE IF NOT EXISTS highlights (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  session_date  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  video_url     TEXT NOT NULL,
+  session_date  DATE NOT NULL,
+  video_url     TEXT,
   -- [{ url, path, start_sec, end_sec, score, label }], best first
-  clips         JSONB NOT NULL CHECK (jsonb_typeof(clips) = 'array'),
+  clips         JSONB,
   top_clip_url  TEXT,
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS highlights_user_idx ON highlights(user_id, created_at DESC);
