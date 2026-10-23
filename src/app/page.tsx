@@ -15,8 +15,10 @@ export default function Home() {
         .cp-menu a{font-size:14px;font-weight:500;color:#fff;text-decoration:none;opacity:0.7;transition:opacity 0.15s}
         .cp-menu a:hover{opacity:1}
         @media(max-width:767px){.cp-menu{display:none}}
-        .cp-signin{padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;color:rgba(240,236,228,0.6);text-decoration:none}
-        .cp-cta-sm{padding:8px 18px;border-radius:8px;background:#9b1c1c;font-size:14px;font-weight:600;color:#fff;text-decoration:none}
+        @media(max-width:420px){.cp-nav{padding:20px 16px;gap:12px}.cp-nav-links{gap:4px}.cp-signin{padding:8px 10px}.cp-cta-sm{padding:8px 14px}.cp-logo-name{font-size:16px}}
+        @media(max-width:359px){.cp-logo-name{display:none}}
+        .cp-signin{padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;color:rgba(240,236,228,0.6);text-decoration:none;white-space:nowrap}
+        .cp-cta-sm{padding:8px 18px;border-radius:8px;background:#9b1c1c;font-size:14px;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap}
         .cp-hero{max-width:800px;margin:0 auto;padding:72px 24px 64px;text-align:center}
         .cp-pulse-dot{display:inline-flex;align-items:center;gap:8px;background:rgba(155,28,28,0.12);border:1px solid rgba(155,28,28,0.3);border-radius:100px;padding:5px 14px 5px 10px;font-size:12.5px;font-weight:600;color:#c9a54c;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:28px}
         .cp-pulse-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:#9b1c1c;animation:pulse 2s ease-in-out infinite}
