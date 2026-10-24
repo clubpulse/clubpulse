@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
-  { href: '/dashboard',   label: 'Home',        icon: '🏠' },
-  { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
-  { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-  { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/dashboard',     label: 'Home',          icon: '🏠' },
+  { href: '/analyse',       label: 'Analyse',       icon: '🎯' },
+  { href: '/marketplace',   label: 'Marketplace',   icon: '🛍️' },
+  { href: '/companion',     label: 'Companion',     icon: '🧠' },
+  { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝' },
+  { href: '/profile',       label: 'Profile',       icon: '👤' },
+  { href: '/cricket-cv',    label: 'My Cricket CV', icon: '📄' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
