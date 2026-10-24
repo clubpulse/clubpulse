@@ -4,19 +4,27 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
-  { href: '/dashboard',   label: 'Home',        icon: '🏠' },
-  { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
-  { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-  { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/wellbeing',   label: 'Wellbeing',   icon: '🧡' },
-  { href: '/profile',          label: 'Profile',         icon: '👤' },
+  { href: '/dashboard',       label: 'Home',            icon: '🏠' },
+  { href: '/analyse',         label: 'Analyse',         icon: '🎯' },
+  { href: '/marketplace',     label: 'Marketplace',     icon: '🛍️' },
+  { href: '/companion',       label: 'Companion',       icon: '🧠' },
+  { href: '/wellbeing',       label: 'Wellbeing',       icon: '🧡' },
+  { href: '/profile',         label: 'Profile',         icon: '👤' },
   { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
   { href: '/documents',       label: 'Documents',       icon: '📄' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
-// showSchool: club has an active school_program row.
-export function navLinks({ showAdmin = false, isPlatformAdmin = false, showSchool = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean; showSchool?: boolean }) {
+// showSchool: club has an active school_programs row — injected by DashboardShell.
+export function navLinks({
+  showAdmin = false,
+  isPlatformAdmin = false,
+  showSchool = false,
+}: {
+  showAdmin?: boolean;
+  isPlatformAdmin?: boolean;
+  showSchool?: boolean;
+}) {
   return [
     ...NAV_LINKS,
     ...(showSchool ? [{ href: '/school', label: 'School', icon: '🏫' }] : []),
@@ -25,7 +33,15 @@ export function navLinks({ showAdmin = false, isPlatformAdmin = false, showSchoo
   ];
 }
 
-export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { showAdmin: boolean; isPlatformAdmin: boolean; showSchool?: boolean }) {
+export function Sidebar({
+  showAdmin,
+  isPlatformAdmin,
+  showSchool = false,
+}: {
+  showAdmin: boolean;
+  isPlatformAdmin: boolean;
+  showSchool?: boolean;
+}) {
   const pathname = usePathname();
   const links = navLinks({ showAdmin, isPlatformAdmin, showSchool });
 
