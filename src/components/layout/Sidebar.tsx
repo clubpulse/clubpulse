@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
+  { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
 
@@ -15,7 +16,10 @@ export const NAV_LINKS = [
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,
-    ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
+    ...(showAdmin ? [
+      { href: '/admin/club',              label: 'Club admin',   icon: '🛡️' },
+      { href: '/admin/club/gut-feeling',  label: 'Gut Feeling ⚡', icon: '📋' },
+    ] : []),
     ...(isPlatformAdmin ? [{ href: '/admin', label: 'Admin', icon: '⚙️' }] : []),
   ];
 }
