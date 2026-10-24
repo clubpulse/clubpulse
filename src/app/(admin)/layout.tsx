@@ -21,6 +21,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           { href: '/admin/club/volunteers', label: 'Volunteers' },
           { href: '/admin/club/multipliers', label: 'Multipliers' },
           { href: '/admin/club/sport-configs', label: 'Earning rules' },
+          { href: '/admin/club/waiting-list', label: 'Waiting list' },
         ]
       : []),
     ...(ctx.isMerchant || ctx.isPlatformAdmin ? [{ href: '/admin/merchant', label: 'Merchant insights' }] : []),
