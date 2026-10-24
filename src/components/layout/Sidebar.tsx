@@ -8,7 +8,9 @@ export const NAV_LINKS = [
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
+  { href: '/profile',      label: 'Profile',      icon: '👤' },
+  { href: '/injury-intel', label: 'Injury Intel', icon: '🩹' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
