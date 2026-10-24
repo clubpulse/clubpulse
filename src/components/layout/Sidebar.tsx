@@ -15,7 +15,10 @@ export const NAV_LINKS = [
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,
-    ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
+    ...(showAdmin ? [
+      { href: '/admin/club', label: 'Club admin', icon: '🛡️' },
+      { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
+    ] : []),
     ...(isPlatformAdmin ? [{ href: '/admin', label: 'Admin', icon: '⚙️' }] : []),
   ];
 }
