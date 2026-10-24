@@ -4,11 +4,23 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
+<<<<<<< Updated upstream
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
+=======
+  { href: '/dashboard',    label: 'Home',         icon: '🏠' },
+  { href: '/analyse',         label: 'Analyse',         icon: '🎯' },
+  { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
+  { href: '/marketplace',     label: 'Marketplace',     icon: '🛍️' },
+  { href: '/mentor-match', label: 'Mentor Match', icon: '🎓' },
+  { href: '/leaderboard',  label: 'Leaderboard',  icon: '🏅' },
+  { href: '/club-bible',   label: 'Club Bible',   icon: '📖' },
+  { href: '/companion',    label: 'Companion',    icon: '🧠' },
+  { href: '/profile',      label: 'Profile',      icon: '👤' },
+>>>>>>> Stashed changes
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
