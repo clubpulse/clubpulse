@@ -4,9 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
 import { getWalletHistory } from '@/lib/activity/service';
 import { getMyFormRating } from '@/lib/actions/form';
+import { getMyNemesis } from '@/lib/actions/rivalry';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { ScoresHistoryTable } from '@/components/profile/ScoresHistoryTable';
 import { FormTicker } from '@/components/form/FormTicker';
+import { NemesisWidget } from '@/components/rivalry/NemesisWidget';
 import { Card } from '@/components/ui/Card';
 import { DebutCard } from '@/components/debut-card/DebutCard';
 
@@ -35,6 +37,8 @@ export default async function ProfilePage() {
     ? await getMyFormRating(user.id, membership.club_id)
     : null;
 
+  const nemesisResult = await getMyNemesis(user.id);
+
   if (!profile.success) {
     return (
       <Card title="Profile unavailable">
@@ -49,6 +53,7 @@ export default async function ProfilePage() {
     <div className="space-y-6">
       <ProfileCard profile={profile.data} wallet={wallet.success ? wallet.data : null} roles={roles} />
       <FormTicker form={formRating?.success ? formRating.data ?? null : null} />
+      <NemesisWidget nemesis={nemesisResult.success ? nemesisResult.data : null} />
       <DebutCard userId={user.id} displayName={profile.data.display_name || profile.data.full_name} />
       <ScoresHistoryTable items={history} />
     </div>

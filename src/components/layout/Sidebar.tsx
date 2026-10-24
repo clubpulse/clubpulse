@@ -8,8 +8,9 @@ export const NAV_LINKS = [
   { href: '/availability', label: 'Availability', icon: '📅' },
   { href: '/analyse',      label: 'Analyse',      icon: '🎯' },
   { href: '/marketplace',  label: 'Marketplace',  icon: '🛍️' },
-  { href: '/companion',    label: 'Companion',     icon: '🧠' },
-  { href: '/profile',      label: 'Profile',       icon: '👤' },
+  { href: '/companion',       label: 'Companion',   icon: '🧠' },
+  { href: '/log-performance', label: 'Log Game',    icon: '📋' },
+  { href: '/profile',         label: 'Profile',     icon: '👤' },
 ];
 
 export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
