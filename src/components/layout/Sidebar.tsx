@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
-  { href: '/dashboard',   label: 'Home',        icon: '🏠' },
-  { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
-  { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-  { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/dashboard',     label: 'Home',          icon: '🏠' },
+  { href: '/availability',  label: 'Availability',  icon: '📅' },
+  { href: '/analyse',       label: 'Analyse',       icon: '🎯' },
+  { href: '/dressing-room', label: 'Dressing Room', icon: '👕' },
+  { href: '/marketplace',   label: 'Marketplace',   icon: '🛍️' },
+  { href: '/companion',     label: 'Companion',     icon: '🧠' },
+  { href: '/profile',       label: 'Profile',       icon: '👤' },
 ];
 
 export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
