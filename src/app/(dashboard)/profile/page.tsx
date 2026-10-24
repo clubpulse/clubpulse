@@ -3,9 +3,12 @@ import { getUserRoles } from '@/lib/auth/admin';
 import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
 import { getWalletHistory } from '@/lib/activity/service';
+import { getMyFormRating } from '@/lib/actions/form';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { ScoresHistoryTable } from '@/components/profile/ScoresHistoryTable';
+import { FormTicker } from '@/components/form/FormTicker';
 import { Card } from '@/components/ui/Card';
+import { DebutCard } from '@/components/debut-card/DebutCard';
 
 export default async function ProfilePage() {
   const user = await requireUser();
@@ -17,6 +20,20 @@ export default async function ProfilePage() {
     getWalletHistory(supabase, user.id, 50),
     getUserRoles(user.id),
   ]);
+
+  // Fetch the user's primary active club membership for form rating
+  const { data: membership } = await supabase
+    .from('club_members')
+    .select('club_id')
+    .eq('user_id', user.id)
+    .eq('is_active', true)
+    .order('joined_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  const formRating = membership?.club_id
+    ? await getMyFormRating(user.id, membership.club_id)
+    : null;
 
   if (!profile.success) {
     return (
@@ -31,6 +48,8 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileCard profile={profile.data} wallet={wallet.success ? wallet.data : null} roles={roles} />
+      <FormTicker form={formRating?.success ? formRating.data ?? null : null} />
+      <DebutCard userId={user.id} displayName={profile.data.display_name || profile.data.full_name} />
       <ScoresHistoryTable items={history} />
     </div>
   );

@@ -14,7 +14,13 @@ export const NAV_LINKS = [
 
 export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
   const pathname = usePathname();
-  const links = showAdmin ? [...NAV_LINKS, { href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : NAV_LINKS;
+  const links = showAdmin
+    ? [
+        ...NAV_LINKS,
+        { href: '/admin/club',            label: 'Club admin',  icon: '🛡️' },
+        { href: '/admin/club/form-guide', label: 'Form Guide',  icon: '📈' },
+      ]
+    : NAV_LINKS;
 
   return (
     <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
