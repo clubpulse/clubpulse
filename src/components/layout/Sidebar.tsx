@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
+  { href: '/club-alumni', label: 'Alumni',      icon: '🏆' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
 
