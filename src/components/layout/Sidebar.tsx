@@ -5,10 +5,15 @@ import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
+  { href: '/match-day',   label: 'Match Day',   icon: '🏏' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/club-alumni', label: 'Alumni',      icon: '🏆' },
+  { href: '/wellbeing',   label: 'Wellbeing',   icon: '🧡' },
+  { href: '/profile',          label: 'Profile',         icon: '👤' },
+  { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
+  { href: '/documents',       label: 'Documents',       icon: '📄' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
