@@ -7,7 +7,10 @@ export const NAV_LINKS = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
+  { href: '/coaching',    label: 'Coaching',    icon: '🎓' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
+  { href: '/fee-offset',  label: 'Fee Offset',  icon: '💰' },
+  { href: '/raffle',      label: 'Raffle',      icon: '🎟️' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
 
