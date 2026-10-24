@@ -7,6 +7,7 @@ export const NAV_LINKS = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
+  { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
