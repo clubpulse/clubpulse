@@ -10,6 +10,7 @@ export const NAV_LINKS = [
   { href: '/marketplace',  label: 'Marketplace',  icon: '🛍️' },
   { href: '/companion',    label: 'Companion',     icon: '🧠' },
   { href: '/profile',      label: 'Profile',       icon: '👤' },
+  { href: '/season-wrap', label: 'Season Wrap', icon: '🏆' },
 ];
 
 export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
