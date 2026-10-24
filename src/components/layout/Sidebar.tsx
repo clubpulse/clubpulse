@@ -4,25 +4,23 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const NAV_LINKS = [
-  { href: '/dashboard',   label: 'Home',        icon: '🏠' },
-  { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
-  { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-  { href: '/companion',   label: 'Companion',   icon: '🧠' },
-  { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/dashboard',    label: 'Home',         icon: '🏠' },
+  { href: '/availability', label: 'Availability', icon: '📅' },
+  { href: '/analyse',      label: 'Analyse',      icon: '🎯' },
+  { href: '/marketplace',  label: 'Marketplace',  icon: '🛍️' },
+  { href: '/companion',    label: 'Companion',     icon: '🧠' },
+  { href: '/profile',      label: 'Profile',       icon: '👤' },
 ];
 
-// showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
-export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
-  return [
-    ...NAV_LINKS,
-    ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
-    ...(isPlatformAdmin ? [{ href: '/admin', label: 'Admin', icon: '⚙️' }] : []),
-  ];
-}
-
-export function Sidebar({ showAdmin, isPlatformAdmin }: { showAdmin: boolean; isPlatformAdmin: boolean }) {
+export function Sidebar({ showAdmin }: { showAdmin: boolean }) {
   const pathname = usePathname();
-  const links = navLinks({ showAdmin, isPlatformAdmin });
+  const links = showAdmin
+    ? [
+        ...NAV_LINKS,
+        { href: '/admin/club',            label: 'Club admin',  icon: '🛡️' },
+        { href: '/admin/club/form-guide', label: 'Form Guide',  icon: '📈' },
+      ]
+    : NAV_LINKS;
 
   return (
     <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
