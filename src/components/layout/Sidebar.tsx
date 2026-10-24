@@ -9,6 +9,7 @@ export const NAV_LINKS = [
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/companion',   label: 'Companion',   icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
+  { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
