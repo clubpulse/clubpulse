@@ -28,6 +28,8 @@ SET search_path = public
 AS $$
 DECLARE
   v_member_count INTEGER;
+  -- Shared by the two community sub-blocks, so declared at function scope
+  v_community_actions INTEGER := 0;
   v_active_members INTEGER := 0;
   v_total_score INTEGER := 0;
   v_availability_score INTEGER := 0;
@@ -82,7 +84,6 @@ BEGIN
 
   -- Community engagement (0-15): pot contributions + charity donations + raffle tickets
   BEGIN
-    DECLARE v_community_actions INTEGER := 0;
     BEGIN
       SELECT COUNT(*) INTO v_community_actions FROM pot_contributions WHERE club_id = p_club_id AND contributed_at >= v_month_start;
     EXCEPTION WHEN undefined_table THEN NULL; END;
