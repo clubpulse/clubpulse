@@ -14,7 +14,7 @@ export function AvailablePlayerCard({ player, viewerClubId }: Props) {
     setLoading(true); setError(null);
     const result = await expressInterest(player.id, viewerClubId, message);
     setLoading(false);
-    if (result.success) { setDone(true); setOpen(false); } else setError(result.error);
+    if (result.success) { setDone(true); setOpen(false); } else setError(result.error ?? null);
   }
   return (
     <>

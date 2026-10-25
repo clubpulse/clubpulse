@@ -14,7 +14,7 @@ export function WantedListingCard({ listing, alreadyApplied = false }: Props) {
     const result = await applyToListing(listing.id, coverNote);
     setLoading(false);
     if (result.success) { setApplied(true); setOpen(false); setCoverNote(''); }
-    else setError(result.error);
+    else setError(result.error ?? null);
   }
   return (
     <>
