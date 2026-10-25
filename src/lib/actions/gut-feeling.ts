@@ -226,7 +226,7 @@ export async function adminGetPendingFixtures(clubId: string): Promise<
     >();
 
     for (const row of data ?? []) {
-      const f = row.fixtures as {
+      const f = row.fixtures as unknown as {
         opponent: string
         match_date: string
         result?: string
