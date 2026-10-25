@@ -41,11 +41,14 @@ BEGIN
       mm.user_id,
       mm.mood,
       COUNT(*) AS total_games,
-      ROUND(AVG(COALESCE(mp.batting_runs, 0))::NUMERIC, 1) AS avg_runs,
-      ROUND(AVG(COALESCE(mp.bowling_wickets, 0))::NUMERIC, 2) AS avg_wickets,
+      ROUND(AVG(COALESCE(mp.runs_scored, 0))::NUMERIC, 1) AS avg_runs,
+      ROUND(AVG(COALESCE(mp.wickets_taken, 0))::NUMERIC, 2) AS avg_wickets,
       ROUND(AVG(COALESCE(fr.rating, 50))::NUMERIC, 1) AS avg_form_rating
     FROM match_moods mm
-    LEFT JOIN match_performances mp ON mp.user_id = mm.user_id AND mp.fixture_id = mm.fixture_id
+    -- match_performances has no fixture_id: match the fixture by club and date instead
+    JOIN fixtures f ON f.id = mm.fixture_id
+    LEFT JOIN match_performances mp
+      ON mp.user_id = mm.user_id AND mp.club_id = f.club_id AND mp.match_date = f.match_date
     LEFT JOIN form_ratings fr ON fr.user_id = mm.user_id
     GROUP BY mm.user_id, mm.mood;
   ELSE
