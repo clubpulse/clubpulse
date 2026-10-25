@@ -132,7 +132,7 @@ export async function adminUpdateInnings(
 
   if (fetchErr) return { success: false, error: fetchErr.message };
 
-  const merged = { ...(existing[innings] as InningsState), ...data };
+  const merged = { ...((existing as Record<string, unknown>)[innings] as InningsState), ...data };
 
   const { data: updated, error } = await supabase
     .from('match_scorecards')

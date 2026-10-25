@@ -44,7 +44,7 @@ export default async function QualificationsPage() {
     .single();
 
   const clubId = membership?.club_id as string | undefined;
-  const clubName = (membership?.clubs as { name: string } | null)?.name;
+  const clubName = (membership?.clubs as unknown as { name: string } | null)?.name;
 
   const [coursesResult, qualsResult] = await Promise.all([
     getCourseTypes(),

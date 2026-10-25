@@ -34,7 +34,7 @@ export async function getMyCricketCV(): Promise<ActionResult<FullCricketCV>> {
       .select('awarded_at, badges(name, emoji, rarity)')
       .eq('user_id', user.id);
     if (data) {
-      badges = data.map((r: { awarded_at: string; badges: { name: string; emoji: string; rarity: string } | null }) => ({
+      badges = (data as unknown as Array<{ awarded_at: string; badges: { name: string; emoji: string; rarity: string } | null }>).map((r) => ({
         name: r.badges?.name ?? '',
         emoji: r.badges?.emoji ?? '',
         rarity: r.badges?.rarity ?? '',
@@ -53,7 +53,7 @@ export async function getMyCricketCV(): Promise<ActionResult<FullCricketCV>> {
       .select('completed_date, is_verified, ecb_course_types(name, category)')
       .eq('user_id', user.id);
     if (data) {
-      qualifications = data.map((r: { completed_date: string; is_verified: boolean; ecb_course_types: { name: string; category: string } | null }) => ({
+      qualifications = (data as unknown as Array<{ completed_date: string; is_verified: boolean; ecb_course_types: { name: string; category: string } | null }>).map((r) => ({
         name: r.ecb_course_types?.name ?? '',
         category: r.ecb_course_types?.category ?? '',
         completed_date: r.completed_date,
@@ -224,7 +224,7 @@ export async function getPublicCV(slug: string): Promise<ActionResult<FullCricke
         .select('awarded_at, badges(name, emoji, rarity)')
         .eq('user_id', cvProfile.user_id);
       if (data) {
-        badges = data.map((r: { awarded_at: string; badges: { name: string; emoji: string; rarity: string } | null }) => ({
+        badges = (data as unknown as Array<{ awarded_at: string; badges: { name: string; emoji: string; rarity: string } | null }>).map((r) => ({
           name: r.badges?.name ?? '',
           emoji: r.badges?.emoji ?? '',
           rarity: r.badges?.rarity ?? '',
@@ -244,7 +244,7 @@ export async function getPublicCV(slug: string): Promise<ActionResult<FullCricke
         .select('completed_date, is_verified, ecb_course_types(name, category)')
         .eq('user_id', cvProfile.user_id);
       if (data) {
-        qualifications = data.map((r: { completed_date: string; is_verified: boolean; ecb_course_types: { name: string; category: string } | null }) => ({
+        qualifications = (data as unknown as Array<{ completed_date: string; is_verified: boolean; ecb_course_types: { name: string; category: string } | null }>).map((r) => ({
           name: r.ecb_course_types?.name ?? '',
           category: r.ecb_course_types?.category ?? '',
           completed_date: r.completed_date,
@@ -276,10 +276,3 @@ export async function getPublicCV(slug: string): Promise<ActionResult<FullCricke
   };
 }
 
-// ---------------------------------------------------------------------------
-// Utility
-// ---------------------------------------------------------------------------
-export function getCVShareUrl(slug: string): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.app';
-  return `${base}/cv/${slug}`;
-}

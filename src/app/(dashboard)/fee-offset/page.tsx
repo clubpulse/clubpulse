@@ -50,7 +50,7 @@ export default async function FeeOffsetPage() {
   }
 
   const clubId = membership.club_id;
-  const clubName = (membership.clubs as { name: string } | null)?.name ?? 'Your club';
+  const clubName = (membership.clubs as unknown as { name: string } | null)?.name ?? 'Your club';
 
   const statusRes = await getMyFeeOffsetStatus(clubId);
 

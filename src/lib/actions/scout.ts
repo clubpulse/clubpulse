@@ -106,9 +106,3 @@ export async function deactivateSession(sessionId: string) {
   return { success: true as const };
 }
 
-export function getShareUrl(shareToken: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    (typeof window !== 'undefined' ? window.location.origin : 'https://clubpulse.app');
-  return `${base}/scout/${shareToken}`;
-}

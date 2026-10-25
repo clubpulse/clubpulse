@@ -1,5 +1,6 @@
 import { requireUser } from '@/lib/auth/server';
-import { getMyCricketCV, getCVShareUrl } from '@/lib/actions/cricket-cv';
+import { getMyCricketCV } from '@/lib/actions/cricket-cv';
+import { getCVShareUrl } from '@/lib/share-urls';
 import { CVEditForm } from '@/components/cv/CVEditForm';
 import { CricketCVCard } from '@/components/cv/CricketCVCard';
 import { Card } from '@/components/ui/Card';

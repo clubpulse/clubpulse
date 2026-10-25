@@ -99,7 +99,7 @@ export async function checkAndAwardBadges(
     .eq('season', currentYear);
 
   const earnedSlugs = new Set(
-    (earned ?? []).flatMap((pb: { badge: { slug: string } | null }) =>
+    ((earned ?? []) as unknown as { badge: { slug: string } | null }[]).flatMap((pb) =>
       pb.badge ? [pb.badge.slug] : [],
     ),
   );

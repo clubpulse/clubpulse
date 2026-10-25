@@ -1,5 +1,6 @@
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
-import { getScoutSessions, getScoutSessionData, getShareUrl, deactivateSession } from '@/lib/actions/scout';
+import { getScoutSessions, getScoutSessionData, deactivateSession } from '@/lib/actions/scout';
+import { getScoutShareUrl } from '@/lib/share-urls';
 import { CreateScoutForm } from '@/components/scout/CreateScoutForm';
 import { ScoutDataTable } from '@/components/scout/ScoutDataTable';
 
@@ -56,7 +57,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
             Sessions
           </h2>
           {sessions.map((s) => {
-            const shareUrl = getShareUrl(s.share_token);
+            const shareUrl = getScoutShareUrl(s.share_token);
             const isViewing = activeSessionId === s.id;
 
             return (
@@ -108,7 +109,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
                     </a>
 
                     {s.is_active && (
-                      <form action={deactivateSession.bind(null, s.id)}>
+                      <form action={async () => { 'use server'; await deactivateSession(s.id); }}>
                         <button
                           type="submit"
                           style={{

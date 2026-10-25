@@ -195,7 +195,7 @@ export async function adminGetAcknowledgementStatus(
     .filter((m) => !ackedIds.has(m.user_id as string))
     .map((m) => ({
       user_id: m.user_id as string,
-      display_name: (m.profiles as { display_name: string | null } | null)?.display_name ?? null,
+      display_name: (m.profiles as unknown as { display_name: string | null } | null)?.display_name ?? null,
     }));
 
   return {

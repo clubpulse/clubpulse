@@ -5,6 +5,7 @@ import { getActiveRaffles, getPastRaffles, getRaffleWinners } from '@/lib/action
 import { totalBalance } from '@/lib/types/scores';
 import { formatScores } from '@/lib/utils/format';
 import { RaffleCard, DrawnRaffleCard } from '@/components/raffle/RaffleCard';
+import type { RaffleWinner } from '@/lib/types/raffle';
 
 async function getClubId(userId: string) {
   const supabase = await createClient();
@@ -44,7 +45,7 @@ export default async function RafflePage() {
   const activeRaffles = activeResult.success ? activeResult.data : [];
   const pastRaffles = pastResult.success ? pastResult.data : [];
 
-  const winnersMap: Record<string, Awaited<ReturnType<typeof getRaffleWinners>>['data']> = {};
+  const winnersMap: Record<string, RaffleWinner[]> = {};
   await Promise.all(
     pastRaffles.filter(r => r.status === 'drawn').map(async r => {
       const res = await getRaffleWinners(r.id);

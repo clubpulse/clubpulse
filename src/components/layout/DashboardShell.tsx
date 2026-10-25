@@ -50,7 +50,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
         <Sidebar showAdmin={adminCtx.adminClubIds.length > 0} isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
-      <BottomNav isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
+      <BottomNav isPlatformAdmin={isPlatformAdmin} />
     </div>
   );
 }

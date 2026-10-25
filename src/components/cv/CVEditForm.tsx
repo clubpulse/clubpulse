@@ -9,8 +9,8 @@ import {
   addSeasonStats,
   deleteSeasonStats,
   togglePublic,
-  getCVShareUrl,
 } from '@/lib/actions/cricket-cv';
+import { getCVShareUrl } from '@/lib/share-urls';
 import type { FullCricketCV, CVSeasonStats } from '@/lib/types/cricket-cv';
 import {
   BATTING_STYLE_LABELS,

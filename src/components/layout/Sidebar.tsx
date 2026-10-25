@@ -32,7 +32,6 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/wellbeing', label: 'Wellbeing', icon: '🧡' },
   { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
   { href: '/documents', label: 'Documents', icon: '📄' },
-  { href: '/school', label: 'School', icon: '🏫' },
   { href: '/match-day', label: 'Match Day', icon: '🏏' },
   { href: '/club-alumni', label: 'Alumni', icon: '🏆' },
 ];
@@ -75,9 +74,11 @@ function NavItem({ link, pathname }: { link: NavLink; pathname: string }) {
   );
 }
 
-export function Sidebar({ showAdmin, isPlatformAdmin }: { showAdmin: boolean; isPlatformAdmin: boolean }) {
+// showSchool: the club has an active school_programs row (looked up in DashboardShell)
+export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { showAdmin: boolean; isPlatformAdmin: boolean; showSchool?: boolean }) {
   const pathname = usePathname();
   const links = navLinks({ showAdmin, isPlatformAdmin });
+  const clubLinks = showSchool ? [...CLUB_LINKS, { href: '/school', label: 'School', icon: '🏫' }] : CLUB_LINKS;
 
   return (
     <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
@@ -86,11 +87,11 @@ export function Sidebar({ showAdmin, isPlatformAdmin }: { showAdmin: boolean; is
           {links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} />)}
         </ul>
 
-        {CLUB_LINKS.length > 0 && (
+        {clubLinks.length > 0 && (
           <div>
             <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-600">Club</p>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="space-y-1">
-              {CLUB_LINKS.map((link) => <NavItem key={link.href} link={link} pathname={pathname} />)}
+              {clubLinks.map((link) => <NavItem key={link.href} link={link} pathname={pathname} />)}
             </ul>
           </div>
         )}
