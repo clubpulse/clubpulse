@@ -41,6 +41,8 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📈' },
   { href: '/log-performance', label: 'Log Game', icon: '📋' },
   { href: '/match-mood', label: 'Match Mood', icon: '😤' },
+  { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
+  { href: '/admin/club/gut-feeling', label: 'Gut Feeling ⚡', icon: '📋' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
