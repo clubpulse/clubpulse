@@ -110,6 +110,9 @@ export async function logPerformance(input: {
     .single();
 
   if (error) return { success: false, error: error.message };
-  await supabase.rpc('refresh_nemesis_pairs').then(() => {}).catch(() => {});
+  // Best-effort: a failed refresh shouldn't fail the logged game
+  try {
+    await supabase.rpc('refresh_nemesis_pairs');
+  } catch {}
   return { success: true, data: data as MatchPerformance };
 }
