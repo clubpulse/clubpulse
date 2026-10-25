@@ -1,5 +1,5 @@
 -- Form ratings: computed from last 5 match_performances, stored for fast reads
--- match_performances table is created in migration 20261024000003
+-- match_performances table is created in migration 20261024000043
 -- (this migration depends on it; safe to create IF NOT EXISTS)
 CREATE TABLE IF NOT EXISTS match_performances (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),

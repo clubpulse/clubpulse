@@ -28,7 +28,7 @@ CREATE POLICY "gut_predictions: admin read" ON gut_predictions
       JOIN club_members cm ON cm.club_id = f.club_id
       WHERE f.id = gut_predictions.fixture_id
         AND cm.user_id = auth.uid()
-        AND cm.role IN ('admin','coach')
+        AND cm.role IN ('club_admin','coach')
     )
   );
 

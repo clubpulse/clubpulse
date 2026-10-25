@@ -36,7 +36,7 @@ CREATE POLICY "waiting_list: admin read" ON waiting_list
     SELECT 1 FROM club_members cm
     WHERE cm.club_id = waiting_list.club_id
       AND cm.user_id = auth.uid()
-      AND cm.role IN ('admin','coach')
+      AND cm.role IN ('club_admin','coach')
   ));
 
 DROP POLICY IF EXISTS "waiting_list: public insert" ON waiting_list;
@@ -51,7 +51,7 @@ CREATE POLICY "waiting_list: admin update" ON waiting_list
     SELECT 1 FROM club_members cm
     WHERE cm.club_id = waiting_list.club_id
       AND cm.user_id = auth.uid()
-      AND cm.role IN ('admin','coach')
+      AND cm.role IN ('club_admin','coach')
   ));
 
 CREATE OR REPLACE FUNCTION assign_queue_position()
@@ -89,7 +89,7 @@ BEGIN
   END IF;
 
   IF NOT EXISTS (
-    SELECT 1 FROM club_members WHERE club_id = v_entry.club_id AND user_id = auth.uid() AND role IN ('admin','coach')
+    SELECT 1 FROM club_members WHERE club_id = v_entry.club_id AND user_id = auth.uid() AND role IN ('club_admin','coach')
   ) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'access_denied');
   END IF;

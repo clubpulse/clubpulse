@@ -26,7 +26,7 @@ CREATE POLICY "match_moods: admin read" ON match_moods
       JOIN club_members cm ON cm.club_id = f.club_id
       WHERE f.id = match_moods.fixture_id
         AND cm.user_id = auth.uid()
-        AND cm.role IN ('admin','coach')
+        AND cm.role IN ('club_admin','coach')
     )
   );
 

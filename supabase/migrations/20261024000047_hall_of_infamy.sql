@@ -63,7 +63,7 @@ CREATE POLICY "infamy_categories: member read" ON infamy_categories
 DROP POLICY IF EXISTS "infamy_categories: admin write" ON infamy_categories;
 CREATE POLICY "infamy_categories: admin write" ON infamy_categories
   FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = infamy_categories.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = infamy_categories.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Nominations: members can read and write their own
 DROP POLICY IF EXISTS "infamy_nominations: member read" ON infamy_nominations;
@@ -100,7 +100,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = p_club_id AND user_id = auth.uid() AND role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = p_club_id AND user_id = auth.uid() AND role IN ('club_admin','coach')) THEN
     RAISE EXCEPTION 'Access denied';
   END IF;
 
