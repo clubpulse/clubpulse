@@ -7,7 +7,8 @@ export type Club = {
   created_at: string;
 };
 
-export type ClubMemberRole = 'member' | 'admin' | 'coach' | 'volunteer';
+// Matches the live user_role enum on club_members.role
+export type ClubMemberRole = 'player' | 'volunteer' | 'coach' | 'club_admin' | 'parent' | 'merchant';
 
 export type ClubMember = {
   id:        string;
@@ -18,7 +19,7 @@ export type ClubMember = {
   is_active: boolean;
 };
 
-export type ClubAdmin = ClubMember & { role: 'admin' };
+export type ClubAdmin = ClubMember & { role: 'club_admin' };
 
 // Member row plus the only profile fields a club admin is allowed to see
 export type ClubMemberWithProfile = ClubMember & {

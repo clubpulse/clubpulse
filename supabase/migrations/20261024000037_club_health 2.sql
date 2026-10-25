@@ -27,7 +27,7 @@ CREATE POLICY "club_health_snapshots: admin read" ON club_health_snapshots
     SELECT 1 FROM club_members cm
     WHERE cm.club_id = club_health_snapshots.club_id
       AND cm.user_id = auth.uid()
-      AND cm.role IN ('admin','coach')
+      AND cm.role IN ('club_admin','coach')
   ));
 
 -- Function to compute current club health (live, not from snapshots)
@@ -50,7 +50,7 @@ DECLARE
 BEGIN
   -- Check admin
   IF NOT EXISTS (
-    SELECT 1 FROM club_members WHERE club_id = p_club_id AND user_id = auth.uid() AND role IN ('admin','coach')
+    SELECT 1 FROM club_members WHERE club_id = p_club_id AND user_id = auth.uid() AND role IN ('club_admin','coach')
   ) THEN
     RAISE EXCEPTION 'Access denied';
   END IF;

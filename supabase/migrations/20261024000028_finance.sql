@@ -1,4 +1,8 @@
-CREATE TYPE IF NOT EXISTS finance_entry_type AS ENUM ('income','expense');
+-- Postgres has no CREATE TYPE IF NOT EXISTS
+DO $$ BEGIN
+  CREATE TYPE finance_entry_type AS ENUM ('income','expense');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS finance_entries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -35,5 +39,5 @@ CREATE POLICY "finance_entries: member read" ON finance_entries FOR SELECT TO au
 
 DROP POLICY IF EXISTS "finance_entries: admin write" ON finance_entries;
 CREATE POLICY "finance_entries: admin write" ON finance_entries FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = finance_entries.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = finance_entries.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = finance_entries.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = finance_entries.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));

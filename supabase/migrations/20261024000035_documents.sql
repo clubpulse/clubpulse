@@ -35,8 +35,8 @@ CREATE POLICY "club_documents: member read" ON club_documents FOR SELECT TO auth
 -- Admin write
 DROP POLICY IF EXISTS "club_documents: admin all" ON club_documents;
 CREATE POLICY "club_documents: admin all" ON club_documents FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_documents.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_documents.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_documents.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_documents.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'));
 
 -- Acknowledgements: own write + admin read
 DROP POLICY IF EXISTS "document_acknowledgements: own" ON document_acknowledgements;
@@ -47,5 +47,5 @@ DROP POLICY IF EXISTS "document_acknowledgements: admin read" ON document_acknow
 CREATE POLICY "document_acknowledgements: admin read" ON document_acknowledgements FOR SELECT TO authenticated
   USING (EXISTS (
     SELECT 1 FROM club_documents cd, club_members cm
-    WHERE cd.id = document_acknowledgements.document_id AND cm.club_id = cd.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'
+    WHERE cd.id = document_acknowledgements.document_id AND cm.club_id = cd.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'
   ));

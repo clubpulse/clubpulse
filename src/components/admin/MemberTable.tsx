@@ -25,7 +25,7 @@ export function MemberTable({ members }: { members: ClubMemberWithProfile[] }) {
                   {m.full_name ?? m.display_name ?? 'Unnamed member'}
                 </Link>
               </td>
-              <td className="px-4 py-3"><Badge tone={m.role === 'admin' ? 'gold' : 'neutral'}>{m.role}</Badge></td>
+              <td className="px-4 py-3"><Badge tone={m.role === 'club_admin' ? 'gold' : 'neutral'}>{m.role}</Badge></td>
               <td className="px-4 py-3 text-neutral-400">{formatDate(m.joined_at)}</td>
               <td className="px-4 py-3">{m.is_active ? <Badge tone="green">Active</Badge> : <Badge tone="red">Inactive</Badge>}</td>
             </tr>

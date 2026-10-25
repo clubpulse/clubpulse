@@ -51,15 +51,15 @@ CREATE POLICY "raffles: member read" ON raffles FOR SELECT TO authenticated
 
 DROP POLICY IF EXISTS "raffles: admin write" ON raffles;
 CREATE POLICY "raffles: admin write" ON raffles FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffles.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffles.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffles.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffles.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "raffle_tickets: own read" ON raffle_tickets;
 CREATE POLICY "raffle_tickets: own read" ON raffle_tickets FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "raffle_tickets: admin read" ON raffle_tickets;
 CREATE POLICY "raffle_tickets: admin read" ON raffle_tickets FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffle_tickets.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = raffle_tickets.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "raffle_winners: club read" ON raffle_winners;
 CREATE POLICY "raffle_winners: club read" ON raffle_winners FOR SELECT TO authenticated USING (TRUE);
@@ -129,7 +129,7 @@ BEGIN
   IF NOT FOUND OR v_raffle.status != 'active' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'raffle_not_active');
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = v_raffle.club_id AND user_id = auth.uid() AND role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = v_raffle.club_id AND user_id = auth.uid() AND role IN ('club_admin','coach')) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'access_denied');
   END IF;
   FOR i IN 1..v_raffle.winner_count LOOP

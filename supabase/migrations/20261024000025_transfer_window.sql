@@ -25,7 +25,7 @@ CREATE POLICY "transfer_requests: club admin read" ON transfer_requests
     EXISTS (
       SELECT 1 FROM club_members cm
       WHERE cm.user_id = auth.uid()
-        AND cm.role IN ('admin','coach')
+        AND cm.role IN ('club_admin','coach')
         AND (cm.club_id = from_club_id OR cm.club_id = to_club_id)
     )
   );
@@ -41,7 +41,7 @@ CREATE POLICY "transfer_requests: update" ON transfer_requests
     OR EXISTS (
       SELECT 1 FROM club_members cm
       WHERE cm.user_id = auth.uid()
-        AND cm.role IN ('admin','coach')
+        AND cm.role IN ('club_admin','coach')
         AND (cm.club_id = from_club_id OR cm.club_id = to_club_id)
     )
   );

@@ -38,8 +38,8 @@ CREATE POLICY "club_fee_settings: member read" ON club_fee_settings
 DROP POLICY IF EXISTS "club_fee_settings: admin write" ON club_fee_settings;
 CREATE POLICY "club_fee_settings: admin write" ON club_fee_settings
   FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_fee_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_fee_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_fee_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_fee_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "fee_offset_applications: own read" ON fee_offset_applications;
 CREATE POLICY "fee_offset_applications: own read" ON fee_offset_applications
@@ -52,12 +52,12 @@ CREATE POLICY "fee_offset_applications: own create" ON fee_offset_applications
 DROP POLICY IF EXISTS "fee_offset_applications: admin read" ON fee_offset_applications;
 CREATE POLICY "fee_offset_applications: admin read" ON fee_offset_applications
   FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = fee_offset_applications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = fee_offset_applications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "fee_offset_applications: admin update" ON fee_offset_applications;
 CREATE POLICY "fee_offset_applications: admin update" ON fee_offset_applications
   FOR UPDATE TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = fee_offset_applications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = fee_offset_applications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Apply fee offset atomically: deduct Scores, create application
 CREATE OR REPLACE FUNCTION apply_fee_offset(p_club_id UUID, p_scores_to_apply INTEGER)

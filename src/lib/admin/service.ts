@@ -11,7 +11,7 @@ import type { VolunteerSession, VolunteerSessionWithName, VolunteerStatus } from
 // server actions and API routes are public endpoints and these run with the service role.
 
 const FORBIDDEN = 'You do not have access to this club';
-const MEMBER_ROLES: ClubMemberRole[] = ['member', 'admin', 'coach', 'volunteer'];
+const MEMBER_ROLES: ClubMemberRole[] = ['player', 'club_admin', 'coach', 'volunteer', 'parent'];
 const CONDITION_TYPES = ['weather', 'scarcity', 'season_phase', 'manual'] as const;
 
 async function requireClubAdmin(userId: string, clubId: string): Promise<string | null> {
@@ -143,14 +143,14 @@ export async function updateClubMember(
 
   // Never leave a club with no active admin
   const losesAdmin =
-    member.role === 'admin' && member.is_active &&
-    ((update.role !== undefined && update.role !== 'admin') || update.is_active === false);
+    member.role === 'club_admin' && member.is_active &&
+    ((update.role !== undefined && update.role !== 'club_admin') || update.is_active === false);
   if (losesAdmin) {
     const { count } = await admin
       .from('club_members')
       .select('id', { count: 'exact', head: true })
       .eq('club_id', member.club_id)
-      .eq('role', 'admin')
+      .eq('role', 'club_admin')
       .eq('is_active', true)
       .neq('id', member.id);
     if (!count) return { success: false, error: 'A club needs at least one active admin' };

@@ -25,5 +25,5 @@ CREATE POLICY "notices: member read" ON notices FOR SELECT TO authenticated
 -- Admin write
 DROP POLICY IF EXISTS "notices: admin all" ON notices;
 CREATE POLICY "notices: admin all" ON notices FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = notices.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = notices.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = notices.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = notices.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));

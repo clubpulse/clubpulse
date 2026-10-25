@@ -52,7 +52,7 @@ CREATE POLICY "pot_contributions: own read" ON pot_contributions FOR SELECT TO a
 
 DROP POLICY IF EXISTS "pot_contributions: admin read" ON pot_contributions;
 CREATE POLICY "pot_contributions: admin read" ON pot_contributions FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_contributions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_contributions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "pot_proposals: member read" ON pot_proposals;
 CREATE POLICY "pot_proposals: member read" ON pot_proposals FOR SELECT TO authenticated
@@ -60,8 +60,8 @@ CREATE POLICY "pot_proposals: member read" ON pot_proposals FOR SELECT TO authen
 
 DROP POLICY IF EXISTS "pot_proposals: admin write" ON pot_proposals;
 CREATE POLICY "pot_proposals: admin write" ON pot_proposals FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_proposals.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_proposals.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_proposals.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pot_proposals.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "pot_votes: member read" ON pot_votes;
 CREATE POLICY "pot_votes: member read" ON pot_votes FOR SELECT TO authenticated

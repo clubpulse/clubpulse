@@ -34,8 +34,8 @@ CREATE POLICY "club_milestones: member read" ON club_milestones
 DROP POLICY IF EXISTS "club_milestones: admin write" ON club_milestones;
 CREATE POLICY "club_milestones: admin write" ON club_milestones
   FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_milestones.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_milestones.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_milestones.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_milestones.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Club Bible: members read, admins can update
 DROP POLICY IF EXISTS "club_bible: member read" ON club_bible;
@@ -46,5 +46,5 @@ CREATE POLICY "club_bible: member read" ON club_bible
 DROP POLICY IF EXISTS "club_bible: admin write" ON club_bible;
 CREATE POLICY "club_bible: admin write" ON club_bible
   FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_bible.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_bible.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_bible.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_bible.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));

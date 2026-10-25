@@ -58,15 +58,15 @@ CREATE POLICY "club_charities: member read" ON club_charities FOR SELECT TO auth
 
 DROP POLICY IF EXISTS "club_charities: admin write" ON club_charities;
 CREATE POLICY "club_charities: admin write" ON club_charities FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_charities.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_charities.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_charities.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_charities.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "charity_donations: own read" ON charity_donations;
 CREATE POLICY "charity_donations: own read" ON charity_donations FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "charity_donations: admin read" ON charity_donations;
 CREATE POLICY "charity_donations: admin read" ON charity_donations FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_donations.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_donations.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "charity_settings: member read" ON charity_settings;
 CREATE POLICY "charity_settings: member read" ON charity_settings FOR SELECT TO authenticated
@@ -74,12 +74,12 @@ CREATE POLICY "charity_settings: member read" ON charity_settings FOR SELECT TO 
 
 DROP POLICY IF EXISTS "charity_settings: admin write" ON charity_settings;
 CREATE POLICY "charity_settings: admin write" ON charity_settings FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_settings.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "charity_donation_batches: admin read" ON charity_donation_batches;
 CREATE POLICY "charity_donation_batches: admin read" ON charity_donation_batches FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_donation_batches.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = charity_donation_batches.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 CREATE OR REPLACE FUNCTION donate_to_charity(p_charity_id UUID, p_scores INTEGER, p_message TEXT DEFAULT NULL)
 RETURNS JSONB

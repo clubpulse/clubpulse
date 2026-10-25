@@ -51,8 +51,8 @@ CREATE POLICY "sponsorship_packages: member read" ON sponsorship_packages FOR SE
 
 DROP POLICY IF EXISTS "sponsorship_packages: admin write" ON sponsorship_packages;
 CREATE POLICY "sponsorship_packages: admin write" ON sponsorship_packages FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorship_packages.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorship_packages.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorship_packages.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorship_packages.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Junior slots: only admin can see the full record; members see anonymised view
 DROP POLICY IF EXISTS "junior_slots: member read" ON junior_slots;
@@ -61,15 +61,15 @@ CREATE POLICY "junior_slots: member read" ON junior_slots FOR SELECT TO authenti
 
 DROP POLICY IF EXISTS "junior_slots: admin write" ON junior_slots;
 CREATE POLICY "junior_slots: admin write" ON junior_slots FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = junior_slots.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = junior_slots.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = junior_slots.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = junior_slots.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "sponsorships: own read" ON sponsorships;
 CREATE POLICY "sponsorships: own read" ON sponsorships FOR SELECT TO authenticated USING (auth.uid() = sponsor_user_id);
 
 DROP POLICY IF EXISTS "sponsorships: admin read" ON sponsorships;
 CREATE POLICY "sponsorships: admin read" ON sponsorships FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorships.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = sponsorships.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Sponsor atomically
 CREATE OR REPLACE FUNCTION create_sponsorship(

@@ -30,7 +30,7 @@ DECLARE
   v_result JSONB;
 BEGIN
   -- Verify caller is admin/coach
-  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = p_club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = p_club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'not_authorized');
   END IF;
 

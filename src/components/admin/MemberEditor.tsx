@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import type { ClubMemberRole, ClubMemberWithProfile } from '@/lib/types/club';
 
-const ROLES: ClubMemberRole[] = ['member', 'coach', 'volunteer', 'admin'];
+const ROLES: ClubMemberRole[] = ['player', 'coach', 'volunteer', 'parent', 'club_admin'];
 
 export function MemberEditor({ member }: { member: ClubMemberWithProfile }) {
   const router = useRouter();

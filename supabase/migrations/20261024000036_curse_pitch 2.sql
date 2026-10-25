@@ -46,7 +46,7 @@ CREATE POLICY "pitch_results: club read" ON pitch_results
 DROP POLICY IF EXISTS "pitch_results: admin write" ON pitch_results;
 CREATE POLICY "pitch_results: admin write" ON pitch_results
   FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pitch_results.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = pitch_results.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Resolve pitch votes and award creds
 CREATE OR REPLACE FUNCTION resolve_pitch_votes(p_fixture_id UUID, p_actual_condition TEXT, p_notes TEXT DEFAULT NULL)
@@ -68,7 +68,7 @@ BEGIN
 
   -- Check caller is admin
   IF NOT EXISTS (
-    SELECT 1 FROM club_members WHERE club_id = v_fixture_club AND user_id = auth.uid() AND role IN ('admin','coach')
+    SELECT 1 FROM club_members WHERE club_id = v_fixture_club AND user_id = auth.uid() AND role IN ('club_admin','coach')
   ) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'access_denied');
   END IF;

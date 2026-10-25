@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS scout_sessions (
   session_name TEXT NOT NULL,
   date_from DATE NOT NULL,
   date_to DATE NOT NULL,
-  share_token TEXT UNIQUE DEFAULT encode(gen_random_bytes(12), 'hex'),  -- for sharing without auth
+  share_token TEXT UNIQUE DEFAULT encode(extensions.gen_random_bytes(12), 'hex'),  -- for sharing without auth
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   player_codes JSONB NOT NULL DEFAULT '{}',  -- {user_id: "Player Alpha"} mapping
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -19,8 +19,8 @@ ALTER TABLE scout_sessions ENABLE ROW LEVEL SECURITY;
 -- Admin/coach write
 DROP POLICY IF EXISTS "scout_sessions: admin all" ON scout_sessions;
 CREATE POLICY "scout_sessions: admin all" ON scout_sessions FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = scout_sessions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = scout_sessions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = scout_sessions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = scout_sessions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Members can read scout sessions for their own club (they see anonymous data)
 DROP POLICY IF EXISTS "scout_sessions: member read" ON scout_sessions;
@@ -48,7 +48,7 @@ DECLARE
   v_idx INTEGER := 0;
 BEGIN
   -- Check caller is admin/coach
-  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = p_club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = p_club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'not_authorized');
   END IF;
 

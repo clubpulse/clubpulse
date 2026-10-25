@@ -52,22 +52,22 @@ DROP POLICY IF EXISTS "travel_logs: own read" ON travel_logs;
 CREATE POLICY "travel_logs: own read" ON travel_logs FOR SELECT TO authenticated USING (auth.uid() = user_id);
 DROP POLICY IF EXISTS "travel_logs: club read" ON travel_logs;
 CREATE POLICY "travel_logs: club read" ON travel_logs FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = travel_logs.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = travel_logs.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "club_tours: member read" ON club_tours;
 CREATE POLICY "club_tours: member read" ON club_tours FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_tours.club_id AND cm.user_id = auth.uid()));
 DROP POLICY IF EXISTS "club_tours: admin write" ON club_tours;
 CREATE POLICY "club_tours: admin write" ON club_tours FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_tours.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_tours.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_tours.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = club_tours.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "tour_participants: own read" ON tour_participants;
 CREATE POLICY "tour_participants: own read" ON tour_participants FOR SELECT TO authenticated USING (auth.uid() = user_id);
 DROP POLICY IF EXISTS "tour_participants: admin write" ON tour_participants;
 CREATE POLICY "tour_participants: admin write" ON tour_participants FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm, club_tours ct WHERE ct.id = tour_participants.tour_id AND cm.club_id = ct.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm, club_tours ct WHERE ct.id = tour_participants.tour_id AND cm.club_id = ct.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm, club_tours ct WHERE ct.id = tour_participants.tour_id AND cm.club_id = ct.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm, club_tours ct WHERE ct.id = tour_participants.tour_id AND cm.club_id = ct.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Creds formula: base 50 + 10 per 10 miles (rounded), max 300 for single trips
 -- Tours: base_creds_reward + bonus_per_day * days_attended
@@ -116,7 +116,7 @@ DECLARE
 BEGIN
   SELECT * INTO v_tour FROM club_tours WHERE id = p_tour_id;
   IF NOT FOUND THEN RETURN jsonb_build_object('ok', false, 'error', 'tour_not_found'); END IF;
-  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = v_tour.club_id AND user_id = auth.uid() AND role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members WHERE club_id = v_tour.club_id AND user_id = auth.uid() AND role IN ('club_admin','coach')) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'access_denied');
   END IF;
 

@@ -39,7 +39,7 @@ export default async function MatchDayPage() {
     );
   }
 
-  const isAdmin = membership.role === 'admin' || membership.role === 'coach';
+  const isAdmin = membership.role === 'club_admin' || membership.role === 'coach';
 
   const [todaysMatchRes, recentRes] = await Promise.all([
     getTodaysMatch(membership.club_id),

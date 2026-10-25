@@ -39,5 +39,5 @@ CREATE POLICY "player_legacy: own read" ON player_legacy FOR SELECT TO authentic
 -- Admin write
 DROP POLICY IF EXISTS "player_legacy: admin all" ON player_legacy;
 CREATE POLICY "player_legacy: admin all" ON player_legacy FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = player_legacy.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = player_legacy.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = player_legacy.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = player_legacy.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'));

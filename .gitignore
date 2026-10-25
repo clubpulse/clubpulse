@@ -45,3 +45,6 @@ next-env.d.ts
 /expo/.expo
 /expo/dist
 /expo/expo-env.d.ts
+
+# Supabase CLI local state (linked project, pooler URL)
+supabase/.temp/

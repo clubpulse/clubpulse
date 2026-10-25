@@ -44,8 +44,8 @@ CREATE POLICY "auctions: member read" ON auctions FOR SELECT TO authenticated
 
 DROP POLICY IF EXISTS "auctions: admin all" ON auctions;
 CREATE POLICY "auctions: admin all" ON auctions FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = auctions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = auctions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = auctions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = auctions.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Lots: visible when auction is not draft
 DROP POLICY IF EXISTS "auction_lots: member read" ON auction_lots;
@@ -54,8 +54,8 @@ CREATE POLICY "auction_lots: member read" ON auction_lots FOR SELECT TO authenti
 
 DROP POLICY IF EXISTS "auction_lots: admin all" ON auction_lots;
 CREATE POLICY "auction_lots: admin all" ON auction_lots FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM auctions a, club_members cm WHERE a.id = auction_lots.auction_id AND cm.club_id = a.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM auctions a, club_members cm WHERE a.id = auction_lots.auction_id AND cm.club_id = a.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM auctions a, club_members cm WHERE a.id = auction_lots.auction_id AND cm.club_id = a.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM auctions a, club_members cm WHERE a.id = auction_lots.auction_id AND cm.club_id = a.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Bids: own + admin
 DROP POLICY IF EXISTS "auction_bids: own read" ON auction_bids;

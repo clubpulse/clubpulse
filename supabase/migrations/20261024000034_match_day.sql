@@ -62,8 +62,8 @@ CREATE POLICY "match_scorecards: member read" ON match_scorecards FOR SELECT TO 
 -- Scorer (admin/coach) writes scorecard
 DROP POLICY IF EXISTS "match_scorecards: scorer write" ON match_scorecards;
 CREATE POLICY "match_scorecards: scorer write" ON match_scorecards FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = match_scorecards.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = match_scorecards.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = match_scorecards.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = match_scorecards.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "match_player_scores: member read" ON match_player_scores;
 CREATE POLICY "match_player_scores: member read" ON match_player_scores FOR SELECT TO authenticated
@@ -71,8 +71,8 @@ CREATE POLICY "match_player_scores: member read" ON match_player_scores FOR SELE
 
 DROP POLICY IF EXISTS "match_player_scores: scorer write" ON match_player_scores;
 CREATE POLICY "match_player_scores: scorer write" ON match_player_scores FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_player_scores.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')))
-  WITH CHECK (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_player_scores.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_player_scores.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')))
+  WITH CHECK (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_player_scores.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 DROP POLICY IF EXISTS "match_commentary: member read" ON match_commentary;
 CREATE POLICY "match_commentary: member read" ON match_commentary FOR SELECT TO authenticated
@@ -80,7 +80,7 @@ CREATE POLICY "match_commentary: member read" ON match_commentary FOR SELECT TO 
 
 DROP POLICY IF EXISTS "match_commentary: scorer write" ON match_commentary;
 CREATE POLICY "match_commentary: scorer write" ON match_commentary FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_commentary.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  WITH CHECK (EXISTS (SELECT 1 FROM match_scorecards sc, club_members cm WHERE sc.id = match_commentary.scorecard_id AND cm.club_id = sc.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Award match Scores SECURITY DEFINER
 CREATE OR REPLACE FUNCTION award_match_creds(p_scorecard_id UUID, p_user_id UUID, p_amount INTEGER, p_reason TEXT)
@@ -93,7 +93,7 @@ DECLARE
   v_club_id UUID;
 BEGIN
   SELECT sc.club_id INTO v_club_id FROM match_scorecards sc WHERE sc.id = p_scorecard_id;
-  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = v_club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')) THEN
+  IF NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = v_club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'not_authorized');
   END IF;
 

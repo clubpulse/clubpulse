@@ -61,11 +61,11 @@ DROP POLICY IF EXISTS "school_programs: admin all" ON school_programs;
 CREATE POLICY "school_programs: admin all" ON school_programs FOR ALL TO authenticated
   USING (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_programs.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'
+    WHERE cm.club_id = school_programs.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'
   ))
   WITH CHECK (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_programs.club_id AND cm.user_id = auth.uid() AND cm.role = 'admin'
+    WHERE cm.club_id = school_programs.club_id AND cm.user_id = auth.uid() AND cm.role = 'club_admin'
   ));
 
 -- school_age_groups: member reads own row; admin/coach manage all
@@ -77,11 +77,11 @@ DROP POLICY IF EXISTS "school_age_groups: admin all" ON school_age_groups;
 CREATE POLICY "school_age_groups: admin all" ON school_age_groups FOR ALL TO authenticated
   USING (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_age_groups.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_age_groups.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ))
   WITH CHECK (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_age_groups.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_age_groups.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ));
 
 -- school_attendance: members read; admin/coach write
@@ -96,11 +96,11 @@ DROP POLICY IF EXISTS "school_attendance: admin write" ON school_attendance;
 CREATE POLICY "school_attendance: admin write" ON school_attendance FOR ALL TO authenticated
   USING (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_attendance.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_attendance.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ))
   WITH CHECK (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_attendance.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_attendance.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ));
 
 -- school_team_selections: members read; admin/coach write
@@ -115,9 +115,9 @@ DROP POLICY IF EXISTS "school_team_selections: admin write" ON school_team_selec
 CREATE POLICY "school_team_selections: admin write" ON school_team_selections FOR ALL TO authenticated
   USING (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_team_selections.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_team_selections.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ))
   WITH CHECK (EXISTS (
     SELECT 1 FROM club_members cm
-    WHERE cm.club_id = school_team_selections.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')
+    WHERE cm.club_id = school_team_selections.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')
   ));

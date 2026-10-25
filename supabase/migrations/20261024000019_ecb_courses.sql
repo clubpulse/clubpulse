@@ -67,7 +67,7 @@ CREATE POLICY "member_qualifications: club read" ON member_qualifications FOR SE
 
 DROP POLICY IF EXISTS "member_qualifications: admin verify" ON member_qualifications;
 CREATE POLICY "member_qualifications: admin verify" ON member_qualifications FOR UPDATE TO authenticated
-  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = member_qualifications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('admin','coach')));
+  USING (EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = member_qualifications.club_id AND cm.user_id = auth.uid() AND cm.role IN ('club_admin','coach')));
 
 -- Log a qualification and optionally award creds
 CREATE OR REPLACE FUNCTION log_qualification(

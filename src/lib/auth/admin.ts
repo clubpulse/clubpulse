@@ -28,7 +28,7 @@ export async function getAdminClubIds(userId: string): Promise<string[]> {
     .from('club_members')
     .select('club_id')
     .eq('user_id', userId)
-    .eq('role', 'admin')
+    .eq('role', 'club_admin')
     .eq('is_active', true);
   return (data ?? []).map((row) => row.club_id as string);
 }
@@ -39,7 +39,7 @@ export async function isClubAdmin(userId: string, clubId: string): Promise<boole
     .select('id')
     .eq('user_id', userId)
     .eq('club_id', clubId)
-    .eq('role', 'admin')
+    .eq('role', 'club_admin')
     .eq('is_active', true)
     .maybeSingle();
   return !!data;
