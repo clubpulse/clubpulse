@@ -23,6 +23,7 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/fee-offset', label: 'Fee Offset', icon: '💰' },
   { href: '/coaching', label: 'Coaching', icon: '🎓' },
   { href: '/raffle', label: 'Raffle', icon: '🎟️' },
+  { href: '/travel', label: 'Travel', icon: '🗺️' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
