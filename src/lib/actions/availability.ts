@@ -108,7 +108,7 @@ export async function getFixtureGrid(clubId: string): Promise<FixtureGridRow[]> 
 
   const memberMap = new Map<string, { full_name: string; display_name: string }>();
   for (const m of members ?? []) {
-    const p = m.profiles as { full_name: string; display_name: string } | null;
+    const p = m.profiles as unknown as { full_name: string; display_name: string } | null;
     memberMap.set(m.user_id, {
       full_name: p?.full_name ?? 'Unknown',
       display_name: p?.display_name ?? 'Unknown',
@@ -123,7 +123,7 @@ export async function getFixtureGrid(clubId: string): Promise<FixtureGridRow[]> 
     profiles: { full_name: string; display_name: string } | null;
   };
   const availByFixture = new Map<string, AvailRow[]>();
-  for (const row of (availRows ?? []) as AvailRow[]) {
+  for (const row of (availRows ?? []) as unknown as AvailRow[]) {
     const arr = availByFixture.get(row.fixture_id) ?? [];
     arr.push(row);
     availByFixture.set(row.fixture_id, arr);

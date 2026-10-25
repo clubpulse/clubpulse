@@ -28,7 +28,7 @@ export default async function InjuryIntelPage() {
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
           {!clubId
             ? 'You need to be a club member to use Injury Intel.'
-            : `Couldn't load your injury log: ${result.error}`}
+            : `Couldn't load your injury log: ${result.success ? '' : result.error}`}
         </p>
       </Card>
     );

@@ -45,7 +45,7 @@ BEGIN
     SELECT 1 FROM club_members
     WHERE club_id = p_club_id
       AND user_id = auth.uid()
-      AND role IN ('admin','coach')
+      AND role IN ('club_admin','coach')
   ) THEN
     RAISE EXCEPTION 'Access denied';
   END IF;

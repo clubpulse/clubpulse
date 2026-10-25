@@ -41,7 +41,7 @@ export default async function AvailabilityPage() {
     );
   }
 
-  const clubName = (membership.clubs as { name: string } | null)?.name ?? 'Your Club';
+  const clubName = (membership.clubs as unknown as { name: string } | null)?.name ?? 'Your Club';
   const fixtures = await getMyFixtures(membership.club_id);
 
   return (
