@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { navLinks } from '@/components/layout/Sidebar';
+
+const BOTTOM_LINKS = [
+  { href: '/dashboard',   label: 'Home',     icon: '🏠' },
+  { href: '/analyse',     label: 'Analyse',  icon: '🎯' },
+  { href: '/scorecard',   label: 'Scores',   icon: '📋' },
+  { href: '/marketplace', label: 'Rewards',  icon: '🛍️' },
+  { href: '/profile',     label: 'Profile',  icon: '👤' },
+];
 
 export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boolean }) {
   const pathname = usePathname();
-  const links = navLinks({ isPlatformAdmin });
 
   return (
     <nav
@@ -15,9 +21,9 @@ export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boole
         inset: 'auto 0 0 0',
         zIndex: 40,
         borderTop: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(8,8,8,0.95)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
+        background: 'rgba(8,8,8,0.97)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         fontFamily: "'Inter', sans-serif",
       }}
       className="md:hidden"
@@ -25,13 +31,13 @@ export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boole
     >
       <ul style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${links.length}, 1fr)`,
-        maxWidth: '448px',
+        gridTemplateColumns: `repeat(${BOTTOM_LINKS.length}, 1fr)`,
+        maxWidth: '480px',
         margin: '0 auto',
-        padding: 0,
+        padding: '0 0 env(safe-area-inset-bottom, 0px)',
         listStyle: 'none',
       }}>
-        {links.map((link) => {
+        {BOTTOM_LINKS.map((link) => {
           const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
             <li key={link.href}>
@@ -42,16 +48,16 @@ export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boole
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '2px',
-                  padding: '8px 4px',
-                  fontSize: '11px',
-                  fontWeight: 500,
+                  gap: '3px',
+                  padding: '10px 4px 8px',
+                  fontSize: '10px',
+                  fontWeight: active ? 600 : 400,
                   textDecoration: 'none',
-                  color: active ? '#c9a54c' : 'rgba(255,255,255,0.35)',
+                  color: active ? '#c9a54c' : 'rgba(255,255,255,0.3)',
                   transition: 'color 0.15s',
                 }}
               >
-                <span style={{ fontSize: '18px' }} aria-hidden>{link.icon}</span>
+                <span style={{ fontSize: '20px', lineHeight: 1 }} aria-hidden>{link.icon}</span>
                 {link.label}
               </Link>
             </li>

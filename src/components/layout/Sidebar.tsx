@@ -3,19 +3,58 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export const NAV_LINKS = [
-  { href: '/dashboard',        label: 'Home',            icon: '🏠' },
-  { href: '/analyse',          label: 'Analyse',         icon: '🎯' },
-  { href: '/coaching-history', label: 'Progress',        icon: '📈' },
-  { href: '/highlights',       label: 'Highlights',      icon: '🎬' },
-  { href: '/scorecard',        label: 'Scorecard',       icon: '📋' },
-  { href: '/marketplace',      label: 'Marketplace',     icon: '🛍️' },
-  { href: '/companion',        label: 'Companion',       icon: '🧠' },
-  { href: '/club-alumni',      label: 'Alumni',          icon: '🏆' },
-  { href: '/profile',          label: 'Profile',         icon: '👤' },
+// Grouped nav structure
+const NAV_GROUPS = [
+  {
+    label: null,
+    items: [
+      { href: '/dashboard',        label: 'Home',        icon: '🏠' },
+      { href: '/analyse',          label: 'Analyse',     icon: '🎯' },
+      { href: '/profile',          label: 'Profile',     icon: '👤' },
+    ],
+  },
+  {
+    label: 'Match',
+    items: [
+      { href: '/scorecard',        label: 'Scorecard',   icon: '📋' },
+      { href: '/highlights',       label: 'Highlights',  icon: '🎬' },
+      { href: '/coaching-history', label: 'Progress',    icon: '📈' },
+    ],
+  },
+  {
+    label: 'Club',
+    items: [
+      { href: '/marketplace',      label: 'Marketplace', icon: '🛍️' },
+      { href: '/companion',        label: 'Companion',   icon: '🧠' },
+      { href: '/club-alumni',      label: 'Alumni',      icon: '🏆' },
+    ],
+  },
+  {
+    label: 'More',
+    items: [
+      { href: '/leaderboards',     label: 'Leaderboard', icon: '📊' },
+      { href: '/finance',          label: 'Finance',     icon: '💷' },
+      { href: '/fee-offset',       label: 'Fee Offset',  icon: '🏷️' },
+      { href: '/kit-discounts',    label: 'Kit Discounts', icon: '👕' },
+      { href: '/travel',           label: 'Travel',      icon: '✈️' },
+      { href: '/raffle',           label: 'Raffle',      icon: '🎟️' },
+      { href: '/charity',          label: 'Charity',     icon: '❤️' },
+      { href: '/coaching',         label: 'Coaching',    icon: '🏏' },
+      { href: '/qualifications',   label: 'Qualifications', icon: '📜' },
+      { href: '/mentor-match',     label: 'Mentor',      icon: '🤝' },
+      { href: '/sponsor-a-kid',    label: 'Sponsor a Kid', icon: '🌱' },
+      { href: '/community-pot',    label: 'Community Pot', icon: '🫙' },
+      { href: '/gut-feeling',      label: 'Predictions', icon: '🔮' },
+      { href: '/curse-the-pitch',  label: 'Curse Pitch', icon: '⚡' },
+      { href: '/pulse-score',      label: 'Pulse Score', icon: '💓' },
+      { href: '/my-cricket-cv',    label: 'Cricket CV',  icon: '📄' },
+    ],
+  },
 ];
 
-// showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
+// Flat list used by BottomNav (top 5 only)
+export const NAV_LINKS = NAV_GROUPS.flatMap(g => g.items);
+
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,
@@ -26,40 +65,102 @@ export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showA
 
 export function Sidebar({ showAdmin, isPlatformAdmin }: { showAdmin: boolean; isPlatformAdmin: boolean }) {
   const pathname = usePathname();
-  const links = navLinks({ showAdmin, isPlatformAdmin });
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="sticky top-20 space-y-1">
-        {links.map((link) => {
-          const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
-          return (
-            <li key={link.href}>
+    <nav
+      className="hidden md:block"
+      style={{ width: '192px', flexShrink: 0 }}
+      aria-label="Main"
+    >
+      <div style={{ position: 'sticky', top: '72px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={gi} style={{ marginBottom: group.label === 'More' ? 0 : '4px' }}>
+            {group.label && (
+              <p style={{
+                fontSize: '10px',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.2)',
+                margin: '12px 12px 4px',
+              }}>
+                {group.label}
+              </p>
+            )}
+            {group.items.map(link => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '9px',
+                    padding: '7px 12px',
+                    borderRadius: '9px',
+                    fontSize: '13.5px',
+                    fontWeight: active ? 600 : 400,
+                    textDecoration: 'none',
+                    transition: 'background 0.12s, color 0.12s',
+                    background: active ? 'rgba(155,28,28,0.18)' : 'transparent',
+                    color: active ? '#fff' : 'rgba(255,255,255,0.38)',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  <span style={{ fontSize: '14px', lineHeight: 1 }} aria-hidden>{link.icon}</span>
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
+
+        {/* Admin / platform links */}
+        {(showAdmin || isPlatformAdmin) && (
+          <div style={{ marginTop: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)', margin: '0 12px 4px' }}>
+              Admin
+            </p>
+            {showAdmin && (
               <Link
-                href={link.href}
-                aria-current={active ? 'page' : undefined}
+                href="/admin/club"
+                aria-current={isActive('/admin/club') ? 'page' : undefined}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '8px 12px',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontWeight: 500,
+                  display: 'flex', alignItems: 'center', gap: '9px',
+                  padding: '7px 12px', borderRadius: '9px',
+                  fontSize: '13.5px', fontWeight: isActive('/admin/club') ? 600 : 400,
                   textDecoration: 'none',
-                  transition: 'background 0.15s, color 0.15s',
-                  background: active ? 'rgba(155,28,28,0.15)' : 'transparent',
-                  color: active ? '#fff' : 'rgba(255,255,255,0.45)',
+                  background: isActive('/admin/club') ? 'rgba(155,28,28,0.18)' : 'transparent',
+                  color: isActive('/admin/club') ? '#fff' : 'rgba(255,255,255,0.38)',
+                  fontFamily: "'Inter', sans-serif",
+                  transition: 'background 0.12s, color 0.12s',
+                }}
+              >
+                <span style={{ fontSize: '14px' }}>🛡️</span> Club admin
+              </Link>
+            )}
+            {isPlatformAdmin && (
+              <Link
+                href="/admin"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '9px',
+                  padding: '7px 12px', borderRadius: '9px',
+                  fontSize: '13.5px', fontWeight: 400,
+                  textDecoration: 'none',
+                  color: 'rgba(255,255,255,0.38)',
                   fontFamily: "'Inter', sans-serif",
                 }}
               >
-                <span aria-hidden>{link.icon}</span>
-                {link.label}
+                <span style={{ fontSize: '14px' }}>⚙️</span> Admin
               </Link>
-            </li>
-          );
-        })}
-      </ul>
+            )}
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
