@@ -4,9 +4,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { navLinks } from '@/components/layout/Sidebar';
 
-export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boolean }) {
+export function BottomNav({
+  isPlatformAdmin = false,
+  showSchool = false,
+}: {
+  isPlatformAdmin?: boolean;
+  showSchool?: boolean;
+}) {
   const pathname = usePathname();
-  const links = navLinks({ isPlatformAdmin });
+  const links = navLinks({ isPlatformAdmin, showSchool });
 
   return (
     <nav
