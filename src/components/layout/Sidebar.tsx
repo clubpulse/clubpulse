@@ -15,6 +15,8 @@ export const NAV_LINKS: NavLink[] = [
 
 // Club features: desktop sidebar only, under their own heading. The mobile bottom nav stays NAV_LINKS.
 export const CLUB_LINKS: NavLink[] = [
+  { href: '/mentor-match', label: 'Mentor Match', icon: '🎓' },
+  { href: '/club-bible', label: 'Club Bible', icon: '📖' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
