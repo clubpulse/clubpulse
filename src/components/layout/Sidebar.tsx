@@ -29,6 +29,10 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/pulse-score', label: 'Pulse Score', icon: '💓' },
   { href: '/auction', label: 'The Auction', icon: '🏏' },
   { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
+  { href: '/wellbeing', label: 'Wellbeing', icon: '🧡' },
+  { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
+  { href: '/documents', label: 'Documents', icon: '📄' },
+  { href: '/school', label: 'School', icon: '🏫' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
