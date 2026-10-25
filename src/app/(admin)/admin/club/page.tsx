@@ -73,6 +73,7 @@ export default async function ClubOverviewPage() {
           { href: '/admin/club/multipliers', label: 'Score multipliers', icon: '✖️' },
           { href: '/admin/club/sport-configs', label: 'Sport config', icon: '⚙️' },
           { href: '/admin/club/volunteers', label: 'Volunteer approvals', icon: '🙋' },
+          { href: '/admin/club/documents', label: 'Club Documents', icon: '📄' },
         ].map((link) => (
           <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
             <div style={{
