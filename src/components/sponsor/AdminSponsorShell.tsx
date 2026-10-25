@@ -13,6 +13,10 @@ import {
 import { BENEFIT_TYPE_CONFIG, AGE_GROUP_LABELS } from '@/lib/types/sponsor';
 import type { SponsorshipPackage, JuniorSlot, Sponsorship, BenefitType, AgeGroup } from '@/lib/types/sponsor';
 
+function fetchAll(clubId: string) {
+  return Promise.all([adminGetAllPackages(clubId), adminGetAllJuniorSlots(clubId), adminGetSponsorships(clubId)]);
+}
+
 export function AdminSponsorShell({ clubId }: { clubId: string }) {
   const [tab, setTab] = useState<'packages' | 'slots' | 'sponsorships'>('packages');
   const [packages, setPackages] = useState<SponsorshipPackage[]>([]);
@@ -20,20 +24,30 @@ export function AdminSponsorShell({ clubId }: { clubId: string }) {
   const [sponsorships, setSponsorships] = useState<Sponsorship[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function reload() {
-    setLoading(true);
-    const [pkgs, slt, spns] = await Promise.all([
-      adminGetAllPackages(clubId),
-      adminGetAllJuniorSlots(clubId),
-      adminGetSponsorships(clubId),
-    ]);
+  type Loaded = Awaited<ReturnType<typeof fetchAll>>;
+
+  function apply([pkgs, slt, spns]: Loaded) {
     if (pkgs.success) setPackages(pkgs.data);
     if (slt.success) setSlots(slt.data);
     if (spns.success) setSponsorships(spns.data);
     setLoading(false);
   }
 
-  useEffect(() => { reload(); }, [clubId]);
+  async function reload() {
+    setLoading(true);
+    apply(await fetchAll(clubId));
+  }
+
+  // Initial load: state is only set once the fetch resolves, and ignored if the club changed meanwhile
+  useEffect(() => {
+    let cancelled = false;
+    fetchAll(clubId).then((result) => {
+      if (!cancelled) apply(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [clubId]);
 
   const tabs = [
     { key: 'packages' as const, label: 'Packages' },

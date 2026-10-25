@@ -59,7 +59,7 @@ export async function getMandatoryDocs(
 
   const docIds = (docs ?? []).map((d) => d.id as string);
 
-  let ackMap: Record<string, string> = {};
+  const ackMap: Record<string, string> = {};
   if (docIds.length > 0) {
     const { data: acks } = await supabase
       .from('document_acknowledgements')

@@ -134,7 +134,7 @@ export function LotCard({ lot, currentUserId, balance }: LotCardProps) {
             background: 'rgba(74,222,128,0.15)',
             color: '#4ade80',
           }}>
-            You're leading
+            You&apos;re leading
           </span>
         )}
       </div>

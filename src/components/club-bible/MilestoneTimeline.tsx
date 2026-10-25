@@ -26,7 +26,6 @@ export function MilestoneTimeline({ milestones }: Props) {
   // Group by decade for decade markers
   const decadeOf = (year: number) => Math.floor(year / 10) * 10;
 
-  let lastDecade: number | null = null;
 
   return (
     <div style={{ position: 'relative', fontFamily: "'Inter', sans-serif" }}>
@@ -41,10 +40,9 @@ export function MilestoneTimeline({ milestones }: Props) {
       }} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {sorted.map((m: ClubMilestone) => {
+        {sorted.map((m: ClubMilestone, i: number) => {
           const decade = decadeOf(m.year);
-          const showDecadeMarker = decade !== lastDecade;
-          lastDecade = decade;
+          const showDecadeMarker = i === 0 || decade !== decadeOf(sorted[i - 1].year);
           const config = MILESTONE_CATEGORY_CONFIG[m.category];
           const isFeatured = m.is_featured;
 

@@ -232,7 +232,7 @@ export default async function PulseScorePage() {
               No Pulse Score yet
             </p>
             <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
-              Calculate your club's first Pulse Score to see how active and engaged you are.
+              Calculate your club&apos;s first Pulse Score to see how active and engaged you are.
             </p>
           </div>
           <RecalculateButton clubId={clubId} lastCalculatedAt={new Date().toISOString()} />

@@ -112,7 +112,7 @@ export default async function AuctionPage() {
                 No auction open yet
               </p>
               <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
-                {clubName} hasn't started an auction. Check back soon!
+                {clubName} hasn&apos;t started an auction. Check back soon!
               </p>
             </>
           )}
@@ -127,7 +127,7 @@ export default async function AuctionPage() {
               My Winning Bids
             </h2>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
-              {myBids.length} lot{myBids.length !== 1 ? 's' : ''} you're currently leading
+              {myBids.length} lot{myBids.length !== 1 ? 's' : ''} you&apos;re currently leading
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

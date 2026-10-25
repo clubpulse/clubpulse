@@ -86,7 +86,7 @@ export default async function MatchDayPage() {
               borderRadius: '16px', padding: '24px',
             }}>
               <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>
-                Set up today's match
+                Set up today&apos;s match
               </h2>
               <CreateMatchForm clubId={membership.club_id} />
             </div>

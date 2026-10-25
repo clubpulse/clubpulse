@@ -43,7 +43,8 @@ function VotesBar({ votesFor, votesAgainst }: { votesFor: number; votesAgainst: 
 }
 
 function Countdown({ endsAt }: { endsAt: string }) {
-  const diff = new Date(endsAt).getTime() - Date.now();
+  const [now] = useState(() => Date.now());
+  const diff = new Date(endsAt).getTime() - now;
   if (diff <= 0) return <span className="text-xs text-neutral-500">Voting ended</span>;
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);

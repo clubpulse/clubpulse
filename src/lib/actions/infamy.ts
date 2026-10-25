@@ -45,7 +45,7 @@ export async function getNominationsForCategory(
 
     // Fetch vote counts per nomination
     const nomIds = (nominations ?? []).map((n: Record<string, unknown>) => n.id as string);
-    let voteCounts: Record<string, number> = {};
+    const voteCounts: Record<string, number> = {};
 
     if (nomIds.length > 0) {
       const { data: votes } = await supabase

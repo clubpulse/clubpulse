@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Separate Expo app with its own package.json (also excluded in tsconfig.json)
+    "expo/**",
   ]),
 ]);
 

@@ -68,7 +68,7 @@ export default async function TransferWindowPage() {
               <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
                 Requested {new Date(req.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
-              {req.notes && <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.45)', fontStyle: 'italic' }}>"{req.notes}"</p>}
+              {req.notes && <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.45)', fontStyle: 'italic' }}>&ldquo;{req.notes}&rdquo;</p>}
             </div>
             <span style={{
               padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600,

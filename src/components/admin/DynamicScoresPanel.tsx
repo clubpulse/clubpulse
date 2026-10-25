@@ -18,7 +18,7 @@ function statusOf(m: DynamicMultiplier, now: number): 'active' | 'scheduled' | '
 export function DynamicScoresPanel({ multipliers }: { multipliers: DynamicMultiplier[] }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
-  const now = Date.now();
+  const [now] = useState(() => Date.now());
 
   async function end(id: string) {
     setBusyId(id);

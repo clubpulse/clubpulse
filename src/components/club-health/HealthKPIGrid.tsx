@@ -52,10 +52,7 @@ function useCountUp(target: number, duration = 900): number {
   const startRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (target === 0) {
-      setValue(0);
-      return;
-    }
+    if (target === 0) return;
     startRef.current = null;
     const step = (ts: number) => {
       if (startRef.current === null) startRef.current = ts;
@@ -72,7 +69,7 @@ function useCountUp(target: number, duration = 900): number {
     };
   }, [target, duration]);
 
-  return value;
+  return target === 0 ? 0 : value;
 }
 
 interface KPITileProps {
