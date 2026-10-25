@@ -28,6 +28,7 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄' },
   { href: '/pulse-score', label: 'Pulse Score', icon: '💓' },
   { href: '/auction', label: 'The Auction', icon: '🏏' },
+  { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
