@@ -33,6 +33,8 @@ export const CLUB_LINKS: NavLink[] = [
   { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
   { href: '/documents', label: 'Documents', icon: '📄' },
   { href: '/school', label: 'School', icon: '🏫' },
+  { href: '/match-day', label: 'Match Day', icon: '🏏' },
+  { href: '/club-alumni', label: 'Alumni', icon: '🏆' },
 ];
 
 // showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
