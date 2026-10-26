@@ -77,3 +77,20 @@ export async function adminUpdateTransferStatus(
   revalidatePath('/admin/club/transfer-window');
   return { success: true as const };
 }
+
+export async function expressInterest(
+  listingId: string,
+  clubId: string,
+  message: string,
+): Promise<{ success: boolean; error?: string }> {
+  void listingId; void clubId; void message;
+  return { success: false, error: 'Transfer marketplace coming soon.' };
+}
+
+export async function applyToListing(
+  listingId: string,
+  coverNote: string,
+): Promise<{ success: boolean; error?: string }> {
+  void listingId; void coverNote;
+  return { success: false, error: 'Transfer marketplace coming soon.' };
+}
