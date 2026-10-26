@@ -150,6 +150,8 @@ export default function Home() {
           <a href="#ai">AI Coaching</a>
           <a href="#scores">Scores</a>
           <a href="#why">Why ClubPulse</a>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
         </div>
         <div className="cp-nav-links">
           <Link href="/auth/sign-in" className="cp-signin">Sign in</Link>
@@ -466,7 +468,7 @@ export default function Home() {
           <p>Free for players. Built for admins. Live at Slough CC today.</p>
           <div className="cp-cta-btns">
             <Link href="/auth/sign-up" className="cp-btn-white">Get started free →</Link>
-            <a href="mailto:ishwar@clubpulse.co" className="cp-btn-white-ghost">Talk to the team</a>
+            <Link href="/contact" className="cp-btn-white-ghost">Talk to the team</Link>
           </div>
         </div>
       </div>
@@ -476,9 +478,10 @@ export default function Home() {
         <div className="cp-footer-inner">
           <span className="cp-footer-copy">© 2026 ClubPulse · Built for grassroots cricket</span>
           <div className="cp-footer-links">
+            <Link href="/about">About</Link>
+            <Link href="/contact">Contact</Link>
             <Link href="/auth/sign-in">Sign in</Link>
             <Link href="/auth/sign-up">Sign up</Link>
-            <Link href="/analyse">AI Coach</Link>
           </div>
         </div>
       </footer>
