@@ -824,22 +824,44 @@ export default function HomePage() {
                       <div className="cp-coach-cam">
                         <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
                         <div className="cp-coach-pose">
-                          <svg width="90" height="140" viewBox="0 0 90 140" fill="none" style={{opacity:0.65}}>
-                            <circle cx="45" cy="18" r="10" stroke="#9b1c1c" strokeWidth="2"/>
-                            <line x1="45" y1="28" x2="45" y2="70" stroke="#c9a54c" strokeWidth="2.5"/>
-                            <line x1="45" y1="38" x2="72" y2="28" stroke="#2ecc71" strokeWidth="2"/>
-                            <line x1="72" y1="28" x2="86" y2="10" stroke="#2ecc71" strokeWidth="2"/>
-                            <line x1="45" y1="38" x2="20" y2="52" stroke="#c9a54c" strokeWidth="2"/>
-                            <line x1="45" y1="70" x2="28" y2="108" stroke="#c9a54c" strokeWidth="2"/>
-                            <line x1="45" y1="70" x2="62" y2="108" stroke="#c9a54c" strokeWidth="2"/>
-                            <line x1="28" y1="108" x2="18" y2="118" stroke="#c9a54c" strokeWidth="2"/>
-                            <line x1="62" y1="108" x2="72" y2="118" stroke="#c9a54c" strokeWidth="2"/>
-                            <circle cx="45" cy="38" r="3" fill="#c9a54c"/>
-                            <circle cx="72" cy="28" r="3" fill="#2ecc71"/>
-                            <circle cx="86" cy="10" r="3" fill="#2ecc71"/>
-                            <circle cx="20" cy="52" r="3" fill="#c9a54c"/>
-                            <circle cx="28" cy="108" r="3" fill="#c9a54c"/>
-                            <circle cx="62" cy="108" r="3" fill="#c9a54c"/>
+                          <svg viewBox="0 0 120 180" fill="none" style={{width:'80px',height:'120px',opacity:0.9}}>
+                            {/* Head */}
+                            <ellipse cx="62" cy="16" rx="10" ry="11" fill="rgba(240,236,228,0.85)"/>
+                            {/* Helmet */}
+                            <path d="M52 14 Q52 4 62 4 Q72 4 72 14 Z" fill="#9b1c1c"/>
+                            <rect x="70" y="10" width="8" height="4" rx="1" fill="#9b1c1c"/>
+                            {/* Neck */}
+                            <rect x="59" y="27" width="6" height="6" rx="2" fill="rgba(240,236,228,0.7)"/>
+                            {/* Body / torso */}
+                            <path d="M48 33 Q55 30 62 31 Q70 30 76 34 L74 70 Q68 72 62 72 Q55 72 50 70 Z" fill="rgba(240,236,228,0.15)" stroke="rgba(240,236,228,0.35)" strokeWidth="1.2"/>
+                            {/* Right arm (raised high — top hand on bat) */}
+                            <path d="M76 36 Q86 28 90 18 Q92 12 88 10" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
+                            {/* Right hand */}
+                            <circle cx="88" cy="10" r="4" fill="rgba(240,236,228,0.8)"/>
+                            {/* Left arm (extended forward — bottom hand) */}
+                            <path d="M50 38 Q36 44 28 52 Q24 56 26 60" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
+                            {/* Left hand */}
+                            <circle cx="26" cy="60" r="4" fill="rgba(240,236,228,0.8)"/>
+                            {/* Cricket bat — angled through-drive */}
+                            <rect x="22" y="54" width="7" height="38" rx="3" transform="rotate(-35 22 54)" fill="#c9a54c" opacity="0.9"/>
+                            <rect x="25" y="55" width="3" height="12" rx="1" transform="rotate(-35 25 55)" fill="rgba(201,165,76,0.5)"/>
+                            {/* Front leg (stride forward) */}
+                            <path d="M55 70 Q50 95 42 115 Q40 122 44 126" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
+                            {/* Back leg */}
+                            <path d="M68 70 Q72 92 74 112 Q76 120 72 124" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
+                            {/* Front boot */}
+                            <path d="M40 124 Q36 130 44 132 Q52 132 50 126" fill="rgba(240,236,228,0.55)"/>
+                            {/* Back boot */}
+                            <path d="M68 123 Q64 130 72 131 Q80 130 78 124" fill="rgba(240,236,228,0.55)"/>
+                            {/* Pose landmark dots — MediaPipe style */}
+                            <circle cx="88" cy="10" r="3.5" fill="#2ecc71" opacity="0.9"/>
+                            <circle cx="26" cy="60" r="3.5" fill="#2ecc71" opacity="0.9"/>
+                            <circle cx="76" cy="36" r="3" fill="#c9a54c" opacity="0.9"/>
+                            <circle cx="50" cy="38" r="3" fill="#c9a54c" opacity="0.9"/>
+                            <circle cx="55" cy="70" r="3" fill="#c9a54c" opacity="0.9"/>
+                            <circle cx="68" cy="70" r="3" fill="#c9a54c" opacity="0.9"/>
+                            <circle cx="42" cy="115" r="3" fill="#c9a54c" opacity="0.8"/>
+                            <circle cx="74" cy="112" r="3" fill="#c9a54c" opacity="0.8"/>
                           </svg>
                         </div>
                       </div>
@@ -1009,22 +1031,47 @@ export default function HomePage() {
                   <div className="cp-coach-cam">
                     <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
                     <div className="cp-coach-pose">
-                      <svg width="140" height="220" viewBox="0 0 140 220" fill="none">
-                        <circle cx="70" cy="28" r="15" stroke="#9b1c1c" strokeWidth="2.5"/>
-                        <line x1="70" y1="43" x2="70" y2="110" stroke="#c9a54c" strokeWidth="3"/>
-                        <line x1="70" y1="60" x2="110" y2="45" stroke="#2ecc71" strokeWidth="2.5"/>
-                        <line x1="110" y1="45" x2="135" y2="15" stroke="#2ecc71" strokeWidth="2.5"/>
-                        <line x1="70" y1="60" x2="32" y2="80" stroke="#c9a54c" strokeWidth="2.5"/>
-                        <line x1="70" y1="110" x2="45" y2="168" stroke="#c9a54c" strokeWidth="2.5"/>
-                        <line x1="70" y1="110" x2="95" y2="168" stroke="#c9a54c" strokeWidth="2.5"/>
-                        <line x1="45" y1="168" x2="30" y2="188" stroke="#c9a54c" strokeWidth="2.5"/>
-                        <line x1="95" y1="168" x2="110" y2="188" stroke="#c9a54c" strokeWidth="2.5"/>
-                        <circle cx="70" cy="60" r="4" fill="#c9a54c"/>
-                        <circle cx="110" cy="45" r="4" fill="#2ecc71"/>
-                        <circle cx="135" cy="15" r="5" fill="#2ecc71"/>
-                        <circle cx="32" cy="80" r="4" fill="#c9a54c"/>
-                        <circle cx="45" cy="168" r="4" fill="#c9a54c"/>
-                        <circle cx="95" cy="168" r="4" fill="#c9a54c"/>
+                      <svg viewBox="0 0 160 240" fill="none" style={{width:'140px',height:'200px'}}>
+                        {/* Head */}
+                        <ellipse cx="82" cy="22" rx="14" ry="15" fill="rgba(240,236,228,0.85)"/>
+                        {/* Helmet */}
+                        <path d="M68 19 Q68 5 82 5 Q96 5 96 19 Z" fill="#9b1c1c"/>
+                        <rect x="94" y="13" width="11" height="6" rx="2" fill="#9b1c1c"/>
+                        {/* Neck */}
+                        <rect x="78" y="37" width="8" height="8" rx="3" fill="rgba(240,236,228,0.7)"/>
+                        {/* Torso */}
+                        <path d="M62 46 Q72 42 82 43 Q93 42 102 46 L100 96 Q91 99 82 99 Q72 99 64 96 Z" fill="rgba(240,236,228,0.12)" stroke="rgba(240,236,228,0.3)" strokeWidth="1.5"/>
+                        {/* Right arm raised (top hand) */}
+                        <path d="M100 50 Q114 38 122 24 Q126 16 120 12" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
+                        <ellipse cx="120" cy="11" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
+                        {/* Left arm reaching down (bottom hand on bat) */}
+                        <path d="M64 52 Q46 62 36 74 Q30 82 33 88" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
+                        <ellipse cx="33" cy="88" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
+                        {/* Cricket bat — cover drive angle */}
+                        <rect x="26" y="76" width="10" height="52" rx="4" transform="rotate(-32 26 76)" fill="#c9a54c"/>
+                        <rect x="30" y="78" width="4" height="16" rx="2" transform="rotate(-32 30 78)" fill="rgba(201,165,76,0.4)"/>
+                        <rect x="26" y="76" width="2" height="52" rx="1" transform="rotate(-32 26 76)" fill="rgba(255,255,255,0.18)"/>
+                        {/* Front leg striding forward */}
+                        <path d="M72 96 Q64 128 54 158 Q50 168 55 174" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                        {/* Back leg planted */}
+                        <path d="M90 96 Q97 126 100 156 Q102 166 96 170" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                        {/* Front boot */}
+                        <path d="M50 173 Q44 182 55 185 Q68 185 65 174" fill="rgba(240,236,228,0.6)"/>
+                        {/* Back boot */}
+                        <path d="M91 169 Q85 178 96 180 Q108 179 106 169" fill="rgba(240,236,228,0.6)"/>
+                        {/* MediaPipe landmark dots */}
+                        <circle cx="120" cy="11" r="5" fill="#2ecc71"/>
+                        <circle cx="33" cy="88" r="5" fill="#2ecc71"/>
+                        <circle cx="100" cy="50" r="4.5" fill="#c9a54c"/>
+                        <circle cx="64" cy="52" r="4.5" fill="#c9a54c"/>
+                        <circle cx="82" cy="96" r="4.5" fill="#c9a54c"/>
+                        <circle cx="54" cy="158" r="4" fill="#c9a54c"/>
+                        <circle cx="100" cy="156" r="4" fill="#c9a54c"/>
+                        <circle cx="55" cy="174" r="3.5" fill="rgba(155,28,28,0.9)"/>
+                        <circle cx="96" cy="170" r="3.5" fill="rgba(155,28,28,0.9)"/>
+                        {/* Landmark connection lines */}
+                        <line x1="120" y1="11" x2="100" y2="50" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
+                        <line x1="33" y1="88" x2="64" y2="52" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
                       </svg>
                     </div>
                   </div>
