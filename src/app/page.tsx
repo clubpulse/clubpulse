@@ -1,14 +1,73 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
 type FeatTab = 'avail' | 'score' | 'ai' | 'scores' | 'fin';
 
+function useCountUp(target: number, duration = 1800) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started.current) {
+        started.current = true;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - p, 3);
+          setCount(Math.round(ease * target));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [target, duration]);
+  return { count, ref };
+}
+
 export default function HomePage() {
   const [phoneTab, setPhoneTab] = useState<PhoneTab>('dash');
   const [featTab, setFeatTab] = useState<FeatTab>('avail');
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Parallax on phone mockup
+  useEffect(() => {
+    const onScroll = () => {
+      if (phoneRef.current) {
+        const y = window.scrollY;
+        phoneRef.current.style.transform = `translateY(${y * 0.08}px)`;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Cursor-glow on feature cards
+  useEffect(() => {
+    const cards = document.querySelectorAll<HTMLElement>('.cp-feat-glow');
+    const move = (e: MouseEvent) => {
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mx', `${x}px`);
+        card.style.setProperty('--my', `${y}px`);
+      });
+    };
+    window.addEventListener('mousemove', move);
+    return () => window.removeEventListener('mousemove', move);
+  }, [featTab]);
+
+  const stat50 = useCountUp(50);
+  const stat33 = useCountUp(33);
 
   return (
     <>
@@ -26,6 +85,178 @@ export default function HomePage() {
           color: var(--fg);
           font-family: 'Inter', sans-serif;
           overflow-x: hidden;
+        }
+
+        /* ── GRAIN TEXTURE ── */
+        @keyframes cp-grain {
+          0%,100%{transform:translate(0,0)}
+          10%{transform:translate(-2%,-3%)}
+          20%{transform:translate(3%,2%)}
+          30%{transform:translate(-1%,4%)}
+          40%{transform:translate(2%,-1%)}
+          50%{transform:translate(-3%,3%)}
+          60%{transform:translate(4%,-2%)}
+          70%{transform:translate(-2%,1%)}
+          80%{transform:translate(3%,-4%)}
+          90%{transform:translate(-1%,2%)}
+        }
+        .cp-grain {
+          position:fixed; inset:-50%;
+          width:200%; height:200%;
+          pointer-events:none; z-index:0;
+          opacity:0.028;
+          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 256px 256px;
+          animation: cp-grain 0.4s steps(1) infinite;
+        }
+
+        /* ── SONAR PING ── */
+        @keyframes cp-sonar {
+          0%{transform:scale(1);opacity:0.7}
+          100%{transform:scale(3.2);opacity:0}
+        }
+        @keyframes cp-sonar2 {
+          0%{transform:scale(1);opacity:0.5}
+          100%{transform:scale(2.5);opacity:0}
+        }
+        .cp-live-dot-wrap {
+          position: relative; display:inline-flex; align-items:center; justify-content:center;
+          width:8px; height:8px;
+        }
+        .cp-sonar-ring {
+          position:absolute; inset:0; border-radius:50%;
+          background: rgba(155,28,28,0.6);
+          animation: cp-sonar 2s ease-out infinite;
+        }
+        .cp-sonar-ring2 {
+          position:absolute; inset:0; border-radius:50%;
+          background: rgba(155,28,28,0.4);
+          animation: cp-sonar2 2s ease-out 0.6s infinite;
+        }
+
+        /* ── RED ORB ── */
+        @keyframes cp-orb-pulse {
+          0%,100%{transform:scale(1);opacity:0.55}
+          50%{transform:scale(1.12);opacity:0.7}
+        }
+        .cp-orb {
+          position:absolute; right:-80px; top:50%;
+          transform:translateY(-50%);
+          width:480px; height:480px; border-radius:50%;
+          background:radial-gradient(circle,rgba(155,28,28,0.35) 0%,rgba(155,28,28,0.1) 45%,transparent 70%);
+          pointer-events:none; z-index:0;
+          animation:cp-orb-pulse 4s ease-in-out infinite;
+          filter:blur(2px);
+        }
+
+        /* ── MARQUEE ── */
+        @keyframes cp-marquee {
+          0%{transform:translateX(0)}
+          100%{transform:translateX(-50%)}
+        }
+        .cp-marquee-wrap {
+          overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+          background:var(--bg2); padding:12px 0;
+        }
+        .cp-marquee-track {
+          display:flex; gap:0; white-space:nowrap;
+          animation:cp-marquee 28s linear infinite;
+        }
+        .cp-marquee-item {
+          display:inline-flex; align-items:center; gap:8px;
+          font-size:12px; font-weight:600; letter-spacing:0.06em;
+          text-transform:uppercase; color:var(--fg3);
+          padding:0 32px;
+        }
+        .cp-marquee-item .dot { color:var(--red); font-size:16px; }
+        .cp-marquee-item strong { color:var(--fg2); }
+
+        /* ── FEAT GLOW CARD ── */
+        .cp-feat-glow {
+          position:relative; overflow:hidden;
+        }
+        .cp-feat-glow::before {
+          content:'';
+          position:absolute;
+          left:calc(var(--mx,50%) - 120px);
+          top:calc(var(--my,50%) - 120px);
+          width:240px; height:240px;
+          background:radial-gradient(circle, rgba(155,28,28,0.18) 0%, transparent 70%);
+          border-radius:50%;
+          pointer-events:none;
+          transition:opacity 0.2s;
+          opacity:0;
+          z-index:0;
+        }
+        .cp-feat-glow:hover::before { opacity:1; }
+
+        /* ── SOCIAL PROOF ROW ── */
+        .cp-social-proof {
+          border-top:1px solid var(--border);
+          background: var(--bg2);
+          padding: 24px 40px;
+        }
+        .cp-social-proof-inner {
+          max-width:1200px; margin:0 auto;
+          display:flex; align-items:center; gap:32px; flex-wrap:wrap;
+        }
+        .cp-social-proof-label {
+          font-size:11px; font-weight:700; letter-spacing:0.08em;
+          text-transform:uppercase; color:var(--fg3); white-space:nowrap;
+        }
+        .cp-social-proof-clubs {
+          display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+        }
+        .cp-social-proof-club {
+          display:flex; align-items:center; gap:7px;
+          font-size:13px; font-weight:600; color:var(--fg2);
+        }
+        .cp-social-proof-club-dot {
+          width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0;
+        }
+
+        /* ── ANIMATED AI COACH SCANLINES ── */
+        @keyframes cp-scan {
+          0%{transform:translateY(-100%)}
+          100%{transform:translateY(100%)}
+        }
+        @keyframes cp-blink-green {
+          0%,100%{opacity:1} 50%{opacity:0.3}
+        }
+        .cp-coach-pose-wrap {
+          position:relative; overflow:hidden; border-radius:10px;
+        }
+        .cp-coach-scan-line {
+          position:absolute; left:0; right:0; height:2px;
+          background:linear-gradient(90deg,transparent,rgba(46,204,113,0.4),transparent);
+          animation:cp-scan 3s linear infinite;
+          z-index:2; pointer-events:none;
+        }
+        .cp-coach-scan-overlay {
+          position:absolute; inset:0;
+          background:repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(0,0,0,0.08) 3px,
+            rgba(0,0,0,0.08) 4px
+          );
+          z-index:1; pointer-events:none;
+        }
+        .cp-coach-corner {
+          position:absolute; width:14px; height:14px;
+          border-color:rgba(46,204,113,0.6); border-style:solid;
+          z-index:3; pointer-events:none;
+        }
+        .cp-coach-corner.tl { top:8px; left:8px; border-width:2px 0 0 2px; }
+        .cp-coach-corner.tr { top:8px; right:8px; border-width:2px 2px 0 0; }
+        .cp-coach-corner.bl { bottom:8px; left:8px; border-width:0 0 2px 2px; }
+        .cp-coach-corner.br { bottom:8px; right:8px; border-width:0 2px 2px 0; }
+        .cp-coach-hud-label {
+          position:absolute; bottom:6px; left:10px;
+          font-size:8px; font-weight:700; letter-spacing:0.08em;
+          color:rgba(46,204,113,0.8); text-transform:uppercase; z-index:3;
+          animation:cp-blink-green 2s ease-in-out infinite;
         }
 
         /* ── NAV ── */
@@ -709,6 +940,9 @@ export default function HomePage() {
       `}</style>
 
       <div className="cp-root">
+        {/* GRAIN */}
+        <div className="cp-grain" aria-hidden="true" />
+
         {/* NAV */}
         <nav className="cp-nav">
           <div className="cp-nav-inner">
@@ -733,16 +967,22 @@ export default function HomePage() {
         </nav>
 
         {/* HERO */}
-        <section className="cp-hero">
+        <section className="cp-hero" ref={heroRef} style={{position:'relative',overflow:'hidden'}}>
+          {/* Red orb glow */}
+          <div className="cp-orb" aria-hidden="true" />
           <div className="cp-hero-top">
             <div>
               <div className="cp-live-badge">
-                <span className="cp-live-dot" />
+                <span className="cp-live-dot-wrap" aria-hidden="true">
+                  <span className="cp-sonar-ring" />
+                  <span className="cp-sonar-ring2" />
+                  <span className="cp-live-dot" />
+                </span>
                 Live at Slough CC · 2026 Season
               </div>
               <h1 className="cp-hero-h1">
                 The <span className="red">operating<br />system</span> for<br />
-                grassroots<br /><span className="gold">cricket.</span>
+                grassroots<br /><span style={{background:'linear-gradient(90deg,#c9a54c,#e8c97a,#c9a54c)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>cricket.</span>
               </h1>
               <p className="cp-hero-sub">
                 Availability, live scorecards, AI batting coaching, Scores rewards, and club finance — all in one platform. Built on a real cricket club. For every cricket club.
@@ -752,15 +992,15 @@ export default function HomePage() {
                 <a href="#features" className="cp-btn-hero-ghost">See all features</a>
               </div>
               <div className="cp-hero-stats">
-                <div className="cp-hero-stat"><div className="cp-stat-n">50</div><div className="cp-stat-l">Scores = £1 value</div></div>
+                <div className="cp-hero-stat" ref={stat50.ref}><div className="cp-stat-n">{stat50.count}</div><div className="cp-stat-l">Scores = £1 value</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">&lt;1s</div><div className="cp-stat-l">Scorecard sync</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">33</div><div className="cp-stat-l">Pose landmarks</div></div>
+                <div className="cp-hero-stat" ref={stat33.ref}><div className="cp-stat-n">{stat33.count}</div><div className="cp-stat-l">Pose landmarks</div></div>
               </div>
             </div>
 
             {/* PHONE MOCKUP */}
-            <div className="cp-phone">
+            <div className="cp-phone" ref={phoneRef} style={{willChange:'transform',transition:'transform 0.05s linear'}}>
               <div className="cp-phone-screen">
                 <div className="cp-tab-bar">
                   {(['dash','card','coach','pts'] as PhoneTab[]).map((t, i) => (
@@ -897,6 +1137,33 @@ export default function HomePage() {
 
         <div className="cp-divider"><hr /></div>
 
+        {/* SOCIAL PROOF */}
+        <div className="cp-social-proof">
+          <div className="cp-social-proof-inner">
+            <span className="cp-social-proof-label">Used by real clubs</span>
+            <div className="cp-social-proof-clubs">
+              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot"/><span>Slough CC</span></div>
+              <div className="cp-social-proof-club" style={{color:'rgba(240,236,228,0.3)'}}><span className="cp-social-proof-club-dot" style={{background:'rgba(240,236,228,0.15)'}}/><span>Your club next</span></div>
+            </div>
+          </div>
+        </div>
+
+        {/* MARQUEE */}
+        <div className="cp-marquee-wrap" aria-hidden="true">
+          <div className="cp-marquee-track">
+            {[
+              '📅 Availability','📋 Live Scorecard','🎯 AI Coaching','⭐ Scores Rewards','💷 Club Finance',
+              '🏏 Real-time scoring','📱 Mobile-first','🔒 On-device AI','⚡ Under 1s sync','🇬🇧 Built in the UK',
+              '📅 Availability','📋 Live Scorecard','🎯 AI Coaching','⭐ Scores Rewards','💷 Club Finance',
+              '🏏 Real-time scoring','📱 Mobile-first','🔒 On-device AI','⚡ Under 1s sync','🇬🇧 Built in the UK',
+            ].map((item, i) => (
+              <span key={i} className="cp-marquee-item">
+                <span className="dot">·</span><strong>{item}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* FEATURES */}
         <section className="cp-features" id="features">
           <p className="cp-eyebrow">The full platform</p>
@@ -921,7 +1188,7 @@ export default function HomePage() {
 
           {/* Availability */}
           {featTab === 'avail' && (
-            <div className="cp-feat-panel">
+            <div className="cp-feat-panel cp-feat-glow">
               <div>
                 <span className="cp-feat-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-h">No more Wednesday night<br />WhatsApp chains.</h3>
@@ -962,7 +1229,7 @@ export default function HomePage() {
 
           {/* Scorecard */}
           {featTab === 'score' && (
-            <div className="cp-feat-panel">
+            <div className="cp-feat-panel cp-feat-glow">
               <div>
                 <span className="cp-feat-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-h">Real-time. Every ball.<br />For everyone.</h3>
@@ -1014,7 +1281,7 @@ export default function HomePage() {
 
           {/* AI Coach */}
           {featTab === 'ai' && (
-            <div className="cp-feat-panel">
+            <div className="cp-feat-panel cp-feat-glow">
               <div>
                 <span className="cp-feat-tag cp-tag-road">Roadmap</span>
                 <h3 className="cp-feat-h">A batting coach in your pocket. On-device.</h3>
@@ -1030,8 +1297,15 @@ export default function HomePage() {
                 <div className="cp-mock">
                   <div className="cp-coach-cam">
                     <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
-                    <div className="cp-coach-pose">
-                      <svg viewBox="0 0 160 240" fill="none" style={{width:'140px',height:'200px'}}>
+                    <div className="cp-coach-pose cp-coach-pose-wrap">
+                      <div className="cp-coach-scan-line" aria-hidden="true"/>
+                      <div className="cp-coach-scan-overlay" aria-hidden="true"/>
+                      <div className="cp-coach-corner tl" aria-hidden="true"/>
+                      <div className="cp-coach-corner tr" aria-hidden="true"/>
+                      <div className="cp-coach-corner bl" aria-hidden="true"/>
+                      <div className="cp-coach-corner br" aria-hidden="true"/>
+                      <span className="cp-coach-hud-label">MEDIAPIPE · 33PT · 30FPS</span>
+                      <svg viewBox="0 0 160 240" fill="none" style={{width:'140px',height:'200px',position:'relative',zIndex:1}}>
                         {/* Head */}
                         <ellipse cx="82" cy="22" rx="14" ry="15" fill="rgba(240,236,228,0.85)"/>
                         {/* Helmet */}
@@ -1087,7 +1361,7 @@ export default function HomePage() {
 
           {/* Scores */}
           {featTab === 'scores' && (
-            <div className="cp-feat-panel">
+            <div className="cp-feat-panel cp-feat-glow">
               <div>
                 <span className="cp-feat-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-h">Get rewarded for<br />showing up.</h3>
@@ -1131,7 +1405,7 @@ export default function HomePage() {
 
           {/* Finance */}
           {featTab === 'fin' && (
-            <div className="cp-feat-panel">
+            <div className="cp-feat-panel cp-feat-glow">
               <div>
                 <span className="cp-feat-tag cp-tag-road">Roadmap</span>
                 <h3 className="cp-feat-h">Club accounts, without the spreadsheet.</h3>
