@@ -951,11 +951,11 @@ export default function HomePage() {
               <span className="cp-logo-name">ClubPulse</span>
             </Link>
             <div className="cp-nav-links">
-              <a href="#features">Availability</a>
-              <a href="#features">Scorecard</a>
-              <a href="#features">AI Coach</a>
-              <a href="#features">Scores</a>
-              <a href="#features">Finance</a>
+              <Link href="/features/availability">Availability</Link>
+              <Link href="/features/scorecard">Scorecard</Link>
+              <Link href="/features/ai-coach">AI Coach</Link>
+              <Link href="/features/scores">Scores</Link>
+              <Link href="/features/finance">Finance</Link>
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
             </div>
