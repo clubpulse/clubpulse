@@ -464,7 +464,32 @@ export default function HomePage() {
         /* ── PRICING ── */
         .cp-pricing { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
         .cp-pricing-inner { max-width:1200px;margin:0 auto;padding:96px 40px; }
-        .cp-pricing-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:48px; }
+
+        /* Audience toggle */
+        .cp-pricing-toggle {
+          display:inline-flex;gap:2px;padding:4px;
+          background:rgba(255,255,255,0.04);border:1px solid var(--border);
+          border-radius:12px;margin-bottom:48px;
+        }
+        .cp-pricing-toggle-btn {
+          padding:9px 24px;border-radius:9px;font-size:14px;font-weight:600;
+          cursor:pointer;border:none;font-family:'Inter',sans-serif;
+          color:var(--fg3);background:transparent;transition:all 0.15s;
+        }
+        .cp-pricing-toggle-btn.active {
+          background:var(--bg);color:var(--fg);
+          box-shadow:0 1px 4px rgba(0,0,0,0.4);
+        }
+        .cp-pricing-toggle-btn:not(.active):hover { color:var(--fg2); }
+
+        /* Audience label above toggle */
+        .cp-pricing-header { display:flex;flex-direction:column;align-items:flex-start;gap:0; }
+        .cp-pricing-toggle-label {
+          font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+          color:var(--fg3);margin-bottom:14px;
+        }
+
+        .cp-pricing-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden; }
         .cp-price-card { background:var(--bg2);padding:36px;position:relative; }
         .cp-price-card.featured {
           background:#0f0f0f;
@@ -484,7 +509,9 @@ export default function HomePage() {
         .cp-price-features { display:flex;flex-direction:column;gap:9px;margin-bottom:28px; }
         .cp-price-feature { display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--fg2); }
         .cp-price-feature-icon { color:var(--green);flex-shrink:0;margin-top:1px; }
+        .cp-price-feature-x { color:rgba(240,236,228,0.2);flex-shrink:0;margin-top:1px; }
         .cp-price-feature strong { color:var(--fg); }
+        .cp-price-feature.dimmed { opacity:0.38; }
         .cp-price-cta {
           display:block;width:100%;padding:12px;text-align:center;
           border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;
@@ -494,6 +521,8 @@ export default function HomePage() {
         .cp-price-cta.primary:hover { opacity:0.88; }
         .cp-price-cta.ghost { border:1px solid var(--border);color:var(--fg2); }
         .cp-price-cta.ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
+        .cp-price-divider { height:1px;background:var(--border);margin:20px 0; }
+        .cp-price-note { font-size:11px;color:var(--fg3);margin-top:16px;text-align:center;line-height:1.6; }
 
         /* ── QUOTE ── */
         .cp-quote { max-width:1200px;margin:0 auto;padding:80px 40px; }
@@ -558,6 +587,8 @@ export default function HomePage() {
           .cp-persona-panel { grid-template-columns:1fr; }
           .cp-pricing-grid { grid-template-columns:1fr; }
           .cp-cta-band-inner { flex-direction:column;text-align:center; }
+          .cp-pricing-toggle { width:100%; }
+          .cp-pricing-toggle-btn { flex:1; }
         }
         @media (max-width:600px) {
           .cp-nav-inner { padding:0 16px; }
@@ -968,59 +999,8 @@ export default function HomePage() {
           <div className="cp-pricing-inner">
             <p className="cp-eyebrow">Pricing</p>
             <h2 className="cp-section-h2">Fair pricing for real clubs.</h2>
-            <p className="cp-section-sub">Players always join free. Club plans unlock admin tools and remove all limits. No hidden fees, no annual lock-in.</p>
-
-            <div className="cp-pricing-grid">
-              {/* Player */}
-              <div className="cp-price-card">
-                <p className="cp-price-plan">Player</p>
-                <div className="cp-price-n">£0</div>
-                <p className="cp-price-period">Free forever</p>
-                <p className="cp-price-desc">Everything a player needs to engage with their club — completely free, no card required.</p>
-                <div className="cp-price-features">
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Mark availability</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard access</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Earn &amp; track Scores</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Career stats dashboard</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching sessions</span></div>
-                </div>
-                <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
-              </div>
-
-              {/* Club — featured */}
-              <div className="cp-price-card featured">
-                <span className="cp-price-featured-chip">Most popular</span>
-                <p className="cp-price-plan">Club</p>
-                <div className="cp-price-n"><span>£</span>14.99</div>
-                <p className="cp-price-period">per month · cancel anytime</p>
-                <p className="cp-price-desc">Everything your club admin needs. Unlimited players, full match management, and finance tools.</p>
-                <div className="cp-price-features">
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Player</strong></span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited players &amp; teams</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Admin dashboard &amp; XI selection</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scoring tools</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Finance &amp; fee tracking</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores management for all players</span></div>
-                </div>
-                <Link href="/contact" className="cp-price-cta primary">Get started →</Link>
-              </div>
-
-              {/* League */}
-              <div className="cp-price-card">
-                <p className="cp-price-plan">League</p>
-                <div className="cp-price-n" style={{fontSize:'28px',marginTop:'4px'}}>Talk to us</div>
-                <p className="cp-price-period">Custom pricing</p>
-                <p className="cp-price-desc">Running a league, association or county competition? We&apos;ll tailor ClubPulse around your structure.</p>
-                <div className="cp-price-features">
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Club</strong></span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club management</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>League tables &amp; fixtures</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>White-label options</span></div>
-                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
-                </div>
-                <Link href="/contact" className="cp-price-cta ghost">Get in touch →</Link>
-              </div>
-            </div>
+            <p className="cp-section-sub">Two separate tracks — one for players, one for clubs. No hidden fees, no annual lock-in.</p>
+            <PricingSection />
           </div>
         </section>
 
@@ -1065,6 +1045,160 @@ export default function HomePage() {
           </div>
         </footer>
       </div>
+    </>
+  );
+}
+
+/* ── PRICING SECTION ── */
+type PricingAudience = 'player' | 'club';
+
+function PricingSection() {
+  const [audience, setAudience] = useState<PricingAudience>('player');
+
+  return (
+    <>
+      {/* Audience toggle */}
+      <div className="cp-pricing-toggle-label">I am a…</div>
+      <div className="cp-pricing-toggle">
+        <button
+          className={`cp-pricing-toggle-btn${audience === 'player' ? ' active' : ''}`}
+          onClick={() => setAudience('player')}
+        >🏏 Player</button>
+        <button
+          className={`cp-pricing-toggle-btn${audience === 'club' ? ' active' : ''}`}
+          onClick={() => setAudience('club')}
+        >🏟️ Club / League</button>
+      </div>
+
+      {/* ── PLAYER PRICING ── */}
+      {audience === 'player' && (
+        <>
+          <div className="cp-pricing-grid">
+            {/* Free */}
+            <div className="cp-price-card">
+              <p className="cp-price-plan">Free</p>
+              <div className="cp-price-n">£0</div>
+              <p className="cp-price-period">Always free · no card needed</p>
+              <p className="cp-price-desc">Everything you need to play, track your stats and engage with your club.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Mark availability</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard access</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Career batting &amp; bowling stats</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Earn &amp; track Scores (Bronze tier)</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>AI coaching sessions</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Performance insights &amp; trends</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Silver / Gold Scores multipliers</span></div>
+              </div>
+              <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
+            </div>
+
+            {/* Pro — featured */}
+            <div className="cp-price-card featured">
+              <span className="cp-price-featured-chip">Most popular</span>
+              <p className="cp-price-plan">Pro</p>
+              <div className="cp-price-n"><span>£</span>2.99</div>
+              <p className="cp-price-period">per month · cancel anytime</p>
+              <p className="cp-price-desc">For the serious club cricketer. AI coaching, deeper stats and Silver tier Scores rewards.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Free</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching sessions (unlimited)</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Performance insights &amp; shot trends</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Silver tier</strong> — 2× Scores multiplier</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Session history &amp; progress tracking</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Gold tier Scores multiplier</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Priority rewards redemption</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta primary">Get Pro →</Link>
+            </div>
+
+            {/* Elite */}
+            <div className="cp-price-card">
+              <p className="cp-price-plan">Elite</p>
+              <div className="cp-price-n"><span>£</span>5.99</div>
+              <p className="cp-price-period">per month · cancel anytime</p>
+              <p className="cp-price-desc">Max rewards, priority features and Gold tier status. For players who take their game seriously.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Gold tier</strong> — 3× Scores multiplier</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority rewards redemption</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Early access to new features</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Exportable stats &amp; season report</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Direct support line</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta ghost">Get Elite →</Link>
+            </div>
+          </div>
+          <p className="cp-price-note">50 Scores = £1 value · Bronze (0–499 pts, 1×) · Silver (500–1,999 pts, 2×) · Gold (2,000+ pts, 3×)</p>
+        </>
+      )}
+
+      {/* ── CLUB / LEAGUE PRICING ── */}
+      {audience === 'club' && (
+        <>
+          <div className="cp-pricing-grid">
+            {/* Starter */}
+            <div className="cp-price-card">
+              <p className="cp-price-plan">Starter</p>
+              <div className="cp-price-n"><span>£</span>9.99</div>
+              <p className="cp-price-period">per month · cancel anytime</p>
+              <p className="cp-price-desc">Perfect for a single team getting started. Core availability, scoring and basic finance.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>1 team · up to 25 players</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Availability management</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard &amp; XI selection</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Basic finance &amp; fee tracking</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores rewards for all players</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Multiple teams</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Full finance dashboard &amp; Wise payouts</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta ghost">Get started →</Link>
+            </div>
+
+            {/* Club — featured */}
+            <div className="cp-price-card featured">
+              <span className="cp-price-featured-chip">Most popular</span>
+              <p className="cp-price-plan">Club</p>
+              <div className="cp-price-n"><span>£</span>14.99</div>
+              <p className="cp-price-period">per month · cancel anytime</p>
+              <p className="cp-price-desc">For established clubs with multiple teams. Unlimited players, full finance and all admin tools.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Starter</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited teams &amp; players</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full admin dashboard</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full finance dashboard &amp; Wise payouts</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores management across all players</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club-wide stats &amp; season reports</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>League &amp; association management</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta primary">Get started →</Link>
+            </div>
+
+            {/* League */}
+            <div className="cp-price-card">
+              <p className="cp-price-plan">League</p>
+              <div className="cp-price-n" style={{fontSize:'28px',lineHeight:1.2,paddingTop:'8px'}}>Talk to us</div>
+              <p className="cp-price-period">Custom pricing</p>
+              <p className="cp-price-desc">Running a league, association or county competition? We&apos;ll tailor ClubPulse around your structure.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Club</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club &amp; association management</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>League tables, fixtures &amp; results</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Cross-club Scores &amp; rewards</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>White-label &amp; custom branding</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support &amp; onboarding</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta ghost">Get in touch →</Link>
+            </div>
+          </div>
+          <p className="cp-price-note">All club plans include free player accounts for your entire squad. No per-seat pricing.</p>
+        </>
+      )}
     </>
   );
 }
