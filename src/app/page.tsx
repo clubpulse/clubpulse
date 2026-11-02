@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 
 type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
 type FeatTab = 'avail' | 'score' | 'ai' | 'scores' | 'fin';
+type NavOpen = boolean;
 
 function useCountUp(target: number, duration = 1800) {
   const [count, setCount] = useState(0);
@@ -35,6 +36,7 @@ function useCountUp(target: number, duration = 1800) {
 export default function HomePage() {
   const [phoneTab, setPhoneTab] = useState<PhoneTab>('dash');
   const [featTab, setFeatTab] = useState<FeatTab>('avail');
+  const [navOpen, setNavOpen] = useState<NavOpen>(false);
   const phoneRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
 
@@ -67,7 +69,6 @@ export default function HomePage() {
   }, [featTab]);
 
   const { ref: stat50Ref, count: stat50Count } = useCountUp(50);
-  const { ref: stat33Ref, count: stat33Count } = useCountUp(33);
 
   return (
     <>
@@ -295,6 +296,38 @@ export default function HomePage() {
         }
         .cp-nav-links a:hover { color: var(--fg); background: rgba(255,255,255,0.04); }
         .cp-nav-ctas { display: flex; gap: 8px; flex-shrink: 0; }
+        .cp-hamburger {
+          display: none; flex-direction: column; justify-content: center; gap: 5px;
+          width: 40px; height: 40px; background: none; border: none; cursor: pointer;
+          padding: 8px; border-radius: 8px; flex-shrink: 0;
+          transition: background 0.12s;
+        }
+        .cp-hamburger:hover { background: rgba(255,255,255,0.06); }
+        .cp-hamburger span {
+          display: block; width: 22px; height: 2px;
+          background: var(--fg2); border-radius: 2px;
+          transition: transform 0.2s, opacity 0.2s;
+        }
+        .cp-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .cp-hamburger.open span:nth-child(2) { opacity: 0; }
+        .cp-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        .cp-mobile-nav {
+          display: none; position: fixed; inset: 64px 0 0 0;
+          background: rgba(8,8,8,0.97); backdrop-filter: blur(20px);
+          z-index: 99; flex-direction: column; padding: 24px 24px;
+          border-top: 1px solid var(--border);
+          gap: 4px;
+        }
+        .cp-mobile-nav.open { display: flex; }
+        .cp-mobile-nav a {
+          display: block; padding: 14px 16px; font-size: 15px;
+          color: var(--fg2); text-decoration: none; border-radius: 10px;
+          transition: color 0.12s, background 0.12s;
+        }
+        .cp-mobile-nav a:hover { color: var(--fg); background: rgba(255,255,255,0.05); }
+        .cp-mobile-nav-divider { height: 1px; background: var(--border); margin: 12px 0; }
+        .cp-mobile-nav-ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+        .cp-mobile-nav-ctas a { text-align: center; }
         .cp-btn-ghost {
           padding: 8px 16px; font-size: 13px; font-weight: 500;
           color: var(--fg2); text-decoration: none; border-radius: 8px;
@@ -918,6 +951,8 @@ export default function HomePage() {
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
           .cp-nav-links { display: none; }
+          .cp-hamburger { display: flex; }
+          .cp-nav-ctas { display: none; }
           .cp-hero-top { grid-template-columns: 1fr; }
           .cp-phone { max-width: 340px; margin: 0 auto; }
           .cp-feat-panel { grid-template-columns: 1fr; }
@@ -963,8 +998,32 @@ export default function HomePage() {
               <Link href="/auth/sign-in" className="cp-btn-ghost">Sign in</Link>
               <Link href="/contact" className="cp-btn-red">Get started</Link>
             </div>
+            <button
+              className={`cp-hamburger${navOpen ? ' open' : ''}`}
+              aria-label={navOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={navOpen}
+              onClick={() => setNavOpen(o => !o)}
+            >
+              <span /><span /><span />
+            </button>
           </div>
         </nav>
+
+        {/* MOBILE NAV */}
+        <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
+          <Link href="/features/availability" onClick={() => setNavOpen(false)}>Availability</Link>
+          <Link href="/features/scorecard" onClick={() => setNavOpen(false)}>Scorecard</Link>
+          <Link href="/features/ai-coach" onClick={() => setNavOpen(false)}>AI Coach</Link>
+          <Link href="/features/scores" onClick={() => setNavOpen(false)}>Scores</Link>
+          <Link href="/features/finance" onClick={() => setNavOpen(false)}>Finance</Link>
+          <Link href="/about" onClick={() => setNavOpen(false)}>About</Link>
+          <Link href="/contact" onClick={() => setNavOpen(false)}>Contact</Link>
+          <div className="cp-mobile-nav-divider" />
+          <div className="cp-mobile-nav-ctas">
+            <Link href="/auth/sign-in" className="cp-btn-ghost" onClick={() => setNavOpen(false)}>Sign in</Link>
+            <Link href="/contact" className="cp-btn-red" onClick={() => setNavOpen(false)}>Get started free →</Link>
+          </div>
+        </div>
 
         {/* HERO */}
         <section className="cp-hero" ref={heroRef} style={{position:'relative',overflow:'hidden'}}>
@@ -995,7 +1054,7 @@ export default function HomePage() {
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1 value</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">&lt;1s</div><div className="cp-stat-l">Scorecard sync</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
-                <div className="cp-hero-stat" ref={stat33Ref}><div className="cp-stat-n">{stat33Count}</div><div className="cp-stat-l">Pose landmarks</div></div>
+                <div className="cp-hero-stat"><div className="cp-stat-n">AI</div><div className="cp-stat-l">On-device coaching</div></div>
               </div>
             </div>
 
@@ -1468,7 +1527,7 @@ export default function HomePage() {
           <div className="cp-cta-band-inner">
             <div>
               <h2 className="cp-cta-h">Ready to run your club properly?</h2>
-              <p className="cp-cta-sub">Free for players. Get in touch to bring ClubPulse to your club.</p>
+              <p className="cp-cta-sub">Free for players. Club plans from £14.99/month. No contracts, no hidden fees.</p>
             </div>
             <Link href="/contact" className="cp-cta-btn">Get started — it&apos;s free →</Link>
           </div>
@@ -1482,10 +1541,14 @@ export default function HomePage() {
               <span className="cp-footer-logo-name">ClubPulse</span>
             </Link>
             <div className="cp-footer-links">
+              <Link href="/features/availability">Availability</Link>
+              <Link href="/features/scorecard">Scorecard</Link>
+              <Link href="/features/ai-coach">AI Coach</Link>
+              <Link href="/features/scores">Scores</Link>
+              <Link href="/features/finance">Finance</Link>
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/auth/sign-in">Sign in</Link>
-              <Link href="/auth/sign-up">Sign up</Link>
             </div>
             <p className="cp-footer-copy">© 2026 ClubPulse. Built at Slough CC.</p>
           </div>
