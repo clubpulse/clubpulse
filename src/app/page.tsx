@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 
 type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
-type FeatTab = 'avail' | 'score' | 'ai' | 'scores' | 'fin';
 type NavOpen = boolean;
 
 function useCountUp(target: number, duration = 1800) {
@@ -35,950 +34,550 @@ function useCountUp(target: number, duration = 1800) {
 
 export default function HomePage() {
   const [phoneTab, setPhoneTab] = useState<PhoneTab>('dash');
-  const [featTab, setFeatTab] = useState<FeatTab>('avail');
   const [navOpen, setNavOpen] = useState<NavOpen>(false);
   const phoneRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
 
-  // Parallax on phone mockup
   useEffect(() => {
     const onScroll = () => {
       if (phoneRef.current) {
-        const y = window.scrollY;
-        phoneRef.current.style.transform = `translateY(${y * 0.08}px)`;
+        phoneRef.current.style.transform = `translateY(${window.scrollY * 0.06}px)`;
       }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Cursor-glow on feature cards
-  useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>('.cp-feat-glow');
-    const move = (e: MouseEvent) => {
-      cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mx', `${x}px`);
-        card.style.setProperty('--my', `${y}px`);
-      });
-    };
-    window.addEventListener('mousemove', move);
-    return () => window.removeEventListener('mousemove', move);
-  }, [featTab]);
-
   const { ref: stat50Ref, count: stat50Count } = useCountUp(50);
 
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+
         .cp-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .cp-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
-          --fg: #f0ece4; --fg2: rgba(240,236,228,0.5); --fg3: rgba(240,236,228,0.25);
-          --red: #9b1c1c; --red-dim: rgba(155,28,28,0.15); --red-glow: rgba(155,28,28,0.08);
+          --bg: #080808; --bg2: #0d0d0d; --bg3: #111; --bg4: #0a0a0a;
+          --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
+          --red: #9b1c1c; --red-b: #b91c1c; --red-dim: rgba(155,28,28,0.14); --red-glow: rgba(155,28,28,0.08);
           --gold: #c9a54c; --gold-dim: rgba(201,165,76,0.12);
           --green: #2ecc71; --green-dim: rgba(46,204,113,0.08);
           --orange: #f97316;
-          --border: rgba(255,255,255,0.07);
-          background: var(--bg);
-          color: var(--fg);
-          font-family: 'Inter', sans-serif;
-          overflow-x: hidden;
+          --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.04);
+          background: var(--bg); color: var(--fg);
+          font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
 
-        /* ── GRAIN TEXTURE ── */
+        /* ── GRAIN ── */
         @keyframes cp-grain {
-          0%,100%{transform:translate(0,0)}
-          10%{transform:translate(-2%,-3%)}
-          20%{transform:translate(3%,2%)}
-          30%{transform:translate(-1%,4%)}
-          40%{transform:translate(2%,-1%)}
-          50%{transform:translate(-3%,3%)}
-          60%{transform:translate(4%,-2%)}
-          70%{transform:translate(-2%,1%)}
-          80%{transform:translate(3%,-4%)}
-          90%{transform:translate(-1%,2%)}
+          0%,100%{transform:translate(0,0)} 10%{transform:translate(-2%,-3%)}
+          20%{transform:translate(3%,2%)} 30%{transform:translate(-1%,4%)}
+          40%{transform:translate(2%,-1%)} 50%{transform:translate(-3%,3%)}
+          60%{transform:translate(4%,-2%)} 70%{transform:translate(-2%,1%)}
+          80%{transform:translate(3%,-4%)} 90%{transform:translate(-1%,2%)}
         }
         .cp-grain {
-          position:fixed; inset:-50%;
-          width:200%; height:200%;
-          pointer-events:none; z-index:0;
-          opacity:0.028;
+          position:fixed;inset:-50%;width:200%;height:200%;
+          pointer-events:none;z-index:0;opacity:0.025;
           background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 256px 256px;
-          animation: cp-grain 0.4s steps(1) infinite;
+          background-size:256px 256px;animation:cp-grain 0.4s steps(1) infinite;
         }
 
-        /* ── SONAR PING ── */
+        /* ── ANIMATIONS ── */
+        @keyframes cp-blink {
+          0%,100%{box-shadow:0 0 0 3px rgba(46,204,113,0.18)}
+          50%{box-shadow:0 0 0 8px rgba(46,204,113,0.04)}
+        }
+        @keyframes cp-blink-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
         @keyframes cp-sonar {
-          0%{transform:scale(1);opacity:0.7}
-          100%{transform:scale(3.2);opacity:0}
+          0%{transform:scale(1);opacity:0.7} 100%{transform:scale(3.2);opacity:0}
         }
         @keyframes cp-sonar2 {
-          0%{transform:scale(1);opacity:0.5}
-          100%{transform:scale(2.5);opacity:0}
+          0%{transform:scale(1);opacity:0.5} 100%{transform:scale(2.5);opacity:0}
         }
+        @keyframes cp-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes cp-fade-up {
+          from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}
+        }
+        @keyframes cp-orb-pulse {
+          0%,100%{transform:translateY(-50%) scale(1);opacity:0.5}
+          50%{transform:translateY(-50%) scale(1.1);opacity:0.7}
+        }
+
         .cp-live-dot-wrap {
-          position: relative; display:inline-flex; align-items:center; justify-content:center;
-          width:8px; height:8px;
+          position:relative;display:inline-flex;align-items:center;justify-content:center;
+          width:8px;height:8px;
         }
         .cp-sonar-ring {
-          position:absolute; inset:0; border-radius:50%;
-          background: rgba(155,28,28,0.6);
-          animation: cp-sonar 2s ease-out infinite;
+          position:absolute;inset:0;border-radius:50%;background:rgba(155,28,28,0.6);
+          animation:cp-sonar 2s ease-out infinite;
         }
         .cp-sonar-ring2 {
-          position:absolute; inset:0; border-radius:50%;
-          background: rgba(155,28,28,0.4);
-          animation: cp-sonar2 2s ease-out 0.6s infinite;
+          position:absolute;inset:0;border-radius:50%;background:rgba(155,28,28,0.4);
+          animation:cp-sonar2 2s ease-out 0.6s infinite;
         }
-
-        /* ── RED ORB ── */
-        @keyframes cp-orb-pulse {
-          0%,100%{transform:scale(1);opacity:0.55}
-          50%{transform:scale(1.12);opacity:0.7}
-        }
-        .cp-orb {
-          position:absolute; right:-80px; top:50%;
-          transform:translateY(-50%);
-          width:480px; height:480px; border-radius:50%;
-          background:radial-gradient(circle,rgba(155,28,28,0.35) 0%,rgba(155,28,28,0.1) 45%,transparent 70%);
-          pointer-events:none; z-index:0;
-          animation:cp-orb-pulse 4s ease-in-out infinite;
-          filter:blur(2px);
-        }
-
-        /* ── MARQUEE ── */
-        @keyframes cp-marquee {
-          0%{transform:translateX(0)}
-          100%{transform:translateX(-50%)}
-        }
-        .cp-marquee-wrap {
-          overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-          background:var(--bg2); padding:12px 0;
-        }
-        .cp-marquee-track {
-          display:flex; gap:0; white-space:nowrap;
-          animation:cp-marquee 28s linear infinite;
-        }
-        .cp-marquee-item {
-          display:inline-flex; align-items:center; gap:8px;
-          font-size:12px; font-weight:600; letter-spacing:0.06em;
-          text-transform:uppercase; color:var(--fg3);
-          padding:0 32px;
-        }
-        .cp-marquee-item .dot { color:var(--red); font-size:16px; }
-        .cp-marquee-item strong { color:var(--fg2); }
-
-        /* ── FEAT GLOW CARD ── */
-        .cp-feat-glow {
-          position:relative; overflow:hidden;
-        }
-        .cp-feat-glow::before {
-          content:'';
-          position:absolute;
-          left:calc(var(--mx,50%) - 120px);
-          top:calc(var(--my,50%) - 120px);
-          width:240px; height:240px;
-          background:radial-gradient(circle, rgba(155,28,28,0.18) 0%, transparent 70%);
-          border-radius:50%;
-          pointer-events:none;
-          transition:opacity 0.2s;
-          opacity:0;
-          z-index:0;
-        }
-        .cp-feat-glow:hover::before { opacity:1; }
-
-        /* ── SOCIAL PROOF ROW ── */
-        .cp-social-proof {
-          border-top:1px solid var(--border);
-          background: var(--bg2);
-          padding: 24px 40px;
-        }
-        .cp-social-proof-inner {
-          max-width:1200px; margin:0 auto;
-          display:flex; align-items:center; gap:32px; flex-wrap:wrap;
-        }
-        .cp-social-proof-label {
-          font-size:11px; font-weight:700; letter-spacing:0.08em;
-          text-transform:uppercase; color:var(--fg3); white-space:nowrap;
-        }
-        .cp-social-proof-clubs {
-          display:flex; align-items:center; gap:20px; flex-wrap:wrap;
-        }
-        .cp-social-proof-club {
-          display:flex; align-items:center; gap:7px;
-          font-size:13px; font-weight:600; color:var(--fg2);
-        }
-        .cp-social-proof-club-dot {
-          width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0;
-        }
-
-        /* ── ANIMATED AI COACH SCANLINES ── */
-        @keyframes cp-scan {
-          0%{transform:translateY(-100%)}
-          100%{transform:translateY(100%)}
-        }
-        @keyframes cp-blink-green {
-          0%,100%{opacity:1} 50%{opacity:0.3}
-        }
-        .cp-coach-pose-wrap {
-          position:relative; overflow:hidden; border-radius:10px;
-        }
-        .cp-coach-scan-line {
-          position:absolute; left:0; right:0; height:2px;
-          background:linear-gradient(90deg,transparent,rgba(46,204,113,0.4),transparent);
-          animation:cp-scan 3s linear infinite;
-          z-index:2; pointer-events:none;
-        }
-        .cp-coach-scan-overlay {
-          position:absolute; inset:0;
-          background:repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 3px,
-            rgba(0,0,0,0.08) 3px,
-            rgba(0,0,0,0.08) 4px
-          );
-          z-index:1; pointer-events:none;
-        }
-        .cp-coach-corner {
-          position:absolute; width:14px; height:14px;
-          border-color:rgba(46,204,113,0.6); border-style:solid;
-          z-index:3; pointer-events:none;
-        }
-        .cp-coach-corner.tl { top:8px; left:8px; border-width:2px 0 0 2px; }
-        .cp-coach-corner.tr { top:8px; right:8px; border-width:2px 2px 0 0; }
-        .cp-coach-corner.bl { bottom:8px; left:8px; border-width:0 0 2px 2px; }
-        .cp-coach-corner.br { bottom:8px; right:8px; border-width:0 2px 2px 0; }
-        .cp-coach-hud-label {
-          position:absolute; bottom:6px; left:10px;
-          font-size:8px; font-weight:700; letter-spacing:0.08em;
-          color:rgba(46,204,113,0.8); text-transform:uppercase; z-index:3;
-          animation:cp-blink-green 2s ease-in-out infinite;
-        }
+        .cp-live-dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:cp-blink 2s ease-in-out infinite; }
 
         /* ── NAV ── */
         .cp-nav {
-          position: sticky; top: 0; z-index: 100;
-          background: rgba(8,8,8,0.92);
-          backdrop-filter: blur(20px);
-          border-bottom: 1px solid var(--border);
+          position:sticky;top:0;z-index:100;
+          background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);
+          border-bottom:1px solid var(--border);
         }
         .cp-nav-inner {
-          max-width: 1200px; margin: 0 auto; padding: 0 40px;
-          height: 64px; display: flex; align-items: center; gap: 32px;
+          max-width:1200px;margin:0 auto;padding:0 40px;
+          height:64px;display:flex;align-items:center;gap:32px;
         }
-        .cp-logo {
-          display: flex; align-items: center; gap: 10px;
-          text-decoration: none; flex-shrink: 0;
-        }
+        .cp-logo { display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0; }
         .cp-logo-mark {
-          width: 36px; height: 36px; background: var(--red);
-          border-radius: 9px; display: grid; place-items: center;
-          font-family: 'Syne', sans-serif; font-weight: 800;
-          font-size: 16px; color: #fff;
-          box-shadow: 0 0 20px rgba(155,28,28,0.4);
+          width:36px;height:36px;background:var(--red);border-radius:9px;
+          display:grid;place-items:center;font-family:'Syne',sans-serif;
+          font-weight:800;font-size:16px;color:#fff;
+          box-shadow:0 0 20px rgba(155,28,28,0.4);
         }
-        .cp-logo-name {
-          font-family: 'Syne', sans-serif; font-weight: 700;
-          font-size: 17px; color: var(--fg);
-        }
-        .cp-nav-links {
-          display: flex; gap: 4px; flex: 1; justify-content: center;
-        }
+        .cp-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--fg); }
+        .cp-nav-links { display:flex;gap:4px;flex:1;justify-content:center; }
         .cp-nav-links a {
-          padding: 6px 13px; font-size: 13px; color: var(--fg2);
-          text-decoration: none; border-radius: 7px;
-          transition: color 0.12s, background 0.12s;
+          padding:6px 13px;font-size:13px;color:var(--fg2);text-decoration:none;
+          border-radius:7px;transition:color 0.12s,background 0.12s;
         }
-        .cp-nav-links a:hover { color: var(--fg); background: rgba(255,255,255,0.04); }
-        .cp-nav-ctas { display: flex; gap: 8px; flex-shrink: 0; }
-        .cp-hamburger {
-          display: none; flex-direction: column; justify-content: center; gap: 5px;
-          width: 40px; height: 40px; background: none; border: none; cursor: pointer;
-          padding: 8px; border-radius: 8px; flex-shrink: 0;
-          transition: background 0.12s;
-        }
-        .cp-hamburger:hover { background: rgba(255,255,255,0.06); }
-        .cp-hamburger span {
-          display: block; width: 22px; height: 2px;
-          background: var(--fg2); border-radius: 2px;
-          transition: transform 0.2s, opacity 0.2s;
-        }
-        .cp-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .cp-hamburger.open span:nth-child(2) { opacity: 0; }
-        .cp-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-        .cp-mobile-nav {
-          display: none; position: fixed; inset: 64px 0 0 0;
-          background: rgba(8,8,8,0.97); backdrop-filter: blur(20px);
-          z-index: 99; flex-direction: column; padding: 24px 24px;
-          border-top: 1px solid var(--border);
-          gap: 4px;
-        }
-        .cp-mobile-nav.open { display: flex; }
-        .cp-mobile-nav a {
-          display: block; padding: 14px 16px; font-size: 15px;
-          color: var(--fg2); text-decoration: none; border-radius: 10px;
-          transition: color 0.12s, background 0.12s;
-        }
-        .cp-mobile-nav a:hover { color: var(--fg); background: rgba(255,255,255,0.05); }
-        .cp-mobile-nav-divider { height: 1px; background: var(--border); margin: 12px 0; }
-        .cp-mobile-nav-ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-        .cp-mobile-nav-ctas a { text-align: center; }
+        .cp-nav-links a:hover { color:var(--fg);background:rgba(255,255,255,0.04); }
+        .cp-nav-ctas { display:flex;gap:8px;flex-shrink:0; }
         .cp-btn-ghost {
-          padding: 8px 16px; font-size: 13px; font-weight: 500;
-          color: var(--fg2); text-decoration: none; border-radius: 8px;
-          border: 1px solid var(--border); transition: all 0.12s;
+          padding:8px 16px;font-size:13px;font-weight:500;color:var(--fg2);
+          text-decoration:none;border-radius:8px;border:1px solid var(--border);transition:all 0.12s;
         }
-        .cp-btn-ghost:hover { color: var(--fg); border-color: rgba(255,255,255,0.2); }
+        .cp-btn-ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
         .cp-btn-red {
-          padding: 8px 18px; font-size: 13px; font-weight: 600;
-          background: var(--red); color: #fff; text-decoration: none;
-          border-radius: 8px; transition: opacity 0.12s;
-          box-shadow: 0 0 20px rgba(155,28,28,0.3);
+          padding:8px 18px;font-size:13px;font-weight:600;background:var(--red);color:#fff;
+          text-decoration:none;border-radius:8px;transition:opacity 0.12s;
+          box-shadow:0 0 20px rgba(155,28,28,0.3);
         }
-        .cp-btn-red:hover { opacity: 0.88; }
+        .cp-btn-red:hover { opacity:0.88; }
+        .cp-hamburger {
+          display:none;flex-direction:column;justify-content:center;gap:5px;
+          width:40px;height:40px;background:none;border:none;cursor:pointer;
+          padding:8px;border-radius:8px;flex-shrink:0;transition:background 0.12s;
+        }
+        .cp-hamburger:hover { background:rgba(255,255,255,0.06); }
+        .cp-hamburger span {
+          display:block;width:22px;height:2px;background:var(--fg2);border-radius:2px;
+          transition:transform 0.2s,opacity 0.2s;
+        }
+        .cp-hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+        .cp-hamburger.open span:nth-child(2) { opacity:0; }
+        .cp-hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+        .cp-mobile-nav {
+          display:none;position:fixed;inset:64px 0 0 0;
+          background:rgba(8,8,8,0.97);backdrop-filter:blur(20px);
+          z-index:99;flex-direction:column;padding:24px;
+          border-top:1px solid var(--border);gap:4px;
+        }
+        .cp-mobile-nav.open { display:flex; }
+        .cp-mobile-nav a {
+          display:block;padding:14px 16px;font-size:15px;color:var(--fg2);
+          text-decoration:none;border-radius:10px;transition:color 0.12s,background 0.12s;
+        }
+        .cp-mobile-nav a:hover { color:var(--fg);background:rgba(255,255,255,0.05); }
+        .cp-mobile-nav-divider { height:1px;background:var(--border);margin:12px 0; }
+        .cp-mobile-nav-ctas { display:flex;flex-direction:column;gap:10px;margin-top:8px; }
+        .cp-mobile-nav-ctas a { text-align:center; }
 
         /* ── HERO ── */
         .cp-hero {
-          max-width: 1200px; margin: 0 auto;
-          padding: 80px 40px 0; position: relative;
+          max-width:1200px;margin:0 auto;padding:72px 40px 0;
+          position:relative;overflow:hidden;
         }
-        .cp-hero-top {
-          display: grid; grid-template-columns: 1fr 420px;
-          gap: 56px; align-items: start;
+        .cp-hero-orb {
+          position:absolute;right:-60px;top:40%;transform:translateY(-50%);
+          width:500px;height:500px;border-radius:50%;
+          background:radial-gradient(circle,rgba(155,28,28,0.28) 0%,rgba(155,28,28,0.06) 50%,transparent 70%);
+          pointer-events:none;z-index:0;filter:blur(4px);
+          animation:cp-orb-pulse 5s ease-in-out infinite;
+        }
+        .cp-hero-grid {
+          display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:start;position:relative;z-index:1;
         }
         .cp-live-badge {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 5px 14px;
-          background: rgba(46,204,113,0.08);
-          border: 1px solid rgba(46,204,113,0.2);
-          border-radius: 100px; font-size: 11px; font-weight: 700;
-          letter-spacing: 0.09em; text-transform: uppercase;
-          color: var(--green); margin-bottom: 28px;
-        }
-        .cp-live-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--green);
-          animation: cp-blink 2s ease-in-out infinite;
-        }
-        @keyframes cp-blink {
-          0%, 100% { box-shadow: 0 0 0 3px rgba(46,204,113,0.18); }
-          50% { box-shadow: 0 0 0 8px rgba(46,204,113,0.04); }
+          display:inline-flex;align-items:center;gap:8px;padding:5px 14px;
+          background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);
+          border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.09em;
+          text-transform:uppercase;color:var(--green);margin-bottom:24px;
         }
         .cp-hero-h1 {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(52px,7vw,88px); font-weight: 800;
-          line-height: 0.92; letter-spacing: -0.04em;
-          color: var(--fg); margin-bottom: 28px;
+          font-family:'Syne',sans-serif;
+          font-size:clamp(48px,6.5vw,82px);font-weight:800;
+          line-height:0.94;letter-spacing:-0.04em;color:var(--fg);margin-bottom:24px;
         }
-        .cp-hero-h1 .red { color: var(--red); }
-        .cp-hero-h1 .gold { color: var(--gold); }
+        .cp-hero-h1 .red { color:var(--red); }
         .cp-hero-sub {
-          font-size: 17px; color: var(--fg2); line-height: 1.75;
-          max-width: 480px; margin-bottom: 36px;
+          font-size:17px;color:var(--fg2);line-height:1.7;
+          max-width:500px;margin-bottom:32px;
         }
-        .cp-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 48px; }
-        .cp-btn-hero {
-          padding: 15px 32px; font-size: 15px; font-weight: 700;
-          background: var(--red); color: #fff; text-decoration: none;
-          border-radius: 11px;
-          box-shadow: 0 0 40px rgba(155,28,28,0.35);
-          transition: all 0.15s;
-        }
-        .cp-btn-hero:hover {
-          box-shadow: 0 0 60px rgba(155,28,28,0.5);
-          transform: translateY(-1px);
-        }
-        .cp-btn-hero-ghost {
-          padding: 15px 26px; font-size: 15px; font-weight: 500;
-          border: 1px solid var(--border); color: var(--fg2);
-          text-decoration: none; border-radius: 11px; transition: all 0.12s;
-        }
-        .cp-btn-hero-ghost:hover { color: var(--fg); border-color: rgba(255,255,255,0.2); }
-        .cp-hero-stats {
-          display: flex; gap: 0; border-top: 1px solid var(--border);
-        }
-        .cp-hero-stat {
-          padding: 20px 0; padding-right: 32px; margin-right: 32px;
-          border-right: 1px solid var(--border);
-        }
-        .cp-hero-stat:last-child { border-right: none; padding-right: 0; margin-right: 0; }
-        .cp-stat-n {
-          font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
-          color: var(--gold); letter-spacing: -0.02em; line-height: 1;
-        }
-        .cp-stat-l { font-size: 11px; color: var(--fg3); margin-top: 3px; }
 
-        /* ── PHONE ── */
+        /* 5 product pillars */
+        .cp-pillars {
+          display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;
+        }
+        .cp-pillar {
+          display:inline-flex;align-items:center;gap:7px;
+          padding:7px 14px;border-radius:100px;
+          border:1px solid var(--border);
+          font-size:13px;font-weight:600;color:var(--fg2);
+          background:rgba(255,255,255,0.02);
+          transition:all 0.15s;text-decoration:none;
+        }
+        .cp-pillar:hover { color:var(--fg);border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.04); }
+        .cp-pillar-dot {
+          width:6px;height:6px;border-radius:50%;flex-shrink:0;
+        }
+        .cp-pillar-dot.live { background:var(--green); }
+        .cp-pillar-dot.road { background:var(--orange); }
+
+        .cp-hero-btns { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px; }
+        .cp-btn-hero {
+          padding:14px 30px;font-size:15px;font-weight:700;
+          background:var(--red);color:#fff;text-decoration:none;border-radius:11px;
+          box-shadow:0 0 40px rgba(155,28,28,0.35);transition:all 0.15s;
+        }
+        .cp-btn-hero:hover { box-shadow:0 0 60px rgba(155,28,28,0.5);transform:translateY(-1px); }
+        .cp-btn-hero-ghost {
+          padding:14px 24px;font-size:15px;font-weight:500;
+          border:1px solid var(--border);color:var(--fg2);
+          text-decoration:none;border-radius:11px;transition:all 0.12s;
+        }
+        .cp-btn-hero-ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
+
+        .cp-hero-stats { display:flex;gap:0;border-top:1px solid var(--border);padding-top:0; }
+        .cp-hero-stat {
+          padding:20px 32px 20px 0;margin-right:32px;border-right:1px solid var(--border);
+        }
+        .cp-hero-stat:last-child { border-right:none;padding-right:0;margin-right:0; }
+        .cp-stat-n {
+          font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+          color:var(--gold);letter-spacing:-0.02em;line-height:1;
+        }
+        .cp-stat-l { font-size:11px;color:var(--fg3);margin-top:3px; }
+
+        /* ── PHONE MOCKUP ── */
         .cp-phone {
-          background: #0a0a0a;
-          border: 1.5px solid rgba(255,255,255,0.1);
-          border-radius: 36px; padding: 14px;
-          box-shadow: 0 40px 80px rgba(0,0,0,0.7),
-            0 0 0 1px rgba(255,255,255,0.03),
-            0 0 60px rgba(155,28,28,0.06);
-          position: relative; width: 100%;
+          background:#0a0a0a;border:1.5px solid rgba(255,255,255,0.1);
+          border-radius:36px;padding:14px;
+          box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03),0 0 60px rgba(155,28,28,0.06);
+          position:relative;width:100%;
         }
         .cp-phone::before {
-          content: ''; position: absolute; top: 11px;
-          left: 50%; transform: translateX(-50%);
-          width: 56px; height: 5px;
-          background: rgba(255,255,255,0.07); border-radius: 10px;
+          content:'';position:absolute;top:11px;left:50%;transform:translateX(-50%);
+          width:56px;height:5px;background:rgba(255,255,255,0.07);border-radius:10px;
         }
-        .cp-phone-screen {
-          background: #0c0c0c; border-radius: 24px;
-          overflow: hidden; margin-top: 6px;
-        }
-        .cp-tab-bar {
-          display: flex; gap: 0;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+        .cp-phone-screen { background:#0c0c0c;border-radius:24px;overflow:hidden;margin-top:6px; }
+        .cp-tab-bar { display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.06); }
         .cp-ph-tab {
-          flex: 1; padding: 10px 4px; font-size: 9px; font-weight: 600;
-          color: rgba(255,255,255,0.25); text-align: center; cursor: pointer;
-          transition: all 0.15s; letter-spacing: 0.04em; text-transform: uppercase;
-          border: none; background: transparent; font-family: 'Inter', sans-serif;
-          border-bottom: 2px solid transparent;
+          flex:1;padding:10px 4px;font-size:9px;font-weight:600;
+          color:rgba(255,255,255,0.25);text-align:center;cursor:pointer;
+          transition:all 0.15s;letter-spacing:0.04em;text-transform:uppercase;
+          border:none;background:transparent;font-family:'Inter',sans-serif;
+          border-bottom:2px solid transparent;
         }
-        .cp-ph-tab.active { color: var(--red); border-bottom-color: var(--red); }
-        .cp-phone-content { padding: 16px; min-height: 360px; }
+        .cp-ph-tab.active { color:var(--red);border-bottom-color:var(--red); }
+        .cp-phone-content { padding:16px;min-height:360px; }
 
-        /* Dashboard */
-        .cp-sc-greeting {
-          font-family: 'Syne', sans-serif; font-size: 17px;
-          font-weight: 800; color: #fff; margin-bottom: 2px;
-        }
-        .cp-sc-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
+        /* Phone screens */
+        .cp-sc-greeting { font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px; }
+        .cp-sc-sub { font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
         .cp-score-card {
-          background: linear-gradient(135deg,rgba(201,165,76,0.12),rgba(201,165,76,0.04));
-          border: 1px solid rgba(201,165,76,0.2); border-radius: 14px;
-          padding: 14px; margin-bottom: 12px;
-          display: flex; justify-content: space-between; align-items: flex-end;
+          background:linear-gradient(135deg,rgba(201,165,76,0.12),rgba(201,165,76,0.04));
+          border:1px solid rgba(201,165,76,0.2);border-radius:14px;
+          padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;
         }
-        .cp-score-n {
-          font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800;
-          color: var(--gold); line-height: 1; letter-spacing: -0.02em;
-        }
-        .cp-score-unit { font-size: 10px; color: rgba(201,165,76,0.5); }
-        .cp-score-label { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-        .cp-score-val { font-size: 12px; font-weight: 600; color: var(--gold); }
-        .cp-tiles {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
-        }
-        .cp-tile {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; padding: 10px; text-align: center;
-        }
-        .cp-tile-icon { font-size: 18px; margin-bottom: 4px; }
-        .cp-tile-label { font-size: 8.5px; color: rgba(255,255,255,0.35); font-weight: 500; }
+        .cp-score-n { font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.02em; }
+        .cp-score-unit { font-size:10px;color:rgba(201,165,76,0.5); }
+        .cp-score-label { font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px; }
+        .cp-score-val { font-size:12px;font-weight:600;color:var(--gold); }
+        .cp-tiles { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px; }
+        .cp-tile { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center; }
+        .cp-tile-icon { font-size:18px;margin-bottom:4px; }
+        .cp-tile-label { font-size:8.5px;color:rgba(255,255,255,0.35);font-weight:500; }
         .cp-avail-bar {
-          background: rgba(46,204,113,0.08);
-          border: 1px solid rgba(46,204,113,0.15);
-          border-radius: 10px; padding: 10px 12px;
-          display: flex; align-items: center; justify-content: space-between;
+          background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.15);
+          border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;
         }
-        .cp-avail-label { font-size: 9px; font-weight: 600; color: var(--green); }
-        .cp-avail-toggle {
-          width: 28px; height: 16px; background: var(--green);
-          border-radius: 8px; position: relative;
-        }
-        .cp-avail-toggle::after {
-          content: ''; position: absolute; right: 3px; top: 3px;
-          width: 10px; height: 10px; background: #fff; border-radius: 50%;
-        }
-
-        /* Scorecard screen */
+        .cp-avail-label { font-size:9px;font-weight:600;color:var(--green); }
+        .cp-avail-toggle { width:28px;height:16px;background:var(--green);border-radius:8px;position:relative; }
+        .cp-avail-toggle::after { content:'';position:absolute;right:3px;top:3px;width:10px;height:10px;background:#fff;border-radius:50%; }
         .cp-live-chip {
-          display: inline-flex; align-items: center; gap: 4px;
-          padding: 2px 7px;
-          background: rgba(46,204,113,0.1);
-          border: 1px solid rgba(46,204,113,0.2);
-          border-radius: 5px; font-size: 8px; font-weight: 700;
-          color: var(--green); margin-bottom: 8px;
+          display:inline-flex;align-items:center;gap:4px;padding:2px 7px;
+          background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.2);
+          border-radius:5px;font-size:8px;font-weight:700;color:var(--green);margin-bottom:8px;
         }
-        .cp-live-chip-dot {
-          width: 4px; height: 4px; border-radius: 50%;
-          background: var(--green); animation: cp-blink 1.5s infinite;
-        }
-        .cp-sc-match-title {
-          font-family: 'Syne', sans-serif; font-size: 13px;
-          font-weight: 800; color: #fff; margin-bottom: 2px;
-        }
-        .cp-sc-match-meta { font-size: 9px; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
-        .cp-sc-innings {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; overflow: hidden; margin-bottom: 8px;
-        }
+        .cp-live-chip-dot { width:4px;height:4px;border-radius:50%;background:var(--green);animation:cp-blink-dot 1.5s infinite; }
+        .cp-sc-match-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;margin-bottom:2px; }
+        .cp-sc-match-meta { font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
+        .cp-sc-innings { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px; }
         .cp-sc-head {
-          display: flex; justify-content: space-between; padding: 8px 10px;
-          background: rgba(155,28,28,0.12);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          display:flex;justify-content:space-between;padding:8px 10px;
+          background:rgba(155,28,28,0.12);border-bottom:1px solid rgba(255,255,255,0.04);
         }
-        .cp-sc-head-name { font-weight: 700; color: #fff; font-size: 10px; }
-        .cp-sc-head-score {
-          font-family: 'Syne', sans-serif; font-weight: 800;
-          font-size: 13px; color: var(--gold);
-        }
+        .cp-sc-head-name { font-weight:700;color:#fff;font-size:10px; }
+        .cp-sc-head-score { font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
         .cp-sc-bat-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);
-          font-size: 10px;
+          display:flex;justify-content:space-between;align-items:center;
+          padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:10px;
         }
-        .cp-sc-bat-row:last-child { border-bottom: none; }
-        .cp-sc-bat-name { color: rgba(255,255,255,0.6); }
-        .cp-sc-bat-name.bold { color: #fff; font-weight: 600; }
-        .cp-sc-bat-runs { font-weight: 700; color: #fff; }
-
-        /* AI Coach screen */
-        .cp-coach-feedback {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; padding: 10px; margin-top: 10px;
-        }
-        .cp-coach-fb-title { font-weight: 700; color: #fff; font-size: 10px; margin-bottom: 6px; }
-        .cp-coach-fb-row {
-          display: flex; align-items: center; gap: 6px; padding: 4px 0;
-          border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 9px;
-        }
-        .cp-coach-fb-row:last-child { border-bottom: none; }
-        .cp-fb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-        .cp-fb-dot.ok { background: var(--green); }
-        .cp-fb-dot.warn { background: var(--orange); }
-        .cp-fb-dot.bad { background: var(--red); }
-        .cp-fb-text { color: rgba(255,255,255,0.5); }
-        .cp-fb-text span { color: #fff; }
-
-        /* Scores screen */
+        .cp-sc-bat-row:last-child { border-bottom:none; }
+        .cp-sc-bat-name { color:rgba(255,255,255,0.6); }
+        .cp-sc-bat-name.bold { color:#fff;font-weight:600; }
+        .cp-sc-bat-runs { font-weight:700;color:#fff; }
         .cp-pts-hero {
-          background: linear-gradient(135deg,rgba(201,165,76,0.14),rgba(155,28,28,0.06));
-          border: 1px solid rgba(201,165,76,0.18);
-          border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 10px;
+          background:linear-gradient(135deg,rgba(201,165,76,0.14),rgba(155,28,28,0.06));
+          border:1px solid rgba(201,165,76,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
         }
-        .cp-pts-big {
-          font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800;
-          color: var(--gold); line-height: 1; letter-spacing: -0.03em;
-        }
-        .cp-pts-eq { font-size: 11px; color: rgba(240,236,228,0.4); margin-top: 4px; }
-        .cp-earn-list {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; overflow: hidden;
-        }
+        .cp-pts-big { font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.03em; }
+        .cp-pts-eq { font-size:11px;color:rgba(240,236,228,0.4);margin-top:4px; }
+        .cp-earn-list { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden; }
         .cp-earn-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);
-          font-size: 9.5px;
+          display:flex;justify-content:space-between;align-items:center;
+          padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:9.5px;
         }
-        .cp-earn-row:last-child { border-bottom: none; }
-        .cp-earn-label { color: rgba(255,255,255,0.5); }
-        .cp-earn-pts { font-weight: 700; color: var(--gold); }
+        .cp-earn-row:last-child { border-bottom:none; }
+        .cp-earn-label { color:rgba(255,255,255,0.5); }
+        .cp-earn-pts { font-weight:700;color:var(--gold); }
+        .cp-coach-cam { background:#0a0a0a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;margin-bottom:12px; }
+        .cp-coach-cam-label {
+          display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;
+          color:var(--green);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;
+        }
+        .cp-coach-cam-dot { width:5px;height:5px;border-radius:50%;background:var(--green);animation:cp-blink-dot 2s infinite; }
+        .cp-coach-pose { aspect-ratio:4/3;background:#050505;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden; }
+        .cp-coach-feedback { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px;margin-top:10px; }
+        .cp-coach-fb-title { font-weight:700;color:#fff;font-size:10px;margin-bottom:6px; }
+        .cp-coach-fb-row {
+          display:flex;align-items:center;gap:6px;padding:4px 0;
+          border-bottom:1px solid rgba(255,255,255,0.04);font-size:9px;
+        }
+        .cp-coach-fb-row:last-child { border-bottom:none; }
+        .cp-fb-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+        .cp-fb-dot.ok { background:var(--green); }
+        .cp-fb-dot.warn { background:var(--orange); }
+        .cp-fb-dot.bad { background:var(--red); }
+        .cp-fb-text { color:rgba(255,255,255,0.5); }
+        .cp-fb-text span { color:#fff; }
 
-        /* ── DIVIDER ── */
-        .cp-divider {
-          max-width: 1200px; margin: 0 auto; padding: 0 40px;
-          padding-top: 72px;
-        }
-        .cp-divider hr { border: none; border-top: 1px solid var(--border); }
+        /* ── SOCIAL PROOF ── */
+        .cp-social-proof { border-top:1px solid var(--border);background:var(--bg2);padding:20px 40px; }
+        .cp-social-proof-inner { max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:28px;flex-wrap:wrap; }
+        .cp-social-proof-label { font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg3);white-space:nowrap; }
+        .cp-social-proof-clubs { display:flex;align-items:center;gap:20px;flex-wrap:wrap; }
+        .cp-social-proof-club { display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--fg2); }
+        .cp-social-proof-club-dot { width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0; }
 
-        /* ── FEATURES SECTION ── */
-        .cp-features {
-          max-width: 1200px; margin: 0 auto; padding: 80px 40px;
+        /* ── MARQUEE ── */
+        .cp-marquee-wrap { overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);padding:10px 0; }
+        .cp-marquee-track { display:flex;gap:0;white-space:nowrap;animation:cp-marquee 32s linear infinite; }
+        .cp-marquee-item {
+          display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;
+          letter-spacing:0.06em;text-transform:uppercase;color:var(--fg3);padding:0 28px;
         }
+        .cp-marquee-item .dot { color:var(--red);font-size:14px; }
+        .cp-marquee-item strong { color:var(--fg2); }
+
+        /* ── HOW IT WORKS ── */
+        .cp-how { max-width:1200px;margin:0 auto;padding:96px 40px; }
         .cp-eyebrow {
-          font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-          text-transform: uppercase; color: var(--red); margin-bottom: 12px;
+          font-size:11px;font-weight:700;letter-spacing:0.1em;
+          text-transform:uppercase;color:var(--red);margin-bottom:12px;
         }
         .cp-section-h2 {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(32px,4vw,48px); font-weight: 800;
-          letter-spacing: -0.03em; color: var(--fg); margin-bottom: 8px;
+          font-family:'Syne',sans-serif;
+          font-size:clamp(30px,4vw,46px);font-weight:800;
+          letter-spacing:-0.03em;color:var(--fg);margin-bottom:8px;
         }
-        .cp-section-sub {
-          font-size: 16px; color: var(--fg2); line-height: 1.7;
-          max-width: 520px; margin-bottom: 48px;
+        .cp-section-sub { font-size:16px;color:var(--fg2);line-height:1.7;max-width:540px;margin-bottom:56px; }
+
+        .cp-steps { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden; }
+        .cp-step { background:var(--bg2);padding:40px 36px;position:relative; }
+        .cp-step-num {
+          font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
+          letter-spacing:0.1em;color:rgba(155,28,28,0.5);margin-bottom:20px;
         }
-        .cp-feat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 32px; }
-        .cp-feat-tab {
-          padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-          cursor: pointer; border: 1px solid var(--border); color: var(--fg3);
-          background: transparent; transition: all 0.15s; font-family: 'Inter', sans-serif;
-        }
-        .cp-feat-tab.active {
-          background: var(--red-dim); color: var(--fg);
-          border-color: rgba(155,28,28,0.35);
-        }
-        .cp-feat-tab:hover:not(.active) { color: var(--fg); border-color: rgba(255,255,255,0.18); }
-        .cp-feat-panel {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
-        }
-        .cp-feat-tag {
-          display: inline-flex; align-items: center;
-          padding: 4px 10px; border-radius: 6px; font-size: 10px;
-          font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-          margin-bottom: 16px;
-        }
-        .cp-tag-live {
-          background: rgba(46,204,113,0.1); color: var(--green);
-          border: 1px solid rgba(46,204,113,0.2);
-        }
-        .cp-tag-road {
-          background: rgba(249,115,22,0.08); color: var(--orange);
-          border: 1px solid rgba(249,115,22,0.18);
-        }
-        .cp-feat-h {
-          font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
-          letter-spacing: -0.025em; color: var(--fg); margin-bottom: 12px; line-height: 1.1;
-        }
-        .cp-feat-body {
-          font-size: 15px; color: var(--fg2); line-height: 1.75; margin-bottom: 24px;
-        }
-        .cp-feat-bullets { display: flex; flex-direction: column; gap: 10px; }
-        .cp-feat-bullet {
-          display: flex; align-items: flex-start; gap: 10px;
-          font-size: 14px; color: var(--fg2);
-        }
-        .cp-feat-bullet::before {
-          content: '→'; color: var(--red); flex-shrink: 0; margin-top: 1px;
-        }
-        .cp-feat-bullet strong { color: var(--fg); }
-        .cp-mock {
-          background: #0d0d0d; border: 1px solid var(--border);
-          border-radius: 20px; padding: 24px; min-height: 380px;
+        .cp-step-icon { font-size:32px;margin-bottom:16px; }
+        .cp-step-h { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px; }
+        .cp-step-body { font-size:14px;color:var(--fg2);line-height:1.7; }
+        .cp-step-arrow {
+          position:absolute;top:50%;right:-1px;transform:translateY(-50%);
+          width:28px;height:28px;background:var(--bg);border:1px solid var(--border);
+          border-radius:50%;display:grid;place-items:center;
+          font-size:12px;color:var(--red);z-index:2;
         }
 
-        /* Availability mock */
-        .cp-avail-h {
-          font-family: 'Syne', sans-serif; font-size: 16px;
-          font-weight: 800; color: #fff;
+        /* ── FEATURES GRID ── */
+        .cp-features { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+        .cp-features-inner { max-width:1200px;margin:0 auto;padding:96px 40px; }
+        .cp-feat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:48px; }
+        .cp-feat-card {
+          background:var(--bg2);padding:36px;text-decoration:none;
+          transition:background 0.15s;position:relative;overflow:hidden;
         }
-        .cp-avail-meta { font-size: 11px; color: var(--fg3); }
-        .cp-avail-header {
-          display: flex; justify-content: space-between; align-items: center;
-          margin-bottom: 16px;
+        .cp-feat-card:hover { background:#0f0f0f; }
+        .cp-feat-card-icon { font-size:28px;margin-bottom:16px; }
+        .cp-feat-card-tag {
+          display:inline-flex;align-items:center;gap:5px;
+          padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;
+          letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;
         }
-        .cp-avail-count-chip {
-          font-size: 11px; padding: 4px 10px;
-          background: rgba(46,204,113,0.1);
-          border: 1px solid rgba(46,204,113,0.2);
-          border-radius: 6px; color: var(--green); font-weight: 600;
-        }
-        .cp-avail-match-card {
-          background: #111; border: 1px solid rgba(155,28,28,0.2);
-          border-radius: 12px; padding: 14px; margin-bottom: 14px;
-        }
-        .cp-avail-match-name { font-weight: 700; font-size: 13px; color: #fff; margin-bottom: 2px; }
-        .cp-avail-match-date { font-size: 11px; color: var(--fg3); margin-bottom: 10px; }
-        .cp-avail-squad-count { display: flex; align-items: center; gap: 8px; }
-        .cp-avail-count { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--green); }
-        .cp-avail-count-label { font-size: 11px; color: var(--fg3); }
-        .cp-avail-players { display: flex; flex-direction: column; gap: 4px; }
-        .cp-avail-player {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 7px 10px; border-radius: 8px;
-          background: #111; border: 1px solid rgba(255,255,255,0.04);
-        }
-        .cp-avail-player-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); }
-        .cp-avail-chip {
-          padding: 3px 8px; border-radius: 5px; font-size: 9px;
-          font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-        }
-        .cp-avail-chip.yes {
-          background: rgba(46,204,113,0.12); color: var(--green);
-          border: 1px solid rgba(46,204,113,0.2);
-        }
-        .cp-avail-chip.no {
-          background: rgba(249,115,22,0.08); color: var(--orange);
-          border: 1px solid rgba(249,115,22,0.2);
-        }
-        .cp-avail-chip.maybe {
-          background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.35);
-          border: 1px solid rgba(255,255,255,0.08);
-        }
-        .cp-avail-confirm-btn {
-          width: 100%; margin-top: 12px; padding: 11px;
-          background: var(--red); color: #fff; border: none;
-          border-radius: 9px; font-size: 13px; font-weight: 700;
-          font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity 0.12s;
-        }
-        .cp-avail-confirm-btn:hover { opacity: 0.85; }
+        .cp-tag-live { background:rgba(46,204,113,0.1);color:var(--green);border:1px solid rgba(46,204,113,0.2); }
+        .cp-tag-road { background:rgba(249,115,22,0.08);color:var(--orange);border:1px solid rgba(249,115,22,0.18); }
+        .cp-feat-card-h { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px;line-height:1.2; }
+        .cp-feat-card-body { font-size:13.5px;color:var(--fg2);line-height:1.65;margin-bottom:18px; }
+        .cp-feat-card-link { font-size:13px;font-weight:600;color:var(--red);text-decoration:none;display:inline-flex;align-items:center;gap:6px; }
+        .cp-feat-card-bullets { display:flex;flex-direction:column;gap:7px;margin-bottom:18px; }
+        .cp-feat-card-bullet { display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--fg2); }
+        .cp-feat-card-bullet::before { content:'→';color:var(--red);flex-shrink:0;margin-top:1px; }
+        .cp-feat-card-bullet strong { color:var(--fg); }
+        /* Wide card spans 2 cols */
+        .cp-feat-card-wide { grid-column:span 2; }
 
-        /* Scorecard mock */
-        .cp-score-live-bar {
-          display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+        /* ── PERSONA SECTION ── */
+        .cp-personas { max-width:1200px;margin:0 auto;padding:96px 40px; }
+        .cp-persona-tabs { display:flex;gap:6px;margin-bottom:40px; }
+        .cp-persona-tab {
+          padding:9px 20px;border-radius:9px;font-size:14px;font-weight:600;
+          cursor:pointer;border:1px solid var(--border);color:var(--fg3);
+          background:transparent;transition:all 0.15s;font-family:'Inter',sans-serif;
         }
-        .cp-score-live-chip {
-          display: flex; align-items: center; gap: 6px; padding: 4px 10px;
-          background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.2);
-          border-radius: 6px; font-size: 10px; font-weight: 700; color: var(--green);
+        .cp-persona-tab.active { background:var(--red-dim);color:var(--fg);border-color:rgba(155,28,28,0.35); }
+        .cp-persona-tab:hover:not(.active) { color:var(--fg);border-color:rgba(255,255,255,0.18); }
+        .cp-persona-panel { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; }
+        .cp-persona-eyebrow {
+          font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
+          color:var(--red);margin-bottom:12px;
         }
-        .cp-score-live-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: var(--green); animation: cp-blink 1.5s infinite;
+        .cp-persona-h { font-family:'Syne',sans-serif;font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:14px;line-height:1.1; }
+        .cp-persona-body { font-size:15px;color:var(--fg2);line-height:1.75;margin-bottom:24px; }
+        .cp-persona-checks { display:flex;flex-direction:column;gap:10px; }
+        .cp-persona-check { display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--fg2); }
+        .cp-persona-check-icon { color:var(--green);font-size:13px;flex-shrink:0;margin-top:2px; }
+        .cp-persona-check strong { color:var(--fg); }
+        .cp-persona-card {
+          background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;
         }
-        .cp-score-update { font-size: 10px; color: var(--fg3); }
-        .cp-score-team {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 12px; overflow: hidden; margin-bottom: 10px;
-        }
-        .cp-score-team-head {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 10px 14px; background: rgba(155,28,28,0.1);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .cp-score-team-name { font-weight: 700; font-size: 12px; color: #fff; }
-        .cp-score-team-total {
-          font-family: 'Syne', sans-serif; font-size: 18px;
-          font-weight: 800; color: var(--gold);
-        }
-        .cp-score-bat-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 6px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px;
-        }
-        .cp-score-bat-row:last-child { border-bottom: none; }
-        .cp-score-bat-name { color: rgba(255,255,255,0.55); }
-        .cp-score-bat-name.bat { color: #fff; font-weight: 600; }
-        .cp-score-bat-runs { font-weight: 700; color: #fff; min-width: 32px; text-align: right; }
-        .cp-score-bat-balls { color: rgba(255,255,255,0.35); min-width: 28px; text-align: right; }
-        .cp-bbb {
-          background: rgba(201,165,76,0.04); border: 1px solid rgba(201,165,76,0.1);
-          border-radius: 10px; padding: 10px 12px;
-        }
-        .cp-bbb-label {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.07em;
-          text-transform: uppercase; color: var(--fg3); margin-bottom: 7px;
-        }
-        .cp-balls { display: flex; gap: 5px; }
-        .cp-ball {
-          width: 26px; height: 26px; border-radius: 50%;
-          display: grid; place-items: center; font-size: 10px;
-          font-weight: 800; font-family: 'Syne', sans-serif;
-        }
-        .cp-ball.dot { background: #111; color: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.06); }
-        .cp-ball.run { background: rgba(255,255,255,0.07); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-        .cp-ball.four { background: rgba(201,165,76,0.15); color: var(--gold); border: 1px solid rgba(201,165,76,0.25); }
-        .cp-ball.six { background: rgba(155,28,28,0.2); color: #f87171; border: 1px solid rgba(155,28,28,0.3); }
-        .cp-ball.wkt { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.25); }
 
-        /* AI coach mock */
-        .cp-coach-cam {
-          background: #0a0a0a; border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 14px; padding: 14px; margin-bottom: 12px;
+        /* ── PRICING ── */
+        .cp-pricing { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+        .cp-pricing-inner { max-width:1200px;margin:0 auto;padding:96px 40px; }
+        .cp-pricing-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:48px; }
+        .cp-price-card { background:var(--bg2);padding:36px;position:relative; }
+        .cp-price-card.featured {
+          background:#0f0f0f;
+          outline:1px solid rgba(155,28,28,0.4);
+          outline-offset:-1px;
         }
-        .cp-coach-cam-label {
-          display: flex; align-items: center; gap: 5px; font-size: 9px;
-          font-weight: 700; color: var(--green); letter-spacing: 0.07em;
-          text-transform: uppercase; margin-bottom: 8px;
+        .cp-price-featured-chip {
+          display:inline-block;padding:3px 10px;border-radius:5px;
+          background:var(--red);color:#fff;font-size:10px;font-weight:700;
+          letter-spacing:0.06em;text-transform:uppercase;margin-bottom:20px;
         }
-        .cp-coach-cam-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: var(--green); animation: cp-blink 2s infinite;
+        .cp-price-plan { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px; }
+        .cp-price-n { font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--fg);letter-spacing:-0.03em;line-height:1; }
+        .cp-price-n span { font-size:18px;font-weight:600;color:var(--fg2);vertical-align:top;margin-top:6px;display:inline-block; }
+        .cp-price-period { font-size:12px;color:var(--fg3);margin-top:4px;margin-bottom:20px; }
+        .cp-price-desc { font-size:14px;color:var(--fg2);line-height:1.6;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border); }
+        .cp-price-features { display:flex;flex-direction:column;gap:9px;margin-bottom:28px; }
+        .cp-price-feature { display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--fg2); }
+        .cp-price-feature-icon { color:var(--green);flex-shrink:0;margin-top:1px; }
+        .cp-price-feature strong { color:var(--fg); }
+        .cp-price-cta {
+          display:block;width:100%;padding:12px;text-align:center;
+          border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;
+          transition:all 0.15s;
         }
-        .cp-coach-pose {
-          aspect-ratio: 4/3; background: #050505; border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          position: relative; overflow: hidden;
-        }
-        .cp-coach-pose::after {
-          content: ''; position: absolute; inset: 0;
-          background: radial-gradient(ellipse at 50% 100%, rgba(155,28,28,0.08), transparent 60%);
-        }
-        .cp-coach-fb-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .cp-coach-fb-card {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; padding: 10px;
-        }
-        .cp-coach-fb-icon { font-size: 16px; margin-bottom: 5px; }
-        .cp-coach-fb-label { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
-        .cp-coach-fb-val { font-size: 11px; font-weight: 700; }
-        .cp-coach-fb-val.ok { color: var(--green); }
-        .cp-coach-fb-val.warn { color: var(--orange); }
-
-        /* Scores mock */
-        .cp-scores-big-card {
-          background: linear-gradient(135deg, rgba(201,165,76,0.12), rgba(155,28,28,0.06));
-          border: 1px solid rgba(201,165,76,0.2); border-radius: 14px;
-          padding: 20px; display: flex; justify-content: space-between;
-          align-items: center; margin-bottom: 12px;
-        }
-        .cp-scores-big-n {
-          font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800;
-          color: var(--gold); line-height: 1; letter-spacing: -0.03em;
-        }
-        .cp-scores-big-eq { font-size: 13px; color: rgba(201,165,76,0.6); }
-        .cp-scores-big-equiv {
-          font-family: 'Syne', sans-serif; font-size: 28px;
-          font-weight: 700; color: var(--fg); text-align: right;
-        }
-        .cp-scores-big-equiv-label { font-size: 10px; color: var(--fg3); text-align: right; }
-        .cp-scores-earn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .cp-scores-earn-card {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; padding: 12px;
-        }
-        .cp-scores-earn-icon { font-size: 18px; margin-bottom: 5px; }
-        .cp-scores-earn-label { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
-        .cp-scores-earn-pts {
-          font-family: 'Syne', sans-serif; font-size: 18px;
-          font-weight: 800; color: var(--gold);
-        }
-        .cp-scores-history {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 10px; overflow: hidden;
-        }
-        .cp-scores-hist-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px;
-        }
-        .cp-scores-hist-row:last-child { border-bottom: none; }
-        .cp-scores-hist-label { color: rgba(255,255,255,0.5); }
-        .cp-scores-hist-pts { font-weight: 700; color: var(--gold); }
-
-        /* Finance mock */
-        .cp-fin-balance {
-          background: linear-gradient(135deg, rgba(46,204,113,0.1), rgba(46,204,113,0.02));
-          border: 1px solid rgba(46,204,113,0.15); border-radius: 14px;
-          padding: 18px; margin-bottom: 12px;
-        }
-        .cp-fin-bal-label {
-          font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
-          text-transform: uppercase; color: rgba(46,204,113,0.6); margin-bottom: 4px;
-        }
-        .cp-fin-bal-n {
-          font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800;
-          color: var(--green); letter-spacing: -0.02em; line-height: 1;
-        }
-        .cp-fin-bal-sub { font-size: 11px; color: var(--fg3); margin-top: 4px; }
-        .cp-fin-tx-list {
-          background: #111; border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 12px; overflow: hidden;
-        }
-        .cp-fin-tx-head {
-          padding: 10px 14px; font-size: 10px; font-weight: 700;
-          letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg3);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .cp-fin-tx-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-        .cp-fin-tx-row:last-child { border-bottom: none; }
-        .cp-fin-tx-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); }
-        .cp-fin-tx-date { font-size: 9px; color: rgba(255,255,255,0.25); }
-        .cp-fin-tx-amount { font-size: 13px; font-weight: 700; }
-        .cp-fin-tx-amount.cr { color: var(--green); }
-        .cp-fin-tx-amount.db { color: rgba(255,255,255,0.45); }
-
-        /* ── WHY SECTION ── */
-        .cp-why { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .cp-why-inner { max-width: 1200px; margin: 0 auto; padding: 80px 40px; }
-        .cp-why-grid {
-          display: grid; grid-template-columns: repeat(3,1fr);
-          gap: 1px; background: var(--border);
-          border: 1px solid var(--border); border-radius: 16px;
-          overflow: hidden; margin-top: 48px;
-        }
-        .cp-why-cell { background: var(--bg2); padding: 32px; }
-        .cp-why-n {
-          font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800;
-          letter-spacing: 0.1em; color: rgba(155,28,28,0.4); margin-bottom: 14px;
-        }
-        .cp-why-h { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
-        .cp-why-body { font-size: 13.5px; color: var(--fg2); line-height: 1.65; }
+        .cp-price-cta.primary { background:var(--red);color:#fff;box-shadow:0 0 24px rgba(155,28,28,0.3); }
+        .cp-price-cta.primary:hover { opacity:0.88; }
+        .cp-price-cta.ghost { border:1px solid var(--border);color:var(--fg2); }
+        .cp-price-cta.ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
 
         /* ── QUOTE ── */
-        .cp-quote { max-width: 1200px; margin: 0 auto; padding: 80px 40px; }
+        .cp-quote { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .cp-quote-inner {
-          background: #0a0a0a; border: 1px solid var(--border);
-          border-radius: 20px; padding: 56px; position: relative; overflow: hidden;
+          background:var(--bg4);border:1px solid var(--border);
+          border-radius:20px;padding:56px;position:relative;overflow:hidden;
         }
         .cp-quote-mark {
-          position: absolute; top: -20px; left: 36px;
-          font-family: 'Syne', sans-serif; font-size: 180px; font-weight: 800;
-          color: rgba(155,28,28,0.07); line-height: 1;
-          pointer-events: none; user-select: none;
+          position:absolute;top:-20px;left:36px;
+          font-family:'Syne',sans-serif;font-size:180px;font-weight:800;
+          color:rgba(155,28,28,0.06);line-height:1;pointer-events:none;user-select:none;
         }
         .cp-quote-text {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(18px,2.5vw,28px); font-weight: 700;
-          color: var(--fg); line-height: 1.45; max-width: 780px;
-          position: relative; letter-spacing: -0.01em;
+          font-family:'Syne',sans-serif;
+          font-size:clamp(18px,2.5vw,26px);font-weight:700;
+          color:var(--fg);line-height:1.45;max-width:760px;position:relative;letter-spacing:-0.01em;
         }
-        .cp-quote-attr {
-          margin-top: 24px; font-size: 13px; color: var(--fg3); position: relative;
-        }
+        .cp-quote-attr { margin-top:24px;font-size:13px;color:var(--fg3);position:relative; }
 
         /* ── CTA BAND ── */
-        .cp-cta-band { background: var(--red); border-top: 1px solid rgba(255,255,255,0.08); }
+        .cp-cta-band { background:var(--red);border-top:1px solid rgba(255,255,255,0.08); }
         .cp-cta-band-inner {
-          max-width: 1200px; margin: 0 auto; padding: 64px 40px;
-          display: flex; align-items: center; justify-content: space-between;
-          gap: 32px; flex-wrap: wrap;
+          max-width:1200px;margin:0 auto;padding:64px 40px;
+          display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
         }
-        .cp-cta-h {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(24px,3.5vw,40px); font-weight: 800;
-          letter-spacing: -0.025em; color: #fff; line-height: 1.1;
-        }
-        .cp-cta-sub { font-size: 15px; color: rgba(255,255,255,0.65); margin-top: 6px; }
+        .cp-cta-h { font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:#fff;line-height:1.1; }
+        .cp-cta-sub { font-size:15px;color:rgba(255,255,255,0.65);margin-top:6px; }
         .cp-cta-btn {
-          padding: 15px 32px; font-size: 15px; font-weight: 700;
-          background: #fff; color: var(--red); text-decoration: none;
-          border-radius: 11px; white-space: nowrap; flex-shrink: 0; transition: opacity 0.12s;
+          padding:15px 32px;font-size:15px;font-weight:700;background:#fff;color:var(--red);
+          text-decoration:none;border-radius:11px;white-space:nowrap;flex-shrink:0;transition:opacity 0.12s;
         }
-        .cp-cta-btn:hover { opacity: 0.9; }
+        .cp-cta-btn:hover { opacity:0.9; }
 
         /* ── FOOTER ── */
-        .cp-footer { border-top: 1px solid var(--border); }
+        .cp-footer { border-top:1px solid var(--border); }
         .cp-footer-inner {
-          max-width: 1200px; margin: 0 auto; padding: 40px;
-          display: flex; align-items: center; justify-content: space-between;
-          flex-wrap: wrap; gap: 16px;
+          max-width:1200px;margin:0 auto;padding:40px;
+          display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
         }
-        .cp-footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .cp-footer-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
         .cp-footer-logo-mark {
-          width: 28px; height: 28px; background: var(--red); border-radius: 7px;
-          display: grid; place-items: center;
-          font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+          width:28px;height:28px;background:var(--red);border-radius:7px;
+          display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff;
         }
-        .cp-footer-logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--fg); }
-        .cp-footer-links { display: flex; gap: 20px; }
-        .cp-footer-links a { font-size: 13px; color: var(--fg3); text-decoration: none; transition: color 0.12s; }
-        .cp-footer-links a:hover { color: var(--fg); }
-        .cp-footer-copy { font-size: 12px; color: var(--fg3); }
+        .cp-footer-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--fg); }
+        .cp-footer-links { display:flex;gap:20px;flex-wrap:wrap; }
+        .cp-footer-links a { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.12s; }
+        .cp-footer-links a:hover { color:var(--fg); }
+        .cp-footer-copy { font-size:12px;color:var(--fg3); }
 
         /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
-          .cp-nav-links { display: none; }
-          .cp-hamburger { display: flex; }
-          .cp-nav-ctas { display: none; }
-          .cp-hero-top { grid-template-columns: 1fr; }
-          .cp-phone { max-width: 340px; margin: 0 auto; }
-          .cp-feat-panel { grid-template-columns: 1fr; }
-          .cp-why-grid { grid-template-columns: 1fr 1fr; }
-          .cp-cta-band-inner { flex-direction: column; text-align: center; }
-          .cp-coach-fb-cards { grid-template-columns: 1fr 1fr; }
+        @media (max-width:900px) {
+          .cp-nav-links { display:none; }
+          .cp-nav-ctas { display:none; }
+          .cp-hamburger { display:flex; }
+          .cp-hero-grid { grid-template-columns:1fr; }
+          .cp-phone { max-width:340px;margin:0 auto; }
+          .cp-steps { grid-template-columns:1fr; }
+          .cp-step-arrow { display:none; }
+          .cp-feat-grid { grid-template-columns:1fr; }
+          .cp-feat-card-wide { grid-column:span 1; }
+          .cp-persona-panel { grid-template-columns:1fr; }
+          .cp-pricing-grid { grid-template-columns:1fr; }
+          .cp-cta-band-inner { flex-direction:column;text-align:center; }
         }
-        @media (max-width: 600px) {
-          .cp-nav-inner { padding: 0 16px; }
-          .cp-hero, .cp-features, .cp-why-inner, .cp-quote,
-          .cp-cta-band-inner, .cp-footer-inner, .cp-divider {
-            padding-left: max(16px, env(safe-area-inset-left, 0px));
-            padding-right: max(16px, env(safe-area-inset-right, 0px));
+        @media (max-width:600px) {
+          .cp-nav-inner { padding:0 16px; }
+          .cp-hero,.cp-how,.cp-features-inner,.cp-personas,.cp-pricing-inner,
+          .cp-quote,.cp-cta-band-inner,.cp-footer-inner {
+            padding-left:max(16px, env(safe-area-inset-left, 0px));
+            padding-right:max(16px, env(safe-area-inset-right, 0px));
           }
-          .cp-why-grid { grid-template-columns: 1fr; }
-          .cp-scores-earn-grid { grid-template-columns: 1fr; }
-          .cp-coach-fb-cards { grid-template-columns: 1fr; }
-          .cp-footer-inner { flex-direction: column; align-items: flex-start; }
+          .cp-social-proof { padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+          .cp-persona-tabs { flex-wrap:wrap; }
+          .cp-footer-inner { flex-direction:column;align-items:flex-start; }
+          .cp-footer-links { gap:12px; }
+          .cp-pillars { gap:6px; }
         }
       `}</style>
 
       <div className="cp-root">
-        {/* GRAIN */}
         <div className="cp-grain" aria-hidden="true" />
 
-        {/* NAV */}
+        {/* ── NAV ── */}
         <nav className="cp-nav">
           <div className="cp-nav-inner">
             <Link href="/" className="cp-logo">
@@ -1009,7 +608,7 @@ export default function HomePage() {
           </div>
         </nav>
 
-        {/* MOBILE NAV */}
+        {/* ── MOBILE NAV ── */}
         <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
           <Link href="/features/availability" onClick={() => setNavOpen(false)}>Availability</Link>
           <Link href="/features/scorecard" onClick={() => setNavOpen(false)}>Scorecard</Link>
@@ -1025,36 +624,54 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* HERO */}
-        <section className="cp-hero" ref={heroRef} style={{position:'relative',overflow:'hidden'}}>
-          {/* Red orb glow */}
-          <div className="cp-orb" aria-hidden="true" />
-          <div className="cp-hero-top">
+        {/* ── HERO ── */}
+        <section className="cp-hero">
+          <div className="cp-hero-orb" aria-hidden="true" />
+          <div className="cp-hero-grid">
             <div>
               <div className="cp-live-badge">
                 <span className="cp-live-dot-wrap" aria-hidden="true">
-                  <span className="cp-sonar-ring" />
-                  <span className="cp-sonar-ring2" />
-                  <span className="cp-live-dot" />
+                  <span className="cp-sonar-ring" /><span className="cp-sonar-ring2" /><span className="cp-live-dot" />
                 </span>
                 Live at Slough CC · 2026 Season
               </div>
               <h1 className="cp-hero-h1">
-                The <span className="red">operating<br />system</span> for<br />
-                grassroots<br /><span style={{background:'linear-gradient(90deg,#c9a54c,#e8c97a,#c9a54c)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>cricket.</span>
+                The <span className="red">complete</span><br />
+                platform for<br />
+                grassroots cricket.
               </h1>
               <p className="cp-hero-sub">
-                Availability, live scorecards, AI batting coaching, Scores rewards, and club finance — all in one platform. Built on a real cricket club. For every cricket club.
+                Five tools. One app. Built by a cricketer, for cricketers. Availability, live scoring, AI coaching, loyalty rewards and club finance — everything your club has been doing manually, done properly.
               </p>
+
+              {/* 5 product pillars */}
+              <div className="cp-pillars">
+                <Link href="/features/availability" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />📅 Availability
+                </Link>
+                <Link href="/features/scorecard" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />📋 Live Scorecard
+                </Link>
+                <Link href="/features/ai-coach" className="cp-pillar">
+                  <span className="cp-pillar-dot road" />🎯 AI Coach
+                </Link>
+                <Link href="/features/scores" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />⭐ Scores
+                </Link>
+                <Link href="/features/finance" className="cp-pillar">
+                  <span className="cp-pillar-dot road" />💷 Finance
+                </Link>
+              </div>
+
               <div className="cp-hero-btns">
                 <Link href="/contact" className="cp-btn-hero">Get started free →</Link>
-                <a href="#features" className="cp-btn-hero-ghost">See all features</a>
+                <a href="#how-it-works" className="cp-btn-hero-ghost">See how it works</a>
               </div>
               <div className="cp-hero-stats">
-                <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1 value</div></div>
+                <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">&lt;1s</div><div className="cp-stat-l">Scorecard sync</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">AI</div><div className="cp-stat-l">On-device coaching</div></div>
+                <div className="cp-hero-stat"><div className="cp-stat-n">5</div><div className="cp-stat-l">Tools in one app</div></div>
               </div>
             </div>
 
@@ -1124,43 +741,22 @@ export default function HomePage() {
                         <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
                         <div className="cp-coach-pose">
                           <svg viewBox="0 0 120 180" fill="none" style={{width:'80px',height:'120px',opacity:0.9}}>
-                            {/* Head */}
                             <ellipse cx="62" cy="16" rx="10" ry="11" fill="rgba(240,236,228,0.85)"/>
-                            {/* Helmet */}
                             <path d="M52 14 Q52 4 62 4 Q72 4 72 14 Z" fill="#9b1c1c"/>
                             <rect x="70" y="10" width="8" height="4" rx="1" fill="#9b1c1c"/>
-                            {/* Neck */}
                             <rect x="59" y="27" width="6" height="6" rx="2" fill="rgba(240,236,228,0.7)"/>
-                            {/* Body / torso */}
                             <path d="M48 33 Q55 30 62 31 Q70 30 76 34 L74 70 Q68 72 62 72 Q55 72 50 70 Z" fill="rgba(240,236,228,0.15)" stroke="rgba(240,236,228,0.35)" strokeWidth="1.2"/>
-                            {/* Right arm (raised high — top hand on bat) */}
                             <path d="M76 36 Q86 28 90 18 Q92 12 88 10" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
-                            {/* Right hand */}
                             <circle cx="88" cy="10" r="4" fill="rgba(240,236,228,0.8)"/>
-                            {/* Left arm (extended forward — bottom hand) */}
                             <path d="M50 38 Q36 44 28 52 Q24 56 26 60" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
-                            {/* Left hand */}
                             <circle cx="26" cy="60" r="4" fill="rgba(240,236,228,0.8)"/>
-                            {/* Cricket bat — angled through-drive */}
                             <rect x="22" y="54" width="7" height="38" rx="3" transform="rotate(-35 22 54)" fill="#c9a54c" opacity="0.9"/>
-                            <rect x="25" y="55" width="3" height="12" rx="1" transform="rotate(-35 25 55)" fill="rgba(201,165,76,0.5)"/>
-                            {/* Front leg (stride forward) */}
                             <path d="M55 70 Q50 95 42 115 Q40 122 44 126" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
-                            {/* Back leg */}
                             <path d="M68 70 Q72 92 74 112 Q76 120 72 124" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
-                            {/* Front boot */}
-                            <path d="M40 124 Q36 130 44 132 Q52 132 50 126" fill="rgba(240,236,228,0.55)"/>
-                            {/* Back boot */}
-                            <path d="M68 123 Q64 130 72 131 Q80 130 78 124" fill="rgba(240,236,228,0.55)"/>
-                            {/* Pose landmark dots — MediaPipe style */}
                             <circle cx="88" cy="10" r="3.5" fill="#2ecc71" opacity="0.9"/>
                             <circle cx="26" cy="60" r="3.5" fill="#2ecc71" opacity="0.9"/>
                             <circle cx="76" cy="36" r="3" fill="#c9a54c" opacity="0.9"/>
                             <circle cx="50" cy="38" r="3" fill="#c9a54c" opacity="0.9"/>
-                            <circle cx="55" cy="70" r="3" fill="#c9a54c" opacity="0.9"/>
-                            <circle cx="68" cy="70" r="3" fill="#c9a54c" opacity="0.9"/>
-                            <circle cx="42" cy="115" r="3" fill="#c9a54c" opacity="0.8"/>
-                            <circle cx="74" cy="112" r="3" fill="#c9a54c" opacity="0.8"/>
                           </svg>
                         </div>
                       </div>
@@ -1194,15 +790,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="cp-divider"><hr /></div>
-
         {/* SOCIAL PROOF */}
         <div className="cp-social-proof">
           <div className="cp-social-proof-inner">
-            <span className="cp-social-proof-label">Used by real clubs</span>
+            <span className="cp-social-proof-label">Live at</span>
             <div className="cp-social-proof-clubs">
-              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot"/><span>Slough CC</span></div>
-              <div className="cp-social-proof-club" style={{color:'rgba(240,236,228,0.3)'}}><span className="cp-social-proof-club-dot" style={{background:'rgba(240,236,228,0.15)'}}/><span>Your club next</span></div>
+              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot" /><span>Slough CC</span></div>
+              <div className="cp-social-proof-club" style={{color:'rgba(240,236,228,0.3)'}}>
+                <span className="cp-social-proof-club-dot" style={{background:'rgba(240,236,228,0.15)'}} />
+                <span>Your club next →</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1223,306 +820,220 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* FEATURES */}
+        {/* ── HOW IT WORKS ── */}
+        <section className="cp-how" id="how-it-works">
+          <p className="cp-eyebrow">How it works</p>
+          <h2 className="cp-section-h2">Up and running in minutes.</h2>
+          <p className="cp-section-sub">No training sessions. No implementation consultants. No 12-month contracts. Just sign up, invite your squad, and start your season.</p>
+
+          <div className="cp-steps">
+            <div className="cp-step">
+              <p className="cp-step-num">STEP 01</p>
+              <div className="cp-step-icon">🏏</div>
+              <h3 className="cp-step-h">Create your club</h3>
+              <p className="cp-step-body">Sign up as a club admin. Add your club name, teams, and season dates. Takes under 5 minutes — no card required to start.</p>
+              <div className="cp-step-arrow">→</div>
+            </div>
+            <div className="cp-step">
+              <p className="cp-step-num">STEP 02</p>
+              <div className="cp-step-icon">📱</div>
+              <h3 className="cp-step-h">Invite your squad</h3>
+              <p className="cp-step-body">Share a link or add players by email. Players join free, set up their profile, and immediately see upcoming fixtures and their Scores balance.</p>
+              <div className="cp-step-arrow">→</div>
+            </div>
+            <div className="cp-step">
+              <p className="cp-step-num">STEP 03</p>
+              <div className="cp-step-icon">⚡</div>
+              <h3 className="cp-step-h">Run your season</h3>
+              <p className="cp-step-body">Players mark availability. Captains pick the XI. Scorers log every ball live. Stats build automatically. Finance tracks itself. Done.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FEATURES GRID ── */}
         <section className="cp-features" id="features">
-          <p className="cp-eyebrow">The full platform</p>
-          <h2 className="cp-section-h2">Every tool your club needs.</h2>
-          <p className="cp-section-sub">Click any feature below to see it in action — this is exactly what your players and admins will see when they sign in.</p>
+          <div className="cp-features-inner">
+            <p className="cp-eyebrow">The full platform</p>
+            <h2 className="cp-section-h2">Five tools. One platform.</h2>
+            <p className="cp-section-sub">Each feature works standalone. Together they eliminate every spreadsheet, WhatsApp chain, and Sunday-night admin task your club has.</p>
 
-          <div className="cp-feat-tabs">
-            {([
-              ['avail','📅 Availability'],
-              ['score','📋 Live Scorecard'],
-              ['ai','🎯 AI Coach'],
-              ['scores','⭐ Scores'],
-              ['fin','💷 Finance'],
-            ] as [FeatTab, string][]).map(([id, label]) => (
-              <button
-                key={id}
-                className={`cp-feat-tab${featTab === id ? ' active' : ''}`}
-                onClick={() => setFeatTab(id)}
-              >{label}</button>
-            ))}
-          </div>
+            <div className="cp-feat-grid">
+              {/* Availability — wide */}
+              <div className="cp-feat-card cp-feat-card-wide" style={{borderBottom:'1px solid var(--border)'}}>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'40px',alignItems:'center'}}>
+                  <div>
+                    <div className="cp-feat-card-icon">📅</div>
+                    <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
+                    <h3 className="cp-feat-card-h">Availability<br />management</h3>
+                    <p className="cp-feat-card-body">No more Wednesday night WhatsApp chains. Players tap once. Captains see a live count — 9/11, 10/11 — and confirm the XI in one click. Push notifications go out automatically.</p>
+                    <div className="cp-feat-card-bullets">
+                      <div className="cp-feat-card-bullet"><strong>One-tap response</strong> for players</div>
+                      <div className="cp-feat-card-bullet"><strong>Live squad count</strong> for captains in real time</div>
+                      <div className="cp-feat-card-bullet"><strong>+5 Scores</strong> awarded automatically for responding</div>
+                    </div>
+                    <Link href="/features/availability" className="cp-feat-card-link">Learn more →</Link>
+                  </div>
+                  <div style={{background:'#0a0a0a',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
+                      <div>
+                        <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>Availability</div>
+                        <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · vs Henley CC</div>
+                      </div>
+                      <span style={{fontSize:'11px',padding:'4px 10px',background:'rgba(46,204,113,0.1)',border:'1px solid rgba(46,204,113,0.2)',borderRadius:'6px',color:'var(--green)',fontWeight:600}}>10 / 11 ✓</span>
+                    </div>
+                    {[['I. Suresh','Available','yes'],['R. Patel','Available','yes'],['A. Khan','Available','yes'],['S. Bhatt','Unavailable','no'],['D. Sharma','No response','maybe']].map(([name,status,cls]) => (
+                      <div key={name} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 10px',borderRadius:'8px',background:'#111',border:'1px solid rgba(255,255,255,0.04)',marginBottom:'6px'}}>
+                        <span style={{fontSize:'12px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{name}</span>
+                        <span style={{padding:'3px 8px',borderRadius:'5px',fontSize:'9px',fontWeight:700,textTransform:'uppercase' as const,
+                          background:cls==='yes'?'rgba(46,204,113,0.12)':cls==='no'?'rgba(249,115,22,0.08)':'rgba(255,255,255,0.04)',
+                          color:cls==='yes'?'var(--green)':cls==='no'?'var(--orange)':'rgba(255,255,255,0.35)',
+                          border:`1px solid ${cls==='yes'?'rgba(46,204,113,0.2)':cls==='no'?'rgba(249,115,22,0.2)':'rgba(255,255,255,0.08)'}`
+                        }}>{status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-          {/* Availability */}
-          {featTab === 'avail' && (
-            <div className="cp-feat-panel cp-feat-glow">
-              <div>
-                <span className="cp-feat-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-h">No more Wednesday night<br />WhatsApp chains.</h3>
-                <p className="cp-feat-body">Players mark themselves available in one tap. Captains see a live running count, drill into who&apos;s confirmed, and publish the XI the moment they&apos;re ready — notifications go out automatically.</p>
-                <div className="cp-feat-bullets">
-                  <div className="cp-feat-bullet"><strong>One-tap responses</strong> — players spend 2 seconds, not 20 reading a thread</div>
-                  <div className="cp-feat-bullet"><strong>Live squad count</strong> — captain sees 9/11, 10/11 in real time as responses come in</div>
-                  <div className="cp-feat-bullet"><strong>Publish XI instantly</strong> — squad confirmed, push notification goes to all 11</div>
-                  <div className="cp-feat-bullet"><strong>+5 Scores awarded</strong> — automatically, for every player who responds</div>
+              {/* Live Scorecard */}
+              <div className="cp-feat-card">
+                <div className="cp-feat-card-icon">📋</div>
+                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
+                <h3 className="cp-feat-card-h">Live scorecard</h3>
+                <p className="cp-feat-card-body">Scorer enters each delivery. Every player, parent and supporter sees the update in under a second. No paper. No spreadsheet. Ball-by-ball history stored forever.</p>
+                <div className="cp-feat-card-bullets">
+                  <div className="cp-feat-card-bullet"><strong>Under 1s sync</strong> — Supabase Realtime</div>
+                  <div className="cp-feat-card-bullet"><strong>Career stats</strong> built automatically</div>
+                  <div className="cp-feat-card-bullet"><strong>Shareable link</strong> for anyone outside the club</div>
                 </div>
+                <Link href="/features/scorecard" className="cp-feat-card-link">Learn more →</Link>
               </div>
-              <div>
-                <div className="cp-mock">
-                  <div className="cp-avail-header">
-                    <div><p className="cp-avail-h">Availability</p><p className="cp-avail-meta">Sat 26 Oct · Slough CC vs Henley CC</p></div>
-                    <span className="cp-avail-count-chip">10 / 11 ✓</span>
-                  </div>
-                  <div className="cp-avail-match-card">
-                    <p className="cp-avail-match-name">vs Henley CC — Away</p>
-                    <p className="cp-avail-match-date">Saturday 26 Oct · 10:30am · Henley-on-Thames CC</p>
-                    <div className="cp-avail-squad-count">
-                      <span className="cp-avail-count">10</span>
-                      <span className="cp-avail-count-label">confirmed · 1 awaiting</span>
-                    </div>
-                  </div>
-                  <div className="cp-avail-players">
-                    <div className="cp-avail-player"><span className="cp-avail-player-name">I. Suresh</span><span className="cp-avail-chip yes">Available</span></div>
-                    <div className="cp-avail-player"><span className="cp-avail-player-name">R. Patel</span><span className="cp-avail-chip yes">Available</span></div>
-                    <div className="cp-avail-player"><span className="cp-avail-player-name">A. Khan</span><span className="cp-avail-chip yes">Available</span></div>
-                    <div className="cp-avail-player"><span className="cp-avail-player-name">S. Bhatt</span><span className="cp-avail-chip no">Unavailable</span></div>
-                    <div className="cp-avail-player"><span className="cp-avail-player-name">D. Sharma</span><span className="cp-avail-chip maybe">No response</span></div>
-                  </div>
-                  <button className="cp-avail-confirm-btn">Confirm XI &amp; notify squad →</button>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* Scorecard */}
-          {featTab === 'score' && (
-            <div className="cp-feat-panel cp-feat-glow">
-              <div>
-                <span className="cp-feat-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-h">Real-time. Every ball.<br />For everyone.</h3>
-                <p className="cp-feat-body">Scorer enters each delivery and the scorecard updates in under a second for every player, parent, committee member and supporter watching — no paper, no spreadsheet.</p>
-                <div className="cp-feat-bullets">
-                  <div className="cp-feat-bullet"><strong>Under 1 second sync</strong> — Supabase Realtime, every ball</div>
-                  <div className="cp-feat-bullet"><strong>Ball-by-ball record</strong> — full over-by-over breakdown stored forever</div>
-                  <div className="cp-feat-bullet"><strong>Career stats built automatically</strong> — every match feeds a player&apos;s all-time record</div>
-                  <div className="cp-feat-bullet"><strong>Shareable link</strong> — send one URL to anyone outside the club</div>
+              {/* Scores */}
+              <div className="cp-feat-card">
+                <div className="cp-feat-card-icon">⭐</div>
+                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
+                <h3 className="cp-feat-card-h">Scores rewards</h3>
+                <p className="cp-feat-card-body">Players earn Scores for every contribution — marking available, playing matches, paying fees, coaching sessions. 50 Scores = £1 toward kit, fee offsets and rewards.</p>
+                <div className="cp-feat-card-bullets">
+                  <div className="cp-feat-card-bullet"><strong>+5</strong> mark available · <strong>+50</strong> match played</div>
+                  <div className="cp-feat-card-bullet"><strong>+200</strong> pay season fee · <strong>+100</strong> referral</div>
+                  <div className="cp-feat-card-bullet"><strong>Bronze / Silver / Gold</strong> tier multipliers</div>
                 </div>
+                <Link href="/features/scores" className="cp-feat-card-link">Learn more →</Link>
               </div>
-              <div>
-                <div className="cp-mock">
-                  <div className="cp-score-live-bar">
-                    <div className="cp-score-live-chip"><span className="cp-score-live-dot" />LIVE</div>
-                    <span className="cp-score-update">Updated 4 seconds ago</span>
-                  </div>
-                  <div className="cp-score-team">
-                    <div className="cp-score-team-head">
-                      <span className="cp-score-team-name">Slough CC (batting)</span>
-                      <span className="cp-score-team-total">142–3 (28.4 ov)</span>
-                    </div>
-                    <div className="cp-score-bat-row"><span className="cp-score-bat-name bat">I. Suresh*</span><span className="cp-score-bat-runs">67*</span><span className="cp-score-bat-balls">(52)</span></div>
-                    <div className="cp-score-bat-row"><span className="cp-score-bat-name bat">R. Patel*</span><span className="cp-score-bat-runs">24*</span><span className="cp-score-bat-balls">(19)</span></div>
-                    <div className="cp-score-bat-row"><span className="cp-score-bat-name">A. Khan — b Simms</span><span className="cp-score-bat-runs">34</span><span className="cp-score-bat-balls">(41)</span></div>
-                    <div className="cp-score-bat-row"><span className="cp-score-bat-name">S. Bhatt — c&amp;b Raj</span><span className="cp-score-bat-runs">12</span><span className="cp-score-bat-balls">(18)</span></div>
-                  </div>
-                  <div className="cp-score-team">
-                    <div className="cp-score-team-head">
-                      <span className="cp-score-team-name">Henley CC (completed)</span>
-                      <span className="cp-score-team-total">178 all out</span>
-                    </div>
-                  </div>
-                  <div className="cp-bbb">
-                    <p className="cp-bbb-label">Over 28 — I. Suresh facing</p>
-                    <div className="cp-balls">
-                      <div className="cp-ball dot">·</div>
-                      <div className="cp-ball run">1</div>
-                      <div className="cp-ball four">4</div>
-                      <div className="cp-ball dot">·</div>
-                      <div className="cp-ball six">6</div>
-                      <div className="cp-ball wkt">W</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* AI Coach */}
-          {featTab === 'ai' && (
-            <div className="cp-feat-panel cp-feat-glow">
-              <div>
-                <span className="cp-feat-tag cp-tag-road">Roadmap</span>
-                <h3 className="cp-feat-h">A batting coach in your pocket. On-device.</h3>
-                <p className="cp-feat-body">MediaPipe Pose maps 33 3D body landmarks at 30fps — directly on your phone camera. No server, no upload, no waiting. Real-time feedback on your stance, elbow position, head level, and follow-through.</p>
-                <div className="cp-feat-bullets">
-                  <div className="cp-feat-bullet"><strong>33 pose landmarks</strong> — head, shoulders, elbows, wrists, hips, knees, ankles</div>
-                  <div className="cp-feat-bullet"><strong>30fps real-time</strong> — live analysis as you play each shot</div>
-                  <div className="cp-feat-bullet"><strong>On-device only</strong> — nothing leaves your phone, zero latency</div>
-                  <div className="cp-feat-bullet"><strong>Progress history</strong> — every session logged, improvement tracked over time</div>
+              {/* AI Coach */}
+              <div className="cp-feat-card">
+                <div className="cp-feat-card-icon">🎯</div>
+                <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
+                <h3 className="cp-feat-card-h">AI batting coach</h3>
+                <p className="cp-feat-card-body">Your phone camera analyses your stance, elbow position, head level and follow-through at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
+                <div className="cp-feat-card-bullets">
+                  <div className="cp-feat-card-bullet"><strong>On-device only</strong> — nothing leaves your phone</div>
+                  <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot feedback</div>
+                  <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
                 </div>
+                <Link href="/features/ai-coach" className="cp-feat-card-link">Learn more →</Link>
               </div>
-              <div>
-                <div className="cp-mock">
-                  <div className="cp-coach-cam">
-                    <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
-                    <div className="cp-coach-pose cp-coach-pose-wrap">
-                      <div className="cp-coach-scan-line" aria-hidden="true"/>
-                      <div className="cp-coach-scan-overlay" aria-hidden="true"/>
-                      <div className="cp-coach-corner tl" aria-hidden="true"/>
-                      <div className="cp-coach-corner tr" aria-hidden="true"/>
-                      <div className="cp-coach-corner bl" aria-hidden="true"/>
-                      <div className="cp-coach-corner br" aria-hidden="true"/>
-                      <span className="cp-coach-hud-label">MEDIAPIPE · 33PT · 30FPS</span>
-                      <svg viewBox="0 0 160 240" fill="none" style={{width:'140px',height:'200px',position:'relative',zIndex:1}}>
-                        {/* Head */}
-                        <ellipse cx="82" cy="22" rx="14" ry="15" fill="rgba(240,236,228,0.85)"/>
-                        {/* Helmet */}
-                        <path d="M68 19 Q68 5 82 5 Q96 5 96 19 Z" fill="#9b1c1c"/>
-                        <rect x="94" y="13" width="11" height="6" rx="2" fill="#9b1c1c"/>
-                        {/* Neck */}
-                        <rect x="78" y="37" width="8" height="8" rx="3" fill="rgba(240,236,228,0.7)"/>
-                        {/* Torso */}
-                        <path d="M62 46 Q72 42 82 43 Q93 42 102 46 L100 96 Q91 99 82 99 Q72 99 64 96 Z" fill="rgba(240,236,228,0.12)" stroke="rgba(240,236,228,0.3)" strokeWidth="1.5"/>
-                        {/* Right arm raised (top hand) */}
-                        <path d="M100 50 Q114 38 122 24 Q126 16 120 12" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
-                        <ellipse cx="120" cy="11" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
-                        {/* Left arm reaching down (bottom hand on bat) */}
-                        <path d="M64 52 Q46 62 36 74 Q30 82 33 88" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
-                        <ellipse cx="33" cy="88" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
-                        {/* Cricket bat — cover drive angle */}
-                        <rect x="26" y="76" width="10" height="52" rx="4" transform="rotate(-32 26 76)" fill="#c9a54c"/>
-                        <rect x="30" y="78" width="4" height="16" rx="2" transform="rotate(-32 30 78)" fill="rgba(201,165,76,0.4)"/>
-                        <rect x="26" y="76" width="2" height="52" rx="1" transform="rotate(-32 26 76)" fill="rgba(255,255,255,0.18)"/>
-                        {/* Front leg striding forward */}
-                        <path d="M72 96 Q64 128 54 158 Q50 168 55 174" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                        {/* Back leg planted */}
-                        <path d="M90 96 Q97 126 100 156 Q102 166 96 170" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                        {/* Front boot */}
-                        <path d="M50 173 Q44 182 55 185 Q68 185 65 174" fill="rgba(240,236,228,0.6)"/>
-                        {/* Back boot */}
-                        <path d="M91 169 Q85 178 96 180 Q108 179 106 169" fill="rgba(240,236,228,0.6)"/>
-                        {/* MediaPipe landmark dots */}
-                        <circle cx="120" cy="11" r="5" fill="#2ecc71"/>
-                        <circle cx="33" cy="88" r="5" fill="#2ecc71"/>
-                        <circle cx="100" cy="50" r="4.5" fill="#c9a54c"/>
-                        <circle cx="64" cy="52" r="4.5" fill="#c9a54c"/>
-                        <circle cx="82" cy="96" r="4.5" fill="#c9a54c"/>
-                        <circle cx="54" cy="158" r="4" fill="#c9a54c"/>
-                        <circle cx="100" cy="156" r="4" fill="#c9a54c"/>
-                        <circle cx="55" cy="174" r="3.5" fill="rgba(155,28,28,0.9)"/>
-                        <circle cx="96" cy="170" r="3.5" fill="rgba(155,28,28,0.9)"/>
-                        {/* Landmark connection lines */}
-                        <line x1="120" y1="11" x2="100" y2="50" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
-                        <line x1="33" y1="88" x2="64" y2="52" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="cp-coach-fb-cards">
-                    <div className="cp-coach-fb-card"><div className="cp-coach-fb-icon">🧠</div><div className="cp-coach-fb-label">Head</div><div className="cp-coach-fb-val ok">Level ✓</div></div>
-                    <div className="cp-coach-fb-card"><div className="cp-coach-fb-icon">💪</div><div className="cp-coach-fb-label">Elbow</div><div className="cp-coach-fb-val warn">Drop 8°</div></div>
-                    <div className="cp-coach-fb-card"><div className="cp-coach-fb-icon">👣</div><div className="cp-coach-fb-label">Front foot</div><div className="cp-coach-fb-val ok">Straight ✓</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* Scores */}
-          {featTab === 'scores' && (
-            <div className="cp-feat-panel cp-feat-glow">
-              <div>
-                <span className="cp-feat-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-h">Get rewarded for<br />showing up.</h3>
-                <p className="cp-feat-body">Scores is ClubPulse&apos;s loyalty currency. Players earn automatically for every contribution. 50 Scores = £1 toward kit, fee offsets, and rewards.</p>
-                <div className="cp-feat-bullets">
-                  <div className="cp-feat-bullet"><strong>+5</strong> — for marking yourself available</div>
-                  <div className="cp-feat-bullet"><strong>+25</strong> — for each AI coaching session</div>
-                  <div className="cp-feat-bullet"><strong>+50</strong> — for every match played</div>
-                  <div className="cp-feat-bullet"><strong>+100</strong> — when you refer a teammate</div>
-                  <div className="cp-feat-bullet"><strong>+200</strong> — when you pay your season fee</div>
+              {/* Finance */}
+              <div className="cp-feat-card">
+                <div className="cp-feat-card-icon">💷</div>
+                <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
+                <h3 className="cp-feat-card-h">Club finance</h3>
+                <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments, and send Wise payouts — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
+                <div className="cp-feat-card-bullets">
+                  <div className="cp-feat-card-bullet"><strong>Full transaction history</strong> in one place</div>
+                  <div className="cp-feat-card-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, chase in one click</div>
+                  <div className="cp-feat-card-bullet"><strong>One-click export</strong> for AGM or committee</div>
                 </div>
+                <Link href="/features/finance" className="cp-feat-card-link">Learn more →</Link>
               </div>
-              <div>
-                <div className="cp-mock">
-                  <div className="cp-scores-big-card">
-                    <div>
-                      <div className="cp-scores-big-n">1,250</div>
-                      <div className="cp-scores-big-eq">⭐ Your Scores balance</div>
-                    </div>
-                    <div>
-                      <div className="cp-scores-big-equiv">£25.00</div>
-                      <div className="cp-scores-big-equiv-label">Cash equivalent</div>
-                    </div>
-                  </div>
-                  <div className="cp-scores-earn-grid">
-                    <div className="cp-scores-earn-card"><div className="cp-scores-earn-icon">📅</div><div className="cp-scores-earn-label">Available</div><div className="cp-scores-earn-pts">+5</div></div>
-                    <div className="cp-scores-earn-card"><div className="cp-scores-earn-icon">🏏</div><div className="cp-scores-earn-label">Match played</div><div className="cp-scores-earn-pts">+50</div></div>
-                    <div className="cp-scores-earn-card"><div className="cp-scores-earn-icon">🎯</div><div className="cp-scores-earn-label">AI session</div><div className="cp-scores-earn-pts">+25</div></div>
-                    <div className="cp-scores-earn-card"><div className="cp-scores-earn-icon">💷</div><div className="cp-scores-earn-label">Fee payment</div><div className="cp-scores-earn-pts">+200</div></div>
-                  </div>
-                  <div className="cp-scores-history">
-                    <div className="cp-scores-hist-row"><span className="cp-scores-hist-label">✅ Marked available · Sat match</span><span className="cp-scores-hist-pts">+5</span></div>
-                    <div className="cp-scores-hist-row"><span className="cp-scores-hist-label">🏏 Match vs Henley CC</span><span className="cp-scores-hist-pts">+50</span></div>
-                    <div className="cp-scores-hist-row"><span className="cp-scores-hist-label">💷 Season fee — Oct</span><span className="cp-scores-hist-pts">+200</span></div>
-                    <div className="cp-scores-hist-row"><span className="cp-scores-hist-label">🤝 Referral — R. Patel joined</span><span className="cp-scores-hist-pts">+100</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Finance */}
-          {featTab === 'fin' && (
-            <div className="cp-feat-panel cp-feat-glow">
-              <div>
-                <span className="cp-feat-tag cp-tag-road">Roadmap</span>
-                <h3 className="cp-feat-h">Club accounts, without the spreadsheet.</h3>
-                <p className="cp-feat-body">Track every transaction, chase fee payments, and send payouts via Wise — all from one admin dashboard. No more treasurer juggling a spreadsheet and a bank app on match days.</p>
-                <div className="cp-feat-bullets">
-                  <div className="cp-feat-bullet"><strong>Full transaction history</strong> — income, expenses, fee payments all in one place</div>
-                  <div className="cp-feat-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, who hasn&apos;t, send reminders in one click</div>
-                  <div className="cp-feat-bullet"><strong>Wise payouts</strong> — direct bank transfers from the dashboard</div>
-                  <div className="cp-feat-bullet"><strong>Treasurer report</strong> — one-click export for AGM or committee meetings</div>
-                </div>
-              </div>
-              <div>
-                <div className="cp-mock">
-                  <div className="cp-fin-balance">
-                    <p className="cp-fin-bal-label">Club balance</p>
-                    <p className="cp-fin-bal-n">£4,280.00</p>
-                    <p className="cp-fin-bal-sub">As of today · 18 fee payments received</p>
-                  </div>
-                  <div className="cp-fin-tx-list">
-                    <div className="cp-fin-tx-head">Recent transactions</div>
-                    <div className="cp-fin-tx-row"><div><div className="cp-fin-tx-name">Season fee — I. Suresh</div><div className="cp-fin-tx-date">26 Oct 2026</div></div><div className="cp-fin-tx-amount cr">+£80.00</div></div>
-                    <div className="cp-fin-tx-row"><div><div className="cp-fin-tx-name">Season fee — R. Patel</div><div className="cp-fin-tx-date">24 Oct 2026</div></div><div className="cp-fin-tx-amount cr">+£80.00</div></div>
-                    <div className="cp-fin-tx-row"><div><div className="cp-fin-tx-name">Ground hire — Arbour Park</div><div className="cp-fin-tx-date">20 Oct 2026</div></div><div className="cp-fin-tx-amount db">−£120.00</div></div>
-                    <div className="cp-fin-tx-row"><div><div className="cp-fin-tx-name">Kit order — Masuri helmets</div><div className="cp-fin-tx-date">15 Oct 2026</div></div><div className="cp-fin-tx-amount db">−£340.00</div></div>
-                    <div className="cp-fin-tx-row"><div><div className="cp-fin-tx-name">Season fee — A. Khan</div><div className="cp-fin-tx-date">12 Oct 2026</div></div><div className="cp-fin-tx-amount cr">+£80.00</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* WHY */}
-        <section className="cp-why">
-          <div className="cp-why-inner">
-            <p className="cp-eyebrow">Why ClubPulse</p>
-            <h2 className="cp-section-h2">Built different. On purpose.</h2>
-            <div className="cp-why-grid">
-              <div className="cp-why-cell"><p className="cp-why-n">01</p><h3 className="cp-why-h">Cricket first</h3><p className="cp-why-body">Every decision is made from the perspective of someone who plays on Saturdays, not a product team that&apos;s never faced a seam bowler.</p></div>
-              <div className="cp-why-cell"><p className="cp-why-n">02</p><h3 className="cp-why-h">Grassroots, not glamour</h3><p className="cp-why-body">We&apos;re not building for county academies or T20 franchises. We&apos;re building for clubs that share a pavilion and argue about who brings the teas.</p></div>
-              <div className="cp-why-cell"><p className="cp-why-n">03</p><h3 className="cp-why-h">Community owned</h3><p className="cp-why-body">Scores are earned by the players and stay in the club&apos;s ecosystem. No VC cash-out clause. No platform cut on your members&apos; rewards.</p></div>
-              <div className="cp-why-cell"><p className="cp-why-n">04</p><h3 className="cp-why-h">Actually useful</h3><p className="cp-why-body">We only ship features that save real admin time or make players better. No vanity dashboards. No engagement gamification for its own sake.</p></div>
-              <div className="cp-why-cell"><p className="cp-why-n">05</p><h3 className="cp-why-h">Privacy by default</h3><p className="cp-why-body">AI coaching runs on-device. Your players&apos; pose data never leaves their phone. We don&apos;t sell data, ever.</p></div>
-              <div className="cp-why-cell"><p className="cp-why-n">06</p><h3 className="cp-why-h">Fair pricing</h3><p className="cp-why-body">Players join free. Club plans are priced for clubs that hold fundraisers to buy a new sightscreen. Not for clubs with a hospitality suite.</p></div>
             </div>
           </div>
         </section>
 
-        {/* QUOTE */}
+        {/* ── PERSONA / WHO IT'S FOR ── */}
+        <section className="cp-personas">
+          <p className="cp-eyebrow">Who it&apos;s for</p>
+          <h2 className="cp-section-h2">Built for every role in the club.</h2>
+          <p className="cp-section-sub">Whether you play, captain, or run the committee — ClubPulse is built around how you actually use it.</p>
+
+          <PersonaSection />
+        </section>
+
+        {/* ── PRICING ── */}
+        <section className="cp-pricing">
+          <div className="cp-pricing-inner">
+            <p className="cp-eyebrow">Pricing</p>
+            <h2 className="cp-section-h2">Fair pricing for real clubs.</h2>
+            <p className="cp-section-sub">Players always join free. Club plans unlock admin tools and remove all limits. No hidden fees, no annual lock-in.</p>
+
+            <div className="cp-pricing-grid">
+              {/* Player */}
+              <div className="cp-price-card">
+                <p className="cp-price-plan">Player</p>
+                <div className="cp-price-n">£0</div>
+                <p className="cp-price-period">Free forever</p>
+                <p className="cp-price-desc">Everything a player needs to engage with their club — completely free, no card required.</p>
+                <div className="cp-price-features">
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Mark availability</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard access</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Earn &amp; track Scores</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Career stats dashboard</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching sessions</span></div>
+                </div>
+                <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
+              </div>
+
+              {/* Club — featured */}
+              <div className="cp-price-card featured">
+                <span className="cp-price-featured-chip">Most popular</span>
+                <p className="cp-price-plan">Club</p>
+                <div className="cp-price-n"><span>£</span>14.99</div>
+                <p className="cp-price-period">per month · cancel anytime</p>
+                <p className="cp-price-desc">Everything your club admin needs. Unlimited players, full match management, and finance tools.</p>
+                <div className="cp-price-features">
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Player</strong></span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited players &amp; teams</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Admin dashboard &amp; XI selection</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scoring tools</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Finance &amp; fee tracking</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores management for all players</span></div>
+                </div>
+                <Link href="/contact" className="cp-price-cta primary">Get started →</Link>
+              </div>
+
+              {/* League */}
+              <div className="cp-price-card">
+                <p className="cp-price-plan">League</p>
+                <div className="cp-price-n" style={{fontSize:'28px',marginTop:'4px'}}>Talk to us</div>
+                <p className="cp-price-period">Custom pricing</p>
+                <p className="cp-price-desc">Running a league, association or county competition? We&apos;ll tailor ClubPulse around your structure.</p>
+                <div className="cp-price-features">
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Club</strong></span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club management</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>League tables &amp; fixtures</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>White-label options</span></div>
+                  <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
+                </div>
+                <Link href="/contact" className="cp-price-cta ghost">Get in touch →</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── QUOTE ── */}
         <section className="cp-quote">
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
             <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Founder, ClubPulse · Slough CC · Performance &amp; Operations Manager</p>
+            <p className="cp-quote-attr">— Founder, ClubPulse · Performance &amp; Operations Manager, Slough CC</p>
           </div>
         </section>
 
-        {/* CTA */}
+        {/* ── CTA BAND ── */}
         <section className="cp-cta-band">
           <div className="cp-cta-band-inner">
             <div>
@@ -1533,7 +1044,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* FOOTER */}
+        {/* ── FOOTER ── */}
         <footer className="cp-footer">
           <div className="cp-footer-inner">
             <Link href="/" className="cp-footer-logo">
@@ -1553,6 +1064,148 @@ export default function HomePage() {
             <p className="cp-footer-copy">© 2026 ClubPulse. Built at Slough CC.</p>
           </div>
         </footer>
+      </div>
+    </>
+  );
+}
+
+/* ── PERSONA SECTION (client component for tab state) ── */
+type Persona = 'player' | 'captain' | 'admin';
+
+function PersonaSection() {
+  const [persona, setPersona] = useState<Persona>('player');
+
+  const personas: Record<Persona, {
+    eyebrow: string; h: string; body: string;
+    checks: { label: string; detail: string }[];
+    card: React.ReactNode;
+  }> = {
+    player: {
+      eyebrow: 'For players',
+      h: 'Your cricket life, in one app.',
+      body: 'Mark availability, track your career stats, follow the live scorecard, get AI coaching feedback, and earn Scores rewards — everything you do at the club, reflected back to you.',
+      checks: [
+        { label: 'Availability in one tap', detail: 'No more WhatsApp threads. Respond in seconds.' },
+        { label: 'Career stats, every match', detail: 'Batting, bowling, fielding — built automatically.' },
+        { label: 'Earn as you play', detail: 'Scores rewards for every contribution you make.' },
+        { label: 'AI coaching feedback', detail: 'Live batting analysis from your phone camera.' },
+      ],
+      card: (
+        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+          <div style={{background:'linear-gradient(135deg,rgba(201,165,76,0.12),rgba(201,165,76,0.04))',border:'1px solid rgba(201,165,76,0.2)',borderRadius:'14px',padding:'20px'}}>
+            <div style={{fontSize:'11px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'rgba(201,165,76,0.6)',marginBottom:'4px'}}>Your Scores balance</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'#c9a54c',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(201,165,76,0.5)'}}>pts</span></div>
+            <div style={{fontSize:'13px',color:'rgba(240,236,228,0.4)',marginTop:'6px'}}>≈ £25.00 cash value</div>
+          </div>
+          <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
+            {[['Match played · vs Henley CC','+50 pts'],['Marked available · Sat','+5 pts'],['Season fee paid','+200 pts'],['AI coaching session','+25 pts']].map(([l,p])=>(
+              <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'12px'}}>
+                <span style={{color:'rgba(255,255,255,0.5)'}}>{l}</span>
+                <span style={{fontWeight:700,color:'#c9a54c'}}>{p}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    captain: {
+      eyebrow: 'For captains',
+      h: 'Run your XI without the chaos.',
+      body: 'See availability responses live as they come in. Know exactly who\'s confirmed at any moment. Pick your XI when you\'re ready, send notifications in one click, and let the app handle the chasing.',
+      checks: [
+        { label: 'Live availability dashboard', detail: 'Watch responses come in — 8/11, 9/11, 10/11.' },
+        { label: 'Confirm XI instantly', detail: 'Squad confirmed. Push notification goes to all 11.' },
+        { label: 'No more group chat admin', detail: 'Stop manually counting who replied.' },
+        { label: 'Full squad history', detail: 'Who played when, career records, form guides.' },
+      ],
+      card: (
+        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(155,28,28,0.2)',borderRadius:'12px',padding:'16px'}}>
+            <div>
+              <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
+              <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · 10:30am</div>
+            </div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'28px',fontWeight:800,color:'var(--green)'}}>10<span style={{fontSize:'14px',fontWeight:500,color:'rgba(240,236,228,0.3)'}}>/11</span></div>
+          </div>
+          {[['I. Suresh','yes'],['R. Patel','yes'],['A. Khan','yes'],['S. Bhatt','no'],['D. Sharma','maybe']].map(([n,s])=>(
+            <div key={n} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',borderRadius:'8px',background:'#111',border:'1px solid rgba(255,255,255,0.04)'}}>
+              <span style={{fontSize:'13px',color:'rgba(255,255,255,0.7)'}}>{n}</span>
+              <span style={{padding:'3px 9px',borderRadius:'5px',fontSize:'10px',fontWeight:700,textTransform:'uppercase' as const,
+                background:s==='yes'?'rgba(46,204,113,0.12)':s==='no'?'rgba(249,115,22,0.08)':'rgba(255,255,255,0.04)',
+                color:s==='yes'?'var(--green)':s==='no'?'var(--orange)':'rgba(255,255,255,0.35)',
+                border:`1px solid ${s==='yes'?'rgba(46,204,113,0.2)':s==='no'?'rgba(249,115,22,0.2)':'rgba(255,255,255,0.08)'}`
+              }}>
+                {s==='yes'?'Available':s==='no'?'Unavailable':'No response'}
+              </span>
+            </div>
+          ))}
+          <button style={{width:'100%',padding:'12px',background:'var(--red)',color:'#fff',border:'none',borderRadius:'9px',fontSize:'13px',fontWeight:700,fontFamily:"'Inter',sans-serif",cursor:'pointer'}}>
+            Confirm XI &amp; notify squad →
+          </button>
+        </div>
+      ),
+    },
+    admin: {
+      eyebrow: 'For club admins',
+      h: 'Run the whole club from one dashboard.',
+      body: 'Availability, scorecards, finance, Scores rewards — all in one place. Stop switching between spreadsheets, banking apps and WhatsApp threads. One platform handles it all.',
+      checks: [
+        { label: 'Full club overview', detail: 'Every team, every match, every player in one view.' },
+        { label: 'Finance & fee tracking', detail: 'Know who\'s paid, chase in one click, Wise payouts.' },
+        { label: 'Scores management', detail: 'Award, adjust and redeem points across all players.' },
+        { label: 'Match management', detail: 'Set fixtures, scorers, results — admin made simple.' },
+      ],
+      card: (
+        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+          <div style={{background:'linear-gradient(135deg,rgba(46,204,113,0.1),rgba(46,204,113,0.02))',border:'1px solid rgba(46,204,113,0.15)',borderRadius:'14px',padding:'20px'}}>
+            <div style={{fontSize:'10px',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase' as const,color:'rgba(46,204,113,0.6)',marginBottom:'4px'}}>Club balance</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'var(--green)',letterSpacing:'-0.02em',lineHeight:1}}>£4,280</div>
+            <div style={{fontSize:'12px',color:'var(--fg3)',marginTop:'4px'}}>18 fee payments received this season</div>
+          </div>
+          <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
+            <div style={{padding:'10px 14px',fontSize:'10px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'var(--fg3)',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>Recent transactions</div>
+            {[['Season fee — I. Suresh','+£80.00','cr'],['Season fee — R. Patel','+£80.00','cr'],['Ground hire — Arbour Park','−£120.00','db']].map(([n,a,t])=>(
+              <div key={n} style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'12px'}}>
+                <span style={{color:'rgba(255,255,255,0.55)'}}>{n}</span>
+                <span style={{fontWeight:700,color:t==='cr'?'var(--green)':'rgba(255,255,255,0.4)'}}>{a}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+  };
+
+  const p = personas[persona];
+
+  return (
+    <>
+      <div className="cp-persona-tabs">
+        {(['player','captain','admin'] as Persona[]).map(id => (
+          <button
+            key={id}
+            className={`cp-persona-tab${persona === id ? ' active' : ''}`}
+            onClick={() => setPersona(id)}
+          >
+            {id === 'player' ? '🏏 Player' : id === 'captain' ? '📋 Captain' : '⚙️ Admin'}
+          </button>
+        ))}
+      </div>
+      <div className="cp-persona-panel">
+        <div>
+          <p className="cp-persona-eyebrow">{p.eyebrow}</p>
+          <h3 className="cp-persona-h">{p.h}</h3>
+          <p className="cp-persona-body">{p.body}</p>
+          <div className="cp-persona-checks">
+            {p.checks.map(c => (
+              <div key={c.label} className="cp-persona-check">
+                <span className="cp-persona-check-icon">✓</span>
+                <span><strong>{c.label}</strong> — {c.detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="cp-persona-card">{p.card}</div>
       </div>
     </>
   );
