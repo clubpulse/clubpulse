@@ -119,11 +119,11 @@ export default function ContactPage() {
             <span className="cp-logo-name">ClubPulse</span>
           </Link>
           <div className="cp-menu">
-            <a href="/#availability">Availability</a>
-            <a href="/#scorecard">Scorecard</a>
-            <a href="/#ai-coach">AI Coach</a>
-            <a href="/#scores">Scores</a>
-            <a href="/#finance">Finance</a>
+            <Link href="/#availability">Availability</Link>
+            <Link href="/#scorecard">Scorecard</Link>
+            <Link href="/#ai-coach">AI Coach</Link>
+            <Link href="/#scores">Scores</Link>
+            <Link href="/#finance">Finance</Link>
             <Link href="/about">About</Link>
             <Link href="/contact" className="active">Contact</Link>
           </div>
@@ -141,7 +141,7 @@ export default function ContactPage() {
         <div>
           <p className="section-tag">Get in touch</p>
           <h1 className="page-h">Bring ClubPulse<br />to your club</h1>
-          <p className="page-sub">We onboard clubs one at a time to make sure the setup fits your structure. Fill in the form and we'll be in touch within a couple of days.</p>
+          <p className="page-sub">We onboard clubs one at a time to make sure the setup fits your structure. Fill in the form and we&apos;ll be in touch within a couple of days.</p>
 
           <div className="contact-method">
             <div className="method-icon">✉️</div>

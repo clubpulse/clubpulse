@@ -93,11 +93,11 @@ export default function AboutPage() {
             <span className="cp-logo-name">ClubPulse</span>
           </Link>
           <div className="cp-menu">
-            <a href="/#availability">Availability</a>
-            <a href="/#scorecard">Scorecard</a>
-            <a href="/#ai-coach">AI Coach</a>
-            <a href="/#scores">Scores</a>
-            <a href="/#finance">Finance</a>
+            <Link href="/#availability">Availability</Link>
+            <Link href="/#scorecard">Scorecard</Link>
+            <Link href="/#ai-coach">AI Coach</Link>
+            <Link href="/#scores">Scores</Link>
+            <Link href="/#finance">Finance</Link>
             <Link href="/about" className="active">About</Link>
             <Link href="/contact">Contact</Link>
           </div>
@@ -119,12 +119,12 @@ export default function AboutPage() {
       <section className="story-wrap">
         <div className="story-block">
           <h2 className="story-h">The problem every club knows</h2>
-          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who's available, tracking who's paid their annual fee: it falls on one or two volunteers who burn out.</p>
+          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two volunteers who burn out.</p>
           <p className="story-p">At Slough CC, we lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
         </div>
 
         <div className="pull-quote">
-          <p>"We didn't set out to build a software company. We just needed Saturday mornings back."</p>
+          <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
           <cite>— Founder, ClubPulse · Slough CC member since 2019</cite>
         </div>
 
@@ -136,8 +136,8 @@ export default function AboutPage() {
 
         <div className="story-block">
           <h2 className="story-h">From one club to many</h2>
-          <p className="story-p">What started as an internal tool for Slough CC is now a platform built to serve any grassroots cricket club in the UK. We've kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
-          <p className="story-p">We're not here to replace the human side of your club. We're here to remove the admin burden so you can focus on it.</p>
+          <p className="story-p">What started as an internal tool for Slough CC is now a platform built to serve any grassroots cricket club in the UK. We&apos;ve kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
+          <p className="story-p">We&apos;re not here to replace the human side of your club. We&apos;re here to remove the admin burden so you can focus on it.</p>
         </div>
       </section>
 
@@ -170,7 +170,7 @@ export default function AboutPage() {
           <div className="origin-text">
             <p className="section-tag" style={{ marginBottom: '12px' }}>Live at Slough CC</p>
             <h2>Running in production every weekend</h2>
-            <p>ClubPulse isn't a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
+            <p>ClubPulse isn&apos;t a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
             <p>That means every bug gets found fast, and every feature gets stress-tested in the most unforgiving environment: a cricket club where people actually care about the result.</p>
           </div>
           <div className="stat-cluster">
@@ -192,7 +192,7 @@ export default function AboutPage() {
       {/* ── CTA ── */}
       <section className="cta-section">
         <h2 className="cta-h">Ready to bring ClubPulse<br />to your club?</h2>
-        <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we'll show you what it looks like for your setup.</p>
+        <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>
           <Link href="/" className="btn-ghost">See all features</Link>

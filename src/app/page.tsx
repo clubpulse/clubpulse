@@ -66,8 +66,8 @@ export default function HomePage() {
     return () => window.removeEventListener('mousemove', move);
   }, [featTab]);
 
-  const stat50 = useCountUp(50);
-  const stat33 = useCountUp(33);
+  const { ref: stat50Ref, count: stat50Count } = useCountUp(50);
+  const { ref: stat33Ref, count: stat33Count } = useCountUp(33);
 
   return (
     <>
@@ -992,10 +992,10 @@ export default function HomePage() {
                 <a href="#features" className="cp-btn-hero-ghost">See all features</a>
               </div>
               <div className="cp-hero-stats">
-                <div className="cp-hero-stat" ref={stat50.ref}><div className="cp-stat-n">{stat50.count}</div><div className="cp-stat-l">Scores = £1 value</div></div>
+                <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1 value</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">&lt;1s</div><div className="cp-stat-l">Scorecard sync</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
-                <div className="cp-hero-stat" ref={stat33.ref}><div className="cp-stat-n">{stat33.count}</div><div className="cp-stat-l">Pose landmarks</div></div>
+                <div className="cp-hero-stat" ref={stat33Ref}><div className="cp-stat-n">{stat33Count}</div><div className="cp-stat-l">Pose landmarks</div></div>
               </div>
             </div>
 
