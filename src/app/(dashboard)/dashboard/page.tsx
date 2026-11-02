@@ -7,16 +7,25 @@ import { getRecentActivity } from '@/lib/activity/service';
 import { totalBalance } from '@/lib/types/scores';
 import { EarningNudges } from '@/components/dashboard/EarningNudges';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
+import { CoachingInsightsCard } from '@/components/dashboard/CoachingInsightsCard';
+import type { CoachingInsight } from '@/lib/types/coaching-insights';
 
 export default async function DashboardPage() {
   const user = await requireUser();
   const supabase = await createClient();
 
-  const [profile, wallet, activity, roles] = await Promise.all([
+  const [profile, wallet, activity, roles, insights] = await Promise.all([
     fetchProfile(supabase, user.id),
     fetchWallet(supabase, user.id),
     getRecentActivity(supabase, user.id, 6),
     getUserRoles(user.id),
+    supabase
+      .from('coaching_insights')
+      .select('id, player_id, match_id, generated_at, tier, insight_type, finding, recommendation, acknowledged')
+      .eq('player_id', user.id)
+      .order('generated_at', { ascending: false })
+      .limit(3)
+      .returns<CoachingInsight[]>(),
   ]);
 
   const walletData = wallet.success ? wallet.data : null;
@@ -88,6 +97,9 @@ export default async function DashboardPage() {
 
           {/* AI earning nudges */}
           <EarningNudges />
+
+          {/* Tier 1 AI coaching insights */}
+          <CoachingInsightsCard playerId={user.id} initialInsights={insights.data ?? []} />
 
           {/* Recent activity */}
           <RecentActivity items={activity} />

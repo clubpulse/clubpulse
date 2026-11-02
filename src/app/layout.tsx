@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Syne } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+// Headings: var(--font-syne)
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  weight: "800",
 });
 
 export const metadata: Metadata = {
@@ -15,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${syne.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
         <Toaster richColors position="top-right" theme="dark" />

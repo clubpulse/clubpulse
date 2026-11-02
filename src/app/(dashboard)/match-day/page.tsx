@@ -5,6 +5,9 @@ import { LiveScorecard } from '@/components/match-day/LiveScorecard';
 import { CreateMatchForm } from '@/components/match-day/CreateMatchForm';
 import type { MatchScorecard } from '@/lib/types/match-day';
 
+// Completing a match generates coaching insights in after(), which runs within this page's duration limit
+export const maxDuration = 300;
+
 async function getUserClubAndRole(userId: string) {
   const supabase = await createClient();
   const { data } = await supabase

@@ -1,6 +1,8 @@
 'use server';
 
+import { after } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { generateCoachingInsights } from '@/lib/ai/coaching-insights';
 import type { ActionResult } from '@/lib/types/action';
 import type {
   MatchScorecard,
@@ -245,6 +247,15 @@ export async function adminCompleteMatch(
     scorecard_id: id,
     message: `🏆 Match result: ${result}`,
     event_type: 'result',
+  });
+
+  // Coaching insights take a while per player, so generate them after the response is sent
+  after(async () => {
+    try {
+      await generateCoachingInsights(id);
+    } catch (err) {
+      console.error('[coaching-insights] generation failed for match', id, err);
+    }
   });
 
   return { success: true, data: data as MatchScorecard };
