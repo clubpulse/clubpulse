@@ -1067,7 +1067,7 @@ function PricingSection() {
         <button
           className={`cp-pricing-toggle-btn${audience === 'club' ? ' active' : ''}`}
           onClick={() => setAudience('club')}
-        >🏟️ Club / League</button>
+        >🏟️ Club</button>
       </div>
 
       {/* ── PLAYER PRICING ── */}
@@ -1135,10 +1135,10 @@ function PricingSection() {
         </>
       )}
 
-      {/* ── CLUB / LEAGUE PRICING ── */}
+      {/* ── CLUB PRICING ── */}
       {audience === 'club' && (
         <>
-          <div className="cp-pricing-grid">
+          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(2,1fr)'}}>
             {/* Starter */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Starter</p>
@@ -1160,11 +1160,11 @@ function PricingSection() {
 
             {/* Club — featured */}
             <div className="cp-price-card featured">
-              <span className="cp-price-featured-chip">Most popular</span>
+              <span className="cp-price-featured-chip">Recommended</span>
               <p className="cp-price-plan">Club</p>
               <div className="cp-price-n"><span>£</span>14.99</div>
               <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">For established clubs with multiple teams. Unlimited players, full finance and all admin tools.</p>
+              <p className="cp-price-desc">For established clubs with multiple teams. Unlimited players, full finance and every admin tool.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Starter</strong></span></div>
@@ -1173,27 +1173,9 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full finance dashboard &amp; Wise payouts</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores management across all players</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club-wide stats &amp; season reports</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>League &amp; association management</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta primary">Get started →</Link>
-            </div>
-
-            {/* League */}
-            <div className="cp-price-card">
-              <p className="cp-price-plan">League</p>
-              <div className="cp-price-n" style={{fontSize:'28px',lineHeight:1.2,paddingTop:'8px'}}>Talk to us</div>
-              <p className="cp-price-period">Custom pricing</p>
-              <p className="cp-price-desc">Running a league, association or county competition? We&apos;ll tailor ClubPulse around your structure.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Club</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club &amp; association management</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>League tables, fixtures &amp; results</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Cross-club Scores &amp; rewards</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>White-label &amp; custom branding</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support &amp; onboarding</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta ghost">Get in touch →</Link>
             </div>
           </div>
           <p className="cp-price-note">All club plans include free player accounts for your entire squad. No per-seat pricing.</p>
