@@ -26,6 +26,16 @@ import sys
 import cv2
 import numpy as np
 
+# YOLO detector — imported lazily; fails gracefully if ultralytics absent
+try:
+    from yolo_detector import YOLODetector as _YOLODetector
+    _yolo: "_YOLODetector | None" = _YOLODetector()
+except Exception:
+    _yolo = None
+
+# HSV confidence below this threshold triggers YOLO fallback
+HSV_CONF_THRESHOLD = 0.45
+
 # ---------------------------------------------------------------------------
 # Kalman Filter — constant-velocity model for 2-D ball tracking
 # ---------------------------------------------------------------------------
@@ -271,6 +281,15 @@ def run_pipeline(
     frame_w    = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_h    = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+    # Attempt auto calibration from the first frame
+    from calibration import calibrate_from_frame, calibrated_speed_kph
+    ret0, first_frame = cap.read()
+    calibration = calibrate_from_frame(first_frame, pitch_length_m=pitch_length_m) if ret0 else None
+    if not ret0:
+        return {"error": f"Cannot read first frame: {video_path}"}
+    # Re-seek to start (first frame already consumed)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
     kf         = make_kalman()
     kalman_initialised = False
 
@@ -285,6 +304,14 @@ def run_pipeline(
             break
 
         detection = detect_ball_hsv(frame, white_ball=white_ball)
+
+        # If HSV confidence is low (or nothing found), try YOLO
+        if (detection is None or detection[3] < HSV_CONF_THRESHOLD) and _yolo and _yolo.available:
+            yolo_det = _yolo.detect(frame)
+            if yolo_det is not None:
+                # Prefer YOLO when HSV was absent or weak
+                if detection is None or yolo_det[3] > detection[3]:
+                    detection = yolo_det
 
         if detection is not None:
             cx, cy, r, conf = detection
@@ -336,8 +363,11 @@ def run_pipeline(
     bounce_frame = detect_bounce(trajectory)
     bounce_point = trajectory[bounce_frame] if bounce_frame is not None else None
 
-    # Speed
-    speed_kph = estimate_speed(raw_detections, fps, pitch_length_m, frame_w)
+    # Speed — use calibrated px/m if available, otherwise rough heuristic
+    if calibration and calibration.valid:
+        speed_kph = calibrated_speed_kph(raw_detections, fps, calibration)
+    else:
+        speed_kph = estimate_speed(raw_detections, fps, pitch_length_m, frame_w)
 
     # Swing
     swing_px = measure_swing(trajectory, bounce_frame)
@@ -362,6 +392,12 @@ def run_pipeline(
         "speed_kph": speed_kph,
         "swing_px": swing_px,
         "pitch_map": pitch_coords,
+        "calibration": {
+            "valid":      calibration.valid      if calibration else False,
+            "px_per_m":   calibration.px_per_m   if calibration else None,
+            "method":     calibration.method     if calibration else "none",
+            "confidence": calibration.confidence if calibration else 0.0,
+        } if calibration else None,
     }
 
 
