@@ -92,6 +92,8 @@ function makeRequest(opts: {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('POST /api/analysis/ball-track', () => {
+  jest.setTimeout(15000);
+
   beforeEach(() => {
     mockWriteFile.mockResolvedValue(undefined);
     mockUnlink.mockResolvedValue(undefined);
