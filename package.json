@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:highlights": "tsx scripts/seed-highlights.ts"
+    "seed:highlights": "tsx scripts/seed-highlights.ts",
+    "test": "jest --testPathPatterns=__tests__",
+    "test:py": "python -m pytest scripts/cv/tests/ -v",
+    "test:all": "npm run test && npm run test:py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
@@ -21,12 +24,16 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "jest": "^30.5.2",
+    "jest-environment-node": "^30.5.2",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^5"
   }
