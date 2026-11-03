@@ -22,8 +22,8 @@ export default function ContactPage() {
         /* Nav */
         .cp-nav { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 24px 32px }
         .cp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none }
-        .cp-logo-mark { width: 36px; height: 36px; background: #1D4ED8; border-radius: 8px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff }
-        .cp-logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #f0ece4 }
+        .cp-logo-mark {width:36px;height:36px;border-radius:8px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
+        .cp-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:18px;} .cp-logo-name .club {color:#f0ece4;} .cp-logo-name .pulse {color:#60A5FA;}
         .cp-menu { display: flex; align-items: center; gap: 24px }
         .cp-menu a { font-size: 14px; font-weight: 500; color: #fff; text-decoration: none; opacity: 0.55; transition: opacity 0.15s }
         .cp-menu a:hover, .cp-menu a.active { opacity: 1 }
@@ -115,8 +115,22 @@ export default function ContactPage() {
       <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(8,8,8,0.94)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <nav className="cp-nav">
           <Link href="/" className="cp-logo">
-            <span className="cp-logo-mark">C</span>
-            <span className="cp-logo-name">ClubPulse</span>
+            <span className="cp-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="cpNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#cpNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg></span>
+            <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
           </Link>
           <div className="cp-menu">
             <Link href="/#availability">Availability</Link>

@@ -19,8 +19,8 @@ export default function ScoresPage() {
         .sr-nav { position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.92);backdrop-filter:blur(16px); }
         .sr-nav-inner { max-width:1200px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px; }
         .sr-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
-        .sr-logo-mark { width:30px;height:30px;background:var(--red);border-radius:7px;display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff; }
-        .sr-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--fg); }
+        .sr-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
+        .sr-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .sr-logo-name .club {color:#f0ece4;} .sr-logo-name .pulse {color:#60A5FA;}
         .sr-nav-back { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.15s; }
         .sr-nav-back:hover { color:var(--fg); }
         .sr-nav-cta { padding:9px 20px;font-size:13px;font-weight:700;background:var(--red);color:#fff;text-decoration:none;border-radius:9px;transition:opacity 0.12s; }
@@ -121,7 +121,21 @@ export default function ScoresPage() {
       <div className="sr-root">
         <nav className="sr-nav">
           <div className="sr-nav-inner">
-            <Link href="/" className="sr-logo"><span className="sr-logo-mark">C</span><span className="sr-logo-name">ClubPulse</span></Link>
+            <Link href="/" className="sr-logo"><span className="sr-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="srNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#srNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg></span><span className="sr-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
             <Link href="/#features" className="sr-nav-back">← All features</Link>
             <Link href="/contact" className="sr-nav-cta">Get started</Link>
           </div>
@@ -268,7 +282,21 @@ export default function ScoresPage() {
 
         <footer className="sr-footer">
           <div className="sr-footer-inner">
-            <Link href="/" className="sr-logo"><span className="sr-logo-mark">C</span><span className="sr-logo-name">ClubPulse</span></Link>
+            <Link href="/" className="sr-logo"><span className="sr-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="srFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#srFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg></span><span className="sr-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
             <div className="sr-footer-links">
               <Link href="/features/availability">Availability</Link>
               <Link href="/features/scorecard">Scorecard</Link>

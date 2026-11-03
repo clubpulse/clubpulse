@@ -22,8 +22,8 @@ export default function AICoachPage() {
         .ai-nav { position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.92);backdrop-filter:blur(16px); }
         .ai-nav-inner { max-width:1200px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px; }
         .ai-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
-        .ai-logo-mark { width:30px;height:30px;background:var(--red);border-radius:7px;display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff; }
-        .ai-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--fg); }
+        .ai-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
+        .ai-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .ai-logo-name .club {color:#f0ece4;} .ai-logo-name .pulse {color:#60A5FA;}
         .ai-nav-back { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.15s; }
         .ai-nav-back:hover { color:var(--fg); }
         .ai-nav-cta { padding:9px 20px;font-size:13px;font-weight:700;background:var(--red);color:#fff;text-decoration:none;border-radius:9px;transition:opacity 0.12s; }
@@ -134,7 +134,21 @@ export default function AICoachPage() {
       <div className="ai-root">
         <nav className="ai-nav">
           <div className="ai-nav-inner">
-            <Link href="/" className="ai-logo"><span className="ai-logo-mark">C</span><span className="ai-logo-name">ClubPulse</span></Link>
+            <Link href="/" className="ai-logo"><span className="ai-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="aiNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#aiNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg></span><span className="ai-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
             <Link href="/#features" className="ai-nav-back">← All features</Link>
             <Link href="/contact" className="ai-nav-cta">Get started</Link>
           </div>
@@ -310,7 +324,21 @@ export default function AICoachPage() {
 
         <footer className="ai-footer">
           <div className="ai-footer-inner">
-            <Link href="/" className="ai-logo"><span className="ai-logo-mark">C</span><span className="ai-logo-name">ClubPulse</span></Link>
+            <Link href="/" className="ai-logo"><span className="ai-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="aiFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#aiFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg></span><span className="ai-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
             <div className="ai-footer-links">
               <Link href="/features/availability">Availability</Link>
               <Link href="/features/scorecard">Scorecard</Link>
