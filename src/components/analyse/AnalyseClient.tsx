@@ -9,6 +9,12 @@ import { Card } from '@/components/ui/Card';
 import { createClient } from '@/lib/supabase/client';
 import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
 import { seedDemoHighlights } from '@/app/analyse/actions';
+import { BallTrackClient } from '@/components/analyse/BallTrackClient';
+
+type AnalyseTab = 'pose' | 'ball';
+
+const GOLD   = '#c9a54c';
+const CRIMSON = '#9b1c1c';
 
 // Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
@@ -20,8 +26,6 @@ const MIN_FRAMES = 10;
 // Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
 const MIN_CLIP_SECONDS = 2;
 const MIN_VISIBILITY = 0.5;
-const GOLD = '#c9a54c';
-const CRIMSON = '#9b1c1c';
 
 // MediaPipe Pose landmark indices ("left" is the player's own left)
 const L = { nose: 0, lShoulder: 11, rShoulder: 12, lElbow: 13, rElbow: 14, lWrist: 15, rWrist: 16,
@@ -281,6 +285,7 @@ function Toggle<T extends string>({ value, options, onChange, disabled, label }:
 }
 
 export function AnalyseClient() {
+  const [tab, setTab] = useState<AnalyseTab>('pose');
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -503,15 +508,46 @@ export function AnalyseClient() {
 
   return (
     <div className="space-y-6">
+      {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Analyse</h1>
+        <h1 className="text-2xl font-semibold" style={{ fontFamily: "’Inter’, sans-serif" }}>Analyse</h1>
         <p className="mt-1 text-sm text-neutral-400">
-          Record a 5-second clip and get instant feedback on your {mode} technique. When you stop the camera, your
-          best 3 clips are saved to your highlight reel, where anyone with a clip’s link can watch it.
+          AI-powered cricket analysis — biomechanics and ball tracking in one place.
         </p>
       </div>
 
-      {process.env.NODE_ENV === 'development' && (
+      {/* Tab switcher */}
+      <div style={{ display: ‘flex’, gap: ‘4px’, padding: ‘4px’, background: ‘rgba(255,255,255,0.04)’, border: ‘1px solid rgba(255,255,255,0.07)’, borderRadius: ‘12px’, width: ‘fit-content’ }}>
+        {([[‘pose’, ‘🧍 Pose & Technique’], [‘ball’, ‘🏏 Ball Tracking’]] as [AnalyseTab, string][]).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            style={{
+              padding:      ‘8px 20px’,
+              borderRadius: ‘9px’,
+              border:       ‘none’,
+              fontSize:     ‘13px’,
+              fontWeight:   600,
+              cursor:       ‘pointer’,
+              background:   tab === key ? ‘#111’ : ‘transparent’,
+              color:        tab === key ? ‘#f0ece4’ : ‘rgba(240,236,228,0.45)’,
+              boxShadow:    tab === key ? ‘0 1px 4px rgba(0,0,0,0.4)’ : ‘none’,
+              transition:   ‘all 0.15s’,
+              fontFamily:   "’Inter’, sans-serif",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Ball tracking tab */}
+      {tab === ‘ball’ && <BallTrackClient />}
+
+      {/* Pose tab — existing content */}
+      {tab === ‘pose’ && <>
+      {process.env.NODE_ENV === ‘development’ && (
         <form action={seedDemoHighlights}
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-neutral-700 px-4 py-3 text-sm">
           <span className="text-neutral-400">Dev only: add a sample reel without recording.</span>
@@ -616,6 +652,7 @@ export function AnalyseClient() {
           </p>
         </Card>
       )}
+      </>}
     </div>
   );
 }
