@@ -31,7 +31,7 @@ export function SaveSnapshotButton({ clubId }: Props) {
   const bg =
     state === 'saved' ? 'rgba(52,211,153,0.15)'
     : state === 'error' ? 'rgba(248,113,113,0.15)'
-    : '#c9a54c';
+    : '#EFC84A';
 
   return (
     <button

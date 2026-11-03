@@ -56,7 +56,7 @@ export default async function FeeOffsetPage() {
 
   const card = (children: React.ReactNode, style?: React.CSSProperties) => (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '24px',
@@ -104,7 +104,7 @@ export default async function FeeOffsetPage() {
                     { label: 'Max offset', value: `${maxPoundsOffset.toFixed(2) === '0.00' ? formatPounds(0) : `£${maxPoundsOffset.toFixed(2)}`} (${settings.max_offset_percent}%)`, icon: '📉' },
                   ].map((tile) => (
                     <div key={tile.label} style={{
-                      background: '#0f0f0f',
+                      background: '#07102B',
                       border: '1px solid rgba(255,255,255,0.07)',
                       borderRadius: '14px',
                       padding: '16px',
@@ -123,7 +123,7 @@ export default async function FeeOffsetPage() {
                 {/* Rate info */}
                 {card(
                   <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
-                    Conversion rate: <strong style={{ color: '#c9a54c' }}>{settings.scores_per_pound.toLocaleString()} Scores = £1.00 off</strong>
+                    Conversion rate: <strong style={{ color: '#EFC84A' }}>{settings.scores_per_pound.toLocaleString()} Scores = £1.00 off</strong>
                     {' '}— max offset is {settings.max_offset_percent}% of your {annualFee} fee
                     {' '}({formatPounds(Math.floor(settings.annual_fee_pence * settings.max_offset_percent / 100))}).
                     You can apply up to <strong style={{ color: '#fff' }}>{maxScoresAllowed.toLocaleString()} Scores</strong>.
@@ -143,7 +143,7 @@ export default async function FeeOffsetPage() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div>
                           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores spent</p>
-                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#c9a54c', fontFamily: "'Syne', sans-serif" }}>
+                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Syne', sans-serif" }}>
                             {myApplication.scores_applied.toLocaleString()}
                           </p>
                         </div>

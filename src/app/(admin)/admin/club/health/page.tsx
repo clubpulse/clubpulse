@@ -76,7 +76,7 @@ export default async function ClubHealthPage() {
       {/* Engagement stats + health score side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', alignItems: 'stretch' }}>
         {engagementStats.map((s) => (
-          <div key={s.label} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px' }}>
+          <div key={s.label} style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px' }}>
             <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px', fontWeight: 600 }}>{s.label}</p>
             <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '36px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{s.value}</p>
             <p style={{ fontSize: '12px', color: s.positive ? '#2ecc71' : '#e74c3c', margin: 0, fontWeight: 600 }}>{s.trend}</p>
@@ -117,7 +117,7 @@ export default async function ClubHealthPage() {
             <div key={d.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0 }}>{d.label}</p>
-                <span style={{ fontSize: '12px', color: '#c9a54c', fontWeight: 700 }}>{d.weight}</span>
+                <span style={{ fontSize: '12px', color: '#EFC84A', fontWeight: 700 }}>{d.weight}</span>
               </div>
               <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.5 }}>{d.desc}</p>
             </div>

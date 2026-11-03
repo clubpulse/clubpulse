@@ -2,35 +2,44 @@
 
 /* ── ClubPulse Design Tokens ── */
 :root {
-  /* Surfaces */
-  --background: #080810;
-  --foreground: #E8EDF5;
+  /* Surfaces — consistent navy-tinted dark scale */
+  --background:   #04091A;   /* Page root — deepest navy */
+  --surface-1:    #07102B;   /* Cards, panels */
+  --surface-2:    #0C1A38;   /* Elevated / hover */
+  --surface-3:    rgba(255,255,255,0.04); /* Subtle containers */
+  --foreground:   #E8EDF5;   /* Primary text */
+  --fg-muted:     rgba(232,237,245,0.55);
+  --fg-subtle:    rgba(232,237,245,0.3);
 
-  /* Brand — Navy / Blue */
-  --brand-primary:       #1D4ED8;   /* Navy — primary actions, CTAs */
-  --brand-primary-light: #3B82F6;   /* Medium blue — hover state */
+  /* Brand — Blue */
+  --brand-primary:       #2563EB;   /* Primary CTAs, buttons */
+  --brand-primary-light: #3B82F6;   /* Hover state */
+  --brand-primary-dim:   rgba(37,99,235,0.14);  /* Tinted surfaces */
   --brand-primary-dark:  #0F1F5C;   /* Deep navy — icon bg start */
-  --brand-sky:           #60A5FA;   /* Sky blue — accent, wordmark "Pulse" */
+  --brand-sky:           #60A5FA;   /* Sky — accent, wordmark "Pulse" */
 
   /* Brand — Gold (Scores / rewards) */
   --brand-gold:          #EFC84A;   /* Gold — Scores balance, trophy */
+  --brand-gold-muted:    #C8A63E;   /* Slightly dimmed for text on dark */
   --brand-gold-dim:      rgba(239,200,74,0.12);
 
   /* Status */
-  --brand-green:         #22C55E;   /* Live / available / success */
+  --brand-green:         #22C55E;
   --brand-green-dim:     rgba(34,197,94,0.10);
-  --brand-orange:        #F97316;   /* Road-map / warning */
+  --brand-orange:        #F97316;
 
-  /* Legacy compat — mapped away from red */
-  --brand-red:           #1D4ED8;   /* Alias: anywhere old red was used, now blue */
+  /* Legacy compat */
+  --brand-red:           #2563EB;
 
-  /* Neutrals */
-  --border:              rgba(255,255,255,0.07);
-  --border2:             rgba(255,255,255,0.04);
+  /* Borders */
+  --border:   rgba(255,255,255,0.08);
+  --border2:  rgba(255,255,255,0.04);
 }
 
 @theme inline {
   --color-background:          var(--background);
+  --color-surface-1:           var(--surface-1);
+  --color-surface-2:           var(--surface-2);
   --color-foreground:          var(--foreground);
   --color-brand-primary:       var(--brand-primary);
   --color-brand-primary-light: var(--brand-primary-light);

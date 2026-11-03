@@ -78,8 +78,8 @@ export default async function AuctionPage() {
             borderRadius: '20px',
             fontSize: '12px',
             fontWeight: 600,
-            background: 'rgba(201,165,76,0.15)',
-            color: '#c9a54c',
+            background: 'rgba(239,200,74,0.15)',
+            color: '#EFC84A',
           }}>
             {balance} Scores available
           </span>

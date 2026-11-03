@@ -58,7 +58,7 @@ export function AdminFinanceTable({ entries }: Props) {
           onChange={e => setMonthFilter(e.target.value)}
           style={{
             marginLeft: 'auto',
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '8px',
             padding: '6px 10px',
@@ -76,7 +76,7 @@ export function AdminFinanceTable({ entries }: Props) {
 
       {/* Table */}
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '14px',
         overflow: 'hidden',

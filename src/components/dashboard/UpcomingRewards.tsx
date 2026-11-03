@@ -11,7 +11,7 @@ export function UpcomingRewards({ rewards, balance }: { rewards: Reward[]; balan
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '20px',
@@ -30,7 +30,7 @@ export function UpcomingRewards({ rewards, balance }: { rewards: Reward[]; balan
       {upcoming.length === 0 ? (
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
           No rewards within reach yet.{' '}
-          <Link href="/marketplace" style={{ color: '#c9a54c', textDecoration: 'none' }}>
+          <Link href="/marketplace" style={{ color: '#EFC84A', textDecoration: 'none' }}>
             Browse the marketplace
           </Link>
         </p>
@@ -50,7 +50,7 @@ export function UpcomingRewards({ rewards, balance }: { rewards: Reward[]; balan
                     </span>
                   </div>
                   <div style={{ marginTop: '6px', height: '4px', borderRadius: '999px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', borderRadius: '999px', background: '#c9a54c', width: `${progress}%` }} />
+                    <div style={{ height: '100%', borderRadius: '999px', background: '#EFC84A', width: `${progress}%` }} />
                   </div>
                 </Link>
               </li>

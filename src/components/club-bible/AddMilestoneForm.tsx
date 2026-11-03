@@ -25,7 +25,7 @@ const labelStyle: CSSProperties = {
 
 const inputStyle: CSSProperties = {
   width: '100%',
-  background: '#0f0f0f',
+  background: '#07102B',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '10px',
   padding: '9px 12px',
@@ -106,7 +106,7 @@ export function AddMilestoneForm({ clubId }: Props) {
             style={{ ...inputStyle, cursor: 'pointer' }}
           >
             {CATEGORIES.map(([key, cfg]) => (
-              <option key={key} value={key} style={{ background: '#0f0f0f' }}>
+              <option key={key} value={key} style={{ background: '#07102B' }}>
                 {cfg.emoji} {cfg.label}
               </option>
             ))}

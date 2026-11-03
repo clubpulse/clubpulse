@@ -90,7 +90,7 @@ export default async function FormGuidePage() {
 
       {result.success && entries.length === 0 && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '16px',
           padding: '32px',
@@ -104,7 +104,7 @@ export default async function FormGuidePage() {
 
       {entries.length > 0 && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '16px',
           overflow: 'hidden',

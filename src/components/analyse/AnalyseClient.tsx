@@ -13,7 +13,7 @@ import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 
 type AnalyseTab = 'pose' | 'ball';
 
-const GOLD   = '#c9a54c';
+const GOLD   = '#EFC84A';
 const CRIMSON = '#1D4ED8';
 
 // Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
@@ -557,7 +557,7 @@ export function AnalyseClient() {
 
       {highlights === 'ready' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm"
-          style={{ borderColor: 'rgba(201,165,76,0.3)', background: 'rgba(201,165,76,0.08)' }}>
+          style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.08)' }}>
           <span className="font-medium text-white">✨ Highlights ready</span>
           <Link href="/highlights" className="font-semibold hover:underline" style={{ color: GOLD }}>View your reel →</Link>
         </div>

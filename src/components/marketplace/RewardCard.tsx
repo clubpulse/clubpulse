@@ -9,7 +9,7 @@ export function RewardCard({ reward, balance }: { reward: Reward; balance: numbe
   return (
     <Link
       href={`/marketplace/${reward.id}`}
-      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#0f0f0f', transition: 'border-color 0.15s' }}
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#07102B', transition: 'border-color 0.15s' }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', background: '#161616', overflow: 'hidden' }}>
         {reward.image_url ? (
@@ -35,7 +35,7 @@ export function RewardCard({ reward, balance }: { reward: Reward; balance: numbe
           </p>
         )}
         <div style={{ marginTop: 'auto', paddingTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '16px', fontWeight: 700, color: '#c9a54c', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: '16px', fontWeight: 700, color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
             {formatScores(reward.creds_cost)} Scores
           </span>
           {outOfStock ? (

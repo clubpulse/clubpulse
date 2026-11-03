@@ -67,7 +67,7 @@ export function AdminSponsorShell({ clubId }: { clubId: string }) {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '4px', background: '#0f0f0f', borderRadius: '10px', padding: '4px', width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: '4px', background: '#07102B', borderRadius: '10px', padding: '4px', width: 'fit-content' }}>
         {tabs.map(t => (
           <button
             key={t.key}
@@ -368,11 +368,11 @@ const inputStyle: React.CSSProperties = {
   fontFamily: "'Inter', sans-serif", boxSizing: 'border-box',
 };
 const formCardStyle: React.CSSProperties = {
-  background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.1)',
+  background: '#07102B', border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '14px', padding: '18px',
 };
 const rowCardStyle: React.CSSProperties = {
-  background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)',
+  background: '#07102B', border: '1px solid rgba(255,255,255,0.07)',
   borderRadius: '12px', padding: '14px 16px',
   display: 'flex', alignItems: 'center', gap: '12px',
 };

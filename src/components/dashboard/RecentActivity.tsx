@@ -4,7 +4,7 @@ import type { WalletTransaction } from '@/lib/types/scores';
 export function RecentActivity({ items }: { items: WalletTransaction[] }) {
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '20px',

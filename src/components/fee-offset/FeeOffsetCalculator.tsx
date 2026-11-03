@@ -59,7 +59,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
           Offset applied!
         </p>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 4px' }}>
-          You spent <strong style={{ color: '#c9a54c' }}>{result.scores_applied.toLocaleString()} Scores</strong> for a{' '}
+          You spent <strong style={{ color: '#EFC84A' }}>{result.scores_applied.toLocaleString()} Scores</strong> for a{' '}
           <strong style={{ color: '#4ade80' }}>£{result.pounds_offset.toFixed(2)} discount</strong>.
         </p>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
@@ -73,8 +73,8 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Conversion info */}
       <div style={{
-        background: 'rgba(201,165,76,0.08)',
-        border: '1px solid rgba(201,165,76,0.2)',
+        background: 'rgba(239,200,74,0.08)',
+        border: '1px solid rgba(239,200,74,0.2)',
         borderRadius: '12px',
         padding: '14px 16px',
         display: 'flex',
@@ -83,7 +83,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
       }}>
         <span style={{ fontSize: '18px' }}>💡</span>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>
-          <strong style={{ color: '#c9a54c' }}>{settings.scores_per_pound.toLocaleString()} Scores = £1.00 off</strong>
+          <strong style={{ color: '#EFC84A' }}>{settings.scores_per_pound.toLocaleString()} Scores = £1.00 off</strong>
           {' '}· Up to {settings.max_offset_percent}% of your annual fee
         </p>
       </div>
@@ -102,7 +102,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
             onChange={handleChange}
             style={{
               flex: 1,
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: '10px',
               padding: '10px 14px',
@@ -116,13 +116,13 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
           <button
             onClick={handleMax}
             style={{
-              background: 'rgba(201,165,76,0.15)',
-              border: '1px solid rgba(201,165,76,0.3)',
+              background: 'rgba(239,200,74,0.15)',
+              border: '1px solid rgba(239,200,74,0.3)',
               borderRadius: '10px',
               padding: '10px 16px',
               fontSize: '13px',
               fontWeight: 600,
-              color: '#c9a54c',
+              color: '#EFC84A',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
@@ -136,7 +136,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
           max={maxApplicable}
           value={scores}
           onChange={handleSlider}
-          style={{ width: '100%', marginTop: '10px', accentColor: '#c9a54c' }}
+          style={{ width: '100%', marginTop: '10px', accentColor: '#EFC84A' }}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>
           <span>0</span>
@@ -146,7 +146,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
 
       {/* Live preview */}
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '12px',
         padding: '16px',
@@ -156,7 +156,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
       }}>
         <div>
           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores to spend</p>
-          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#c9a54c' : 'rgba(255,255,255,0.2)', fontFamily: "'Syne', sans-serif" }}>
+          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#EFC84A' : 'rgba(255,255,255,0.2)', fontFamily: "'Syne', sans-serif" }}>
             {scores.toLocaleString()}
           </p>
         </div>
@@ -178,7 +178,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
         onClick={handleSubmit}
         disabled={scores <= 0 || isPending}
         style={{
-          background: scores > 0 ? 'linear-gradient(135deg, #1D4ED8 0%, #c9a54c 100%)' : 'rgba(255,255,255,0.06)',
+          background: scores > 0 ? 'linear-gradient(135deg, #1D4ED8 0%, #EFC84A 100%)' : 'rgba(255,255,255,0.06)',
           border: 'none',
           borderRadius: '12px',
           padding: '14px',

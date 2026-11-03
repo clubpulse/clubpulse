@@ -35,19 +35,19 @@ export function CharityCard({ charity, settings }: Props) {
   }
 
   return (
-    <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>{charity.name}</h3>
           {charity.charity_number && <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Reg. {charity.charity_number}</p>}
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#1D4ED8' }}>£{totalRaisedPounds}</p>
+          <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#3B82F6' }}>£{totalRaisedPounds}</p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>raised via Scores</p>
         </div>
       </div>
       {charity.description && <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{charity.description}</p>}
-      {charity.website_url && <a href={charity.website_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#1D4ED8', textDecoration: 'none' }}>Visit website ↗</a>}
+      {charity.website_url && <a href={charity.website_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3B82F6', textDecoration: 'none' }}>Visit website ↗</a>}
       {settings.is_enabled ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>

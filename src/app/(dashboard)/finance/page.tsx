@@ -39,7 +39,7 @@ export default async function FinancePage() {
   const netPositive = (stats?.net_pence ?? 0) >= 0;
 
   const tileStyle = {
-    background: '#0f0f0f',
+    background: '#07102B',
     border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: '14px',
     padding: '16px',
@@ -106,7 +106,7 @@ export default async function FinancePage() {
           Recent Entries
         </h2>
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '14px',
           overflow: 'hidden',

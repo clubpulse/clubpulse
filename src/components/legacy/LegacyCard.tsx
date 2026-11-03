@@ -137,9 +137,9 @@ export function LegacyCard({ legacy }: { legacy: PlayerLegacy }) {
           {legacy.honours.map((h) => (
             <span key={h} style={{
               fontSize: 11, padding: '3px 9px', borderRadius: 20,
-              background: isLegend ? 'rgba(212,175,55,0.1)' : 'rgba(29,78,216,0.15)',
+              background: isLegend ? 'rgba(212,175,55,0.1)' : 'rgba(37,99,235,0.18)',
               color: isLegend ? 'rgba(212,175,55,0.85)' : 'rgba(252,165,165,0.8)',
-              border: isLegend ? '1px solid rgba(212,175,55,0.2)' : '1px solid rgba(29,78,216,0.3)',
+              border: isLegend ? '1px solid rgba(212,175,55,0.2)' : '1px solid rgba(37,99,235,0.35)',
             }}>
               🏅 {h}
             </span>

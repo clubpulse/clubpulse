@@ -31,7 +31,7 @@ export default async function KitDiscountsPage() {
           </div>
           <div style={{ textAlign: 'right' }}>
             <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Your balance</p>
-            <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#c9a54c', fontVariantNumeric: 'tabular-nums' }}>
+            <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
               {balance.toLocaleString('en-GB')} Scores
             </p>
           </div>
@@ -45,7 +45,7 @@ export default async function KitDiscountsPage() {
         </h2>
 
         {rewards.length === 0 ? (
-          <div style={{ padding: '48px 24px', textAlign: 'center', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#0f0f0f' }}>
+          <div style={{ padding: '48px 24px', textAlign: 'center', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#07102B' }}>
             <p style={{ fontSize: '32px', margin: '0 0 12px' }} aria-hidden>🏏</p>
             <p style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 600, color: '#fff' }}>
               No kit deals available right now — check back soon

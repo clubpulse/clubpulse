@@ -112,7 +112,7 @@ export function LogSessionForm({ request, onLogged }: Props) {
               onClick={() => setDuration(min)}
               style={{
                 flex: 1,
-                background: duration === min ? 'rgba(29,78,216,0.35)' : 'rgba(255,255,255,0.05)',
+                background: duration === min ? 'rgba(37,99,235,0.40)' : 'rgba(255,255,255,0.05)',
                 border: `1px solid ${duration === min ? 'rgba(29,78,216,0.6)' : 'rgba(255,255,255,0.1)'}`,
                 borderRadius: '10px', padding: '10px 0',
                 fontSize: '14px', fontWeight: 600,
@@ -128,8 +128,8 @@ export function LogSessionForm({ request, onLogged }: Props) {
 
       {/* Creds preview */}
       <div style={{
-        background: 'rgba(29,78,216,0.1)',
-        border: '1px solid rgba(29,78,216,0.2)',
+        background: 'rgba(37,99,235,0.12)',
+        border: '1px solid rgba(37,99,235,0.22)',
         borderRadius: '12px', padding: '14px',
         display: 'flex', justifyContent: 'space-around',
       }}>

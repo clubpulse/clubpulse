@@ -23,7 +23,7 @@ export function AdminResolveList({ fixtures }: { fixtures: PendingFixture[] }) {
   if (fixtures.length === 0) {
     return (
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '16px',
         padding: '32px',
@@ -75,7 +75,7 @@ function FixtureResolveCard({ fixture }: { fixture: PendingFixture }) {
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: resolved ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '20px',
@@ -145,7 +145,7 @@ function FixtureResolveCard({ fixture }: { fixture: PendingFixture }) {
                     padding: '10px 4px',
                     borderRadius: '10px',
                     border: selected === o.value ? '1.5px solid #1D4ED8' : '1.5px solid rgba(255,255,255,0.08)',
-                    background: selected === o.value ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.03)',
+                    background: selected === o.value ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',

@@ -10,7 +10,7 @@ interface TransferReq {
 }
 interface Props { clubId: string; incoming: TransferReq[]; outgoing: TransferReq[]; }
 
-const SC: Record<string, string> = { pending: '#c9a54c', approved: '#4ade80', rejected: '#f87171', withdrawn: 'rgba(255,255,255,0.3)' };
+const SC: Record<string, string> = { pending: '#EFC84A', approved: '#4ade80', rejected: '#f87171', withdrawn: 'rgba(255,255,255,0.3)' };
 
 export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: Props) {
   const [incoming, setIncoming] = useState(iIn);
@@ -75,7 +75,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
           <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>🔄 Transfer Window</h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Manage incoming and outgoing player transfer requests</p>
         </div>
-        <button onClick={() => setShowNew(true)} style={{ padding: '9px 16px', borderRadius: '10px', border: 'none', background: '#1D4ED8', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={() => setShowNew(true)} style={{ padding: '9px 16px', borderRadius: '10px', border: 'none', background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
           + New request
         </button>
       </div>
@@ -90,7 +90,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
               {nError && <p style={{ margin: 0, fontSize: '12px', color: '#f87171' }}>{nError}</p>}
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button type="button" onClick={() => setShowNew(false)} style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.6)', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={nLoading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: '#1D4ED8', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: nLoading ? 'wait' : 'pointer', opacity: nLoading ? 0.7 : 1 }}>{nLoading ? 'Sending…' : 'Send request'}</button>
+                <button type="submit" disabled={nLoading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: nLoading ? 'wait' : 'pointer', opacity: nLoading ? 0.7 : 1 }}>{nLoading ? 'Sending…' : 'Send request'}</button>
               </div>
             </form>
           </div>

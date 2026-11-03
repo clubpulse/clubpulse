@@ -88,7 +88,7 @@ export default function AdminCharityPage() {
   }
 
   const iStyle = { width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 10px', fontSize: '13px', color: '#fff', outline: 'none', boxSizing: 'border-box' as const };
-  const btnPrimary = { background: '#1D4ED8', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' as const };
+  const btnPrimary = { background: '#2563EB', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' as const };
 
   if (loading) return <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: "'Inter', sans-serif", fontSize: '14px' }}>Loading…</p>;
   if (error) return <p style={{ color: '#f87171', fontFamily: "'Inter', sans-serif", fontSize: '14px' }}>{error}</p>;
@@ -103,7 +103,7 @@ export default function AdminCharityPage() {
       {/* Settings */}
       <section>
         <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Syne', sans-serif" }}>Donation Settings</h2>
-        <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '0 0 200px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>Scores per £1 donated</label>
@@ -127,7 +127,7 @@ export default function AdminCharityPage() {
           <button onClick={() => setShowAdd(v => !v)} style={{ ...btnPrimary, background: showAdd ? 'rgba(255,255,255,0.06)' : '#1D4ED8', fontSize: '12px', padding: '7px 14px' }}>{showAdd ? 'Cancel' : '+ Add charity'}</button>
         </div>
         {showAdd && (
-          <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
+          <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '14px', color: '#fff', fontWeight: 600 }}>Add new charity</h3>
             <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Charity name *" style={iStyle} />
             <input value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="Description (optional)" style={iStyle} />
@@ -140,7 +140,7 @@ export default function AdminCharityPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {charities.length === 0 && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>No charities configured yet.</p>}
           {charities.map(ch => (
-            <div key={ch.id} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+            <div key={ch.id} style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
               <div>
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: ch.is_active ? '#fff' : 'rgba(255,255,255,0.35)' }}>{ch.name} {ch.charity_number && <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>#{ch.charity_number}</span>}</p>
                 {ch.description && <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{ch.description}</p>}
@@ -158,7 +158,7 @@ export default function AdminCharityPage() {
         {pending.length === 0 ? <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>No unbatched donations at the moment.</p> : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {pending.map(group => (
-              <div key={group.charity.id} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div key={group.charity.id} style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>
                   <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#fff' }}>{group.charity.name}</p>
                   <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{group.donation_count} donation{group.donation_count !== 1 ? 's' : ''} · {group.total_scores.toLocaleString()} Scores · £{(group.total_pence / 100).toFixed(2)}</p>
@@ -186,7 +186,7 @@ export default function AdminCharityPage() {
                   <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <td style={{ padding: '10px', color: '#fff' }}>{charities.find(c => c.id === b.charity_id)?.name ?? b.charity_id.slice(0, 8)}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.6)' }}>{b.total_scores.toLocaleString()}</td>
-                    <td style={{ padding: '10px', color: '#1D4ED8', fontWeight: 600 }}>£{(b.total_pence / 100).toFixed(2)}</td>
+                    <td style={{ padding: '10px', color: '#3B82F6', fontWeight: 600 }}>£{(b.total_pence / 100).toFixed(2)}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', fontSize: '12px' }}>{b.transaction_reference ?? '—'}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>{new Date(b.processed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                   </tr>

@@ -121,7 +121,7 @@ export function RegisterMentorForm({ clubId, existing, onSaved }: Props) {
               type="button"
               onClick={() => setSpeciality(speciality === o.value ? '' : o.value)}
               style={{
-                background: speciality === o.value ? 'rgba(29,78,216,0.3)' : 'rgba(255,255,255,0.05)',
+                background: speciality === o.value ? 'rgba(37,99,235,0.35)' : 'rgba(255,255,255,0.05)',
                 border: `1px solid ${speciality === o.value ? 'rgba(29,78,216,0.6)' : 'rgba(255,255,255,0.1)'}`,
                 borderRadius: '20px', padding: '6px 14px',
                 fontSize: '13px', fontWeight: 600,

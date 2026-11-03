@@ -30,7 +30,7 @@ export function CVTabs({ cv }: { cv: FullCricketCV }) {
           gap: '4px',
           marginBottom: '20px',
           padding: '4px',
-          background: '#0a0a0a',
+          background: '#04091A',
           border: '1px solid #1f2937',
           borderRadius: '10px',
           width: 'fit-content',

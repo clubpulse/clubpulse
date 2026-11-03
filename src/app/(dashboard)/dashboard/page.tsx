@@ -76,8 +76,8 @@ export default async function DashboardPage() {
               alignItems: 'center',
               gap: '8px',
               padding: '16px 10px',
-              background: '#0f0f0f',
-              border: '1px solid rgba(255,255,255,0.07)',
+              background: 'var(--surface-1)',
+              border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '14px',
               textDecoration: 'none',
               transition: 'border-color 0.15s',
@@ -106,8 +106,8 @@ export default async function DashboardPage() {
 
           {/* Quick nav to features */}
           <div style={{
-            background: '#0f0f0f',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--surface-1)',
+            border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '16px',
             padding: '20px',
           }}>
@@ -154,8 +154,8 @@ export default async function DashboardPage() {
 
           {/* Scores wallet */}
           <div style={{
-            background: '#0f0f0f',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--surface-1)',
+            border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '16px',
             padding: '20px',
           }}>
@@ -166,7 +166,7 @@ export default async function DashboardPage() {
               fontFamily: "'Syne', sans-serif",
               fontWeight: 800,
               fontSize: '40px',
-              color: '#c9a54c',
+              color: 'var(--brand-gold)',
               margin: '0 0 2px',
               lineHeight: 1,
               letterSpacing: '-0.02em',
@@ -192,12 +192,12 @@ export default async function DashboardPage() {
                 display: 'block',
                 textAlign: 'center',
                 padding: '10px',
-                background: 'rgba(201,165,76,0.12)',
-                border: '1px solid rgba(201,165,76,0.25)',
+                background: 'rgba(239,200,74,0.12)',
+                border: '1px solid rgba(239,200,74,0.25)',
                 borderRadius: '10px',
                 fontSize: '13px',
                 fontWeight: 600,
-                color: '#c9a54c',
+                color: 'var(--brand-gold)',
                 textDecoration: 'none',
               }}
             >
@@ -207,8 +207,8 @@ export default async function DashboardPage() {
 
           {/* How to earn */}
           <div style={{
-            background: '#0f0f0f',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--surface-1)',
+            border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '16px',
             padding: '18px 20px',
           }}>
@@ -227,9 +227,9 @@ export default async function DashboardPage() {
                   <span style={{
                     fontSize: '12px',
                     fontWeight: 700,
-                    color: '#c9a54c',
-                    background: 'rgba(201,165,76,0.08)',
-                    border: '1px solid rgba(201,165,76,0.2)',
+                    color: 'var(--brand-gold)',
+                    background: 'rgba(239,200,74,0.10)',
+                    border: '1px solid rgba(239,200,74,0.2)',
                     borderRadius: '6px',
                     padding: '2px 8px',
                     whiteSpace: 'nowrap',
@@ -248,8 +248,8 @@ export default async function DashboardPage() {
                 alignItems: 'center',
                 gap: '10px',
                 padding: '14px 16px',
-                background: 'rgba(29,78,216,0.08)',
-                border: '1px solid rgba(29,78,216,0.2)',
+                background: 'rgba(37,99,235,0.10)',
+                border: '1px solid rgba(37,99,235,0.25)',
                 borderRadius: '14px',
                 textDecoration: 'none',
               }}

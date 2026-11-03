@@ -35,7 +35,7 @@ export default async function ClubOverviewPage() {
         {stats.map((stat) => (
           <Link key={stat.label} href={stat.href} style={{ textDecoration: 'none' }}>
             <div style={{
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '14px', padding: '16px',
               transition: 'border-color 0.15s',
@@ -78,7 +78,7 @@ export default async function ClubOverviewPage() {
           <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '10px',
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '12px', padding: '12px 14px',
               fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)',

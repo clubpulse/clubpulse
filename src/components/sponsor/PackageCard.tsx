@@ -45,7 +45,7 @@ export function PackageCard({ pkg, juniorSlots, walletBalance, onSuccess }: Pack
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: `1px solid ${isSoldOut ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}`,
       borderRadius: '16px',
       padding: '20px',

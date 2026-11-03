@@ -62,8 +62,8 @@ export default async function CommunityPotPage() {
 
       {/* Pot balance */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(29,78,216,0.15) 0%, rgba(255,255,255,0.03) 100%)',
-        border: '1px solid rgba(29,78,216,0.25)',
+        background: 'linear-gradient(135deg, rgba(37,99,235,0.18) 0%, rgba(255,255,255,0.03) 100%)',
+        border: '1px solid rgba(37,99,235,0.28)',
         borderRadius: '18px',
         padding: '28px',
         textAlign: 'center',
@@ -105,7 +105,7 @@ export default async function CommunityPotPage() {
         </h2>
         {activeProposals.length === 0 ? (
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '14px',
             padding: '32px',
@@ -141,7 +141,7 @@ export default async function CommunityPotPage() {
               <div
                 key={c.id}
                 style={{
-                  background: '#0f0f0f',
+                  background: '#07102B',
                   border: '1px solid rgba(255,255,255,0.06)',
                   borderRadius: '12px',
                   padding: '14px 16px',

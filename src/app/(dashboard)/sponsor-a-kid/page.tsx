@@ -95,7 +95,7 @@ export default async function SponsorAKidPage() {
               <div
                 key={slot.id}
                 style={{
-                  background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)',
+                  background: '#07102B', border: '1px solid rgba(255,255,255,0.07)',
                   borderRadius: '12px', padding: '14px',
                 }}
               >

@@ -41,7 +41,7 @@ export default async function WaitingListAdminPage() {
       {/* Share link */}
       <div style={{
         background: 'rgba(29,78,216,0.06)',
-        border: '1px solid rgba(29,78,216,0.2)',
+        border: '1px solid rgba(37,99,235,0.22)',
         borderRadius: '14px',
         padding: '16px',
         fontSize: '13px',
@@ -97,7 +97,7 @@ export default async function WaitingListAdminPage() {
 
       {entries.length === 0 && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.05)',
           borderRadius: '16px',
           padding: '48px',

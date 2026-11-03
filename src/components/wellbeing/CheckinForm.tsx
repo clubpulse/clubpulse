@@ -167,7 +167,7 @@ function RatingRow({
                 padding: '10px 4px',
                 borderRadius: '10px',
                 border: selected ? '2px solid rgba(29,78,216,0.8)' : '1px solid rgba(255,255,255,0.08)',
-                background: selected ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
+                background: selected ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.04)',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',

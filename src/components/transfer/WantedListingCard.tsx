@@ -24,7 +24,7 @@ export function WantedListingCard({ listing, alreadyApplied = false }: Props) {
             <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{listing.club?.name ?? 'Unknown club'}</p>
             <h3 style={{ margin: '2px 0 0', fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>{listing.position}</h3>
           </div>
-          <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, background: 'rgba(29,78,216,0.25)', color: '#f87171', whiteSpace: 'nowrap' }}>{listing.level_required}</span>
+          <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, background: 'rgba(37,99,235,0.28)', color: '#f87171', whiteSpace: 'nowrap' }}>{listing.level_required}</span>
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {listing.age_range && <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>Age: {listing.age_range}</span>}
@@ -49,7 +49,7 @@ export function WantedListingCard({ listing, alreadyApplied = false }: Props) {
             {error && <p style={{ margin: 0, fontSize: '12px', color: '#f87171' }}>{error}</p>}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setOpen(false)} style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.6)', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={handleApply} disabled={loading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: '#1D4ED8', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>{loading ? 'Submitting…' : 'Submit application'}</button>
+              <button onClick={handleApply} disabled={loading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>{loading ? 'Submitting…' : 'Submit application'}</button>
             </div>
           </div>
         </div>

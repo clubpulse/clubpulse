@@ -59,7 +59,7 @@ export default async function AdminClubBiblePage() {
             Current Narrative
           </h2>
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: '14px',
             padding: '20px 22px',
@@ -79,7 +79,7 @@ export default async function AdminClubBiblePage() {
           Add Milestone
         </h2>
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '14px',
           padding: '20px',
@@ -107,7 +107,7 @@ export default async function AdminClubBiblePage() {
               const cfg = MILESTONE_CATEGORY_CONFIG[m.category];
               return (
                 <div key={m.id} style={{
-                  background: '#0f0f0f',
+                  background: '#07102B',
                   border: '1px solid rgba(255,255,255,0.07)',
                   borderRadius: '12px',
                   padding: '12px 14px',

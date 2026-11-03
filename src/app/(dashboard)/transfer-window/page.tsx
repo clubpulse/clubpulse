@@ -4,7 +4,7 @@ import { getMyTransferRequests } from '@/lib/actions/transfer';
 const SEASON = new Date().getFullYear();
 
 const statusColour: Record<string, string> = {
-  pending: '#c9a54c',
+  pending: '#EFC84A',
   approved: '#4ade80',
   rejected: '#f87171',
   withdrawn: 'rgba(255,255,255,0.3)',
@@ -26,7 +26,7 @@ export default async function TransferWindowPage() {
             Request a move between clubs — both clubs must approve
           </p>
         </div>
-        <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: 'rgba(29,78,216,0.2)', color: '#f87171' }}>
+        <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: 'rgba(37,99,235,0.22)', color: '#f87171' }}>
           {SEASON} Season
         </span>
       </div>

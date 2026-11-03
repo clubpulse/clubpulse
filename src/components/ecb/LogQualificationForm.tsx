@@ -150,8 +150,8 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
       {selectedCourse && (
         <div style={{
           padding: '10px 14px',
-          background: 'rgba(29,78,216,0.15)',
-          border: '1px solid rgba(29,78,216,0.3)',
+          background: 'rgba(37,99,235,0.18)',
+          border: '1px solid rgba(37,99,235,0.35)',
           borderRadius: 10,
           display: 'flex',
           justifyContent: 'space-between',
@@ -199,7 +199,7 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
         style={{
           padding: '12px',
           borderRadius: 10,
-          background: isPending || !courseTypeId || !completedDate ? 'rgba(29,78,216,0.3)' : '#1D4ED8',
+          background: isPending || !courseTypeId || !completedDate ? 'rgba(37,99,235,0.35)' : '#1D4ED8',
           color: '#fff',
           fontWeight: 600,
           fontSize: 15,

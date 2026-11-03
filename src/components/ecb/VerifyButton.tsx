@@ -25,7 +25,7 @@ export function VerifyButton({ qualId }: { qualId: string }) {
         fontSize: 11,
         fontWeight: 600,
         border: '1px solid rgba(29,78,216,0.4)',
-        background: 'rgba(29,78,216,0.15)',
+        background: 'rgba(37,99,235,0.18)',
         color: '#f87171',
         cursor: isPending ? 'not-allowed' : 'pointer',
         transition: 'background 0.15s',

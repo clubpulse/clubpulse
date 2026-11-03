@@ -26,7 +26,7 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
       </Link>
 
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '20px',
         overflow: 'hidden',
@@ -60,7 +60,7 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
 
           <div style={{ marginTop: '24px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
             <div>
-              <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '32px', color: '#c9a54c', fontVariantNumeric: 'tabular-nums' }}>
+              <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '32px', color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
                 {formatScores(r.creds_cost)} Scores
               </p>
               <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>

@@ -16,9 +16,9 @@ export function DonationHistory({ donations, scoresPerPound }: Props) {
   const totalPounds = (totalPence / 100).toFixed(2);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontFamily: "'Inter', sans-serif" }}>
-      <div style={{ background: 'rgba(29,78,216,0.12)', border: '1px solid rgba(29,78,216,0.25)', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+      <div style={{ background: 'rgba(37,99,235,0.14)', border: '1px solid rgba(37,99,235,0.28)', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
         <div><p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Total donated</p><p style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 700, color: '#fff' }}>{totalScores.toLocaleString()} Scores</p></div>
-        <div><p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>£ equivalent</p><p style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 700, color: '#1D4ED8' }}>£{totalPounds}</p></div>
+        <div><p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>£ equivalent</p><p style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 700, color: '#3B82F6' }}>£{totalPounds}</p></div>
         <div><p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Donations</p><p style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 700, color: '#fff' }}>{donations.length}</p></div>
       </div>
       <div style={{ overflowX: 'auto' }}>
@@ -29,7 +29,7 @@ export function DonationHistory({ donations, scoresPerPound }: Props) {
               <tr key={d.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <td style={{ padding: '10px', color: '#fff', fontWeight: 500 }}>{d.charity?.name ?? '—'}</td>
                 <td style={{ padding: '10px', color: 'rgba(255,255,255,0.7)' }}>{d.scores_donated.toLocaleString()}</td>
-                <td style={{ padding: '10px', color: '#1D4ED8', fontWeight: 600 }}>£{(d.pence_value / 100).toFixed(2)}</td>
+                <td style={{ padding: '10px', color: '#3B82F6', fontWeight: 600 }}>£{(d.pence_value / 100).toFixed(2)}</td>
                 <td style={{ padding: '10px', color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>{new Date(d.donated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                 <td style={{ padding: '10px', color: 'rgba(255,255,255,0.45)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.message ?? <span style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>}</td>
               </tr>

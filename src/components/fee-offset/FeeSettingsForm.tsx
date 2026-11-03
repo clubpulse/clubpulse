@@ -112,14 +112,14 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
       {/* Preview */}
       {feePence > 0 && spp > 0 && maxPct > 0 && (
         <div style={{
-          background: 'rgba(201,165,76,0.06)',
-          border: '1px solid rgba(201,165,76,0.15)',
+          background: 'rgba(239,200,74,0.06)',
+          border: '1px solid rgba(239,200,74,0.15)',
           borderRadius: '10px',
           padding: '12px 16px',
           fontSize: '13px',
           color: 'rgba(255,255,255,0.55)',
         }}>
-          Preview: Members can apply up to <strong style={{ color: '#c9a54c' }}>{maxScores.toLocaleString()} Scores</strong>{' '}
+          Preview: Members can apply up to <strong style={{ color: '#EFC84A' }}>{maxScores.toLocaleString()} Scores</strong>{' '}
           for a max discount of <strong style={{ color: '#4ade80' }}>£{(maxOffsetPence / 100).toFixed(2)}</strong>
           {' '}({maxPct}% of £{(feePence / 100).toFixed(2)} fee)
         </div>
@@ -149,7 +149,7 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
         disabled={isPending}
         style={{
           alignSelf: 'flex-start',
-          background: saved ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, #1D4ED8 0%, #c9a54c 100%)',
+          background: saved ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, #1D4ED8 0%, #EFC84A 100%)',
           border: saved ? '1px solid rgba(34,197,94,0.4)' : 'none',
           borderRadius: '10px',
           padding: '10px 24px',

@@ -21,7 +21,7 @@ const sectionHeadingStyle: React.CSSProperties = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: '#c9a54c',
+  pending: '#EFC84A',
   accepted: '#4ade80',
   declined: '#f87171',
   completed: 'rgba(255,255,255,0.35)',
@@ -91,7 +91,7 @@ export default async function MentorMatchPage() {
 
       {myMentorProfile ? (
         <section>
-          <div style={{ ...cardStyle, borderColor: 'rgba(29,78,216,0.3)' }}>
+          <div style={{ ...cardStyle, borderColor: 'rgba(37,99,235,0.35)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h2 style={{ ...sectionHeadingStyle, margin: 0 }}>Your mentor profile</h2>
               <span style={{
@@ -129,7 +129,7 @@ export default async function MentorMatchPage() {
         <section style={cardStyle}>
           <h2 style={sectionHeadingStyle}>Become a mentor</h2>
           <p style={{ margin: '0 0 20px', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-            Share your experience with junior players. Earn <strong style={{ color: '#c9a54c' }}>Scores</strong> for every session you run — 2 per minute, up to 300 per session.
+            Share your experience with junior players. Earn <strong style={{ color: '#EFC84A' }}>Scores</strong> for every session you run — 2 per minute, up to 300 per session.
           </p>
           <RegisterMentorForm clubId={clubId} />
         </section>
@@ -267,7 +267,7 @@ export default async function MentorMatchPage() {
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-                    <span style={{ fontSize: '13px', color: '#c9a54c', fontWeight: 700 }}>
+                    <span style={{ fontSize: '13px', color: '#EFC84A', fontWeight: 700 }}>
                       +{isMentor ? s.mentor_creds_awarded : s.mentee_creds_awarded} Scores
                     </span>
                     {!isMentor && !s.mentee_rating && (

@@ -74,7 +74,7 @@ export default async function CoachingPage({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
-            <span style={{ fontWeight: 700, color: '#c9a54c' }}>{formatScores(balance)} Scores</span>
+            <span style={{ fontWeight: 700, color: '#EFC84A' }}>{formatScores(balance)} Scores</span>
           </p>
           {clubId && <CreateListingForm clubId={clubId} />}
         </div>
@@ -97,7 +97,7 @@ export default async function CoachingPage({
                 fontSize: '13px',
                 fontWeight: active ? 600 : 400,
                 color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                borderBottom: active ? '2px solid #1D4ED8' : '2px solid transparent',
+                borderBottom: active ? '2px solid #3B82F6' : '2px solid transparent',
                 textDecoration: 'none',
                 marginBottom: '-1px',
               }}
@@ -169,7 +169,7 @@ export default async function CoachingPage({
                         {b.status === 'confirmed' ? 'Confirmed' : 'Awaiting confirmation'}
                       </span>
                       {b.scores_paid > 0 && (
-                        <span style={{ color: '#c9a54c', marginLeft: '6px' }}>· {formatScores(b.scores_paid)} Scores paid</span>
+                        <span style={{ color: '#EFC84A', marginLeft: '6px' }}>· {formatScores(b.scores_paid)} Scores paid</span>
                       )}
                     </p>
                   </div>
@@ -207,15 +207,15 @@ export default async function CoachingPage({
                           href={`/coaching/rate/${b.id}`}
                           style={{
                             fontSize: '12px', padding: '4px 10px', borderRadius: '8px',
-                            background: 'rgba(201,165,76,0.15)', color: '#c9a54c',
-                            border: '1px solid rgba(201,165,76,0.3)', textDecoration: 'none',
+                            background: 'rgba(239,200,74,0.15)', color: '#EFC84A',
+                            border: '1px solid rgba(239,200,74,0.3)', textDecoration: 'none',
                           }}
                         >
                           Rate ⭐
                         </a>
                       )}
                       {b.player_rating != null && (
-                        <span style={{ fontSize: '13px', color: '#c9a54c' }}>⭐ {b.player_rating}/5</span>
+                        <span style={{ fontSize: '13px', color: '#EFC84A' }}>⭐ {b.player_rating}/5</span>
                       )}
                     </div>
                   </div>
@@ -239,7 +239,7 @@ function filterChip(active: boolean): React.CSSProperties {
     padding: '5px 12px',
     borderRadius: '20px',
     border: `1px solid ${active ? '#1D4ED8' : 'rgba(255,255,255,0.1)'}`,
-    background: active ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
+    background: active ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.04)',
     color: active ? '#fff' : 'rgba(255,255,255,0.5)',
     fontSize: '12px',
     textDecoration: 'none',

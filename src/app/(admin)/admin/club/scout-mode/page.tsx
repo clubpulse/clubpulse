@@ -21,7 +21,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
     : null;
 
   const cardStyle: React.CSSProperties = {
-    background: '#0f0f0f',
+    background: '#07102B',
     border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: '14px',
     padding: '20px',
@@ -66,7 +66,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
                 style={{
                   ...cardStyle,
                   border: isViewing
-                    ? '1px solid rgba(29,78,216,0.5)'
+                    ? '1px solid rgba(37,99,235,0.55)'
                     : '1px solid rgba(255,255,255,0.07)',
                 }}
               >
@@ -97,7 +97,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
                       href={`/admin/club/scout-mode?session=${s.id}`}
                       style={{
                         display: 'inline-flex', alignItems: 'center',
-                        background: isViewing ? 'rgba(29,78,216,0.3)' : 'rgba(255,255,255,0.06)',
+                        background: isViewing ? 'rgba(37,99,235,0.35)' : 'rgba(255,255,255,0.06)',
                         border: `1px solid ${isViewing ? 'rgba(29,78,216,0.4)' : 'rgba(255,255,255,0.1)'}`,
                         borderRadius: '8px', padding: '6px 12px',
                         fontSize: '12px', fontWeight: 500,

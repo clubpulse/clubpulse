@@ -33,8 +33,8 @@ export function EarningNudges() {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(201,165,76,0.08) 0%, #0f0f0f 70%)',
-      border: '1px solid rgba(201,165,76,0.18)',
+      background: 'linear-gradient(135deg, rgba(239,200,74,0.08) 0%, #07102B 70%)',
+      border: '1px solid rgba(239,200,74,0.18)',
       borderRadius: '16px',
       padding: '20px',
       fontFamily: "'Inter', sans-serif",
@@ -43,7 +43,7 @@ export function EarningNudges() {
         <div>
           <p style={{
             fontFamily: "'Syne', sans-serif", fontWeight: 700,
-            fontSize: '13px', color: '#c9a54c',
+            fontSize: '13px', color: '#EFC84A',
             textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0,
           }}>Earn more Scores</p>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)', margin: '3px 0 0' }}>
@@ -52,7 +52,7 @@ export function EarningNudges() {
         </div>
         <span style={{
           fontSize: '10px', fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.5px', color: '#1D4ED8',
+          letterSpacing: '0.5px', color: '#3B82F6',
           border: '1px solid rgba(29,78,216,0.4)',
           borderRadius: '6px', padding: '2px 7px',
         }}>AI</span>
@@ -82,7 +82,7 @@ export function EarningNudges() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
                   <p style={{ fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0 }}>{nudge.title}</p>
-                  <span style={{ flexShrink: 0, fontSize: '12px', fontWeight: 700, color: '#c9a54c' }}>
+                  <span style={{ flexShrink: 0, fontSize: '12px', fontWeight: 700, color: '#EFC84A' }}>
                     +{nudge.scoresPotential} Scores
                   </span>
                 </div>
@@ -92,7 +92,7 @@ export function EarningNudges() {
                 {nudge.href && (
                   <Link href={nudge.href} style={{
                     display: 'inline-block', marginTop: '8px',
-                    fontSize: '12px', fontWeight: 600, color: '#c9a54c',
+                    fontSize: '12px', fontWeight: 600, color: '#EFC84A',
                     textDecoration: 'none',
                   }}>
                     {nudge.cta ?? 'Get started'} →

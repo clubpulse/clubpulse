@@ -130,8 +130,8 @@ export default function CoachingHistoryPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {sessions.map((s, i) => (
             <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 0', borderBottom: i < sessions.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(29,78,216,0.15)', border: '1px solid rgba(29,78,216,0.25)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#c9a54c', fontFamily: "'Syne', sans-serif" }}>{s.num}</span>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(37,99,235,0.18)', border: '1px solid rgba(37,99,235,0.28)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#EFC84A', fontFamily: "'Syne', sans-serif" }}>{s.num}</span>
               </div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '14px', fontWeight: 600, color: '#fff', marginBottom: '2px' }}>{s.notes}</p>
@@ -152,7 +152,7 @@ export default function CoachingHistoryPage() {
           <p style={{ fontSize: '12px', fontWeight: 600, color: '#2ecc71', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Next session target</p>
           <p style={{ fontSize: '16px', color: '#fff', fontWeight: 600 }}>Head position → 82% · Keep elbow alignment above 72%</p>
         </div>
-        <a href="/analyse" style={{ padding: '10px 20px', background: '#1D4ED8', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+        <a href="/analyse" style={{ padding: '10px 20px', background: '#2563EB', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Start session →
         </a>
       </div>

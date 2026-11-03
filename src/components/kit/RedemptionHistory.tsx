@@ -13,7 +13,7 @@ const STATUS_STYLES: Record<string, { background: string; color: string; label: 
 export function RedemptionHistory({ redemptions }: { redemptions: KitRedemption[] }) {
   if (redemptions.length === 0) {
     return (
-      <div style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.07)', background: '#0f0f0f' }}>
+      <div style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.07)', background: '#07102B' }}>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
           No kit redemptions yet — redeem a deal above to get started.
         </p>
@@ -22,7 +22,7 @@ export function RedemptionHistory({ redemptions }: { redemptions: KitRedemption[
   }
 
   return (
-    <div style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.07)', background: '#0f0f0f', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.07)', background: '#07102B', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
@@ -46,7 +46,7 @@ export function RedemptionHistory({ redemptions }: { redemptions: KitRedemption[
                 <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 500, color: '#fff' }}>
                   {r.reward?.title ?? 'Kit reward'}
                 </td>
-                <td style={{ padding: '12px 16px', fontSize: '13px', color: '#c9a54c', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                <td style={{ padding: '12px 16px', fontSize: '13px', color: '#EFC84A', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
                   {formatScores(r.creds_spent)}
                 </td>
                 <td style={{ padding: '12px 16px', fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>

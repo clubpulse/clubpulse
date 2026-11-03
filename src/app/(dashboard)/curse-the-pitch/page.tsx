@@ -116,8 +116,8 @@ export default async function CurseThePitchPage() {
       {/* Ground history insight */}
       {topGround && (
         <div style={{
-          background: 'rgba(29,78,216,0.12)',
-          border: '1px solid rgba(29,78,216,0.25)',
+          background: 'rgba(37,99,235,0.14)',
+          border: '1px solid rgba(37,99,235,0.28)',
           borderRadius: '12px',
           padding: '12px 16px',
         }}>

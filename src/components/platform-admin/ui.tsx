@@ -17,7 +17,7 @@ export function StatCard({ label, value, hint, accent = 'gold' }: {
   return (
     <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">{label}</p>
-      <p className="mt-2 text-3xl font-bold tracking-tight" style={{ color: accent === 'gold' ? '#c9a54c' : '#e05252' }}>
+      <p className="mt-2 text-3xl font-bold tracking-tight" style={{ color: accent === 'gold' ? '#EFC84A' : '#e05252' }}>
         {typeof value === 'number' ? value.toLocaleString('en-GB') : value}
       </p>
       {hint && <p className="mt-1 text-xs text-neutral-500">{hint}</p>}

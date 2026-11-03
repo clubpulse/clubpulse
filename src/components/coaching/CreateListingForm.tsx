@@ -58,7 +58,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
         onClick={() => setOpen(true)}
         style={{
           padding: '8px 16px', borderRadius: '10px', border: 'none',
-          background: '#1D4ED8', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+          background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
         }}
       >
         + List a Session
@@ -123,7 +123,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
                     style={{
                       padding: '5px 10px', borderRadius: '8px', border: '1px solid',
                       borderColor: form.coaching_type === t ? '#1D4ED8' : 'rgba(255,255,255,0.1)',
-                      background: form.coaching_type === t ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
+                      background: form.coaching_type === t ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.04)',
                       color: form.coaching_type === t ? '#fff' : 'rgba(255,255,255,0.5)',
                       fontSize: '12px', cursor: 'pointer',
                     }}

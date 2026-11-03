@@ -27,7 +27,7 @@ export default async function MarketplacePage() {
           </div>
           <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
             You have{' '}
-            <span style={{ fontWeight: 700, color: '#c9a54c' }}>{formatScores(balance)} Scores</span>
+            <span style={{ fontWeight: 700, color: '#EFC84A' }}>{formatScores(balance)} Scores</span>
           </p>
         </div>
         {rewards.success ? (

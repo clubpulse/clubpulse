@@ -6,9 +6,9 @@ export default function FinancePage() {
       <style>{`
         .fn-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .fn-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
+          --bg: #04091A; --bg2: #07102B; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #EFC84A; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -37,7 +37,7 @@ export default function FinancePage() {
         .fn-btn-ghost:hover { border-color:rgba(255,255,255,0.2);color:var(--fg); }
 
         /* FINANCE MOCKUP */
-        .fn-card { background:#0a0a0a;border:1px solid var(--border);border-radius:20px;padding:20px; }
+        .fn-card { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:20px; }
         .fn-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
         .fn-card-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
         .fn-period { font-size:10px;color:var(--fg3); }
@@ -90,7 +90,7 @@ export default function FinancePage() {
         .fn-wise-body { font-size:14px;color:var(--fg2);line-height:1.7;margin-bottom:20px; }
         .fn-wise-chips { display:flex;flex-wrap:wrap;gap:8px; }
         .fn-wise-chip { background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.15);color:var(--green);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px; }
-        .fn-wise-visual { background:#0a0a0a;border:1px solid rgba(46,204,113,0.15);border-radius:16px;padding:20px; }
+        .fn-wise-visual { background:#04091A;border:1px solid rgba(46,204,113,0.15);border-radius:16px;padding:20px; }
         .fn-wise-row { display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px; }
         .fn-wise-row:last-child { border-bottom:none; }
         .fn-wise-key { color:var(--fg3); }

@@ -57,7 +57,7 @@ const MAX_MB    = 100;
 const MAX_BYTES = MAX_MB * 1024 * 1024;
 const ACCEPTED  = 'video/mp4,video/quicktime,video/x-msvideo,video/webm';
 
-const GOLD    = '#c9a54c';
+const GOLD    = '#EFC84A';
 const CRIMSON = '#1D4ED8';
 
 // Trail length: how many past positions to draw fading behind the ball
@@ -95,7 +95,7 @@ function DropZone({ onFile, disabled }: DropZoneProps) {
         padding:      '40px 24px',
         textAlign:    'center',
         cursor:       disabled ? 'not-allowed' : 'pointer',
-        background:   over ? 'rgba(201,165,76,0.06)' : 'rgba(255,255,255,0.02)',
+        background:   over ? 'rgba(239,200,74,0.06)' : 'rgba(255,255,255,0.02)',
         transition:   'border-color 0.15s, background 0.15s',
         opacity:      disabled ? 0.5 : 1,
       }}
@@ -128,7 +128,7 @@ function ProgressBar({ label }: { label: string }) {
         display:      'inline-block',
         width:        '40px',
         height:       '40px',
-        border:       `3px solid rgba(201,165,76,0.2)`,
+        border:       `3px solid rgba(239,200,74,0.2)`,
         borderTop:    `3px solid ${GOLD}`,
         borderRadius: '50%',
         animation:    'spin 0.8s linear infinite',
@@ -191,13 +191,13 @@ function VideoOverlay({ videoSrc, ballPositions, fps, bounceFrame }: VideoOverla
         const alpha = (TRAIL_FRAMES - i + 1) / (TRAIL_FRAMES + 1);
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, pos.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(201,165,76,${alpha * 0.6})`;
+        ctx.strokeStyle = `rgba(239,200,74,${alpha * 0.6})`;
         ctx.lineWidth   = 2;
         ctx.stroke();
         // Small filled dot
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(201,165,76,${alpha * 0.5})`;
+        ctx.fillStyle = `rgba(239,200,74,${alpha * 0.5})`;
         ctx.fill();
       }
 
@@ -207,20 +207,20 @@ function VideoOverlay({ videoSrc, ballPositions, fps, bounceFrame }: VideoOverla
         // Outer ring
         ctx.beginPath();
         ctx.arc(cur.x, cur.y, cur.radius + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(201,165,76,0.9)';
+        ctx.strokeStyle = 'rgba(239,200,74,0.9)';
         ctx.lineWidth   = 2.5;
         ctx.stroke();
 
         // Inner fill (semi-transparent)
         ctx.beginPath();
         ctx.arc(cur.x, cur.y, cur.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(201,165,76,0.15)';
+        ctx.fillStyle = 'rgba(239,200,74,0.15)';
         ctx.fill();
 
         // Confidence label
         const pct = Math.round(cur.confidence * 100);
         ctx.font      = `bold ${Math.max(11, cur.radius)}px Inter,sans-serif`;
-        ctx.fillStyle = 'rgba(201,165,76,0.9)';
+        ctx.fillStyle = 'rgba(239,200,74,0.9)';
         ctx.textAlign = 'center';
         ctx.fillText(`${pct}%`, cur.x, cur.y - cur.radius - 6);
       }
@@ -486,7 +486,7 @@ export function BallTrackClient() {
                 fontWeight:   600,
                 cursor:       uploading ? 'not-allowed' : 'pointer',
                 background:   whiteBall === val ? (val ? '#f0ece4' : CRIMSON) : 'transparent',
-                color:        whiteBall === val ? (val ? '#080808' : '#fff') : 'rgba(240,236,228,0.5)',
+                color:        whiteBall === val ? (val ? '#04091A' : '#fff') : 'rgba(240,236,228,0.5)',
                 transition:   'all 0.15s',
               }}
             >

@@ -72,7 +72,7 @@ export function ScorecardUpload() {
         onDragOver={(e) => e.preventDefault()}
         onClick={() => state !== 'loading' && inputRef.current?.click()}
         style={{
-          border: `2px dashed ${state === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(201,165,76,0.25)'}`,
+          border: `2px dashed ${state === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(239,200,74,0.25)'}`,
           borderRadius: '14px',
           padding: '28px',
           textAlign: 'center',
@@ -105,7 +105,7 @@ export function ScorecardUpload() {
           }}>
             <div style={{
               width: '28px', height: '28px', border: '3px solid rgba(255,255,255,0.1)',
-              borderTopColor: '#c9a54c', borderRadius: '50%',
+              borderTopColor: '#EFC84A', borderRadius: '50%',
               animation: 'spin 0.8s linear infinite', marginBottom: '10px',
             }} />
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>Parsing scorecard…</p>
@@ -132,7 +132,7 @@ export function ScorecardUpload() {
           <button
             type="button"
             onClick={() => { setState('idle'); setPreview(null); }}
-            style={{ marginLeft: '8px', color: '#c9a54c', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+            style={{ marginLeft: '8px', color: '#EFC84A', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px' }}
           >
             Try again
           </button>
@@ -153,8 +153,8 @@ export function ScorecardUpload() {
               ✓ Scorecard parsed
             </p>
             <span style={{
-              fontSize: '13px', fontWeight: 700, color: '#c9a54c',
-              background: 'rgba(201,165,76,0.1)', border: '1px solid rgba(201,165,76,0.25)',
+              fontSize: '13px', fontWeight: 700, color: '#EFC84A',
+              background: 'rgba(239,200,74,0.1)', border: '1px solid rgba(239,200,74,0.25)',
               borderRadius: '8px', padding: '3px 10px',
             }}>
               +{result.scoresAwarded} Scores

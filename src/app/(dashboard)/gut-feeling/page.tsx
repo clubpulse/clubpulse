@@ -11,7 +11,7 @@ import type { PredictionOutcome } from '@/lib/types/gut-feeling';
 function StatPill({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '14px',
       padding: '16px 20px',
@@ -133,7 +133,7 @@ export default async function GutFeelingPage() {
 
       {upcoming.length === 0 && !clubId && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '16px',
           padding: '32px',
@@ -147,7 +147,7 @@ export default async function GutFeelingPage() {
 
       {upcoming.length === 0 && clubId && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '16px',
           padding: '32px',

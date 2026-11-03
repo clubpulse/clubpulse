@@ -25,7 +25,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
     return (
       <main style={{
         minHeight: '100vh',
-        background: '#080808',
+        background: '#04091A',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -48,7 +48,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
   return (
     <main style={{
       minHeight: '100vh',
-      background: '#080808',
+      background: '#04091A',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -64,7 +64,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
         transform: 'translateX(-50%)',
         width: '600px',
         height: '300px',
-        background: 'radial-gradient(ellipse at center, rgba(29,78,216,0.18) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse at center, rgba(37,99,235,0.20) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -80,8 +80,8 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(29,78,216,0.12)',
-            border: '1px solid rgba(29,78,216,0.3)',
+            background: 'rgba(37,99,235,0.14)',
+            border: '1px solid rgba(37,99,235,0.35)',
             borderRadius: '100px',
             padding: '6px 16px',
             fontSize: '12px',
@@ -166,7 +166,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
 
         {/* Form card */}
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '20px',
           padding: '28px',

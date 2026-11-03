@@ -8,9 +8,9 @@ export default function AvailabilityPage() {
       <style>{`
         .av-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .av-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
+          --bg: #04091A; --bg2: #07102B; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #EFC84A; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -85,8 +85,8 @@ export default function AvailabilityPage() {
 
         /* MOCKUP */
         .av-mockup {
-          background: #0a0a0a; border: 1px solid var(--border);
-          border-radius: 20px; padding: 24px; box-shadow: 0 0 60px rgba(29,78,216,0.08);
+          background: #04091A; border: 1px solid var(--border);
+          border-radius: 20px; padding: 24px; box-shadow: 0 0 60px rgba(37,99,235,0.10);
         }
         .av-mock-header {
           display: flex; justify-content: space-between; align-items: flex-start;
@@ -100,8 +100,8 @@ export default function AvailabilityPage() {
           border-radius: 20px; padding: 5px 14px; white-space: nowrap;
         }
         .av-match-card {
-          background: linear-gradient(135deg,rgba(29,78,216,0.1),rgba(29,78,216,0.03));
-          border: 1px solid rgba(29,78,216,0.2); border-radius: 14px;
+          background: linear-gradient(135deg,rgba(37,99,235,0.12),rgba(29,78,216,0.03));
+          border: 1px solid rgba(37,99,235,0.22); border-radius: 14px;
           padding: 18px; margin-bottom: 16px;
         }
         .av-match-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 4px; }
@@ -157,7 +157,7 @@ export default function AvailabilityPage() {
           background: var(--bg2); border: 1px solid var(--border);
           border-radius: 16px; padding: 28px;
         }
-        .av-detail-card:hover { border-color: rgba(29,78,216,0.3); }
+        .av-detail-card:hover { border-color: rgba(37,99,235,0.35); }
         .av-detail-icon { font-size: 24px; margin-bottom: 12px; }
         .av-detail-h { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
         .av-detail-body { font-size: 13px; color: var(--fg2); line-height: 1.65; }
@@ -173,7 +173,7 @@ export default function AvailabilityPage() {
           background: rgba(255,255,255,0.02); border: 1px solid var(--border);
         }
         .av-compare-col.after {
-          background: rgba(29,78,216,0.06); border: 1px solid rgba(29,78,216,0.2);
+          background: rgba(29,78,216,0.06); border: 1px solid rgba(37,99,235,0.22);
         }
         .av-compare-label {
           font-size: 11px; font-weight: 700; letter-spacing: 0.08em;

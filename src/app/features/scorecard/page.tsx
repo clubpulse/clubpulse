@@ -8,9 +8,9 @@ export default function ScorecardPage() {
       <style>{`
         .sc-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .sc-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
+          --bg: #04091A; --bg2: #07102B; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #EFC84A; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -43,7 +43,7 @@ export default function ScorecardPage() {
         .sc-btn-ghost:hover { border-color:rgba(255,255,255,0.2);color:var(--fg); }
 
         /* SCORECARD MOCKUP */
-        .sc-card { background:#0a0a0a;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 0 60px rgba(201,165,76,0.06); }
+        .sc-card { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 0 60px rgba(239,200,74,0.06); }
         .sc-live-bar { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
         .sc-live-chip { display:flex;align-items:center;gap:6px;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.25);color:var(--green);font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:20px;padding:5px 12px; }
         .sc-live-chip-dot { width:5px;height:5px;border-radius:50%;background:var(--green);animation:sc-blink 2s infinite; }
@@ -65,8 +65,8 @@ export default function ScorecardPage() {
         .sc-ball.dot { background:rgba(255,255,255,0.04);color:var(--fg3); }
         .sc-ball.run { background:rgba(255,255,255,0.08);color:var(--fg); }
         .sc-ball.four { background:rgba(46,204,113,0.15);color:var(--green); }
-        .sc-ball.six { background:rgba(201,165,76,0.15);color:var(--gold); }
-        .sc-ball.wkt { background:rgba(29,78,216,0.2);color:#f87171; }
+        .sc-ball.six { background:rgba(239,200,74,0.15);color:var(--gold); }
+        .sc-ball.wkt { background:rgba(37,99,235,0.22);color:#f87171; }
         .sc-share-btn { width:100%;margin-top:16px;padding:11px;font-size:12px;font-weight:700;background:rgba(255,255,255,0.05);color:var(--fg2);border:1px solid var(--border);border-radius:10px;cursor:pointer;letter-spacing:0.04em; }
 
         /* SECTIONS */
@@ -78,7 +78,7 @@ export default function ScorecardPage() {
         /* FEATURES GRID */
         .sc-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
         .sc-grid-card { background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px; }
-        .sc-grid-card:hover { border-color:rgba(201,165,76,0.25); }
+        .sc-grid-card:hover { border-color:rgba(239,200,74,0.25); }
         .sc-grid-icon { font-size:26px;margin-bottom:14px; }
         .sc-grid-h { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:8px; }
         .sc-grid-body { font-size:13px;color:var(--fg2);line-height:1.65; }

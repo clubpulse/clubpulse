@@ -66,7 +66,7 @@ export function ChatWindow({
       overflow: 'hidden',
       borderRadius: '20px',
       border: '1px solid rgba(255,255,255,0.07)',
-      background: '#0a0a0a',
+      background: '#04091A',
       fontFamily: "'Inter', sans-serif",
     }}>
       {/* Header */}

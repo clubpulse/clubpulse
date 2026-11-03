@@ -44,7 +44,7 @@ export default async function AdminTravelPage() {
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)' }}>No trips logged yet.</p>
         ) : (
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: '14px',
             overflow: 'hidden',
@@ -92,7 +92,7 @@ export default async function AdminTravelPage() {
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)' }}>No trips yet.</p>
         ) : (
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: '14px',
             overflow: 'hidden',

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const GOLD = '#c9a54c';
+const GOLD = '#EFC84A';
 const CRIMSON = '#1D4ED8';
 
 const FEATURES = [
@@ -19,7 +19,7 @@ function ScoreRing() {
 
   return (
     <div className="relative mx-auto aspect-square w-56 max-w-full sm:w-64">
-      <div className="absolute inset-6 rounded-full blur-3xl" style={{ background: 'rgba(29,78,216,0.35)' }} aria-hidden />
+      <div className="absolute inset-6 rounded-full blur-3xl" style={{ background: 'rgba(37,99,235,0.40)' }} aria-hidden />
       <svg viewBox="0 0 180 180" className="relative h-full w-full -rotate-90" aria-hidden>
         <circle cx="90" cy="90" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
         <circle
@@ -60,7 +60,7 @@ export function AnalyseLanding() {
       <main className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-8 md:grid-cols-[1.2fr_1fr] md:pt-16">
         <div>
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider"
-            style={{ borderColor: 'rgba(29,78,216,0.35)', background: 'rgba(29,78,216,0.12)', color: GOLD }}>
+            style={{ borderColor: 'rgba(37,99,235,0.40)', background: 'rgba(37,99,235,0.14)', color: GOLD }}>
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: CRIMSON }} aria-hidden />
             New · ClubPulse Analyse
           </span>
@@ -79,7 +79,7 @@ export function AnalyseLanding() {
               <li key={feature.text}
                 className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#111] px-4 py-3 text-sm text-neutral-200">
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-base"
-                  style={{ background: 'rgba(29,78,216,0.15)' }} aria-hidden>{feature.icon}</span>
+                  style={{ background: 'rgba(37,99,235,0.18)' }} aria-hidden>{feature.icon}</span>
                 {feature.text}
               </li>
             ))}
@@ -98,7 +98,7 @@ export function AnalyseLanding() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/[0.07] bg-[#0f0f0f] p-8">
+        <div className="rounded-3xl border border-white/[0.07] bg-[#07102B] p-8">
           <ScoreRing />
           <p className="mt-6 text-center text-sm font-semibold" style={{ color: GOLD }}>Bowling action</p>
           <p className="mt-1 text-center text-xs text-neutral-500">Example result</p>

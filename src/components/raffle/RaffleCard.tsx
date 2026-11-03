@@ -80,19 +80,19 @@ export function RaffleCard({ raffle, userBalance, onPurchased }: Props) {
           </p>
         )}
         <div style={{
-          background: 'rgba(201,165,76,0.1)',
-          border: '1px solid rgba(201,165,76,0.2)',
+          background: 'rgba(239,200,74,0.1)',
+          border: '1px solid rgba(239,200,74,0.2)',
           borderRadius: '8px',
           padding: '10px 12px',
         }}>
-          <p style={{ margin: 0, fontSize: '11px', color: 'rgba(201,165,76,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>
+          <p style={{ margin: 0, fontSize: '11px', color: 'rgba(239,200,74,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>
             Prize
           </p>
-          <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#c9a54c' }}>
+          <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#EFC84A' }}>
             {raffle.prize_description}
           </p>
           {raffle.winner_count > 1 && (
-            <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'rgba(201,165,76,0.6)' }}>
+            <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'rgba(239,200,74,0.6)' }}>
               {raffle.winner_count} winners
             </p>
           )}
@@ -125,7 +125,7 @@ export function RaffleCard({ raffle, userBalance, onPurchased }: Props) {
       </div>
 
       {(raffle.my_ticket_count ?? 0) > 0 && (
-        <p style={{ margin: 0, fontSize: '12px', color: '#c9a54c', fontWeight: 500 }}>
+        <p style={{ margin: 0, fontSize: '12px', color: '#EFC84A', fontWeight: 500 }}>
           🎟️ You have {raffle.my_ticket_count} ticket(s)
         </p>
       )}
@@ -198,7 +198,7 @@ export function DrawnRaffleCard({ raffle, winners }: DrawnRaffleCardProps) {
           {raffle.drawn_at ? new Date(raffle.drawn_at).toLocaleDateString('en-GB') : 'Drawn'}
         </span>
       </div>
-      <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'rgba(201,165,76,0.7)' }}>
+      <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'rgba(239,200,74,0.7)' }}>
         Prize: {raffle.prize_description}
       </p>
       {winners.length > 0 ? (

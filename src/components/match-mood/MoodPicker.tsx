@@ -101,10 +101,10 @@ export function MoodPicker({ fixtureId, initialMood, opponent, matchDate }: Mood
                     padding: '14px 8px',
                     borderRadius: '12px',
                     border: isSelected
-                      ? '2px solid rgba(201,165,76,0.8)'
+                      ? '2px solid rgba(239,200,74,0.8)'
                       : '2px solid rgba(255,255,255,0.06)',
                     background: isSelected
-                      ? 'rgba(201,165,76,0.12)'
+                      ? 'rgba(239,200,74,0.12)'
                       : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
@@ -118,7 +118,7 @@ export function MoodPicker({ fixtureId, initialMood, opponent, matchDate }: Mood
                   <span style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: isSelected ? '#c9a54c' : 'rgba(255,255,255,0.5)',
+                    color: isSelected ? '#EFC84A' : 'rgba(255,255,255,0.5)',
                   }}>
                     {config.label}
                   </span>
@@ -142,7 +142,7 @@ export function MoodPicker({ fixtureId, initialMood, opponent, matchDate }: Mood
               borderRadius: '10px',
               border: 'none',
               background: selected && !isPending
-                ? 'linear-gradient(135deg, #c9a54c, #a0783a)'
+                ? 'linear-gradient(135deg, #EFC84A, #a0783a)'
                 : 'rgba(255,255,255,0.08)',
               color: selected && !isPending ? '#fff' : 'rgba(255,255,255,0.3)',
               fontSize: '14px',

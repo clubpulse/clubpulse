@@ -12,7 +12,7 @@ const STATUS_COLOURS: Record<AuctionStatus, string> = {
   draft: 'rgba(255,255,255,0.3)',
   open: '#4ade80',
   closed: '#f87171',
-  settled: '#c9a54c',
+  settled: '#EFC84A',
 };
 
 const STATUS_NEXT: Record<AuctionStatus, AuctionStatus | null> = {
@@ -111,7 +111,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
     padding: '9px 18px',
     borderRadius: '9px',
     border: 'none',
-    background: '#1D4ED8',
+    background: '#2563EB',
     color: '#fff',
     fontSize: '13px',
     fontWeight: 600,
@@ -242,8 +242,8 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
                           padding: '5px 14px',
                           borderRadius: '8px',
                           border: 'none',
-                          background: nextStatus === 'open' ? 'rgba(74,222,128,0.2)' : nextStatus === 'closed' ? 'rgba(248,113,113,0.2)' : 'rgba(201,165,76,0.2)',
-                          color: nextStatus === 'open' ? '#4ade80' : nextStatus === 'closed' ? '#f87171' : '#c9a54c',
+                          background: nextStatus === 'open' ? 'rgba(74,222,128,0.2)' : nextStatus === 'closed' ? 'rgba(248,113,113,0.2)' : 'rgba(239,200,74,0.2)',
+                          color: nextStatus === 'open' ? '#4ade80' : nextStatus === 'closed' ? '#f87171' : '#EFC84A',
                           fontSize: '12px',
                           fontWeight: 600,
                           cursor: isPending ? 'not-allowed' : 'pointer',
@@ -284,7 +284,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
                           <span style={{
                             fontSize: '13px',
                             fontWeight: 700,
-                            color: lot.current_bid ? '#c9a54c' : 'rgba(255,255,255,0.3)',
+                            color: lot.current_bid ? '#EFC84A' : 'rgba(255,255,255,0.3)',
                           }}>
                             {lot.current_bid ? `${lot.current_bid} Scores` : `Base ${lot.base_price}`}
                           </span>
@@ -293,8 +293,8 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
                             borderRadius: '20px',
                             fontSize: '10px',
                             fontWeight: 600,
-                            background: lot.status === 'sold' ? 'rgba(201,165,76,0.15)' : lot.status === 'unsold' ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.05)',
-                            color: lot.status === 'sold' ? '#c9a54c' : lot.status === 'unsold' ? '#f87171' : 'rgba(255,255,255,0.4)',
+                            background: lot.status === 'sold' ? 'rgba(239,200,74,0.15)' : lot.status === 'unsold' ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.05)',
+                            color: lot.status === 'sold' ? '#EFC84A' : lot.status === 'unsold' ? '#f87171' : 'rgba(255,255,255,0.4)',
                             textTransform: 'capitalize',
                           }}>
                             {lot.status}

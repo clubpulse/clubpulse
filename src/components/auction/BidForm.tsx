@@ -48,7 +48,7 @@ export function BidForm({ lotId, minBid, balance, onSuccess, onCancel }: BidForm
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
-        Your balance: <strong style={{ color: '#c9a54c' }}>{balance} Scores</strong>
+        Your balance: <strong style={{ color: '#EFC84A' }}>{balance} Scores</strong>
       </p>
 
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

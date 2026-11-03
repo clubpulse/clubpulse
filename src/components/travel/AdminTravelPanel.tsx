@@ -11,7 +11,7 @@ interface Props {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: '#0a0a0a',
+  background: '#04091A',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '10px',
   padding: '10px 12px',
@@ -145,7 +145,7 @@ function AwardParticipationRow({ tour }: { tour: ClubTour }) {
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '12px',
       padding: '14px 16px',
@@ -182,7 +182,7 @@ function AwardParticipationRow({ tour }: { tour: ClubTour }) {
             padding: '10px 14px',
             borderRadius: '10px',
             border: 'none',
-            background: '#1D4ED8',
+            background: '#2563EB',
             color: '#fff',
             fontSize: '13px',
             fontWeight: 600,
@@ -231,7 +231,7 @@ export function AdminTravelPanel({ clubId, tours: initialTours }: Props) {
         </div>
         {showCreate && (
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: '14px',
             padding: '20px',

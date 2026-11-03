@@ -32,7 +32,7 @@ export function MySponsorships({ sponsorships }: MySponsorshipsProps) {
   if (sponsorships.length === 0) {
     return (
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: '16px',
         padding: '32px 20px',
@@ -57,7 +57,7 @@ export function MySponsorships({ sponsorships }: MySponsorshipsProps) {
           <div
             key={s.id}
             style={{
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '14px',
               padding: '16px',

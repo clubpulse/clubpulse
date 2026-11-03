@@ -21,7 +21,7 @@ export default async function ScorecardPage() {
       </div>
 
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '16px',
         padding: '20px',
@@ -31,8 +31,8 @@ export default async function ScorecardPage() {
       </div>
 
       <div style={{
-        background: 'rgba(29,78,216,0.08)',
-        border: '1px solid rgba(29,78,216,0.2)',
+        background: 'rgba(37,99,235,0.10)',
+        border: '1px solid rgba(37,99,235,0.22)',
         borderRadius: '12px',
         padding: '14px 16px',
       }}>

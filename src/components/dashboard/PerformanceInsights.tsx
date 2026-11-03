@@ -14,7 +14,7 @@ interface InsightsData {
 }
 
 const TYPE_STYLES: Record<Insight['type'], { dot: string; label: string }> = {
-  tip:       { dot: '#c9a54c', label: '💡 Tip' },
+  tip:       { dot: '#EFC84A', label: '💡 Tip' },
   warning:   { dot: '#ef4444', label: '⚠️ Watch out' },
   milestone: { dot: '#34d399', label: '🏆 Milestone' },
 };
@@ -35,7 +35,7 @@ export function PerformanceInsights() {
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '20px',
@@ -54,7 +54,7 @@ export function PerformanceInsights() {
         </div>
         <span style={{
           fontSize: '10px', fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.5px', color: '#1D4ED8',
+          letterSpacing: '0.5px', color: '#3B82F6',
           border: '1px solid rgba(29,78,216,0.4)',
           borderRadius: '6px', padding: '2px 7px',
         }}>AI</span>

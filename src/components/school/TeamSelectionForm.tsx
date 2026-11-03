@@ -132,7 +132,7 @@ export function TeamSelectionForm({ clubId, members, onSuccess }: TeamSelectionF
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 14px', cursor: 'pointer',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
-                background: checked ? 'rgba(29,78,216,0.1)' : 'transparent',
+                background: checked ? 'rgba(37,99,235,0.12)' : 'transparent',
               }}>
                 <input
                   type="checkbox"

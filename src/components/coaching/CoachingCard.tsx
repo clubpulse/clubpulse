@@ -48,7 +48,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
         <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
           <div style={{
             width: '44px', height: '44px', borderRadius: '12px',
-            background: 'rgba(29,78,216,0.2)', display: 'flex', alignItems: 'center',
+            background: 'rgba(37,99,235,0.22)', display: 'flex', alignItems: 'center',
             justifyContent: 'center', fontSize: '22px', flexShrink: 0,
           }}>
             {typeConfig.emoji}
@@ -63,8 +63,8 @@ export function CoachingCard({ listing, userBalance }: Props) {
                 {listing.qualification && (
                   <span style={{
                     marginLeft: '6px', fontSize: '10px', fontWeight: 600,
-                    background: 'rgba(201,165,76,0.15)', color: '#c9a54c',
-                    border: '1px solid rgba(201,165,76,0.3)',
+                    background: 'rgba(239,200,74,0.15)', color: '#EFC84A',
+                    border: '1px solid rgba(239,200,74,0.3)',
                     borderRadius: '4px', padding: '1px 5px',
                   }}>
                     {listing.qualification}
@@ -111,7 +111,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {listing.avg_rating != null && (
-              <span style={{ fontSize: '12px', color: '#c9a54c' }}>
+              <span style={{ fontSize: '12px', color: '#EFC84A' }}>
                 ⭐ {listing.avg_rating.toFixed(1)}
                 <span style={{ color: 'rgba(255,255,255,0.35)', marginLeft: '4px' }}>
                   ({listing.total_sessions_delivered})
@@ -125,7 +125,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: listing.scores_cost === 0 ? '#4ade80' : '#c9a54c' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: listing.scores_cost === 0 ? '#4ade80' : '#EFC84A' }}>
               {listing.scores_cost === 0 ? 'Free' : `${formatScores(listing.scores_cost)} Scores`}
             </span>
             <button
@@ -227,7 +227,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
                     disabled={!date || loading}
                     style={{
                       flex: 1, padding: '10px', borderRadius: '10px',
-                      background: date && !loading ? '#1D4ED8' : 'rgba(29,78,216,0.3)',
+                      background: date && !loading ? '#1D4ED8' : 'rgba(37,99,235,0.35)',
                       border: 'none', color: '#fff', fontSize: '14px', fontWeight: 600,
                       cursor: date && !loading ? 'pointer' : 'not-allowed',
                     }}

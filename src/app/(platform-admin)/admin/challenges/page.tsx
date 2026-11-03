@@ -43,7 +43,7 @@ export default async function AdminChallengesPage() {
       {error && !missing && <ErrorNote message={`Couldn't load challenges: ${error.message}`} />}
       <div className="max-w-2xl rounded-2xl border border-neutral-800 bg-neutral-950 p-6">
         <span className="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-gold"
-          style={{ borderColor: 'rgba(29,78,216,0.35)', background: 'rgba(29,78,216,0.12)' }}>
+          style={{ borderColor: 'rgba(37,99,235,0.40)', background: 'rgba(37,99,235,0.14)' }}>
           Coming soon
         </span>
         <h2 className="mt-4 text-xl font-semibold text-white">Challenges launching Q1 2027</h2>

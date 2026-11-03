@@ -17,7 +17,7 @@ export function FinanceChart({ summaries }: Props) {
   if (months.length === 0) {
     return (
       <div style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '14px',
         padding: '24px',
@@ -41,7 +41,7 @@ export function FinanceChart({ summaries }: Props) {
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '14px',
       padding: '16px',

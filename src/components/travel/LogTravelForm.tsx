@@ -38,7 +38,7 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    background: '#0a0a0a',
+    background: '#04091A',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '10px',
     padding: '10px 12px',
@@ -119,7 +119,7 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
                 padding: '8px 14px',
                 borderRadius: '20px',
                 border: mode === key ? '1.5px solid #1D4ED8' : '1.5px solid rgba(255,255,255,0.1)',
-                background: mode === key ? 'rgba(29,78,216,0.15)' : 'transparent',
+                background: mode === key ? 'rgba(37,99,235,0.18)' : 'transparent',
                 color: mode === key ? '#fff' : 'rgba(255,255,255,0.45)',
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -147,8 +147,8 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
 
       {/* Live Scores preview */}
       <div style={{
-        background: 'rgba(29,78,216,0.08)',
-        border: '1px solid rgba(29,78,216,0.2)',
+        background: 'rgba(37,99,235,0.10)',
+        border: '1px solid rgba(37,99,235,0.22)',
         borderRadius: '12px',
         padding: '14px 16px',
         display: 'flex',

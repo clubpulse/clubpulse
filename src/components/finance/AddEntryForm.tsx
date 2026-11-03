@@ -60,7 +60,7 @@ export function AddEntryForm({ clubId }: Props) {
 
   const inputStyle = {
     width: '100%',
-    background: '#0f0f0f',
+    background: '#07102B',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '10px',
     padding: '10px 12px',

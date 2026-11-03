@@ -64,7 +64,7 @@ export function LeaderboardTable({
                 style={{
                   borderBottom: '1px solid rgba(255,255,255,0.05)',
                   background: isMe
-                    ? 'rgba(29,78,216,0.18)'
+                    ? 'rgba(37,99,235,0.20)'
                     : 'transparent',
                   transition: 'background 0.15s',
                 }}
@@ -98,7 +98,7 @@ export function LeaderboardTable({
                           width: '32px',
                           height: '32px',
                           borderRadius: '50%',
-                          background: 'rgba(29,78,216,0.3)',
+                          background: 'rgba(37,99,235,0.35)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',

@@ -25,7 +25,7 @@ export default async function MerchantPage() {
       </div>
 
       {/* Summary */}
-      <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+      <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
           <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
             Summary
@@ -37,7 +37,7 @@ export default async function MerchantPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
         {/* Top categories */}
-        <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+        <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
           <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
             Top categories
           </p>
@@ -45,7 +45,7 @@ export default async function MerchantPage() {
         </div>
 
         {/* By role */}
-        <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+        <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
           <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
             By role
           </p>
@@ -65,7 +65,7 @@ export default async function MerchantPage() {
       </div>
 
       {/* Peak times */}
-      <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
+      <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
         <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
           Peak redemption times
         </p>

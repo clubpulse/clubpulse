@@ -15,10 +15,10 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      backgroundColor: 'rgba(8,8,8,0.96)',
+      backgroundColor: 'rgba(4,9,26,0.96)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid rgba(255,255,255,0.08)',
     }}>
       <div style={{
         maxWidth: '1200px',
@@ -69,8 +69,8 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
               padding: '5px 11px',
               borderRadius: '8px',
               textDecoration: 'none',
-              background: 'rgba(239,200,74,0.08)',
-              border: '1px solid rgba(239,200,74,0.2)',
+              background: 'rgba(239,200,74,0.10)',
+              border: '1px solid rgba(239,200,74,0.25)',
               fontSize: '13px', fontWeight: 600, color: '#EFC84A',
             }}
           >

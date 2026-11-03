@@ -69,7 +69,7 @@ export function NominateModal({
     >
       <div
         style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(220,38,38,0.3)',
           borderRadius: '16px',
           padding: '28px',

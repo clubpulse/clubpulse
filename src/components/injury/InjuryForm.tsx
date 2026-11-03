@@ -94,7 +94,7 @@ export function InjuryForm({ clubId, onSuccess, onCancel }: Props) {
                 padding: '8px 4px',
                 borderRadius: '8px',
                 border: severity === val ? '2px solid rgba(29,78,216,0.8)' : '1px solid rgba(255,255,255,0.1)',
-                background: severity === val ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
+                background: severity === val ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.04)',
                 color: '#fff',
                 fontSize: '13px',
                 fontWeight: severity === val ? 600 : 400,

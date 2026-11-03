@@ -60,7 +60,7 @@ export function CoachDashboard({ bookings, totalScoresEarned }: Props) {
             background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '12px', padding: '14px', textAlign: 'center',
           }}>
-            <p style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 700, color: '#c9a54c' }}>{value}</p>
+            <p style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 700, color: '#EFC84A' }}>{value}</p>
             <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{label}</p>
           </div>
         ))}
@@ -126,7 +126,7 @@ export function CoachDashboard({ bookings, totalScoresEarned }: Props) {
           {completed.map((b) => (
             <BookingRow key={b.id} booking={b} message={messages[b.id]}>
               {b.player_rating != null && (
-                <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#c9a54c' }}>
+                <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#EFC84A' }}>
                   ⭐ {b.player_rating}/5{b.player_feedback ? ` — "${b.player_feedback}"` : ''}
                 </p>
               )}
@@ -174,7 +174,7 @@ function BookingRow({ booking, message, children }: { booking: CoachingBooking; 
             {' · '}
             <span style={{ color: statusColor(booking.status) }}>{BOOKING_STATUS_LABEL[booking.status]}</span>
             {booking.scores_paid > 0 && (
-              <span style={{ marginLeft: '6px', color: '#c9a54c' }}>· {formatScores(booking.scores_paid)} Scores paid</span>
+              <span style={{ marginLeft: '6px', color: '#EFC84A' }}>· {formatScores(booking.scores_paid)} Scores paid</span>
             )}
           </p>
         </div>

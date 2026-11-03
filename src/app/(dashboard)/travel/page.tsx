@@ -68,7 +68,7 @@ export default async function TravelPage() {
           <div
             key={tile.label}
             style={{
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '14px',
               padding: '16px',
@@ -123,7 +123,7 @@ export default async function TravelPage() {
                 <div
                   key={tour.id}
                   style={{
-                    background: '#0f0f0f',
+                    background: '#07102B',
                     border: '1px solid rgba(255,255,255,0.07)',
                     borderRadius: '14px',
                     padding: '16px',
@@ -140,8 +140,8 @@ export default async function TravelPage() {
                       </p>
                     </div>
                     <div style={{
-                      background: 'rgba(29,78,216,0.12)',
-                      border: '1px solid rgba(29,78,216,0.2)',
+                      background: 'rgba(37,99,235,0.14)',
+                      border: '1px solid rgba(37,99,235,0.22)',
                       borderRadius: '8px',
                       padding: '6px 12px',
                       fontSize: '12px',
@@ -178,7 +178,7 @@ export default async function TravelPage() {
 
         {log.length === 0 ? (
           <div style={{
-            background: '#0f0f0f',
+            background: '#07102B',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '14px',
             padding: '32px',
@@ -196,7 +196,7 @@ export default async function TravelPage() {
                 <div
                   key={entry.id}
                   style={{
-                    background: '#0f0f0f',
+                    background: '#07102B',
                     border: '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '12px',
                     padding: '14px 16px',

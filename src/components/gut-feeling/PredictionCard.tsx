@@ -69,7 +69,7 @@ export function PredictionCard({
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: `1px solid ${isResolved && isCorrect ? 'rgba(34,197,94,0.3)' : isResolved && isCorrect === false ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.07)'}`,
       borderRadius: '16px',
       padding: '20px',

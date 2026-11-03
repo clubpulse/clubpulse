@@ -10,7 +10,7 @@ export function AuthShell({ title, subtitle, children, footer }: {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#080808',
+      background: '#04091A',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -25,7 +25,7 @@ export function AuthShell({ title, subtitle, children, footer }: {
           background: linear-gradient(145deg, #0F1F5C 0%, #1D4ED8 50%, #3B82F6 100%);
           border-radius: 8px; display: flex; align-items: center;
           justify-content: center;
-          box-shadow: 0 0 0 1px rgba(96,165,250,0.3), 0 4px 16px rgba(29,78,216,0.5);
+          box-shadow: 0 0 0 1px rgba(96,165,250,0.3), 0 4px 16px rgba(37,99,235,0.55);
         }
         .auth-logo-name {
           font-family: 'Syne', sans-serif; font-weight: 800;
@@ -39,8 +39,8 @@ export function AuthShell({ title, subtitle, children, footer }: {
         }
         .auth-subtitle { font-size: 14px; color: rgba(255,255,255,0.45); margin: 6px 0 0; }
         .auth-box {
-          background: #0f0f0f;
-          border: 1px solid rgba(255,255,255,0.07);
+          background: var(--surface-1, #07102B);
+          border: 1px solid rgba(255,255,255,0.09);
           border-radius: 16px; padding: 28px;
         }
         .auth-footer { font-size: 13px; color: rgba(255,255,255,0.35); text-align: center; margin-top: 20px; }

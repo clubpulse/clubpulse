@@ -71,7 +71,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
   }
 
   const inputStyle: React.CSSProperties = {
-    background: '#0f0f0f',
+    background: '#07102B',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '8px',
     color: '#fff',
@@ -109,7 +109,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
 
       {/* Post form */}
       <form onSubmit={handleCreate} style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '16px',
         padding: '24px',
@@ -190,7 +190,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
           type="submit"
           disabled={isPending}
           style={{
-            background: '#1D4ED8',
+            background: '#2563EB',
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
@@ -226,7 +226,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
           const isExpired = notice.expires_at ? new Date(notice.expires_at) < new Date() : false;
           return (
             <div key={notice.id} style={{
-              background: '#0f0f0f',
+              background: '#07102B',
               border: `1px solid ${isExpired ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}`,
               borderRadius: '12px',
               padding: '16px 20px',
@@ -268,7 +268,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
                   disabled={isPending}
                   title={notice.is_pinned ? 'Unpin' : 'Pin'}
                   style={{
-                    background: notice.is_pinned ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.06)',
+                    background: notice.is_pinned ? 'rgba(37,99,235,0.22)' : 'rgba(255,255,255,0.06)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px',
                     color: '#fff',

@@ -209,8 +209,8 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
                   disabled={isPending || !!drawMessages[r.id]}
                   style={{
                     padding: '8px 14px', borderRadius: '8px', border: 'none',
-                    background: 'rgba(201,165,76,0.15)',
-                    color: '#c9a54c',
+                    background: 'rgba(239,200,74,0.15)',
+                    color: '#EFC84A',
                     fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                     opacity: isPending ? 0.6 : 1,
                     whiteSpace: 'nowrap',

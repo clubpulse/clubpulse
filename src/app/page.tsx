@@ -56,13 +56,13 @@ export default function HomePage() {
 
         .cp-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .cp-root {
-          --bg: #080810; --bg2: #0c0c18; --bg3: #0f0f1c; --bg4: #080810;
+          --bg: #080810; --bg2: #07102B; --bg3: #0f0f1c; --bg4: #080810;
           --fg: #E8EDF5; --fg2: rgba(232,237,245,0.55); --fg3: rgba(232,237,245,0.28);
           --blue: #1D4ED8; --blue-b: #3B82F6; --blue-dark: #0F1F5C;
-          --blue-dim: rgba(29,78,216,0.16); --blue-glow: rgba(29,78,216,0.10);
+          --blue-dim: rgba(29,78,216,0.16); --blue-glow: rgba(37,99,235,0.12);
           --sky: #60A5FA;
           /* Legacy alias — anything using var(--red) now resolves to blue */
-          --red: #1D4ED8; --red-b: #3B82F6; --red-dim: rgba(29,78,216,0.16); --red-glow: rgba(29,78,216,0.10);
+          --red: #1D4ED8; --red-b: #3B82F6; --red-dim: rgba(29,78,216,0.16); --red-glow: rgba(37,99,235,0.12);
           --gold: #EFC84A; --gold-dim: rgba(239,200,74,0.12);
           --green: #22C55E; --green-dim: rgba(34,197,94,0.10);
           --orange: #f97316;
@@ -136,7 +136,7 @@ export default function HomePage() {
           width:36px;height:36px;
           background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);
           border-radius:9px;display:grid;place-items:center;
-          box-shadow:0 0 0 1px rgba(96,165,250,0.3),0 0 20px rgba(29,78,216,0.5);
+          box-shadow:0 0 0 1px rgba(96,165,250,0.3),0 0 20px rgba(37,99,235,0.55);
         }
         .cp-logo-name { font-family:'Syne',sans-serif;font-weight:800;font-size:17px; }
         .cp-logo-name .club { color:var(--fg); }
@@ -156,7 +156,7 @@ export default function HomePage() {
         .cp-btn-red {
           padding:8px 18px;font-size:13px;font-weight:600;background:var(--red);color:#fff;
           text-decoration:none;border-radius:8px;transition:opacity 0.12s;
-          box-shadow:0 0 20px rgba(29,78,216,0.3);
+          box-shadow:0 0 20px rgba(37,99,235,0.35);
         }
         .cp-btn-red:hover { opacity:0.88; }
         .cp-hamburger {
@@ -243,9 +243,9 @@ export default function HomePage() {
         .cp-btn-hero {
           padding:14px 30px;font-size:15px;font-weight:700;
           background:var(--red);color:#fff;text-decoration:none;border-radius:11px;
-          box-shadow:0 0 40px rgba(29,78,216,0.35);transition:all 0.15s;
+          box-shadow:0 0 40px rgba(37,99,235,0.40);transition:all 0.15s;
         }
-        .cp-btn-hero:hover { box-shadow:0 0 60px rgba(29,78,216,0.5);transform:translateY(-1px); }
+        .cp-btn-hero:hover { box-shadow:0 0 60px rgba(37,99,235,0.55);transform:translateY(-1px); }
         .cp-btn-hero-ghost {
           padding:14px 24px;font-size:15px;font-weight:500;
           border:1px solid var(--border);color:var(--fg2);
@@ -266,9 +266,9 @@ export default function HomePage() {
 
         /* ── PHONE MOCKUP ── */
         .cp-phone {
-          background:#0a0a0a;border:1.5px solid rgba(255,255,255,0.1);
+          background:#04091A;border:1.5px solid rgba(255,255,255,0.1);
           border-radius:36px;padding:14px;
-          box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03),0 0 60px rgba(29,78,216,0.08);
+          box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03),0 0 60px rgba(37,99,235,0.10);
           position:relative;width:100%;
         }
         .cp-phone::before {
@@ -291,12 +291,12 @@ export default function HomePage() {
         .cp-sc-greeting { font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px; }
         .cp-sc-sub { font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
         .cp-score-card {
-          background:linear-gradient(135deg,rgba(201,165,76,0.12),rgba(201,165,76,0.04));
-          border:1px solid rgba(201,165,76,0.2);border-radius:14px;
+          background:linear-gradient(135deg,rgba(239,200,74,0.12),rgba(239,200,74,0.04));
+          border:1px solid rgba(239,200,74,0.2);border-radius:14px;
           padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;
         }
         .cp-score-n { font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.02em; }
-        .cp-score-unit { font-size:10px;color:rgba(201,165,76,0.5); }
+        .cp-score-unit { font-size:10px;color:rgba(239,200,74,0.5); }
         .cp-score-label { font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px; }
         .cp-score-val { font-size:12px;font-weight:600;color:var(--gold); }
         .cp-tiles { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px; }
@@ -321,7 +321,7 @@ export default function HomePage() {
         .cp-sc-innings { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px; }
         .cp-sc-head {
           display:flex;justify-content:space-between;padding:8px 10px;
-          background:rgba(29,78,216,0.12);border-bottom:1px solid rgba(255,255,255,0.04);
+          background:rgba(37,99,235,0.14);border-bottom:1px solid rgba(255,255,255,0.04);
         }
         .cp-sc-head-name { font-weight:700;color:#fff;font-size:10px; }
         .cp-sc-head-score { font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
@@ -334,8 +334,8 @@ export default function HomePage() {
         .cp-sc-bat-name.bold { color:#fff;font-weight:600; }
         .cp-sc-bat-runs { font-weight:700;color:#fff; }
         .cp-pts-hero {
-          background:linear-gradient(135deg,rgba(201,165,76,0.14),rgba(29,78,216,0.06));
-          border:1px solid rgba(201,165,76,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
+          background:linear-gradient(135deg,rgba(239,200,74,0.14),rgba(29,78,216,0.06));
+          border:1px solid rgba(239,200,74,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
         }
         .cp-pts-big { font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.03em; }
         .cp-pts-eq { font-size:11px;color:rgba(240,236,228,0.4);margin-top:4px; }
@@ -347,7 +347,7 @@ export default function HomePage() {
         .cp-earn-row:last-child { border-bottom:none; }
         .cp-earn-label { color:rgba(255,255,255,0.5); }
         .cp-earn-pts { font-weight:700;color:var(--gold); }
-        .cp-coach-cam { background:#0a0a0a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;margin-bottom:12px; }
+        .cp-coach-cam { background:#04091A;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;margin-bottom:12px; }
         .cp-coach-cam-label {
           display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;
           color:var(--green);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;
@@ -423,7 +423,7 @@ export default function HomePage() {
           background:var(--bg2);padding:36px;text-decoration:none;
           transition:background 0.15s;position:relative;overflow:hidden;
         }
-        .cp-feat-card:hover { background:#0f0f0f; }
+        .cp-feat-card:hover { background:#07102B; }
         .cp-feat-card-icon { font-size:28px;margin-bottom:16px; }
         .cp-feat-card-tag {
           display:inline-flex;align-items:center;gap:5px;
@@ -450,7 +450,7 @@ export default function HomePage() {
           cursor:pointer;border:1px solid var(--border);color:var(--fg3);
           background:transparent;transition:all 0.15s;font-family:'Inter',sans-serif;
         }
-        .cp-persona-tab.active { background:var(--blue-dim);color:var(--fg);border-color:rgba(29,78,216,0.35); }
+        .cp-persona-tab.active { background:var(--blue-dim);color:var(--fg);border-color:rgba(37,99,235,0.40); }
         .cp-persona-tab:hover:not(.active) { color:var(--fg);border-color:rgba(255,255,255,0.18); }
         .cp-persona-panel { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; }
         .cp-persona-eyebrow {
@@ -498,8 +498,8 @@ export default function HomePage() {
         .cp-pricing-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden; }
         .cp-price-card { background:var(--bg2);padding:36px;position:relative; }
         .cp-price-card.featured {
-          background:#0f0f0f;
-          outline:1px solid rgba(29,78,216,0.5);
+          background:#07102B;
+          outline:1px solid rgba(37,99,235,0.55);
           outline-offset:-1px;
         }
         .cp-price-featured-chip {
@@ -523,7 +523,7 @@ export default function HomePage() {
           border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;
           transition:all 0.15s;
         }
-        .cp-price-cta.primary { background:var(--blue);color:#fff;box-shadow:0 0 24px rgba(29,78,216,0.35); }
+        .cp-price-cta.primary { background:var(--blue);color:#fff;box-shadow:0 0 24px rgba(37,99,235,0.40); }
         .cp-price-cta.primary:hover { opacity:0.88; }
         .cp-price-cta.ghost { border:1px solid var(--border);color:var(--fg2); }
         .cp-price-cta.ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
@@ -539,7 +539,7 @@ export default function HomePage() {
         .cp-quote-mark {
           position:absolute;top:-20px;left:36px;
           font-family:'Syne',sans-serif;font-size:180px;font-weight:800;
-          color:rgba(29,78,216,0.08);line-height:1;pointer-events:none;user-select:none;
+          color:rgba(37,99,235,0.10);line-height:1;pointer-events:none;user-select:none;
         }
         .cp-quote-text {
           font-family:'Syne',sans-serif;
@@ -807,13 +807,13 @@ export default function HomePage() {
                             <circle cx="88" cy="10" r="4" fill="rgba(240,236,228,0.8)"/>
                             <path d="M50 38 Q36 44 28 52 Q24 56 26 60" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
                             <circle cx="26" cy="60" r="4" fill="rgba(240,236,228,0.8)"/>
-                            <rect x="22" y="54" width="7" height="38" rx="3" transform="rotate(-35 22 54)" fill="#c9a54c" opacity="0.9"/>
+                            <rect x="22" y="54" width="7" height="38" rx="3" transform="rotate(-35 22 54)" fill="#EFC84A" opacity="0.9"/>
                             <path d="M55 70 Q50 95 42 115 Q40 122 44 126" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
                             <path d="M68 70 Q72 92 74 112 Q76 120 72 124" stroke="rgba(240,236,228,0.65)" strokeWidth="5" strokeLinecap="round" fill="none"/>
                             <circle cx="88" cy="10" r="3.5" fill="#2ecc71" opacity="0.9"/>
                             <circle cx="26" cy="60" r="3.5" fill="#2ecc71" opacity="0.9"/>
-                            <circle cx="76" cy="36" r="3" fill="#c9a54c" opacity="0.9"/>
-                            <circle cx="50" cy="38" r="3" fill="#c9a54c" opacity="0.9"/>
+                            <circle cx="76" cy="36" r="3" fill="#EFC84A" opacity="0.9"/>
+                            <circle cx="50" cy="38" r="3" fill="#EFC84A" opacity="0.9"/>
                           </svg>
                         </div>
                       </div>
@@ -930,7 +930,7 @@ export default function HomePage() {
                     </div>
                     <Link href="/features/availability" className="cp-feat-card-link">Learn more →</Link>
                   </div>
-                  <div style={{background:'#0a0a0a',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
+                  <div style={{background:'#04091A',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
                       <div>
                         <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>Availability</div>
@@ -1250,16 +1250,16 @@ function PersonaSection() {
       ],
       card: (
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{background:'linear-gradient(135deg,rgba(201,165,76,0.12),rgba(201,165,76,0.04))',border:'1px solid rgba(201,165,76,0.2)',borderRadius:'14px',padding:'20px'}}>
-            <div style={{fontSize:'11px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'rgba(201,165,76,0.6)',marginBottom:'4px'}}>Your Scores balance</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'#c9a54c',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(201,165,76,0.5)'}}>pts</span></div>
+          <div style={{background:'linear-gradient(135deg,rgba(239,200,74,0.12),rgba(239,200,74,0.04))',border:'1px solid rgba(239,200,74,0.2)',borderRadius:'14px',padding:'20px'}}>
+            <div style={{fontSize:'11px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'rgba(239,200,74,0.6)',marginBottom:'4px'}}>Your Scores balance</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'#EFC84A',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(239,200,74,0.5)'}}>pts</span></div>
             <div style={{fontSize:'13px',color:'rgba(240,236,228,0.4)',marginTop:'6px'}}>≈ £25.00 cash value</div>
           </div>
           <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
             {[['Match played · vs Henley CC','+50 pts'],['Marked available · Sat','+5 pts'],['Season fee paid','+200 pts'],['AI coaching session','+25 pts']].map(([l,p])=>(
               <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'12px'}}>
                 <span style={{color:'rgba(255,255,255,0.5)'}}>{l}</span>
-                <span style={{fontWeight:700,color:'#c9a54c'}}>{p}</span>
+                <span style={{fontWeight:700,color:'#EFC84A'}}>{p}</span>
               </div>
             ))}
           </div>
@@ -1278,7 +1278,7 @@ function PersonaSection() {
       ],
       card: (
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(29,78,216,0.2)',borderRadius:'12px',padding:'16px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(37,99,235,0.22)',borderRadius:'12px',padding:'16px'}}>
             <div>
               <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
               <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · 10:30am</div>

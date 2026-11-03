@@ -40,7 +40,7 @@ export function SponsorPackagesClient({
   if (packages.length === 0) {
     return (
       <div style={{
-        background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)',
+        background: '#07102B', border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: '14px', padding: '28px 20px', textAlign: 'center',
       }}>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>

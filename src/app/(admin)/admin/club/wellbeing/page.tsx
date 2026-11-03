@@ -81,8 +81,8 @@ export default async function AdminWellbeingPage() {
 
       {/* Privacy banner */}
       <div style={{
-        background: 'rgba(29,78,216,0.08)',
-        border: '1px solid rgba(29,78,216,0.3)',
+        background: 'rgba(37,99,235,0.10)',
+        border: '1px solid rgba(37,99,235,0.35)',
         borderRadius: '12px',
         padding: '14px 16px',
         marginBottom: '24px',
@@ -114,7 +114,7 @@ export default async function AdminWellbeingPage() {
       {/* Week cards */}
       {result.success && result.data.length === 0 && (
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '14px',
           padding: '28px',
@@ -134,7 +134,7 @@ export default async function AdminWellbeingPage() {
         }) ? '16px' : '0' }}>
           {result.data.map((week) => (
             <div key={week.check_week} style={{
-              background: '#0f0f0f',
+              background: '#07102B',
               border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '14px',
               padding: '18px 20px',

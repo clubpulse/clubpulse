@@ -249,7 +249,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
               rows={4}
               style={{
                 width: '100%',
-                background: '#0a0a0a',
+                background: '#04091A',
                 border: '1px solid #374151',
                 borderRadius: '8px',
                 color: '#f9fafb',
@@ -305,7 +305,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
             style={{
               marginBottom: '16px',
               padding: '14px',
-              background: '#0a0a0a',
+              background: '#04091A',
               border: '1px solid #374151',
               borderRadius: '10px',
             }}
@@ -460,7 +460,7 @@ function Select({
       onChange={(e) => onChange(e.target.value)}
       style={{
         width: '100%',
-        background: '#0a0a0a',
+        background: '#04091A',
         border: '1px solid #374151',
         borderRadius: '8px',
         color: value ? '#f9fafb' : '#6b7280',
@@ -497,7 +497,7 @@ function Toggle({
         justifyContent: 'space-between',
         cursor: 'pointer',
         padding: '10px 12px',
-        background: '#0a0a0a',
+        background: '#04091A',
         border: '1px solid #1f2937',
         borderRadius: '8px',
       }}

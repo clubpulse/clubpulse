@@ -19,7 +19,7 @@ interface ClubHealth {
 
 const GRADE_COLOURS: Record<string, string> = {
   A: '#34d399',
-  B: '#c9a54c',
+  B: '#EFC84A',
   C: '#f59e0b',
   D: '#f87171',
   F: '#ef4444',
@@ -36,11 +36,11 @@ export function ClubHealthScore() {
       .catch(() => setError(true));
   }, []);
 
-  const gradeColour = data ? (GRADE_COLOURS[data.grade] ?? '#c9a54c') : '#c9a54c';
+  const gradeColour = data ? (GRADE_COLOURS[data.grade] ?? '#EFC84A') : '#EFC84A';
 
   return (
     <div style={{
-      background: '#0f0f0f',
+      background: '#07102B',
       border: '1px solid rgba(255,255,255,0.07)',
       borderRadius: '16px',
       padding: '24px',
@@ -59,7 +59,7 @@ export function ClubHealthScore() {
         </div>
         <span style={{
           fontSize: '10px', fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.5px', color: '#1D4ED8',
+          letterSpacing: '0.5px', color: '#3B82F6',
           border: '1px solid rgba(29,78,216,0.4)',
           borderRadius: '6px', padding: '2px 7px',
         }}>AI</span>
@@ -133,7 +133,7 @@ export function ClubHealthScore() {
                 <div style={{ height: '4px', borderRadius: '999px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: '999px',
-                    background: pillar.score >= 70 ? '#34d399' : pillar.score >= 50 ? '#c9a54c' : '#f87171',
+                    background: pillar.score >= 70 ? '#34d399' : pillar.score >= 50 ? '#EFC84A' : '#f87171',
                     width: `${pillar.score}%`,
                     transition: 'width 0.8s ease',
                   }} />

@@ -74,7 +74,7 @@ const SPARK_METRICS: {
 }[] = [
   { key: 'total_members', label: 'Members', color: '#818cf8' },
   { key: 'avg_availability_rate', label: 'Availability %', color: '#34d399', unit: '%' },
-  { key: 'total_scores_earned', label: 'Scores earned', color: '#c9a54c', unit: 'pts' },
+  { key: 'total_scores_earned', label: 'Scores earned', color: '#EFC84A', unit: 'pts' },
   { key: 'fixtures_played', label: 'Fixtures', color: '#60a5fa' },
 ];
 
@@ -88,7 +88,7 @@ export function HealthTrendChart({ snapshots }: Props) {
     return (
       <div
         style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.06)',
           borderRadius: '16px',
           padding: '32px',
@@ -121,7 +121,7 @@ export function HealthTrendChart({ snapshots }: Props) {
   return (
     <div
       style={{
-        background: '#0f0f0f',
+        background: '#07102B',
         border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: '16px',
         padding: '20px 24px',

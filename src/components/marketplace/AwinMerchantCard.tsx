@@ -14,7 +14,7 @@ export function AwinMerchantCard({ merchant, userId }: { merchant: AwinMerchant;
         gap: '8px',
         borderRadius: '16px',
         border: '1px solid rgba(255,255,255,0.07)',
-        background: '#0f0f0f',
+        background: '#07102B',
         padding: '16px',
         textDecoration: 'none',
         transition: 'border-color 0.15s',
@@ -26,8 +26,8 @@ export function AwinMerchantCard({ merchant, userId }: { merchant: AwinMerchant;
         <span style={{
           flexShrink: 0,
           fontSize: '11px', fontWeight: 700,
-          background: 'rgba(201,165,76,0.12)',
-          color: '#c9a54c',
+          background: 'rgba(239,200,74,0.12)',
+          color: '#EFC84A',
           borderRadius: '8px',
           padding: '3px 8px',
         }}>
@@ -35,7 +35,7 @@ export function AwinMerchantCard({ merchant, userId }: { merchant: AwinMerchant;
         </span>
       </div>
       <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{merchant.description}</p>
-      <span style={{ marginTop: '4px', fontSize: '12px', fontWeight: 600, color: '#c9a54c' }}>
+      <span style={{ marginTop: '4px', fontSize: '12px', fontWeight: 600, color: '#EFC84A' }}>
         Shop and earn Scores →
       </span>
     </a>

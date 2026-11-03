@@ -37,7 +37,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
       flexDirection: 'column',
       borderRadius: '16px',
       border: '1px solid rgba(255,255,255,0.07)',
-      background: '#0f0f0f',
+      background: '#07102B',
       overflow: 'hidden',
       fontFamily: "'Inter', sans-serif",
       position: 'relative',
@@ -48,7 +48,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
           position: 'absolute',
           top: '12px',
           right: '12px',
-          background: '#1D4ED8',
+          background: '#2563EB',
           color: '#fff',
           borderRadius: '8px',
           padding: '3px 9px',
@@ -95,7 +95,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
         {/* Cost row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: 'auto', paddingTop: '8px' }}>
           <span aria-hidden style={{ fontSize: '14px' }}>💰</span>
-          <span style={{ fontSize: '16px', fontWeight: 700, color: '#c9a54c', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: '16px', fontWeight: 700, color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
             {formatScores(reward.creds_cost)} Scores
           </span>
         </div>

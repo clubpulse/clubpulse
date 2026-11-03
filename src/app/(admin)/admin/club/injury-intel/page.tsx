@@ -96,7 +96,7 @@ export default async function AdminInjuryIntelPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
-                  background: 'rgba(29,78,216,0.15)', borderRadius: '8px',
+                  background: 'rgba(37,99,235,0.18)', borderRadius: '8px',
                   padding: '8px 12px', fontSize: '13px', fontWeight: 700, color: '#fff',
                   minWidth: '24px', textAlign: 'center',
                 }}>

@@ -8,9 +8,9 @@ export default function AICoachPage() {
       <style>{`
         .ai-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .ai-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
+          --bg: #04091A; --bg2: #07102B; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #EFC84A; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -42,7 +42,7 @@ export default function AICoachPage() {
         .ai-btn-ghost:hover { border-color:rgba(255,255,255,0.2);color:var(--fg); }
 
         /* POSE MOCKUP */
-        .ai-pose-card { background:#0a0a0a;border:1px solid var(--border);border-radius:20px;padding:20px;box-shadow:0 0 60px rgba(46,204,113,0.06); }
+        .ai-pose-card { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:20px;box-shadow:0 0 60px rgba(46,204,113,0.06); }
         .ai-cam-label { display:flex;align-items:center;gap:6px;font-size:9px;font-weight:700;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px; }
         .ai-cam-dot { width:5px;height:5px;border-radius:50%;background:var(--green);animation:ai-blink 2s infinite; }
         .ai-pose-frame {
@@ -184,7 +184,7 @@ export default function AICoachPage() {
                 <ellipse cx="120" cy="11" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
                 <path d="M64 52 Q46 62 36 74 Q30 82 33 88" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
                 <ellipse cx="33" cy="88" rx="6" ry="7" fill="rgba(240,236,228,0.85)"/>
-                <rect x="26" y="76" width="10" height="52" rx="4" transform="rotate(-32 26 76)" fill="#c9a54c"/>
+                <rect x="26" y="76" width="10" height="52" rx="4" transform="rotate(-32 26 76)" fill="#EFC84A"/>
                 <rect x="26" y="76" width="2" height="52" rx="1" transform="rotate(-32 26 76)" fill="rgba(255,255,255,0.18)"/>
                 <path d="M72 96 Q64 128 54 158 Q50 168 55 174" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
                 <path d="M90 96 Q97 126 100 156 Q102 166 96 170" stroke="rgba(240,236,228,0.7)" strokeWidth="7" strokeLinecap="round" fill="none"/>
@@ -192,11 +192,11 @@ export default function AICoachPage() {
                 <path d="M91 169 Q85 178 96 180 Q108 179 106 169" fill="rgba(240,236,228,0.6)"/>
                 <circle cx="120" cy="11" r="5" fill="#2ecc71"/>
                 <circle cx="33" cy="88" r="5" fill="#2ecc71"/>
-                <circle cx="100" cy="50" r="4.5" fill="#c9a54c"/>
-                <circle cx="64" cy="52" r="4.5" fill="#c9a54c"/>
-                <circle cx="82" cy="96" r="4.5" fill="#c9a54c"/>
-                <circle cx="54" cy="158" r="4" fill="#c9a54c"/>
-                <circle cx="100" cy="156" r="4" fill="#c9a54c"/>
+                <circle cx="100" cy="50" r="4.5" fill="#EFC84A"/>
+                <circle cx="64" cy="52" r="4.5" fill="#EFC84A"/>
+                <circle cx="82" cy="96" r="4.5" fill="#EFC84A"/>
+                <circle cx="54" cy="158" r="4" fill="#EFC84A"/>
+                <circle cx="100" cy="156" r="4" fill="#EFC84A"/>
                 <circle cx="55" cy="174" r="3.5" fill="rgba(29,78,216,0.9)"/>
                 <circle cx="96" cy="170" r="3.5" fill="rgba(29,78,216,0.9)"/>
                 <line x1="120" y1="11" x2="100" y2="50" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>

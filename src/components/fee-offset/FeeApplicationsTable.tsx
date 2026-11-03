@@ -62,7 +62,7 @@ function ApplicationRow({ app }: { app: FeeOffsetApplication }) {
 
   return (
     <div style={{
-      background: '#0a0a0a',
+      background: '#04091A',
       border: '1px solid rgba(255,255,255,0.06)',
       borderRadius: '12px',
       padding: '16px',
@@ -83,7 +83,7 @@ function ApplicationRow({ app }: { app: FeeOffsetApplication }) {
           <div style={{ display: 'flex', gap: '16px' }}>
             <div>
               <p style={{ margin: '0 0 1px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores</p>
-              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#c9a54c', fontFamily: "'Syne', sans-serif" }}>
+              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Syne', sans-serif" }}>
                 {app.scores_applied.toLocaleString()}
               </p>
             </div>

@@ -96,7 +96,7 @@ export function DressingRoomClient({
       overflow: 'hidden',
       borderRadius: '20px',
       border: '1px solid rgba(255,255,255,0.07)',
-      background: '#080808',
+      background: '#04091A',
       fontFamily: "'Inter', sans-serif",
     }}>
       {/* Header */}
@@ -138,7 +138,7 @@ export function DressingRoomClient({
                   fontFamily: "'Inter', sans-serif",
                   cursor: 'pointer',
                   transition: 'color 0.15s, background 0.15s',
-                  borderBottom: active ? '2px solid #1D4ED8' : '2px solid transparent',
+                  borderBottom: active ? '2px solid #3B82F6' : '2px solid transparent',
                 }}
               >
                 <span aria-hidden>{tab.icon}</span>

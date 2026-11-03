@@ -89,7 +89,7 @@ export default async function ClubBiblePage() {
             fontSize: '13px',
             textTransform: 'uppercase',
             letterSpacing: '2px',
-            color: '#1D4ED8',
+            color: '#3B82F6',
             margin: '0 0 20px',
             textAlign: 'center',
           }}>
@@ -123,7 +123,7 @@ export default async function ClubBiblePage() {
       ) : (
         <div style={{
           background: 'rgba(29,78,216,0.06)',
-          border: '1px dashed rgba(29,78,216,0.3)',
+          border: '1px dashed rgba(37,99,235,0.35)',
           borderRadius: '14px',
           padding: '32px',
           textAlign: 'center',
@@ -153,8 +153,8 @@ export default async function ClubBiblePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {featured.map((m) => (
               <div key={m.id} style={{
-                background: 'rgba(29,78,216,0.08)',
-                border: '1px solid rgba(29,78,216,0.25)',
+                background: 'rgba(37,99,235,0.10)',
+                border: '1px solid rgba(37,99,235,0.28)',
                 borderRadius: '12px',
                 padding: '14px 16px',
               }}>

@@ -7,7 +7,7 @@ import type { CoachingInsight } from '@/lib/types/coaching-insights';
 const SHOWN = 3;
 
 const TYPE_STYLES: Record<string, { label: string; color: string; bg: string }> = {
-  strength:   { label: 'Strength',   color: '#c9a54c', bg: 'rgba(201,165,76,0.12)' },
+  strength:   { label: 'Strength',   color: '#EFC84A', bg: 'rgba(239,200,74,0.12)' },
   focus_area: { label: 'Focus area', color: '#f87171', bg: 'rgba(29,78,216,0.22)' },
   trend:      { label: 'Trend',      color: '#7dd3fc', bg: 'rgba(56,189,248,0.12)' },
   technique:  { label: 'Technique',  color: '#c4b5fd', bg: 'rgba(167,139,250,0.14)' },
@@ -55,7 +55,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
   return (
     <section
       aria-labelledby="coaching-insights-heading"
-      style={{ background: '#080808', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px', fontFamily: "var(--font-inter), 'Inter', sans-serif" }}
+      style={{ background: '#04091A', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px', fontFamily: "var(--font-inter), 'Inter', sans-serif" }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
         <h2
@@ -64,7 +64,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
         >
           Coaching insights
         </h2>
-        <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#c9a54c' }}>AI coach</span>
+        <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#EFC84A' }}>AI coach</span>
       </div>
 
       {insights.length === 0 ? (
@@ -80,7 +80,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
                 key={insight.id}
                 style={{
                   borderRadius: '12px', padding: '14px', background: 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${insight.acknowledged ? 'rgba(255,255,255,0.05)' : 'rgba(29,78,216,0.35)'}`,
+                  border: `1px solid ${insight.acknowledged ? 'rgba(255,255,255,0.05)' : 'rgba(37,99,235,0.40)'}`,
                   opacity: insight.acknowledged ? 0.65 : 1, transition: 'opacity 0.2s',
                 }}
               >
@@ -89,7 +89,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
                 </span>
                 <p style={{ margin: '10px 0 6px', fontSize: '14px', lineHeight: 1.55, color: '#fff' }}>{insight.finding}</p>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: 'rgba(255,255,255,0.6)' }}>
-                  <span style={{ color: '#c9a54c', fontWeight: 600 }}>Try: </span>{insight.recommendation}
+                  <span style={{ color: '#EFC84A', fontWeight: 600 }}>Try: </span>{insight.recommendation}
                 </p>
                 <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
                   {insight.acknowledged ? (
@@ -101,7 +101,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
                       disabled={saving === insight.id}
                       style={{
                         fontSize: '12px', fontWeight: 600, padding: '6px 14px', borderRadius: '8px', border: 'none',
-                        background: '#1D4ED8', color: '#fff', cursor: 'pointer', opacity: saving === insight.id ? 0.6 : 1,
+                        background: '#2563EB', color: '#fff', cursor: 'pointer', opacity: saving === insight.id ? 0.6 : 1,
                       }}
                     >
                       Got it

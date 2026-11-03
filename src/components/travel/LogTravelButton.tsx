@@ -42,7 +42,7 @@ export function LogTravelButton({ clubId }: Props) {
           padding: '10px 18px',
           borderRadius: '10px',
           border: 'none',
-          background: '#1D4ED8',
+          background: '#2563EB',
           color: '#fff',
           fontSize: '14px',
           fontWeight: 600,

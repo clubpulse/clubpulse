@@ -28,7 +28,7 @@ export default async function ScoutSharePage({ params }: Props) {
     return (
       <main style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#080808', fontFamily: "'Inter', sans-serif",
+        background: '#04091A', fontFamily: "'Inter', sans-serif",
       }}>
         <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>
           <p style={{ fontSize: '32px', margin: '0 0 16px' }}>🔍</p>
@@ -96,7 +96,7 @@ export default async function ScoutSharePage({ params }: Props) {
   return (
     <main style={{
       minHeight: '100vh',
-      background: '#080808',
+      background: '#04091A',
       fontFamily: "'Inter', sans-serif",
       padding: '40px 20px',
     }}>
@@ -123,7 +123,7 @@ export default async function ScoutSharePage({ params }: Props) {
         {/* Notice */}
         <div style={{
           background: 'rgba(29,78,216,0.07)',
-          border: '1px solid rgba(29,78,216,0.2)',
+          border: '1px solid rgba(37,99,235,0.22)',
           borderRadius: '12px',
           padding: '12px 16px',
           fontSize: '12px',
@@ -134,7 +134,7 @@ export default async function ScoutSharePage({ params }: Props) {
 
         {/* Stats table */}
         <div style={{
-          background: '#0f0f0f',
+          background: '#07102B',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '14px',
           overflow: 'hidden',

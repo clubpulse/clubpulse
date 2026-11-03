@@ -6,14 +6,14 @@ export default function ScoresPage() {
       <style>{`
         .sr-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .sr-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
+          --bg: #04091A; --bg2: #07102B; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #EFC84A; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
-        @keyframes sr-glow { 0%,100%{box-shadow:0 0 14px rgba(201,165,76,0.2)} 50%{box-shadow:0 0 28px rgba(201,165,76,0.45)} }
+        @keyframes sr-glow { 0%,100%{box-shadow:0 0 14px rgba(239,200,74,0.2)} 50%{box-shadow:0 0 28px rgba(239,200,74,0.45)} }
         @keyframes sr-rise { 0%{transform:scaleY(0.2);opacity:0.3} 100%{transform:scaleY(1);opacity:1} }
 
         .sr-nav { position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.92);backdrop-filter:blur(16px); }
@@ -38,13 +38,13 @@ export default function ScoresPage() {
         .sr-btn-ghost:hover { border-color:rgba(255,255,255,0.2);color:var(--fg); }
 
         /* LEADERBOARD MOCKUP */
-        .sr-board { background:#0a0a0a;border:1px solid var(--border);border-radius:20px;padding:20px; }
+        .sr-board { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:20px; }
         .sr-board-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
         .sr-board-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
         .sr-board-season { font-size:10px;color:var(--fg3); }
         .sr-rows { display:flex;flex-direction:column;gap:3px;margin-bottom:16px; }
         .sr-row { display:grid;grid-template-columns:26px 1fr 48px 48px;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;background:#111;border:1px solid transparent;transition:border-color 0.12s; }
-        .sr-row.top { border-color:rgba(201,165,76,0.2);background:rgba(201,165,76,0.05);animation:sr-glow 3s ease-in-out infinite; }
+        .sr-row.top { border-color:rgba(239,200,74,0.2);background:rgba(239,200,74,0.05);animation:sr-glow 3s ease-in-out infinite; }
         .sr-rank { font-size:11px;font-weight:700; }
         .sr-rank.gold-rank { color:var(--gold); }
         .sr-rank.silver { color:#aaa; }
@@ -52,7 +52,7 @@ export default function ScoresPage() {
         .sr-player-info { display:flex;flex-direction:column;gap:1px; }
         .sr-player-name { font-size:13px;font-weight:600;color:var(--fg); }
         .sr-player-role { font-size:10px;color:var(--fg3); }
-        .sr-pts-badge { background:rgba(201,165,76,0.12);border:1px solid rgba(201,165,76,0.2);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:var(--gold);text-align:center; }
+        .sr-pts-badge { background:rgba(239,200,74,0.12);border:1px solid rgba(239,200,74,0.2);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:var(--gold);text-align:center; }
         .sr-pts-label { font-size:9px;color:var(--fg3);text-align:center; }
         .sr-pts-header { font-size:9px;font-weight:700;letter-spacing:0.06em;color:var(--fg3);text-transform:uppercase;text-align:center; }
         .sr-milestone-row { background:#111;border:1px solid var(--border);border-radius:10px;padding:10px 14px; }
@@ -78,7 +78,7 @@ export default function ScoresPage() {
         .sr-rewards-inner { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .sr-reward-cards { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px; }
         .sr-reward-card { background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px; }
-        .sr-reward-card.featured { border-color:rgba(201,165,76,0.25);background:rgba(201,165,76,0.04); }
+        .sr-reward-card.featured { border-color:rgba(239,200,74,0.25);background:rgba(239,200,74,0.04); }
         .sr-reward-icon { font-size:32px;margin-bottom:12px; }
         .sr-reward-pts { font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
         .sr-reward-h { font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--fg);margin-bottom:8px; }
@@ -186,7 +186,7 @@ export default function ScoresPage() {
               <div className="sr-milestone-label">A. Rahman · Next milestone: 250 pts</div>
               <div style={{display:'flex',alignItems:'center',gap:10,marginTop:4}}>
                 <div className="sr-milestone-bar" style={{flex:1}}>
-                  <div className="sr-milestone-fill" style={{width:'99%',background:'linear-gradient(90deg,#c9a54c,#e8c86a)'}} />
+                  <div className="sr-milestone-fill" style={{width:'99%',background:'linear-gradient(90deg,#EFC84A,#e8c86a)'}} />
                 </div>
                 <span style={{fontSize:'10px',color:'var(--gold)',fontWeight:700}}>248/250</span>
               </div>

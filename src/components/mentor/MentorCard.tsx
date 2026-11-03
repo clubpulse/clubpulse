@@ -85,7 +85,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
           </div>
           {mentor.speciality && (
             <span style={{
-              background: 'rgba(29,78,216,0.25)',
+              background: 'rgba(37,99,235,0.28)',
               border: '1px solid rgba(29,78,216,0.4)',
               borderRadius: '20px',
               padding: '3px 10px',
@@ -163,7 +163,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)',
+              background: '#07102B', border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '420px',
               display: 'flex', flexDirection: 'column', gap: '16px',
             }}

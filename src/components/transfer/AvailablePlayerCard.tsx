@@ -24,11 +24,11 @@ export function AvailablePlayerCard({ player, viewerClubId }: Props) {
             <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Released by {player.club?.name ?? 'Unknown club'}</p>
             <h3 style={{ margin: '2px 0 0', fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>{player.position}</h3>
           </div>
-          <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, background: 'rgba(201,165,76,0.15)', color: '#c9a54c', whiteSpace: 'nowrap' }}>{player.level}</span>
+          <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, background: 'rgba(239,200,74,0.15)', color: '#EFC84A', whiteSpace: 'nowrap' }}>{player.level}</span>
         </div>
         {player.description && <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{player.description}</p>}
         {viewerClubId && (
-          <button onClick={() => setOpen(true)} disabled={done} style={{ marginTop: '4px', padding: '9px 18px', borderRadius: '10px', border: 'none', cursor: done ? 'default' : 'pointer', background: done ? 'rgba(255,255,255,0.06)' : 'rgba(201,165,76,0.2)', color: done ? 'rgba(255,255,255,0.4)' : '#c9a54c', fontSize: '13px', fontWeight: 600, alignSelf: 'flex-start' }}>
+          <button onClick={() => setOpen(true)} disabled={done} style={{ marginTop: '4px', padding: '9px 18px', borderRadius: '10px', border: 'none', cursor: done ? 'default' : 'pointer', background: done ? 'rgba(255,255,255,0.06)' : 'rgba(239,200,74,0.2)', color: done ? 'rgba(255,255,255,0.4)' : '#EFC84A', fontSize: '13px', fontWeight: 600, alignSelf: 'flex-start' }}>
             {done ? 'Interest sent' : 'Express interest'}
           </button>
         )}
@@ -47,7 +47,7 @@ export function AvailablePlayerCard({ player, viewerClubId }: Props) {
             {error && <p style={{ margin: 0, fontSize: '12px', color: '#f87171' }}>{error}</p>}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setOpen(false)} style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.6)', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={handleInterest} disabled={loading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(201,165,76,0.3)', color: '#c9a54c', fontSize: '13px', fontWeight: 600, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>{loading ? 'Sending…' : 'Send interest'}</button>
+              <button onClick={handleInterest} disabled={loading} style={{ flex: 2, padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(239,200,74,0.3)', color: '#EFC84A', fontSize: '13px', fontWeight: 600, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>{loading ? 'Sending…' : 'Send interest'}</button>
             </div>
           </div>
         </div>

@@ -56,7 +56,7 @@ export default async function SchoolPage() {
   const groupCfg = myGroup ? AGE_GROUP_CONFIG[myGroup.age_group] : null;
 
   const card: React.CSSProperties = {
-    background: '#0f0f0f',
+    background: '#07102B',
     border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: '14px',
     padding: '16px',
@@ -131,7 +131,7 @@ export default async function SchoolPage() {
         <div style={card}>
           <p style={dim}>Next session</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'rgba(29,78,216,0.2)', borderRadius: '8px', padding: '6px 12px', fontSize: '13px', fontWeight: 600, color: '#f87171' }}>
+            <div style={{ background: 'rgba(37,99,235,0.22)', borderRadius: '8px', padding: '6px 12px', fontSize: '13px', fontWeight: 600, color: '#f87171' }}>
               {new Date(nextSession.session_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
             </div>
             <div>

@@ -14,7 +14,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080808', color: '#f0ece4', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#04091A', color: '#f0ece4', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
@@ -37,12 +37,12 @@ export default function ContactPage() {
         @media(max-width: 860px) { .page-wrap { grid-template-columns: 1fr; gap: 48px } }
 
         /* Left column */
-        .section-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #c9a54c; margin-bottom: 16px }
+        .section-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #EFC84A; margin-bottom: 16px }
         .page-h { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.06; color: #f0ece4; margin-bottom: 18px }
         .page-sub { font-size: 16px; color: rgba(240,236,228,0.4); line-height: 1.75; margin-bottom: 40px }
 
         .contact-method { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px }
-        .method-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(29,78,216,0.1); border: 1px solid rgba(29,78,216,0.2); display: grid; place-items: center; font-size: 17px; flex-shrink: 0 }
+        .method-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(37,99,235,0.12); border: 1px solid rgba(37,99,235,0.22); display: grid; place-items: center; font-size: 17px; flex-shrink: 0 }
         .method-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(240,236,228,0.25); margin-bottom: 4px }
         .method-val { font-size: 15px; font-weight: 500; color: #f0ece4 }
         .method-note { font-size: 13px; color: rgba(240,236,228,0.3); margin-top: 3px; line-height: 1.4 }
@@ -51,12 +51,12 @@ export default function ContactPage() {
 
         .onboarding-steps { display: flex; flex-direction: column; gap: 14px }
         .step { display: flex; align-items: flex-start; gap: 14px }
-        .step-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(201,165,76,0.12); border: 1px solid rgba(201,165,76,0.25); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #c9a54c; flex-shrink: 0; margin-top: 1px }
+        .step-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(239,200,74,0.12); border: 1px solid rgba(239,200,74,0.25); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #EFC84A; flex-shrink: 0; margin-top: 1px }
         .step-text { font-size: 14px; color: rgba(240,236,228,0.5); line-height: 1.55 }
         .step-text strong { color: rgba(240,236,228,0.8); font-weight: 500 }
 
         /* Form */
-        .form-card { background: #0d0d0d; border: 1px solid rgba(255,255,255,0.07); border-radius: 20px; padding: 36px }
+        .form-card { background: #07102B; border: 1px solid rgba(255,255,255,0.07); border-radius: 20px; padding: 36px }
         .form-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #f0ece4; margin-bottom: 6px }
         .form-subtitle { font-size: 13px; color: rgba(240,236,228,0.3); margin-bottom: 28px; line-height: 1.5 }
 
@@ -76,7 +76,7 @@ export default function ContactPage() {
           transition: border-color 0.15s;
           width: 100%;
         }
-        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(29,78,216,0.5) }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(37,99,235,0.55) }
         .field input::placeholder, .field textarea::placeholder { color: rgba(240,236,228,0.2) }
         .field select option { background: #111; color: #f0ece4 }
         .field textarea { resize: vertical; min-height: 110px; line-height: 1.55 }
