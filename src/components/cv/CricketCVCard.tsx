@@ -35,7 +35,7 @@ export function CricketCVCard({ cv, isPreview = false }: Props) {
       {/* Header band */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%)',
+          background: 'linear-gradient(135deg, #0F1F5C 0%, #1D4ED8 50%, #3B82F6 100%)',
           padding: '28px 28px 20px',
         }}
       >
@@ -311,7 +311,7 @@ export function CricketCVCard({ cv, isPreview = false }: Props) {
             Built with{' '}
             <a
               href="https://clubpulse.app"
-              style={{ color: '#9b1c1c', textDecoration: 'none', fontWeight: 600 }}
+              style={{ color: '#1D4ED8', textDecoration: 'none', fontWeight: 600 }}
               target="_blank"
               rel="noopener noreferrer"
             >

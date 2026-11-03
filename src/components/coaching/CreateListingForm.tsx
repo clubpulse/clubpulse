@@ -58,7 +58,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
         onClick={() => setOpen(true)}
         style={{
           padding: '8px 16px', borderRadius: '10px', border: 'none',
-          background: '#9b1c1c', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+          background: '#1D4ED8', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
         }}
       >
         + List a Session
@@ -122,8 +122,8 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
                     onClick={() => set('coaching_type', t)}
                     style={{
                       padding: '5px 10px', borderRadius: '8px', border: '1px solid',
-                      borderColor: form.coaching_type === t ? '#9b1c1c' : 'rgba(255,255,255,0.1)',
-                      background: form.coaching_type === t ? 'rgba(155,28,28,0.2)' : 'rgba(255,255,255,0.04)',
+                      borderColor: form.coaching_type === t ? '#1D4ED8' : 'rgba(255,255,255,0.1)',
+                      background: form.coaching_type === t ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
                       color: form.coaching_type === t ? '#fff' : 'rgba(255,255,255,0.5)',
                       fontSize: '12px', cursor: 'pointer',
                     }}
@@ -229,7 +229,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
                 disabled={loading || success}
                 style={{
                   flex: 2, padding: '10px', borderRadius: '10px', border: 'none',
-                  background: loading || success ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+                  background: loading || success ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
                   color: '#fff', fontSize: '14px', fontWeight: 600,
                   cursor: loading || success ? 'not-allowed' : 'pointer',
                 }}

@@ -26,7 +26,7 @@ export function GenerateBibleButton({ clubId, generationCount }: Props) {
         onClick={handleClick}
         disabled={isPending}
         style={{
-          background: isPending ? 'rgba(155,28,28,0.4)' : 'linear-gradient(135deg, #9b1c1c 0%, #7f1d1d 100%)',
+          background: isPending ? 'rgba(29,78,216,0.4)' : 'linear-gradient(135deg, #0F1F5C 0%, #1D4ED8 50%, #3B82F6 100%)',
           color: '#fff',
           border: 'none',
           borderRadius: '12px',

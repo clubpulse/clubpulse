@@ -155,7 +155,7 @@ export function AddMilestoneForm({ clubId }: Props) {
           type="checkbox"
           checked={isFeatured}
           onChange={(e) => setIsFeatured(e.target.checked)}
-          style={{ width: '16px', height: '16px', accentColor: '#9b1c1c', cursor: 'pointer' }}
+          style={{ width: '16px', height: '16px', accentColor: '#1D4ED8', cursor: 'pointer' }}
         />
         Pin as featured milestone
       </label>
@@ -171,7 +171,7 @@ export function AddMilestoneForm({ clubId }: Props) {
         type="submit"
         disabled={isPending}
         style={{
-          background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+          background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
           color: '#fff',
           border: 'none',
           borderRadius: '10px',

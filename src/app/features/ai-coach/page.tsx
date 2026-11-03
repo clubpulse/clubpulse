@@ -10,7 +10,7 @@ export default function AICoachPage() {
         .ai-root {
           --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #9b1c1c; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -77,7 +77,7 @@ export default function AICoachPage() {
 
         .ai-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
         .ai-step { background:var(--bg2);padding:32px 28px; }
-        .ai-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(155,28,28,0.4);margin-bottom:14px; }
+        .ai-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
         .ai-step-icon { font-size:26px;margin-bottom:12px; }
         .ai-step-h { font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
         .ai-step-body { font-size:12.5px;color:var(--fg2);line-height:1.65; }
@@ -162,8 +162,8 @@ export default function AICoachPage() {
               <span className="ai-hud-label">MEDIAPIPE · 33PT · 30FPS</span>
               <svg viewBox="0 0 160 240" fill="none" style={{width:'140px',height:'200px',position:'relative',zIndex:1}}>
                 <ellipse cx="82" cy="22" rx="14" ry="15" fill="rgba(240,236,228,0.85)"/>
-                <path d="M68 19 Q68 5 82 5 Q96 5 96 19 Z" fill="#9b1c1c"/>
-                <rect x="94" y="13" width="11" height="6" rx="2" fill="#9b1c1c"/>
+                <path d="M68 19 Q68 5 82 5 Q96 5 96 19 Z" fill="#1D4ED8"/>
+                <rect x="94" y="13" width="11" height="6" rx="2" fill="#1D4ED8"/>
                 <rect x="78" y="37" width="8" height="8" rx="3" fill="rgba(240,236,228,0.7)"/>
                 <path d="M62 46 Q72 42 82 43 Q93 42 102 46 L100 96 Q91 99 82 99 Q72 99 64 96 Z" fill="rgba(240,236,228,0.12)" stroke="rgba(240,236,228,0.3)" strokeWidth="1.5"/>
                 <path d="M100 50 Q114 38 122 24 Q126 16 120 12" stroke="rgba(240,236,228,0.75)" strokeWidth="6" strokeLinecap="round" fill="none"/>
@@ -183,8 +183,8 @@ export default function AICoachPage() {
                 <circle cx="82" cy="96" r="4.5" fill="#c9a54c"/>
                 <circle cx="54" cy="158" r="4" fill="#c9a54c"/>
                 <circle cx="100" cy="156" r="4" fill="#c9a54c"/>
-                <circle cx="55" cy="174" r="3.5" fill="rgba(155,28,28,0.9)"/>
-                <circle cx="96" cy="170" r="3.5" fill="rgba(155,28,28,0.9)"/>
+                <circle cx="55" cy="174" r="3.5" fill="rgba(29,78,216,0.9)"/>
+                <circle cx="96" cy="170" r="3.5" fill="rgba(29,78,216,0.9)"/>
                 <line x1="120" y1="11" x2="100" y2="50" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
                 <line x1="33" y1="88" x2="64" y2="52" stroke="#2ecc71" strokeWidth="1" opacity="0.4"/>
               </svg>

@@ -66,7 +66,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
                 style={{
                   ...cardStyle,
                   border: isViewing
-                    ? '1px solid rgba(155,28,28,0.5)'
+                    ? '1px solid rgba(29,78,216,0.5)'
                     : '1px solid rgba(255,255,255,0.07)',
                 }}
               >
@@ -97,8 +97,8 @@ export default async function ScoutModePage({ searchParams }: Props) {
                       href={`/admin/club/scout-mode?session=${s.id}`}
                       style={{
                         display: 'inline-flex', alignItems: 'center',
-                        background: isViewing ? 'rgba(155,28,28,0.3)' : 'rgba(255,255,255,0.06)',
-                        border: `1px solid ${isViewing ? 'rgba(155,28,28,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                        background: isViewing ? 'rgba(29,78,216,0.3)' : 'rgba(255,255,255,0.06)',
+                        border: `1px solid ${isViewing ? 'rgba(29,78,216,0.4)' : 'rgba(255,255,255,0.1)'}`,
                         borderRadius: '8px', padding: '6px 12px',
                         fontSize: '12px', fontWeight: 500,
                         color: isViewing ? '#fca5a5' : 'rgba(255,255,255,0.6)',

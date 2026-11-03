@@ -72,7 +72,7 @@ export function InjuryPanel({ clubId, active: initialActive, past: initialPast }
               onClick={() => setShowForm(true)}
               style={{
                 padding: '6px 14px', borderRadius: '8px', border: 'none',
-                background: 'rgba(155,28,28,0.8)', color: '#fff',
+                background: 'rgba(29,78,216,0.8)', color: '#fff',
                 fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               }}
             >

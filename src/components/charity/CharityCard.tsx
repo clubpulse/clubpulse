@@ -42,12 +42,12 @@ export function CharityCard({ charity, settings }: Props) {
           {charity.charity_number && <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Reg. {charity.charity_number}</p>}
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#9b1c1c' }}>£{totalRaisedPounds}</p>
+          <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#1D4ED8' }}>£{totalRaisedPounds}</p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>raised via Scores</p>
         </div>
       </div>
       {charity.description && <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{charity.description}</p>}
-      {charity.website_url && <a href={charity.website_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#9b1c1c', textDecoration: 'none' }}>Visit website ↗</a>}
+      {charity.website_url && <a href={charity.website_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#1D4ED8', textDecoration: 'none' }}>Visit website ↗</a>}
       {settings.is_enabled ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
@@ -61,7 +61,7 @@ export function CharityCard({ charity, settings }: Props) {
             <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>Message (optional)</label>
             <input type="text" value={message} onChange={e => setMessage(e.target.value)} placeholder='"In memory of...", "Match day donation"' maxLength={120} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 10px', fontSize: '13px', color: '#fff', outline: 'none', boxSizing: 'border-box' }} />
           </div>
-          <button onClick={handleDonate} disabled={isPending || numScores < 100} style={{ background: numScores >= 100 ? '#9b1c1c' : 'rgba(255,255,255,0.06)', color: numScores >= 100 ? '#fff' : 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '10px', padding: '10px 16px', fontSize: '13px', fontWeight: 600, cursor: numScores >= 100 ? 'pointer' : 'default', transition: 'background 0.15s', fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={handleDonate} disabled={isPending || numScores < 100} style={{ background: numScores >= 100 ? '#1D4ED8' : 'rgba(255,255,255,0.06)', color: numScores >= 100 ? '#fff' : 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '10px', padding: '10px 16px', fontSize: '13px', fontWeight: 600, cursor: numScores >= 100 ? 'pointer' : 'default', transition: 'background 0.15s', fontFamily: "'Inter', sans-serif" }}>
             {isPending ? 'Donating…' : numScores >= 100 ? `Donate ${numScores.toLocaleString()} Scores (= £${poundsDisplay})` : 'Enter amount to donate'}
           </button>
           {result && <p style={{ margin: 0, fontSize: '13px', color: result.ok ? '#4ade80' : '#f87171', lineHeight: 1.4 }}>{result.ok ? '❤️ ' : ''}{result.text}</p>}

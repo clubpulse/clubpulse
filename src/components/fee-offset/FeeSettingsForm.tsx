@@ -131,7 +131,7 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
           id="fee-offset-active"
           checked={isActive}
           onChange={(e) => setIsActive(e.target.checked)}
-          style={{ width: '16px', height: '16px', accentColor: '#9b1c1c', cursor: 'pointer' }}
+          style={{ width: '16px', height: '16px', accentColor: '#1D4ED8', cursor: 'pointer' }}
         />
         <label htmlFor="fee-offset-active" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>
           Enable fee offset for members
@@ -149,7 +149,7 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
         disabled={isPending}
         style={{
           alignSelf: 'flex-start',
-          background: saved ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, #9b1c1c 0%, #c9a54c 100%)',
+          background: saved ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, #1D4ED8 0%, #c9a54c 100%)',
           border: saved ? '1px solid rgba(34,197,94,0.4)' : 'none',
           borderRadius: '10px',
           padding: '10px 24px',

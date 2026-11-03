@@ -8,7 +8,7 @@ export default function FinancePage() {
         .fn-root {
           --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #9b1c1c; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -69,7 +69,7 @@ export default function FinancePage() {
 
         .fn-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
         .fn-step { background:var(--bg2);padding:30px 24px; }
-        .fn-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(155,28,28,0.4);margin-bottom:14px; }
+        .fn-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
         .fn-step-icon { font-size:24px;margin-bottom:12px; }
         .fn-step-h { font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
         .fn-step-body { font-size:12px;color:var(--fg2);line-height:1.65; }

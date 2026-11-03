@@ -174,7 +174,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
             type="checkbox"
             checked={isPinned}
             onChange={(e) => setIsPinned(e.target.checked)}
-            style={{ width: '16px', height: '16px', accentColor: '#9b1c1c' }}
+            style={{ width: '16px', height: '16px', accentColor: '#1D4ED8' }}
           />
           <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>📌 Pin to top of noticeboard</span>
         </label>
@@ -190,7 +190,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
           type="submit"
           disabled={isPending}
           style={{
-            background: '#9b1c1c',
+            background: '#1D4ED8',
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
@@ -268,7 +268,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
                   disabled={isPending}
                   title={notice.is_pinned ? 'Unpin' : 'Pin'}
                   style={{
-                    background: notice.is_pinned ? 'rgba(155,28,28,0.2)' : 'rgba(255,255,255,0.06)',
+                    background: notice.is_pinned ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.06)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px',
                     color: '#fff',

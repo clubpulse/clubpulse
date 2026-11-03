@@ -104,7 +104,7 @@ export function CreateScoutForm({ clubId }: Props) {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '6px',
-          background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+          background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
           color: '#fff',
           border: 'none',
           borderRadius: '10px',

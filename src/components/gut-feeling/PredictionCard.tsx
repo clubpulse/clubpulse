@@ -195,7 +195,7 @@ export function PredictionCard({
               padding: '11px',
               borderRadius: '10px',
               border: 'none',
-              background: selected ? '#9b1c1c' : 'rgba(255,255,255,0.07)',
+              background: selected ? '#1D4ED8' : 'rgba(255,255,255,0.07)',
               color: selected ? '#fff' : 'rgba(255,255,255,0.3)',
               fontSize: '14px',
               fontWeight: 600,

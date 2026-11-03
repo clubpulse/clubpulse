@@ -31,7 +31,7 @@ export function RewardGrid({ rewards, balance }: { rewards: Reward[]; balance: n
               type="button"
               onClick={() => setCategory(c)}
               style={{
-                background: category === c ? '#9b1c1c' : 'rgba(255,255,255,0.05)',
+                background: category === c ? '#1D4ED8' : 'rgba(255,255,255,0.05)',
                 border: 'none',
                 borderRadius: '999px',
                 padding: '5px 14px',

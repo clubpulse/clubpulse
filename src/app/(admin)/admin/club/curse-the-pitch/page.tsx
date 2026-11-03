@@ -83,7 +83,7 @@ export default async function AdminCurseThePitchPage() {
                           <span style={{ fontSize: '14px', width: '18px' }}>{cfg.emoji}</span>
                           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', width: '48px' }}>{cfg.label}</span>
                           <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ width: `${agg.percent}%`, height: '100%', background: 'rgba(155,28,28,0.7)', borderRadius: '3px' }} />
+                            <div style={{ width: `${agg.percent}%`, height: '100%', background: 'rgba(29,78,216,0.7)', borderRadius: '3px' }} />
                           </div>
                           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', width: '48px', textAlign: 'right' }}>
                             {agg.count} ({agg.percent}%)

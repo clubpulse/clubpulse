@@ -121,8 +121,8 @@ export function RegisterMentorForm({ clubId, existing, onSaved }: Props) {
               type="button"
               onClick={() => setSpeciality(speciality === o.value ? '' : o.value)}
               style={{
-                background: speciality === o.value ? 'rgba(155,28,28,0.3)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${speciality === o.value ? 'rgba(155,28,28,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                background: speciality === o.value ? 'rgba(29,78,216,0.3)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${speciality === o.value ? 'rgba(29,78,216,0.6)' : 'rgba(255,255,255,0.1)'}`,
                 borderRadius: '20px', padding: '6px 14px',
                 fontSize: '13px', fontWeight: 600,
                 color: speciality === o.value ? '#f87171' : 'rgba(255,255,255,0.55)',
@@ -178,7 +178,7 @@ export function RegisterMentorForm({ clubId, existing, onSaved }: Props) {
           onClick={() => setAvailable(!available)}
           style={{
             width: '42px', height: '24px', borderRadius: '12px',
-            background: available ? '#9b1c1c' : 'rgba(255,255,255,0.12)',
+            background: available ? '#1D4ED8' : 'rgba(255,255,255,0.12)',
             position: 'relative', transition: 'background 0.2s', cursor: 'pointer',
           }}
         >
@@ -202,7 +202,7 @@ export function RegisterMentorForm({ clubId, existing, onSaved }: Props) {
         type="submit"
         disabled={loading}
         style={{
-          background: 'linear-gradient(135deg,#9b1c1c,#c0392b)',
+          background: 'linear-gradient(135deg,#1D4ED8,#c0392b)',
           border: 'none', borderRadius: '12px',
           padding: '12px', fontSize: '15px',
           fontWeight: 700, color: '#fff',

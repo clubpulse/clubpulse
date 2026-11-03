@@ -43,7 +43,7 @@ export function RecalculateButton({ clubId, lastCalculatedAt }: RecalculateButto
           padding: '8px 16px',
           borderRadius: '8px',
           border: 'none',
-          background: isPending ? 'rgba(155,28,28,0.4)' : 'rgba(155,28,28,0.8)',
+          background: isPending ? 'rgba(29,78,216,0.4)' : 'rgba(29,78,216,0.8)',
           color: '#fff',
           fontSize: '0.875rem',
           fontWeight: 600,

@@ -11,7 +11,7 @@ export function ChatMessage({ role, content }: { role: 'user' | 'assistant'; con
         fontSize: '13px',
         lineHeight: 1.6,
         fontFamily: "'Inter', sans-serif",
-        background: isUser ? '#9b1c1c' : '#161616',
+        background: isUser ? '#1D4ED8' : '#161616',
         border: isUser ? 'none' : '1px solid rgba(255,255,255,0.07)',
         color: isUser ? '#fff' : 'rgba(255,255,255,0.85)',
       }}>

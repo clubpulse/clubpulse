@@ -136,8 +136,8 @@ export default async function WaitlistStatusPage() {
                   )}
                   {isWaiting && (
                     <div style={{
-                      background: 'rgba(155,28,28,0.08)',
-                      border: '1px solid rgba(155,28,28,0.2)',
+                      background: 'rgba(29,78,216,0.08)',
+                      border: '1px solid rgba(29,78,216,0.2)',
                       borderRadius: '10px',
                       padding: '12px',
                       textAlign: 'center',

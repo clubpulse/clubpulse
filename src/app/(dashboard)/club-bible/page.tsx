@@ -79,7 +79,7 @@ export default async function ClubBiblePage() {
             left: '40px',
             right: '40px',
             height: '3px',
-            background: 'linear-gradient(90deg, #9b1c1c, #c0392b, #9b1c1c)',
+            background: 'linear-gradient(90deg, #1D4ED8, #c0392b, #1D4ED8)',
             borderRadius: '0 0 3px 3px',
           }} />
 
@@ -89,7 +89,7 @@ export default async function ClubBiblePage() {
             fontSize: '13px',
             textTransform: 'uppercase',
             letterSpacing: '2px',
-            color: '#9b1c1c',
+            color: '#1D4ED8',
             margin: '0 0 20px',
             textAlign: 'center',
           }}>
@@ -122,8 +122,8 @@ export default async function ClubBiblePage() {
         </div>
       ) : (
         <div style={{
-          background: 'rgba(155,28,28,0.06)',
-          border: '1px dashed rgba(155,28,28,0.3)',
+          background: 'rgba(29,78,216,0.06)',
+          border: '1px dashed rgba(29,78,216,0.3)',
           borderRadius: '14px',
           padding: '32px',
           textAlign: 'center',
@@ -153,8 +153,8 @@ export default async function ClubBiblePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {featured.map((m) => (
               <div key={m.id} style={{
-                background: 'rgba(155,28,28,0.08)',
-                border: '1px solid rgba(155,28,28,0.25)',
+                background: 'rgba(29,78,216,0.08)',
+                border: '1px solid rgba(29,78,216,0.25)',
                 borderRadius: '12px',
                 padding: '14px 16px',
               }}>

@@ -138,7 +138,7 @@ export function DressingRoomClient({
                   fontFamily: "'Inter', sans-serif",
                   cursor: 'pointer',
                   transition: 'color 0.15s, background 0.15s',
-                  borderBottom: active ? '2px solid #9b1c1c' : '2px solid transparent',
+                  borderBottom: active ? '2px solid #1D4ED8' : '2px solid transparent',
                 }}
               >
                 <span aria-hidden>{tab.icon}</span>

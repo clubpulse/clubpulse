@@ -11,7 +11,7 @@ function Initials({ name }: { name: string }) {
   return (
     <div style={{
       width: 72, height: 72, borderRadius: '50%',
-      background: 'linear-gradient(135deg, rgba(155,28,28,0.6) 0%, rgba(90,10,10,0.8) 100%)',
+      background: 'linear-gradient(135deg, rgba(29,78,216,0.6) 0%, rgba(90,10,10,0.8) 100%)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 26, fontWeight: 700, color: '#fff',
       fontFamily: "'Syne', sans-serif", flexShrink: 0,
@@ -107,7 +107,7 @@ export function LegacyCard({ legacy }: { legacy: PlayerLegacy }) {
       {legacy.career_highlight && (
         <div style={{
           background: 'rgba(255,255,255,0.04)',
-          borderLeft: `3px solid ${isLegend ? 'rgba(212,175,55,0.6)' : 'rgba(155,28,28,0.6)'}`,
+          borderLeft: `3px solid ${isLegend ? 'rgba(212,175,55,0.6)' : 'rgba(29,78,216,0.6)'}`,
           borderRadius: '0 8px 8px 0', padding: '8px 12px',
         }}>
           <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
@@ -137,9 +137,9 @@ export function LegacyCard({ legacy }: { legacy: PlayerLegacy }) {
           {legacy.honours.map((h) => (
             <span key={h} style={{
               fontSize: 11, padding: '3px 9px', borderRadius: 20,
-              background: isLegend ? 'rgba(212,175,55,0.1)' : 'rgba(155,28,28,0.15)',
+              background: isLegend ? 'rgba(212,175,55,0.1)' : 'rgba(29,78,216,0.15)',
               color: isLegend ? 'rgba(212,175,55,0.85)' : 'rgba(252,165,165,0.8)',
-              border: isLegend ? '1px solid rgba(212,175,55,0.2)' : '1px solid rgba(155,28,28,0.3)',
+              border: isLegend ? '1px solid rgba(212,175,55,0.2)' : '1px solid rgba(29,78,216,0.3)',
             }}>
               🏅 {h}
             </span>

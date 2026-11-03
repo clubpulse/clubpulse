@@ -35,10 +35,28 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: '30px', height: '30px',
             borderRadius: '7px',
-            background: '#9b1c1c',
-            fontSize: '13px', fontWeight: 800, color: '#fff', flexShrink: 0,
-          }}>C</span>
-          <span style={{ fontWeight: 700, fontSize: '16px', color: '#f5f5f5', letterSpacing: '-0.3px' }}>ClubPulse</span>
+            background: 'linear-gradient(145deg, #0F1F5C 0%, #1D4ED8 50%, #3B82F6 100%)',
+            flexShrink: 0,
+          }}>
+            <svg width="20" height="20" viewBox="0 0 36 36" fill="none">
+              <defs>
+                <linearGradient id="navPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#7F1D1D"/>
+                  <stop offset="40%" stopColor="#DC2626"/>
+                  <stop offset="100%" stopColor="#1D4ED8"/>
+                </linearGradient>
+              </defs>
+              <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+              <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+              <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+              <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+              <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                    stroke="url(#navPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+          <span style={{ fontWeight: 800, fontSize: '16px', color: '#fff', letterSpacing: '-0.3px', fontFamily: 'var(--font-syne), sans-serif' }}>
+            Club<span style={{ color: '#60A5FA' }}>Pulse</span>
+          </span>
         </Link>
 
         {/* Right side */}
@@ -51,9 +69,9 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
               padding: '5px 11px',
               borderRadius: '8px',
               textDecoration: 'none',
-              background: 'rgba(201,165,76,0.08)',
-              border: '1px solid rgba(201,165,76,0.2)',
-              fontSize: '13px', fontWeight: 600, color: '#c9a54c',
+              background: 'rgba(239,200,74,0.08)',
+              border: '1px solid rgba(239,200,74,0.2)',
+              fontSize: '13px', fontWeight: 600, color: '#EFC84A',
             }}
           >
             ⭐ {formatScores(balance)}

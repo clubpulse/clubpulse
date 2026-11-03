@@ -90,7 +90,7 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
               padding: '6px 14px',
               borderRadius: 20,
               border: '1px solid rgba(255,255,255,0.12)',
-              background: activeCategory === 'all' ? 'rgba(155,28,28,0.4)' : 'rgba(255,255,255,0.05)',
+              background: activeCategory === 'all' ? 'rgba(29,78,216,0.4)' : 'rgba(255,255,255,0.05)',
               color: activeCategory === 'all' ? '#fff' : 'rgba(255,255,255,0.5)',
               fontSize: 13,
               cursor: 'pointer',
@@ -111,7 +111,7 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
                   padding: '6px 14px',
                   borderRadius: 20,
                   border: '1px solid rgba(255,255,255,0.12)',
-                  background: active ? 'rgba(155,28,28,0.4)' : 'rgba(255,255,255,0.05)',
+                  background: active ? 'rgba(29,78,216,0.4)' : 'rgba(255,255,255,0.05)',
                   color: active ? '#fff' : 'rgba(255,255,255,0.5)',
                   fontSize: 13,
                   cursor: 'pointer',
@@ -150,8 +150,8 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
       {selectedCourse && (
         <div style={{
           padding: '10px 14px',
-          background: 'rgba(155,28,28,0.15)',
-          border: '1px solid rgba(155,28,28,0.3)',
+          background: 'rgba(29,78,216,0.15)',
+          border: '1px solid rgba(29,78,216,0.3)',
           borderRadius: 10,
           display: 'flex',
           justifyContent: 'space-between',
@@ -199,7 +199,7 @@ export function LogQualificationForm({ clubId, coursesByCategory, onSuccess }: P
         style={{
           padding: '12px',
           borderRadius: 10,
-          background: isPending || !courseTypeId || !completedDate ? 'rgba(155,28,28,0.3)' : '#9b1c1c',
+          background: isPending || !courseTypeId || !completedDate ? 'rgba(29,78,216,0.3)' : '#1D4ED8',
           color: '#fff',
           fontWeight: 600,
           fontSize: 15,

@@ -140,8 +140,8 @@ export default async function TravelPage() {
                       </p>
                     </div>
                     <div style={{
-                      background: 'rgba(155,28,28,0.12)',
-                      border: '1px solid rgba(155,28,28,0.2)',
+                      background: 'rgba(29,78,216,0.12)',
+                      border: '1px solid rgba(29,78,216,0.2)',
                       borderRadius: '8px',
                       padding: '6px 12px',
                       fontSize: '12px',

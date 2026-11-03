@@ -85,7 +85,7 @@ export function PitchVoteCard({
 
           let bg = 'rgba(255,255,255,0.05)';
           let border = '1px solid rgba(255,255,255,0.1)';
-          if (isChosen && !isResolved) { bg = 'rgba(155,28,28,0.25)'; border = '1px solid rgba(220,38,38,0.5)'; }
+          if (isChosen && !isResolved) { bg = 'rgba(29,78,216,0.25)'; border = '1px solid rgba(220,38,38,0.5)'; }
           if (isCorrect) { bg = 'rgba(34,197,94,0.2)'; border = '1px solid rgba(34,197,94,0.5)'; }
           if (isWrong) { bg = 'rgba(239,68,68,0.15)'; border = '1px solid rgba(239,68,68,0.35)'; }
 

@@ -10,7 +10,7 @@ export default function ScorecardPage() {
         .sc-root {
           --bg: #080808; --bg2: #0d0d0d; --bg3: #111;
           --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #9b1c1c; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
+          --red: #1D4ED8; --gold: #c9a54c; --green: #2ecc71; --orange: #f97316;
           --border: rgba(255,255,255,0.07);
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
@@ -66,7 +66,7 @@ export default function ScorecardPage() {
         .sc-ball.run { background:rgba(255,255,255,0.08);color:var(--fg); }
         .sc-ball.four { background:rgba(46,204,113,0.15);color:var(--green); }
         .sc-ball.six { background:rgba(201,165,76,0.15);color:var(--gold); }
-        .sc-ball.wkt { background:rgba(155,28,28,0.2);color:#f87171; }
+        .sc-ball.wkt { background:rgba(29,78,216,0.2);color:#f87171; }
         .sc-share-btn { width:100%;margin-top:16px;padding:11px;font-size:12px;font-weight:700;background:rgba(255,255,255,0.05);color:var(--fg2);border:1px solid var(--border);border-radius:10px;cursor:pointer;letter-spacing:0.04em; }
 
         /* SECTIONS */

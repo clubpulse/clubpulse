@@ -38,8 +38,8 @@ export function AlumniWall({ legacies }: { legacies: PlayerLegacy[] }) {
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '7px 14px', borderRadius: 24, fontSize: 13,
                 fontWeight: active ? 600 : 400, cursor: 'pointer',
-                border: active ? '1px solid rgba(155,28,28,0.6)' : '1px solid rgba(255,255,255,0.1)',
-                background: active ? 'rgba(155,28,28,0.25)' : 'rgba(255,255,255,0.04)',
+                border: active ? '1px solid rgba(29,78,216,0.6)' : '1px solid rgba(255,255,255,0.1)',
+                background: active ? 'rgba(29,78,216,0.25)' : 'rgba(255,255,255,0.04)',
                 color: active ? '#fff' : 'rgba(255,255,255,0.5)',
                 transition: 'all 0.15s', fontFamily: "'Inter', sans-serif",
               }}

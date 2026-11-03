@@ -77,8 +77,9 @@ function NavItem({ link, pathname }: { link: NavLink; pathname: string }) {
           fontWeight: 500,
           textDecoration: 'none',
           transition: 'background 0.15s, color 0.15s',
-          background: active ? 'rgba(155,28,28,0.15)' : 'transparent',
+          background: active ? 'rgba(29,78,216,0.18)' : 'transparent',
           color: active ? '#fff' : 'rgba(255,255,255,0.45)',
+          borderLeft: active ? '2px solid #3B82F6' : '2px solid transparent',
           fontFamily: "'Inter', sans-serif",
         }}
       >

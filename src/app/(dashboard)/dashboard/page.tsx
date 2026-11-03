@@ -248,8 +248,8 @@ export default async function DashboardPage() {
                 alignItems: 'center',
                 gap: '10px',
                 padding: '14px 16px',
-                background: 'rgba(155,28,28,0.08)',
-                border: '1px solid rgba(155,28,28,0.2)',
+                background: 'rgba(29,78,216,0.08)',
+                border: '1px solid rgba(29,78,216,0.2)',
                 borderRadius: '14px',
                 textDecoration: 'none',
               }}

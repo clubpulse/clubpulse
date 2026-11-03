@@ -62,7 +62,7 @@ export function AdminResolvePanel({ fixtureId }: AdminResolvePanelProps) {
               key={condition}
               onClick={() => setSelected(condition)}
               style={{
-                background: isChosen ? 'rgba(155,28,28,0.35)' : 'rgba(255,255,255,0.05)',
+                background: isChosen ? 'rgba(29,78,216,0.35)' : 'rgba(255,255,255,0.05)',
                 border: isChosen ? '1px solid rgba(220,38,38,0.6)' : '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '8px',
                 padding: '6px 12px',
@@ -108,7 +108,7 @@ export function AdminResolvePanel({ fixtureId }: AdminResolvePanelProps) {
         onClick={handleResolve}
         disabled={!selected || isPending}
         style={{
-          background: selected ? 'rgba(155,28,28,0.8)' : 'rgba(255,255,255,0.06)',
+          background: selected ? 'rgba(29,78,216,0.8)' : 'rgba(255,255,255,0.06)',
           border: 'none',
           borderRadius: '8px',
           padding: '8px 16px',

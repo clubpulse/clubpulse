@@ -96,7 +96,7 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
           step={5}
           value={distance}
           onChange={e => setDistance(Number(e.target.value))}
-          style={{ width: '100%', accentColor: '#9b1c1c' }}
+          style={{ width: '100%', accentColor: '#1D4ED8' }}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>
           <span>0 mi</span><span>150 mi</span><span>300 mi</span>
@@ -118,8 +118,8 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '20px',
-                border: mode === key ? '1.5px solid #9b1c1c' : '1.5px solid rgba(255,255,255,0.1)',
-                background: mode === key ? 'rgba(155,28,28,0.15)' : 'transparent',
+                border: mode === key ? '1.5px solid #1D4ED8' : '1.5px solid rgba(255,255,255,0.1)',
+                background: mode === key ? 'rgba(29,78,216,0.15)' : 'transparent',
                 color: mode === key ? '#fff' : 'rgba(255,255,255,0.45)',
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -147,8 +147,8 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
 
       {/* Live Scores preview */}
       <div style={{
-        background: 'rgba(155,28,28,0.08)',
-        border: '1px solid rgba(155,28,28,0.2)',
+        background: 'rgba(29,78,216,0.08)',
+        border: '1px solid rgba(29,78,216,0.2)',
         borderRadius: '12px',
         padding: '14px 16px',
         display: 'flex',
@@ -198,7 +198,7 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
             padding: '11px',
             borderRadius: '10px',
             border: 'none',
-            background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+            background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
             color: '#fff',
             fontSize: '14px',
             fontWeight: 600,

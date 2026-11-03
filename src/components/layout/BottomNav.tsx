@@ -53,7 +53,7 @@ export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boole
                   fontSize: '10px',
                   fontWeight: active ? 600 : 400,
                   textDecoration: 'none',
-                  color: active ? '#c9a54c' : 'rgba(255,255,255,0.3)',
+                  color: active ? '#60A5FA' : 'rgba(255,255,255,0.3)',
                   transition: 'color 0.15s',
                 }}
               >

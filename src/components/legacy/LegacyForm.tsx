@@ -195,14 +195,14 @@ export function LegacyForm({
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addHonour(); } }}
             placeholder="e.g. Player of the Year 2022"
           />
-          <button type="button" onClick={addHonour} style={{ ...inputStyle, width: 'auto', padding: '8px 14px', cursor: 'pointer', background: 'rgba(155,28,28,0.3)', border: '1px solid rgba(155,28,28,0.5)' }}>
+          <button type="button" onClick={addHonour} style={{ ...inputStyle, width: 'auto', padding: '8px 14px', cursor: 'pointer', background: 'rgba(29,78,216,0.3)', border: '1px solid rgba(29,78,216,0.5)' }}>
             Add
           </button>
         </div>
         {form.honours.length > 0 && (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {form.honours.map((h) => (
-              <span key={h} style={{ fontSize: 12, padding: '3px 8px', borderRadius: 20, background: 'rgba(155,28,28,0.2)', color: 'rgba(252,165,165,0.85)', border: '1px solid rgba(155,28,28,0.3)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span key={h} style={{ fontSize: 12, padding: '3px 8px', borderRadius: 20, background: 'rgba(29,78,216,0.2)', color: 'rgba(252,165,165,0.85)', border: '1px solid rgba(29,78,216,0.3)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 {h}
                 <button type="button" onClick={() => removeHonour(h)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(252,165,165,0.5)', padding: 0, lineHeight: 1 }}>×</button>
               </span>
@@ -220,7 +220,7 @@ export function LegacyForm({
       </Field>
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-        <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} style={{ width: 16, height: 16, accentColor: '#9b1c1c', cursor: 'pointer' }} />
+        <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} style={{ width: 16, height: 16, accentColor: '#1D4ED8', cursor: 'pointer' }} />
         Publish to Club Alumni wall
       </label>
 

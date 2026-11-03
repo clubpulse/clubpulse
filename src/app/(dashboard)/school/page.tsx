@@ -131,7 +131,7 @@ export default async function SchoolPage() {
         <div style={card}>
           <p style={dim}>Next session</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'rgba(155,28,28,0.2)', borderRadius: '8px', padding: '6px 12px', fontSize: '13px', fontWeight: 600, color: '#f87171' }}>
+            <div style={{ background: 'rgba(29,78,216,0.2)', borderRadius: '8px', padding: '6px 12px', fontSize: '13px', fontWeight: 600, color: '#f87171' }}>
               {new Date(nextSession.session_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
             </div>
             <div>

@@ -154,7 +154,7 @@ export function RaffleCard({ raffle, userBalance, onPurchased }: Props) {
               padding: '10px 16px',
               borderRadius: '10px',
               border: 'none',
-              background: canBuy && !isPending ? 'linear-gradient(135deg, #9b1c1c, #c0392b)' : 'rgba(255,255,255,0.08)',
+              background: canBuy && !isPending ? 'linear-gradient(135deg, #1D4ED8, #c0392b)' : 'rgba(255,255,255,0.08)',
               color: canBuy && !isPending ? '#fff' : 'rgba(255,255,255,0.3)',
               fontSize: '13px',
               fontWeight: 600,

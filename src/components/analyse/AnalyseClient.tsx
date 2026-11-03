@@ -14,7 +14,7 @@ import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 type AnalyseTab = 'pose' | 'ball';
 
 const GOLD   = '#c9a54c';
-const CRIMSON = '#9b1c1c';
+const CRIMSON = '#1D4ED8';
 
 // Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
@@ -341,7 +341,7 @@ export function AnalyseClient() {
     const metrics = analyse(recording.frames, m, hd, video.videoWidth, video.videoHeight);
     setFrameCount(recording.frames.length);
     if (!metrics) {
-      setError('We couldn’t see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.');
+      setError("We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
       setPhase('ready');
       return;
     }
@@ -437,7 +437,7 @@ export function AnalyseClient() {
       const denied = err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
       setError(denied
         ? 'Camera access was blocked. Allow camera access in your browser settings and try again.'
-        : `Couldn’t start motion analysis: ${err instanceof Error ? err.message : 'unknown error'}`);
+        : `Couldn't start motion analysis: ${err instanceof Error ? err.message : 'unknown error'}`);
       setPhase('idle');
     }
   }
@@ -493,12 +493,12 @@ export function AnalyseClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode, clips }),
       });
-      if (!res.ok) throw new Error(((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? 'Couldn’t save highlights');
+      if (!res.ok) throw new Error(((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? "Couldn't save highlights");
 
       toast.success('Highlights ready', { id: toastId });
       setHighlights('ready');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Couldn’t save highlights', { id: toastId });
+      toast.error(err instanceof Error ? err.message : "Couldn't save highlights", { id: toastId });
       setHighlights('idle');
     }
   }
@@ -510,31 +510,31 @@ export function AnalyseClient() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold" style={{ fontFamily: "’Inter’, sans-serif" }}>Analyse</h1>
+        <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Analyse</h1>
         <p className="mt-1 text-sm text-neutral-400">
           AI-powered cricket analysis — biomechanics and ball tracking in one place.
         </p>
       </div>
 
       {/* Tab switcher */}
-      <div style={{ display: ‘flex’, gap: ‘4px’, padding: ‘4px’, background: ‘rgba(255,255,255,0.04)’, border: ‘1px solid rgba(255,255,255,0.07)’, borderRadius: ‘12px’, width: ‘fit-content’ }}>
-        {([[‘pose’, ‘🧍 Pose & Technique’], [‘ball’, ‘🏏 Ball Tracking’]] as [AnalyseTab, string][]).map(([key, label]) => (
+      <div style={{ display: 'flex', gap: '4px', padding: '4px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', width: 'fit-content' }}>
+        {([['pose', '🧍 Pose & Technique'], ['ball', '🏏 Ball Tracking']] as [AnalyseTab, string][]).map(([key, label]) => (
           <button
             key={key}
             type="button"
             onClick={() => setTab(key)}
             style={{
-              padding:      ‘8px 20px’,
-              borderRadius: ‘9px’,
-              border:       ‘none’,
-              fontSize:     ‘13px’,
+              padding:      '8px 20px',
+              borderRadius: '9px',
+              border:       'none',
+              fontSize:     '13px',
               fontWeight:   600,
-              cursor:       ‘pointer’,
-              background:   tab === key ? ‘#111’ : ‘transparent’,
-              color:        tab === key ? ‘#f0ece4’ : ‘rgba(240,236,228,0.45)’,
-              boxShadow:    tab === key ? ‘0 1px 4px rgba(0,0,0,0.4)’ : ‘none’,
-              transition:   ‘all 0.15s’,
-              fontFamily:   "’Inter’, sans-serif",
+              cursor:       'pointer',
+              background:   tab === key ? '#111' : 'transparent',
+              color:        tab === key ? '#f0ece4' : 'rgba(240,236,228,0.45)',
+              boxShadow:    tab === key ? '0 1px 4px rgba(0,0,0,0.4)' : 'none',
+              transition:   'all 0.15s',
+              fontFamily:   "'Inter', sans-serif",
             }}
           >
             {label}
@@ -543,11 +543,11 @@ export function AnalyseClient() {
       </div>
 
       {/* Ball tracking tab */}
-      {tab === ‘ball’ && <BallTrackClient />}
+      {tab === 'ball' && <BallTrackClient />}
 
       {/* Pose tab — existing content */}
-      {tab === ‘pose’ && <>
-      {process.env.NODE_ENV === ‘development’ && (
+      {tab === 'pose' && <>
+      {process.env.NODE_ENV === 'development' && (
         <form action={seedDemoHighlights}
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-neutral-700 px-4 py-3 text-sm">
           <span className="text-neutral-400">Dev only: add a sample reel without recording.</span>

@@ -93,8 +93,8 @@ export function InjuryForm({ clubId, onSuccess, onCancel }: Props) {
                 flex: 1,
                 padding: '8px 4px',
                 borderRadius: '8px',
-                border: severity === val ? '2px solid rgba(155,28,28,0.8)' : '1px solid rgba(255,255,255,0.1)',
-                background: severity === val ? 'rgba(155,28,28,0.2)' : 'rgba(255,255,255,0.04)',
+                border: severity === val ? '2px solid rgba(29,78,216,0.8)' : '1px solid rgba(255,255,255,0.1)',
+                background: severity === val ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
                 color: '#fff',
                 fontSize: '13px',
                 fontWeight: severity === val ? 600 : 400,
@@ -162,7 +162,7 @@ export function InjuryForm({ clubId, onSuccess, onCancel }: Props) {
           disabled={isPending}
           style={{
             padding: '8px 20px', borderRadius: '8px', border: 'none',
-            background: isPending ? 'rgba(155,28,28,0.4)' : 'rgba(155,28,28,0.85)',
+            background: isPending ? 'rgba(29,78,216,0.4)' : 'rgba(29,78,216,0.85)',
             color: '#fff', fontSize: '14px', fontWeight: 600, cursor: isPending ? 'not-allowed' : 'pointer',
           }}
         >

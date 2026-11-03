@@ -25,7 +25,7 @@ export default async function AdminMarketplacePage({ searchParams }: { searchPar
   return (
     <>
       <PageHeader title="Marketplace" description="Affiliate link clicks, newest first." />
-      {error && <ErrorNote message={`Couldn’t load clicks: ${error.message}`} />}
+      {error && <ErrorNote message={`Couldn't load clicks: ${error.message}`} />}
 
       {!error && clicks.length === 0 ? (
         <EmptyState icon="🛍️" title="No clicks yet">Clicks on affiliate links in the marketplace will show up here.</EmptyState>

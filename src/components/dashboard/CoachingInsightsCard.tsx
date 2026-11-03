@@ -8,7 +8,7 @@ const SHOWN = 3;
 
 const TYPE_STYLES: Record<string, { label: string; color: string; bg: string }> = {
   strength:   { label: 'Strength',   color: '#c9a54c', bg: 'rgba(201,165,76,0.12)' },
-  focus_area: { label: 'Focus area', color: '#f87171', bg: 'rgba(155,28,28,0.22)' },
+  focus_area: { label: 'Focus area', color: '#f87171', bg: 'rgba(29,78,216,0.22)' },
   trend:      { label: 'Trend',      color: '#7dd3fc', bg: 'rgba(56,189,248,0.12)' },
   technique:  { label: 'Technique',  color: '#c4b5fd', bg: 'rgba(167,139,250,0.14)' },
 };
@@ -80,7 +80,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
                 key={insight.id}
                 style={{
                   borderRadius: '12px', padding: '14px', background: 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${insight.acknowledged ? 'rgba(255,255,255,0.05)' : 'rgba(155,28,28,0.35)'}`,
+                  border: `1px solid ${insight.acknowledged ? 'rgba(255,255,255,0.05)' : 'rgba(29,78,216,0.35)'}`,
                   opacity: insight.acknowledged ? 0.65 : 1, transition: 'opacity 0.2s',
                 }}
               >
@@ -101,7 +101,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
                       disabled={saving === insight.id}
                       style={{
                         fontSize: '12px', fontWeight: 600, padding: '6px 14px', borderRadius: '8px', border: 'none',
-                        background: '#9b1c1c', color: '#fff', cursor: 'pointer', opacity: saving === insight.id ? 0.6 : 1,
+                        background: '#1D4ED8', color: '#fff', cursor: 'pointer', opacity: saving === insight.id ? 0.6 : 1,
                       }}
                     >
                       Got it

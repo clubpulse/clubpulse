@@ -74,7 +74,7 @@ export function AdminSponsorShell({ clubId }: { clubId: string }) {
             onClick={() => setTab(t.key)}
             style={{
               padding: '6px 14px', borderRadius: '7px', border: 'none',
-              background: tab === t.key ? 'rgba(155,28,28,0.7)' : 'transparent',
+              background: tab === t.key ? 'rgba(29,78,216,0.7)' : 'transparent',
               color: tab === t.key ? '#fff' : 'rgba(255,255,255,0.4)',
               fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: 500, cursor: 'pointer',
             }}
@@ -390,7 +390,7 @@ const cancelBtnStyle: React.CSSProperties = {
 };
 const confirmBtnStyle: React.CSSProperties = {
   flex: 2, padding: '8px', borderRadius: '8px', border: 'none',
-  background: 'rgba(155,28,28,0.85)', color: '#fff',
+  background: 'rgba(29,78,216,0.85)', color: '#fff',
   fontFamily: "'Inter', sans-serif", fontWeight: 600,
   fontSize: '13px', cursor: 'pointer',
 };

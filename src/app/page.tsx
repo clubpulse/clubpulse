@@ -56,11 +56,15 @@ export default function HomePage() {
 
         .cp-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .cp-root {
-          --bg: #080808; --bg2: #0d0d0d; --bg3: #111; --bg4: #0a0a0a;
-          --fg: #f0ece4; --fg2: rgba(240,236,228,0.55); --fg3: rgba(240,236,228,0.28);
-          --red: #9b1c1c; --red-b: #b91c1c; --red-dim: rgba(155,28,28,0.14); --red-glow: rgba(155,28,28,0.08);
-          --gold: #c9a54c; --gold-dim: rgba(201,165,76,0.12);
-          --green: #2ecc71; --green-dim: rgba(46,204,113,0.08);
+          --bg: #080810; --bg2: #0c0c18; --bg3: #0f0f1c; --bg4: #080810;
+          --fg: #E8EDF5; --fg2: rgba(232,237,245,0.55); --fg3: rgba(232,237,245,0.28);
+          --blue: #1D4ED8; --blue-b: #3B82F6; --blue-dark: #0F1F5C;
+          --blue-dim: rgba(29,78,216,0.16); --blue-glow: rgba(29,78,216,0.10);
+          --sky: #60A5FA;
+          /* Legacy alias — anything using var(--red) now resolves to blue */
+          --red: #1D4ED8; --red-b: #3B82F6; --red-dim: rgba(29,78,216,0.16); --red-glow: rgba(29,78,216,0.10);
+          --gold: #EFC84A; --gold-dim: rgba(239,200,74,0.12);
+          --green: #22C55E; --green-dim: rgba(34,197,94,0.10);
           --orange: #f97316;
           --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.04);
           background: var(--bg); color: var(--fg);
@@ -108,11 +112,11 @@ export default function HomePage() {
           width:8px;height:8px;
         }
         .cp-sonar-ring {
-          position:absolute;inset:0;border-radius:50%;background:rgba(155,28,28,0.6);
+          position:absolute;inset:0;border-radius:50%;background:rgba(29,78,216,0.6);
           animation:cp-sonar 2s ease-out infinite;
         }
         .cp-sonar-ring2 {
-          position:absolute;inset:0;border-radius:50%;background:rgba(155,28,28,0.4);
+          position:absolute;inset:0;border-radius:50%;background:rgba(29,78,216,0.4);
           animation:cp-sonar2 2s ease-out 0.6s infinite;
         }
         .cp-live-dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:cp-blink 2s ease-in-out infinite; }
@@ -129,12 +133,14 @@ export default function HomePage() {
         }
         .cp-logo { display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0; }
         .cp-logo-mark {
-          width:36px;height:36px;background:var(--red);border-radius:9px;
-          display:grid;place-items:center;font-family:'Syne',sans-serif;
-          font-weight:800;font-size:16px;color:#fff;
-          box-shadow:0 0 20px rgba(155,28,28,0.4);
+          width:36px;height:36px;
+          background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);
+          border-radius:9px;display:grid;place-items:center;
+          box-shadow:0 0 0 1px rgba(96,165,250,0.3),0 0 20px rgba(29,78,216,0.5);
         }
-        .cp-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--fg); }
+        .cp-logo-name { font-family:'Syne',sans-serif;font-weight:800;font-size:17px; }
+        .cp-logo-name .club { color:var(--fg); }
+        .cp-logo-name .pulse { color:var(--sky); }
         .cp-nav-links { display:flex;gap:4px;flex:1;justify-content:center; }
         .cp-nav-links a {
           padding:6px 13px;font-size:13px;color:var(--fg2);text-decoration:none;
@@ -150,7 +156,7 @@ export default function HomePage() {
         .cp-btn-red {
           padding:8px 18px;font-size:13px;font-weight:600;background:var(--red);color:#fff;
           text-decoration:none;border-radius:8px;transition:opacity 0.12s;
-          box-shadow:0 0 20px rgba(155,28,28,0.3);
+          box-shadow:0 0 20px rgba(29,78,216,0.3);
         }
         .cp-btn-red:hover { opacity:0.88; }
         .cp-hamburger {
@@ -190,7 +196,7 @@ export default function HomePage() {
         .cp-hero-orb {
           position:absolute;right:-60px;top:40%;transform:translateY(-50%);
           width:500px;height:500px;border-radius:50%;
-          background:radial-gradient(circle,rgba(155,28,28,0.28) 0%,rgba(155,28,28,0.06) 50%,transparent 70%);
+          background:radial-gradient(circle,rgba(29,78,216,0.28) 0%,rgba(29,78,216,0.06) 50%,transparent 70%);
           pointer-events:none;z-index:0;filter:blur(4px);
           animation:cp-orb-pulse 5s ease-in-out infinite;
         }
@@ -237,9 +243,9 @@ export default function HomePage() {
         .cp-btn-hero {
           padding:14px 30px;font-size:15px;font-weight:700;
           background:var(--red);color:#fff;text-decoration:none;border-radius:11px;
-          box-shadow:0 0 40px rgba(155,28,28,0.35);transition:all 0.15s;
+          box-shadow:0 0 40px rgba(29,78,216,0.35);transition:all 0.15s;
         }
-        .cp-btn-hero:hover { box-shadow:0 0 60px rgba(155,28,28,0.5);transform:translateY(-1px); }
+        .cp-btn-hero:hover { box-shadow:0 0 60px rgba(29,78,216,0.5);transform:translateY(-1px); }
         .cp-btn-hero-ghost {
           padding:14px 24px;font-size:15px;font-weight:500;
           border:1px solid var(--border);color:var(--fg2);
@@ -262,7 +268,7 @@ export default function HomePage() {
         .cp-phone {
           background:#0a0a0a;border:1.5px solid rgba(255,255,255,0.1);
           border-radius:36px;padding:14px;
-          box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03),0 0 60px rgba(155,28,28,0.06);
+          box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03),0 0 60px rgba(29,78,216,0.08);
           position:relative;width:100%;
         }
         .cp-phone::before {
@@ -315,7 +321,7 @@ export default function HomePage() {
         .cp-sc-innings { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px; }
         .cp-sc-head {
           display:flex;justify-content:space-between;padding:8px 10px;
-          background:rgba(155,28,28,0.12);border-bottom:1px solid rgba(255,255,255,0.04);
+          background:rgba(29,78,216,0.12);border-bottom:1px solid rgba(255,255,255,0.04);
         }
         .cp-sc-head-name { font-weight:700;color:#fff;font-size:10px; }
         .cp-sc-head-score { font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
@@ -328,7 +334,7 @@ export default function HomePage() {
         .cp-sc-bat-name.bold { color:#fff;font-weight:600; }
         .cp-sc-bat-runs { font-weight:700;color:#fff; }
         .cp-pts-hero {
-          background:linear-gradient(135deg,rgba(201,165,76,0.14),rgba(155,28,28,0.06));
+          background:linear-gradient(135deg,rgba(201,165,76,0.14),rgba(29,78,216,0.06));
           border:1px solid rgba(201,165,76,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
         }
         .cp-pts-big { font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.03em; }
@@ -397,7 +403,7 @@ export default function HomePage() {
         .cp-step { background:var(--bg2);padding:40px 36px;position:relative; }
         .cp-step-num {
           font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
-          letter-spacing:0.1em;color:rgba(155,28,28,0.5);margin-bottom:20px;
+          letter-spacing:0.1em;color:rgba(29,78,216,0.7);margin-bottom:20px;
         }
         .cp-step-icon { font-size:32px;margin-bottom:16px; }
         .cp-step-h { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px; }
@@ -444,7 +450,7 @@ export default function HomePage() {
           cursor:pointer;border:1px solid var(--border);color:var(--fg3);
           background:transparent;transition:all 0.15s;font-family:'Inter',sans-serif;
         }
-        .cp-persona-tab.active { background:var(--red-dim);color:var(--fg);border-color:rgba(155,28,28,0.35); }
+        .cp-persona-tab.active { background:var(--blue-dim);color:var(--fg);border-color:rgba(29,78,216,0.35); }
         .cp-persona-tab:hover:not(.active) { color:var(--fg);border-color:rgba(255,255,255,0.18); }
         .cp-persona-panel { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; }
         .cp-persona-eyebrow {
@@ -493,7 +499,7 @@ export default function HomePage() {
         .cp-price-card { background:var(--bg2);padding:36px;position:relative; }
         .cp-price-card.featured {
           background:#0f0f0f;
-          outline:1px solid rgba(155,28,28,0.4);
+          outline:1px solid rgba(29,78,216,0.5);
           outline-offset:-1px;
         }
         .cp-price-featured-chip {
@@ -517,7 +523,7 @@ export default function HomePage() {
           border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;
           transition:all 0.15s;
         }
-        .cp-price-cta.primary { background:var(--red);color:#fff;box-shadow:0 0 24px rgba(155,28,28,0.3); }
+        .cp-price-cta.primary { background:var(--blue);color:#fff;box-shadow:0 0 24px rgba(29,78,216,0.35); }
         .cp-price-cta.primary:hover { opacity:0.88; }
         .cp-price-cta.ghost { border:1px solid var(--border);color:var(--fg2); }
         .cp-price-cta.ghost:hover { color:var(--fg);border-color:rgba(255,255,255,0.2); }
@@ -533,7 +539,7 @@ export default function HomePage() {
         .cp-quote-mark {
           position:absolute;top:-20px;left:36px;
           font-family:'Syne',sans-serif;font-size:180px;font-weight:800;
-          color:rgba(155,28,28,0.06);line-height:1;pointer-events:none;user-select:none;
+          color:rgba(29,78,216,0.08);line-height:1;pointer-events:none;user-select:none;
         }
         .cp-quote-text {
           font-family:'Syne',sans-serif;
@@ -564,10 +570,14 @@ export default function HomePage() {
         }
         .cp-footer-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
         .cp-footer-logo-mark {
-          width:28px;height:28px;background:var(--red);border-radius:7px;
-          display:grid;place-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff;
+          width:28px;height:28px;
+          background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);
+          border-radius:7px;display:grid;place-items:center;
+          box-shadow:0 0 0 1px rgba(96,165,250,0.2);
         }
-        .cp-footer-logo-name { font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--fg); }
+        .cp-footer-logo-name { font-family:'Syne',sans-serif;font-weight:800;font-size:14px; }
+        .cp-footer-logo-name .club { color:var(--fg); }
+        .cp-footer-logo-name .pulse { color:var(--sky); }
         .cp-footer-links { display:flex;gap:20px;flex-wrap:wrap; }
         .cp-footer-links a { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.12s; }
         .cp-footer-links a:hover { color:var(--fg); }
@@ -612,8 +622,24 @@ export default function HomePage() {
         <nav className="cp-nav">
           <div className="cp-nav-inner">
             <Link href="/" className="cp-logo">
-              <span className="cp-logo-mark">C</span>
-              <span className="cp-logo-name">ClubPulse</span>
+              <span className="cp-logo-mark">
+                <svg width="22" height="22" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="homeNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#homeNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-nav-links">
               <Link href="/features/availability">Availability</Link>
@@ -773,8 +799,8 @@ export default function HomePage() {
                         <div className="cp-coach-pose">
                           <svg viewBox="0 0 120 180" fill="none" style={{width:'80px',height:'120px',opacity:0.9}}>
                             <ellipse cx="62" cy="16" rx="10" ry="11" fill="rgba(240,236,228,0.85)"/>
-                            <path d="M52 14 Q52 4 62 4 Q72 4 72 14 Z" fill="#9b1c1c"/>
-                            <rect x="70" y="10" width="8" height="4" rx="1" fill="#9b1c1c"/>
+                            <path d="M52 14 Q52 4 62 4 Q72 4 72 14 Z" fill="#1D4ED8"/>
+                            <rect x="70" y="10" width="8" height="4" rx="1" fill="#1D4ED8"/>
                             <rect x="59" y="27" width="6" height="6" rx="2" fill="rgba(240,236,228,0.7)"/>
                             <path d="M48 33 Q55 30 62 31 Q70 30 76 34 L74 70 Q68 72 62 72 Q55 72 50 70 Z" fill="rgba(240,236,228,0.15)" stroke="rgba(240,236,228,0.35)" strokeWidth="1.2"/>
                             <path d="M76 36 Q86 28 90 18 Q92 12 88 10" stroke="rgba(240,236,228,0.7)" strokeWidth="4" strokeLinecap="round" fill="none"/>
@@ -1028,8 +1054,24 @@ export default function HomePage() {
         <footer className="cp-footer">
           <div className="cp-footer-inner">
             <Link href="/" className="cp-footer-logo">
-              <span className="cp-footer-logo-mark">C</span>
-              <span className="cp-footer-logo-name">ClubPulse</span>
+              <span className="cp-footer-logo-mark">
+                <svg width="18" height="18" viewBox="0 0 36 36" fill="none">
+                  <defs>
+                    <linearGradient id="homeFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#7F1D1D"/>
+                      <stop offset="40%" stopColor="#DC2626"/>
+                      <stop offset="100%" stopColor="#1D4ED8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
+                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
+                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
+                        stroke="url(#homeFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="cp-footer-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-footer-links">
               <Link href="/features/availability">Availability</Link>
@@ -1236,7 +1278,7 @@ function PersonaSection() {
       ],
       card: (
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(155,28,28,0.2)',borderRadius:'12px',padding:'16px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(29,78,216,0.2)',borderRadius:'12px',padding:'16px'}}>
             <div>
               <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
               <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · 10:30am</div>

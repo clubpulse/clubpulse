@@ -31,7 +31,7 @@ export function PostBubble({ post, isOwn }: PostBubbleProps) {
           width: '30px',
           height: '30px',
           borderRadius: '50%',
-          background: 'rgba(155,28,28,0.4)',
+          background: 'rgba(29,78,216,0.4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

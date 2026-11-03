@@ -64,7 +64,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
         transform: 'translateX(-50%)',
         width: '600px',
         height: '300px',
-        background: 'radial-gradient(ellipse at center, rgba(155,28,28,0.18) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse at center, rgba(29,78,216,0.18) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -80,8 +80,8 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(155,28,28,0.12)',
-            border: '1px solid rgba(155,28,28,0.3)',
+            background: 'rgba(29,78,216,0.12)',
+            border: '1px solid rgba(29,78,216,0.3)',
             borderRadius: '100px',
             padding: '6px 16px',
             fontSize: '12px',

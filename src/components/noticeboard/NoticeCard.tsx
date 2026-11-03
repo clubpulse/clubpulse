@@ -11,7 +11,7 @@ export function NoticeCard({ notice }: NoticeCardProps) {
   const cardBg = notice.priority === 'urgent' ? '#fff5f5' : notice.priority === 'info' ? '#eff6ff' : '#fff';
   const borderColor = notice.priority === 'urgent' ? '#fca5a5' : notice.priority === 'info' ? '#bfdbfe' : '#e5e7eb';
   const badgeBg = notice.priority === 'urgent' ? '#fee2e2' : notice.priority === 'info' ? '#dbeafe' : '#f3f4f6';
-  const badgeColor = notice.priority === 'urgent' ? '#b91c1c' : notice.priority === 'info' ? '#1d4ed8' : '#374151';
+  const badgeColor = notice.priority === 'urgent' ? '#1D4ED8' : notice.priority === 'info' ? '#1d4ed8' : '#374151';
 
   const postedDate = new Date(notice.created_at).toLocaleDateString('en-GB', {
     day: 'numeric', month: 'short', year: 'numeric',

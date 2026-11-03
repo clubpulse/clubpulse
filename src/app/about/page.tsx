@@ -16,7 +16,7 @@ export default function AboutPage() {
         /* Nav */
         .cp-nav { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 24px 32px }
         .cp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none }
-        .cp-logo-mark { width: 36px; height: 36px; background: #9b1c1c; border-radius: 8px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff }
+        .cp-logo-mark { width: 36px; height: 36px; background: #1D4ED8; border-radius: 8px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff }
         .cp-logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #f0ece4 }
         .cp-menu { display: flex; align-items: center; gap: 24px }
         .cp-menu a { font-size: 14px; font-weight: 500; color: #fff; text-decoration: none; opacity: 0.55; transition: opacity 0.15s }
@@ -24,13 +24,13 @@ export default function AboutPage() {
         @media(max-width: 767px) { .cp-menu { display: none } }
         .cp-nav-ctas { display: flex; align-items: center; gap: 8px }
         .cp-signin { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
-        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #9b1c1c; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
+        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
 
         /* Page */
         .about-hero { max-width: 780px; margin: 0 auto; padding: 80px 32px 64px; text-align: center }
         .section-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #c9a54c; margin-bottom: 16px }
         .hero-h { font-family: 'Syne', sans-serif; font-size: clamp(32px, 5vw, 58px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; color: #f0ece4; margin-bottom: 20px }
-        .hero-h em { font-style: normal; color: #9b1c1c }
+        .hero-h em { font-style: normal; color: #1D4ED8 }
         .hero-sub { font-size: 17px; color: rgba(240,236,228,0.45); line-height: 1.7; max-width: 580px; margin: 0 auto }
 
         /* Story */
@@ -41,7 +41,7 @@ export default function AboutPage() {
         .story-p + .story-p { margin-top: 14px }
 
         /* Pull quote */
-        .pull-quote { border-left: 3px solid #9b1c1c; padding: 20px 24px; margin: 40px 0; background: rgba(155,28,28,0.05); border-radius: 0 10px 10px 0 }
+        .pull-quote { border-left: 3px solid #1D4ED8; padding: 20px 24px; margin: 40px 0; background: rgba(29,78,216,0.05); border-radius: 0 10px 10px 0 }
         .pull-quote p { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #f0ece4; line-height: 1.45; letter-spacing: -0.01em }
         .pull-quote cite { display: block; margin-top: 10px; font-size: 13px; color: rgba(240,236,228,0.35); font-style: normal }
 
@@ -72,7 +72,7 @@ export default function AboutPage() {
         .cta-h { font-family: 'Syne', sans-serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; color: #f0ece4; letter-spacing: -0.025em; margin-bottom: 14px }
         .cta-sub { font-size: 16px; color: rgba(240,236,228,0.4); max-width: 480px; margin: 0 auto 32px }
         .cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap }
-        .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 14px 28px; background: #9b1c1c; color: #fff; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s }
+        .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 14px 28px; background: #1D4ED8; color: #fff; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s }
         .btn-primary:hover { opacity: 0.88 }
         .btn-ghost { display: inline-flex; align-items: center; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.1); color: rgba(240,236,228,0.65); border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; transition: border-color 0.15s }
         .btn-ghost:hover { border-color: rgba(255,255,255,0.25) }

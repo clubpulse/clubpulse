@@ -9,8 +9,8 @@ export function WalletSummary({ flexi, reward }: { flexi: number; reward: number
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
       `}</style>
       <div style={{
-        background: 'linear-gradient(135deg, rgba(155,28,28,0.25) 0%, #0f0f0f 60%)',
-        border: '1px solid rgba(155,28,28,0.2)',
+        background: 'linear-gradient(135deg, rgba(29,78,216,0.25) 0%, #0f0f0f 60%)',
+        border: '1px solid rgba(29,78,216,0.2)',
         borderRadius: '16px',
         padding: '24px',
         fontFamily: "'Inter', sans-serif",

@@ -61,7 +61,7 @@ export function PredictiveScoresWidget() {
           <div style={{ marginTop: '12px', height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: '999px',
-              background: 'linear-gradient(90deg, #9b1c1c, #c9a54c)',
+              background: 'linear-gradient(90deg, #1D4ED8, #c9a54c)',
               width: `${width}%`, transition: 'width 0.8s ease',
             }} />
           </div>

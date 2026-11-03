@@ -14,7 +14,7 @@ export default async function AdminDashboardPage() {
   return (
     <>
       <PageHeader title="Dashboard" description="Platform-wide totals across all users." />
-      {error && <ErrorNote message={`Couldn’t load stats (${error.message}). Has the admin_role migration been run?`} />}
+      {error && <ErrorNote message={`Couldn't load stats (${error.message}). Has the admin_role migration been run?`} />}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard label="Total users" value={stats.totalUsers} accent="crimson" />
         <StatCard label="Analyse sessions" value={stats.analyseSessions} />

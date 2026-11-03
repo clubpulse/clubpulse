@@ -51,7 +51,7 @@ export default async function CricketCVPage() {
               alignItems: 'center',
               gap: '6px',
               padding: '7px 14px',
-              background: '#7f1d1d',
+              background: '#1D4ED8',
               border: '1px solid #991b1b',
               borderRadius: '8px',
               fontSize: '12px',

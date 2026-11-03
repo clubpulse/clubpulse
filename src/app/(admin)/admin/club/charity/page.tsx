@@ -88,7 +88,7 @@ export default function AdminCharityPage() {
   }
 
   const iStyle = { width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 10px', fontSize: '13px', color: '#fff', outline: 'none', boxSizing: 'border-box' as const };
-  const btnPrimary = { background: '#9b1c1c', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' as const };
+  const btnPrimary = { background: '#1D4ED8', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' as const };
 
   if (loading) return <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: "'Inter', sans-serif", fontSize: '14px' }}>Loading…</p>;
   if (error) return <p style={{ color: '#f87171', fontFamily: "'Inter', sans-serif", fontSize: '14px' }}>{error}</p>;
@@ -124,7 +124,7 @@ export default function AdminCharityPage() {
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0, fontFamily: "'Syne', sans-serif" }}>Charities</h2>
-          <button onClick={() => setShowAdd(v => !v)} style={{ ...btnPrimary, background: showAdd ? 'rgba(255,255,255,0.06)' : '#9b1c1c', fontSize: '12px', padding: '7px 14px' }}>{showAdd ? 'Cancel' : '+ Add charity'}</button>
+          <button onClick={() => setShowAdd(v => !v)} style={{ ...btnPrimary, background: showAdd ? 'rgba(255,255,255,0.06)' : '#1D4ED8', fontSize: '12px', padding: '7px 14px' }}>{showAdd ? 'Cancel' : '+ Add charity'}</button>
         </div>
         {showAdd && (
           <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
@@ -146,7 +146,7 @@ export default function AdminCharityPage() {
                 {ch.description && <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{ch.description}</p>}
                 <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{ch.total_scores_donated.toLocaleString()} Scores donated · £{(ch.total_donated_pence / 100).toFixed(2)} processed</p>
               </div>
-              <button onClick={() => handleToggle(ch.id, ch.is_active)} style={{ background: ch.is_active ? 'rgba(255,255,255,0.06)' : '#9b1c1c', color: ch.is_active ? 'rgba(255,255,255,0.5)' : '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>{ch.is_active ? 'Deactivate' : 'Activate'}</button>
+              <button onClick={() => handleToggle(ch.id, ch.is_active)} style={{ background: ch.is_active ? 'rgba(255,255,255,0.06)' : '#1D4ED8', color: ch.is_active ? 'rgba(255,255,255,0.5)' : '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>{ch.is_active ? 'Deactivate' : 'Activate'}</button>
             </div>
           ))}
         </div>
@@ -186,7 +186,7 @@ export default function AdminCharityPage() {
                   <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <td style={{ padding: '10px', color: '#fff' }}>{charities.find(c => c.id === b.charity_id)?.name ?? b.charity_id.slice(0, 8)}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.6)' }}>{b.total_scores.toLocaleString()}</td>
-                    <td style={{ padding: '10px', color: '#9b1c1c', fontWeight: 600 }}>£{(b.total_pence / 100).toFixed(2)}</td>
+                    <td style={{ padding: '10px', color: '#1D4ED8', fontWeight: 600 }}>£{(b.total_pence / 100).toFixed(2)}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', fontSize: '12px' }}>{b.transaction_reference ?? '—'}</td>
                     <td style={{ padding: '10px', color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>{new Date(b.processed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                   </tr>

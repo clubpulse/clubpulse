@@ -132,7 +132,7 @@ export function TeamSelectionForm({ clubId, members, onSuccess }: TeamSelectionF
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 14px', cursor: 'pointer',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
-                background: checked ? 'rgba(155,28,28,0.1)' : 'transparent',
+                background: checked ? 'rgba(29,78,216,0.1)' : 'transparent',
               }}>
                 <input
                   type="checkbox"
@@ -169,7 +169,7 @@ export function TeamSelectionForm({ clubId, members, onSuccess }: TeamSelectionF
         type="submit"
         disabled={isPending}
         style={{
-          background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+          background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
           color: '#fff', border: 'none', borderRadius: '10px',
           padding: '10px 20px', fontSize: '13px', fontWeight: 600,
           cursor: isPending ? 'not-allowed' : 'pointer',

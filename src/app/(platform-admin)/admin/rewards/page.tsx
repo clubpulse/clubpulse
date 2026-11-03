@@ -39,7 +39,7 @@ export default async function AdminRewardsPage({ searchParams }: { searchParams:
         />
         <StatCard label="Points issued all-time" value={totals.pointsIssued} accent="crimson" />
       </div>
-      {error && <ErrorNote message={`Couldn’t load wallets: ${error.message}`} />}
+      {error && <ErrorNote message={`Couldn't load wallets: ${error.message}`} />}
 
       {!error && wallets.length === 0 ? (
         <EmptyState icon="🪙" title="No wallets yet" />

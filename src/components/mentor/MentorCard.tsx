@@ -68,7 +68,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
             width: '44px', height: '44px', borderRadius: '50%',
-            background: 'linear-gradient(135deg,#9b1c1c,#c0392b)',
+            background: 'linear-gradient(135deg,#1D4ED8,#c0392b)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '15px', fontWeight: 700, color: '#fff',
             flexShrink: 0,
@@ -85,8 +85,8 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
           </div>
           {mentor.speciality && (
             <span style={{
-              background: 'rgba(155,28,28,0.25)',
-              border: '1px solid rgba(155,28,28,0.4)',
+              background: 'rgba(29,78,216,0.25)',
+              border: '1px solid rgba(29,78,216,0.4)',
               borderRadius: '20px',
               padding: '3px 10px',
               fontSize: '11px',
@@ -140,7 +140,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
             onClick={() => !sent && setModalOpen(true)}
             disabled={sent}
             style={{
-              background: sent ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg,#9b1c1c,#c0392b)',
+              background: sent ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg,#1D4ED8,#c0392b)',
               border: 'none', borderRadius: '10px',
               padding: '8px 16px', fontSize: '13px',
               fontWeight: 600, color: sent ? 'rgba(255,255,255,0.35)' : '#fff',
@@ -201,7 +201,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
                 onClick={handleRequest}
                 disabled={loading}
                 style={{
-                  background: 'linear-gradient(135deg,#9b1c1c,#c0392b)',
+                  background: 'linear-gradient(135deg,#1D4ED8,#c0392b)',
                   border: 'none', borderRadius: '10px',
                   padding: '9px 18px', fontSize: '14px',
                   fontWeight: 600, color: '#fff',

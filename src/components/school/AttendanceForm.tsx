@@ -133,7 +133,7 @@ export function AttendanceForm({ clubId, members, onSuccess }: AttendanceFormPro
       </div>
 
       {error && <p style={{ margin: 0, fontSize: '12px', color: '#f87171' }}>{error}</p>}
-      <button type="submit" disabled={isPending} style={{ background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: isPending ? 'not-allowed' : 'pointer' }}>
+      <button type="submit" disabled={isPending} style={{ background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: isPending ? 'not-allowed' : 'pointer' }}>
         {isPending ? 'Saving…' : 'Log attendance'}
       </button>
     </form>

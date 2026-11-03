@@ -79,7 +79,7 @@ export function BidForm({ lotId, minBid, balance, onSuccess, onCancel }: BidForm
             padding: '7px 16px',
             borderRadius: '8px',
             border: 'none',
-            background: amount > balance ? 'rgba(255,255,255,0.06)' : '#9b1c1c',
+            background: amount > balance ? 'rgba(255,255,255,0.06)' : '#1D4ED8',
             color: amount > balance ? 'rgba(255,255,255,0.3)' : '#fff',
             fontSize: '13px',
             fontWeight: 600,

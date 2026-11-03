@@ -139,8 +139,8 @@ export function AdminDocumentsClient({ clubId, initialDocs, ackMap }: Props) {
             alignSelf: 'flex-start',
             padding: '9px 18px',
             borderRadius: '10px',
-            border: '1px solid rgba(155,28,28,0.5)',
-            background: 'rgba(155,28,28,0.2)',
+            border: '1px solid rgba(29,78,216,0.5)',
+            background: 'rgba(29,78,216,0.2)',
             color: '#fff',
             fontSize: '13px',
             fontFamily: "'Inter', sans-serif",
@@ -221,7 +221,7 @@ export function AdminDocumentsClient({ clubId, initialDocs, ackMap }: Props) {
               type="checkbox"
               checked={form.is_mandatory}
               onChange={(e) => setForm((f) => ({ ...f, is_mandatory: e.target.checked }))}
-              style={{ width: '16px', height: '16px', accentColor: '#9b1c1c', cursor: 'pointer' }}
+              style={{ width: '16px', height: '16px', accentColor: '#1D4ED8', cursor: 'pointer' }}
             />
             <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', fontFamily: "'Inter', sans-serif" }}>
               Mandatory — members must acknowledge they have read this
@@ -240,7 +240,7 @@ export function AdminDocumentsClient({ clubId, initialDocs, ackMap }: Props) {
                 padding: '8px 20px',
                 borderRadius: '8px',
                 border: 'none',
-                background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+                background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
                 color: '#fff',
                 fontSize: '13px',
                 fontFamily: "'Inter', sans-serif",

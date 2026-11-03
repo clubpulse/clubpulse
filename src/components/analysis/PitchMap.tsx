@@ -60,7 +60,7 @@ const C = {
   goodLength:  'rgba(46,204,113,0.15)',
   goodLenBdr:  'rgba(46,204,113,0.4)',
   trajectory:  'rgba(201,165,76,0.7)',
-  bounceRing:  '#b91c1c',
+  bounceRing:  '#1D4ED8',
   bounceFill:  '#ef4444',
   swingArrow:  'rgba(249,115,22,0.9)',
   text:        'rgba(240,236,228,0.8)',

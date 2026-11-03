@@ -122,8 +122,8 @@ export default async function ScoutSharePage({ params }: Props) {
 
         {/* Notice */}
         <div style={{
-          background: 'rgba(155,28,28,0.07)',
-          border: '1px solid rgba(155,28,28,0.2)',
+          background: 'rgba(29,78,216,0.07)',
+          border: '1px solid rgba(29,78,216,0.2)',
           borderRadius: '12px',
           padding: '12px 16px',
           fontSize: '12px',

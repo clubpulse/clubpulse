@@ -40,8 +40,8 @@ export default async function WaitingListAdminPage() {
 
       {/* Share link */}
       <div style={{
-        background: 'rgba(155,28,28,0.06)',
-        border: '1px solid rgba(155,28,28,0.2)',
+        background: 'rgba(29,78,216,0.06)',
+        border: '1px solid rgba(29,78,216,0.2)',
         borderRadius: '14px',
         padding: '16px',
         fontSize: '13px',

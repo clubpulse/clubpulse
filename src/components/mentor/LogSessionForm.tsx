@@ -112,8 +112,8 @@ export function LogSessionForm({ request, onLogged }: Props) {
               onClick={() => setDuration(min)}
               style={{
                 flex: 1,
-                background: duration === min ? 'rgba(155,28,28,0.35)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${duration === min ? 'rgba(155,28,28,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                background: duration === min ? 'rgba(29,78,216,0.35)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${duration === min ? 'rgba(29,78,216,0.6)' : 'rgba(255,255,255,0.1)'}`,
                 borderRadius: '10px', padding: '10px 0',
                 fontSize: '14px', fontWeight: 600,
                 color: duration === min ? '#f87171' : 'rgba(255,255,255,0.55)',
@@ -128,8 +128,8 @@ export function LogSessionForm({ request, onLogged }: Props) {
 
       {/* Creds preview */}
       <div style={{
-        background: 'rgba(155,28,28,0.1)',
-        border: '1px solid rgba(155,28,28,0.2)',
+        background: 'rgba(29,78,216,0.1)',
+        border: '1px solid rgba(29,78,216,0.2)',
         borderRadius: '12px', padding: '14px',
         display: 'flex', justifyContent: 'space-around',
       }}>
@@ -173,7 +173,7 @@ export function LogSessionForm({ request, onLogged }: Props) {
         type="submit"
         disabled={loading}
         style={{
-          background: 'linear-gradient(135deg,#9b1c1c,#c0392b)',
+          background: 'linear-gradient(135deg,#1D4ED8,#c0392b)',
           border: 'none', borderRadius: '12px',
           padding: '12px', fontSize: '15px',
           fontWeight: 700, color: '#fff',

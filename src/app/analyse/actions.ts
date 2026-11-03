@@ -14,6 +14,6 @@ export async function seedDemoHighlights() {
 
   // The user's own session is enough: RLS allows inserting your own highlights
   const { error } = await insertDemoHighlight(await createClient(), user.id);
-  if (error) throw new Error(`Couldn’t seed highlights: ${error.message}`);
+  if (error) throw new Error(`Couldn't seed highlights: ${error.message}`);
   redirect('/highlights');
 }

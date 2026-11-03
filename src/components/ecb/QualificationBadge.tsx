@@ -51,7 +51,7 @@ export function QualificationBadge({ qual }: { qual: MemberQualification }) {
             fontWeight: 600,
             padding: '2px 8px',
             borderRadius: 20,
-            background: 'rgba(155,28,28,0.3)',
+            background: 'rgba(29,78,216,0.3)',
             color: '#f87171',
           }}>
             +{qual.creds_awarded} Scores

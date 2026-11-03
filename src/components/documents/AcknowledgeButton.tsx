@@ -56,8 +56,8 @@ export function AcknowledgeButton({ documentId, initialAcknowledgedAt }: Props) 
         style={{
           padding: '7px 16px',
           borderRadius: '8px',
-          border: '1px solid rgba(155,28,28,0.6)',
-          background: isPending ? 'rgba(155,28,28,0.1)' : 'rgba(155,28,28,0.2)',
+          border: '1px solid rgba(29,78,216,0.6)',
+          background: isPending ? 'rgba(29,78,216,0.1)' : 'rgba(29,78,216,0.2)',
           color: isPending ? 'rgba(255,255,255,0.4)' : '#fff',
           fontSize: '12px',
           fontFamily: "'Inter', sans-serif",

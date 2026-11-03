@@ -90,7 +90,7 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
             onClick={() => setShowForm(true)}
             style={{
               padding: '10px 20px', borderRadius: '10px', border: 'none',
-              background: 'linear-gradient(135deg, #9b1c1c, #c0392b)',
+              background: 'linear-gradient(135deg, #1D4ED8, #c0392b)',
               color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}
           >
@@ -150,7 +150,7 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
                 disabled={isPending}
                 style={{
                   padding: '10px 20px', borderRadius: '8px', border: 'none',
-                  background: 'linear-gradient(135deg, #9b1c1c, #c0392b)',
+                  background: 'linear-gradient(135deg, #1D4ED8, #c0392b)',
                   color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                   opacity: isPending ? 0.6 : 1,
                 }}

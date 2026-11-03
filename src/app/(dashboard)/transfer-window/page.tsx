@@ -26,7 +26,7 @@ export default async function TransferWindowPage() {
             Request a move between clubs — both clubs must approve
           </p>
         </div>
-        <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: 'rgba(155,28,28,0.2)', color: '#f87171' }}>
+        <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: 'rgba(29,78,216,0.2)', color: '#f87171' }}>
           {SEASON} Season
         </span>
       </div>

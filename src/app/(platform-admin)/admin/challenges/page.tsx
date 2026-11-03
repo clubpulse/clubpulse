@@ -7,7 +7,7 @@ import { Cell, ErrorNote, PageHeader, Table } from '@/components/platform-admin/
 export const metadata: Metadata = { title: 'Challenges | Admin | ClubPulse' };
 
 const PLANNED = [
-  'Weekly club and national challenges, e.g. “fastest 10 deliveries” or “most steps this week”',
+  'Weekly club and national challenges, e.g. "fastest 10 deliveries" or "most steps this week"',
   'Leaderboards per club, age group and sport',
   'Bonus points and badges for winners, paid from the rewards wallet',
   'Entry verified through Analyse sessions and highlight reels',
@@ -40,10 +40,10 @@ export default async function AdminChallengesPage() {
   return (
     <>
       <PageHeader title="Challenges" />
-      {error && !missing && <ErrorNote message={`Couldn’t load challenges: ${error.message}`} />}
+      {error && !missing && <ErrorNote message={`Couldn't load challenges: ${error.message}`} />}
       <div className="max-w-2xl rounded-2xl border border-neutral-800 bg-neutral-950 p-6">
         <span className="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-gold"
-          style={{ borderColor: 'rgba(155,28,28,0.35)', background: 'rgba(155,28,28,0.12)' }}>
+          style={{ borderColor: 'rgba(29,78,216,0.35)', background: 'rgba(29,78,216,0.12)' }}>
           Coming soon
         </span>
         <h2 className="mt-4 text-xl font-semibold text-white">Challenges launching Q1 2027</h2>

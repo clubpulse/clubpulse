@@ -62,8 +62,8 @@ export default async function CommunityPotPage() {
 
       {/* Pot balance */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(155,28,28,0.15) 0%, rgba(255,255,255,0.03) 100%)',
-        border: '1px solid rgba(155,28,28,0.25)',
+        background: 'linear-gradient(135deg, rgba(29,78,216,0.15) 0%, rgba(255,255,255,0.03) 100%)',
+        border: '1px solid rgba(29,78,216,0.25)',
         borderRadius: '18px',
         padding: '28px',
         textAlign: 'center',

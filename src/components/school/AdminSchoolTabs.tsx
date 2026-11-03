@@ -111,7 +111,7 @@ export function AdminSchoolTabs({
             onClick={() => setActiveTab(tab)}
             style={{
               flex: 1,
-              background: activeTab === tab ? '#9b1c1c' : 'transparent',
+              background: activeTab === tab ? '#1D4ED8' : 'transparent',
               border: 'none', borderRadius: '8px',
               padding: '8px 4px', fontSize: '12px', fontWeight: 600,
               color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.4)',
@@ -169,7 +169,7 @@ export function AdminSchoolTabs({
               type="submit"
               disabled={isPending}
               style={{
-                background: isPending ? 'rgba(155,28,28,0.4)' : '#9b1c1c',
+                background: isPending ? 'rgba(29,78,216,0.4)' : '#1D4ED8',
                 color: '#fff', border: 'none', borderRadius: '10px',
                 padding: '10px 20px', fontSize: '13px', fontWeight: 600,
                 cursor: isPending ? 'not-allowed' : 'pointer', alignSelf: 'flex-start',

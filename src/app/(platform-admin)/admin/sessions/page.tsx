@@ -26,7 +26,7 @@ export default async function AdminSessionsPage({ searchParams }: { searchParams
   return (
     <>
       <PageHeader title="Sessions & Highlights" description="Highlight reels generated from Analyse sessions." />
-      {error && <ErrorNote message={`Couldn’t load highlights: ${error.message}`} />}
+      {error && <ErrorNote message={`Couldn't load highlights: ${error.message}`} />}
 
       {!error && rows.length === 0 ? (
         <EmptyState icon="🎬" title="No highlight reels yet">Reels appear here when players stop the camera on Analyse.</EmptyState>

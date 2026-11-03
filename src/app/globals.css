@@ -1,27 +1,45 @@
 @import "tailwindcss";
 
+/* ── ClubPulse Design Tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --brand-primary: #8b0000;
-  --brand-primary-light: #a91d1d;
-  --brand-gold: #c9a84c;
+  /* Surfaces */
+  --background: #080810;
+  --foreground: #E8EDF5;
+
+  /* Brand — Navy / Blue */
+  --brand-primary:       #1D4ED8;   /* Navy — primary actions, CTAs */
+  --brand-primary-light: #3B82F6;   /* Medium blue — hover state */
+  --brand-primary-dark:  #0F1F5C;   /* Deep navy — icon bg start */
+  --brand-sky:           #60A5FA;   /* Sky blue — accent, wordmark "Pulse" */
+
+  /* Brand — Gold (Scores / rewards) */
+  --brand-gold:          #EFC84A;   /* Gold — Scores balance, trophy */
+  --brand-gold-dim:      rgba(239,200,74,0.12);
+
+  /* Status */
+  --brand-green:         #22C55E;   /* Live / available / success */
+  --brand-green-dim:     rgba(34,197,94,0.10);
+  --brand-orange:        #F97316;   /* Road-map / warning */
+
+  /* Legacy compat — mapped away from red */
+  --brand-red:           #1D4ED8;   /* Alias: anywhere old red was used, now blue */
+
+  /* Neutrals */
+  --border:              rgba(255,255,255,0.07);
+  --border2:             rgba(255,255,255,0.04);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-brand-primary: var(--brand-primary);
+  --color-background:          var(--background);
+  --color-foreground:          var(--foreground);
+  --color-brand-primary:       var(--brand-primary);
   --color-brand-primary-light: var(--brand-primary-light);
-  --color-brand-gold: var(--brand-gold);
+  --color-brand-primary-dark:  var(--brand-primary-dark);
+  --color-brand-sky:           var(--brand-sky);
+  --color-brand-gold:          var(--brand-gold);
+  --color-brand-green:         var(--brand-green);
   --font-sans: var(--font-inter);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-syne);
 }
 
 body {

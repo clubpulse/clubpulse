@@ -48,7 +48,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
         <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
           <div style={{
             width: '44px', height: '44px', borderRadius: '12px',
-            background: 'rgba(155,28,28,0.2)', display: 'flex', alignItems: 'center',
+            background: 'rgba(29,78,216,0.2)', display: 'flex', alignItems: 'center',
             justifyContent: 'center', fontSize: '22px', flexShrink: 0,
           }}>
             {typeConfig.emoji}
@@ -133,7 +133,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
               disabled={!canAfford && listing.scores_cost > 0}
               style={{
                 padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: canAfford || listing.scores_cost === 0 ? 'pointer' : 'not-allowed',
-                background: canAfford || listing.scores_cost === 0 ? '#9b1c1c' : 'rgba(255,255,255,0.08)',
+                background: canAfford || listing.scores_cost === 0 ? '#1D4ED8' : 'rgba(255,255,255,0.08)',
                 color: canAfford || listing.scores_cost === 0 ? '#fff' : 'rgba(255,255,255,0.3)',
                 fontSize: '12px', fontWeight: 600,
               }}
@@ -227,7 +227,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
                     disabled={!date || loading}
                     style={{
                       flex: 1, padding: '10px', borderRadius: '10px',
-                      background: date && !loading ? '#9b1c1c' : 'rgba(155,28,28,0.3)',
+                      background: date && !loading ? '#1D4ED8' : 'rgba(29,78,216,0.3)',
                       border: 'none', color: '#fff', fontSize: '14px', fontWeight: 600,
                       cursor: date && !loading ? 'pointer' : 'not-allowed',
                     }}

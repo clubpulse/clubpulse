@@ -111,7 +111,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
     padding: '9px 18px',
     borderRadius: '9px',
     border: 'none',
-    background: '#9b1c1c',
+    background: '#1D4ED8',
     color: '#fff',
     fontSize: '13px',
     fontWeight: 600,

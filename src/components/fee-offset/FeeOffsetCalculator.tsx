@@ -178,7 +178,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
         onClick={handleSubmit}
         disabled={scores <= 0 || isPending}
         style={{
-          background: scores > 0 ? 'linear-gradient(135deg, #9b1c1c 0%, #c9a54c 100%)' : 'rgba(255,255,255,0.06)',
+          background: scores > 0 ? 'linear-gradient(135deg, #1D4ED8 0%, #c9a54c 100%)' : 'rgba(255,255,255,0.06)',
           border: 'none',
           borderRadius: '12px',
           padding: '14px',

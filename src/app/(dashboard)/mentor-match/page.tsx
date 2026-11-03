@@ -91,7 +91,7 @@ export default async function MentorMatchPage() {
 
       {myMentorProfile ? (
         <section>
-          <div style={{ ...cardStyle, borderColor: 'rgba(155,28,28,0.3)' }}>
+          <div style={{ ...cardStyle, borderColor: 'rgba(29,78,216,0.3)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h2 style={{ ...sectionHeadingStyle, margin: 0 }}>Your mentor profile</h2>
               <span style={{

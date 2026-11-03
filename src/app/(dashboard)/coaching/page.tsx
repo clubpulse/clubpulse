@@ -97,7 +97,7 @@ export default async function CoachingPage({
                 fontSize: '13px',
                 fontWeight: active ? 600 : 400,
                 color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                borderBottom: active ? '2px solid #9b1c1c' : '2px solid transparent',
+                borderBottom: active ? '2px solid #1D4ED8' : '2px solid transparent',
                 textDecoration: 'none',
                 marginBottom: '-1px',
               }}
@@ -238,8 +238,8 @@ function filterChip(active: boolean): React.CSSProperties {
   return {
     padding: '5px 12px',
     borderRadius: '20px',
-    border: `1px solid ${active ? '#9b1c1c' : 'rgba(255,255,255,0.1)'}`,
-    background: active ? 'rgba(155,28,28,0.2)' : 'rgba(255,255,255,0.04)',
+    border: `1px solid ${active ? '#1D4ED8' : 'rgba(255,255,255,0.1)'}`,
+    background: active ? 'rgba(29,78,216,0.2)' : 'rgba(255,255,255,0.04)',
     color: active ? '#fff' : 'rgba(255,255,255,0.5)',
     fontSize: '12px',
     textDecoration: 'none',

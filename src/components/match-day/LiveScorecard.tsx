@@ -67,7 +67,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Main scoreboard */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(155,28,28,0.3) 0%, rgba(30,30,40,0.95) 100%)',
+        background: 'linear-gradient(135deg, rgba(29,78,216,0.3) 0%, rgba(30,30,40,0.95) 100%)',
         border: '1px solid rgba(220,38,38,0.2)', borderRadius: '20px', padding: '28px 24px',
       }}>
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em', margin: '0 0 6px 0', textTransform: 'uppercase' }}>

@@ -23,7 +23,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   return (
     <>
       <PageHeader title="Users" description="Everyone with a ClubPulse account." />
-      {error && <ErrorNote message={`Couldn’t load users: ${error.message}`} />}
+      {error && <ErrorNote message={`Couldn't load users: ${error.message}`} />}
 
       <Table headers={['User', 'Email', 'Role', 'Joined', 'Last sign-in', '']}>
         {users.map((user) => {

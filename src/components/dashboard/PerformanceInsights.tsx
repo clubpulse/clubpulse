@@ -54,8 +54,8 @@ export function PerformanceInsights() {
         </div>
         <span style={{
           fontSize: '10px', fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.5px', color: '#9b1c1c',
-          border: '1px solid rgba(155,28,28,0.4)',
+          letterSpacing: '0.5px', color: '#1D4ED8',
+          border: '1px solid rgba(29,78,216,0.4)',
           borderRadius: '6px', padding: '2px 7px',
         }}>AI</span>
       </div>

@@ -81,8 +81,8 @@ export default async function AdminWellbeingPage() {
 
       {/* Privacy banner */}
       <div style={{
-        background: 'rgba(155,28,28,0.08)',
-        border: '1px solid rgba(155,28,28,0.3)',
+        background: 'rgba(29,78,216,0.08)',
+        border: '1px solid rgba(29,78,216,0.3)',
         borderRadius: '12px',
         padding: '14px 16px',
         marginBottom: '24px',

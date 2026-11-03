@@ -22,7 +22,7 @@ export default function ContactPage() {
         /* Nav */
         .cp-nav { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 24px 32px }
         .cp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none }
-        .cp-logo-mark { width: 36px; height: 36px; background: #9b1c1c; border-radius: 8px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff }
+        .cp-logo-mark { width: 36px; height: 36px; background: #1D4ED8; border-radius: 8px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff }
         .cp-logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #f0ece4 }
         .cp-menu { display: flex; align-items: center; gap: 24px }
         .cp-menu a { font-size: 14px; font-weight: 500; color: #fff; text-decoration: none; opacity: 0.55; transition: opacity 0.15s }
@@ -30,7 +30,7 @@ export default function ContactPage() {
         @media(max-width: 767px) { .cp-menu { display: none } }
         .cp-nav-ctas { display: flex; align-items: center; gap: 8px }
         .cp-signin { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
-        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #9b1c1c; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
+        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
 
         /* Layout */
         .page-wrap { max-width: 1100px; margin: 0 auto; padding: 72px 32px 96px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: start }
@@ -42,7 +42,7 @@ export default function ContactPage() {
         .page-sub { font-size: 16px; color: rgba(240,236,228,0.4); line-height: 1.75; margin-bottom: 40px }
 
         .contact-method { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px }
-        .method-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(155,28,28,0.1); border: 1px solid rgba(155,28,28,0.2); display: grid; place-items: center; font-size: 17px; flex-shrink: 0 }
+        .method-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(29,78,216,0.1); border: 1px solid rgba(29,78,216,0.2); display: grid; place-items: center; font-size: 17px; flex-shrink: 0 }
         .method-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(240,236,228,0.25); margin-bottom: 4px }
         .method-val { font-size: 15px; font-weight: 500; color: #f0ece4 }
         .method-note { font-size: 13px; color: rgba(240,236,228,0.3); margin-top: 3px; line-height: 1.4 }
@@ -76,7 +76,7 @@ export default function ContactPage() {
           transition: border-color 0.15s;
           width: 100%;
         }
-        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(155,28,28,0.5) }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(29,78,216,0.5) }
         .field input::placeholder, .field textarea::placeholder { color: rgba(240,236,228,0.2) }
         .field select option { background: #111; color: #f0ece4 }
         .field textarea { resize: vertical; min-height: 110px; line-height: 1.55 }
@@ -84,7 +84,7 @@ export default function ContactPage() {
         .submit-btn {
           width: 100%;
           padding: 14px;
-          background: #9b1c1c;
+          background: #1D4ED8;
           color: #fff;
           border: none;
           border-radius: 10px;

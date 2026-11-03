@@ -92,8 +92,8 @@ export function MilestoneTimeline({ milestones }: Props) {
                     width: isFeatured ? '36px' : '28px',
                     height: isFeatured ? '36px' : '28px',
                     borderRadius: '50%',
-                    background: isFeatured ? 'rgba(155,28,28,0.25)' : '#141414',
-                    border: `1px solid ${isFeatured ? 'rgba(155,28,28,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    background: isFeatured ? 'rgba(29,78,216,0.25)' : '#141414',
+                    border: `1px solid ${isFeatured ? 'rgba(29,78,216,0.5)' : 'rgba(255,255,255,0.1)'}`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -109,8 +109,8 @@ export function MilestoneTimeline({ milestones }: Props) {
                 {/* Content */}
                 <div style={{
                   flex: 1,
-                  background: isFeatured ? 'rgba(155,28,28,0.06)' : 'transparent',
-                  border: `1px solid ${isFeatured ? 'rgba(155,28,28,0.2)' : 'transparent'}`,
+                  background: isFeatured ? 'rgba(29,78,216,0.06)' : 'transparent',
+                  border: `1px solid ${isFeatured ? 'rgba(29,78,216,0.2)' : 'transparent'}`,
                   borderRadius: isFeatured ? '12px' : '0',
                   padding: isFeatured ? '12px 14px' : '2px 0',
                 }}>

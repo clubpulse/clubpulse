@@ -48,7 +48,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
           position: 'absolute',
           top: '12px',
           right: '12px',
-          background: '#9b1c1c',
+          background: '#1D4ED8',
           color: '#fff',
           borderRadius: '8px',
           padding: '3px 9px',
@@ -149,7 +149,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
               fontSize: '13px',
               fontFamily: "'Inter', sans-serif",
               transition: 'background 0.15s, opacity 0.15s',
-              background: canAfford && !outOfStock ? '#9b1c1c' : 'rgba(255,255,255,0.07)',
+              background: canAfford && !outOfStock ? '#1D4ED8' : 'rgba(255,255,255,0.07)',
               color: canAfford && !outOfStock ? '#fff' : 'rgba(255,255,255,0.35)',
               opacity: isPending ? 0.7 : 1,
             }}

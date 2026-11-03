@@ -42,7 +42,7 @@ export function JoinForm({ clubId, clubName }: JoinFormProps) {
   if (queuePosition !== null) {
     return (
       <div style={{
-        background: 'linear-gradient(135deg, rgba(155,28,28,0.15) 0%, rgba(220,38,38,0.08) 100%)',
+        background: 'linear-gradient(135deg, rgba(29,78,216,0.15) 0%, rgba(220,38,38,0.08) 100%)',
         border: '1px solid rgba(220,38,38,0.3)',
         borderRadius: '20px',
         padding: '40px 32px',
@@ -178,7 +178,7 @@ export function JoinForm({ clubId, clubName }: JoinFormProps) {
         type="submit"
         disabled={loading}
         style={{
-          background: loading ? 'rgba(155,28,28,0.5)' : '#9b1c1c',
+          background: loading ? 'rgba(29,78,216,0.5)' : '#1D4ED8',
           color: '#fff',
           border: 'none',
           borderRadius: '12px',
