@@ -389,6 +389,45 @@ function ResultTabs({ active, onChange }: { active: ResultTab; onChange: (t: Res
   );
 }
 
+// ── AI Coaching card ──────────────────────────────────────────────────────────
+
+function CoachingCard({ paragraph, loading }: { paragraph: string | null; loading: boolean }) {
+  if (!loading && !paragraph) return null;
+  return (
+    <div style={{
+      marginTop:    '16px',
+      background:   'linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(239,200,74,0.06) 100%)',
+      border:       '1px solid rgba(37,99,235,0.2)',
+      borderRadius: '14px',
+      padding:      '20px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+        <span style={{ fontSize: '15px' }}>🧠</span>
+        <h3 style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
+          AI Coaching Read
+        </h3>
+      </div>
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '14px', height: '14px', borderRadius: '50%',
+            border: '2px solid rgba(96,165,250,0.25)',
+            borderTopColor: '#60A5FA',
+            animation: 'spin 0.8s linear infinite',
+            flexShrink: 0,
+          }} />
+          <span style={{ fontSize: '13px', color: 'rgba(240,236,228,0.45)' }}>Generating coaching insight…</span>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      ) : (
+        <p style={{ fontSize: '14px', color: 'rgba(240,236,228,0.85)', lineHeight: 1.7, margin: 0 }}>
+          {paragraph}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function BallTrackClient() {
@@ -400,6 +439,8 @@ export function BallTrackClient() {
   const [errMsg,     setErrMsg]     = useState<string | null>(null);
   const [whiteBall,  setWhiteBall]  = useState(false);
   const [resultTab,  setResultTab]  = useState<ResultTab>('video');
+  const [coaching,   setCoaching]   = useState<string | null>(null);
+  const [coachLoad,  setCoachLoad]  = useState(false);
 
   const analyse = useCallback(async (f: File) => {
     // Create an object URL so the video element can play the local file
@@ -408,6 +449,7 @@ export function BallTrackClient() {
     setVideoSrc(url);
     setStatus('uploading');
     setResult(null);
+    setCoaching(null);
     setErrMsg(null);
     setProgress('Uploading video…');
 
@@ -427,9 +469,47 @@ export function BallTrackClient() {
       setResult(data);
       setStatus('done');
       setResultTab('video');   // default to video overlay on new result
+
+      // Fire coaching + save in parallel, non-blocking — results appear as they land
+      setCoachLoad(true);
+
+      // Generate coaching read server-side (Anthropic key stays server-side)
+      const coachRes = await fetch('/api/analysis/coaching-read', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          speed_kph:    data.speed_kph,
+          swing_px:     data.swing_px,
+          bounce_frame: data.bounce_frame,
+          detections:   data.ball_positions.length,
+          frames:       data.frames_processed,
+          white_ball:   whiteBall,
+        }),
+      }).catch(() => null);
+
+      let paragraph: string | undefined;
+      if (coachRes?.ok) {
+        const coachData = await coachRes.json() as { paragraph?: string };
+        paragraph = coachData.paragraph;
+        if (paragraph) setCoaching(paragraph);
+      }
+
+      setCoachLoad(false);
+
+      // Save to Supabase (best-effort — never surfaces errors to user)
+      fetch('/api/analysis/save-result', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          analysis_type:      'ball',
+          result_json:        data,
+          coaching_paragraph: paragraph ?? null,
+        }),
+      }).catch(() => {/* silent — history is a nice-to-have */});
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : 'Analysis failed — try again');
       setStatus('error');
+      setCoachLoad(false);
     }
   }, [whiteBall]);
 
@@ -438,6 +518,7 @@ export function BallTrackClient() {
     setFile(null);
     setVideoSrc(null);
     setResult(null);
+    setCoaching(null);
     setErrMsg(null);
     setStatus('idle');
     setProgress('');
@@ -544,6 +625,9 @@ export function BallTrackClient() {
                 bounceFrame={result.bounce_frame}
               />
               <DeliverySummary result={result} />
+
+              {/* AI Coaching Read */}
+              <CoachingCard paragraph={coaching} loading={coachLoad} />
             </div>
           )}
 
@@ -594,6 +678,9 @@ export function BallTrackClient() {
                     and switch to White ball mode for T20 / indoor.
                   </div>
                 )}
+
+                {/* AI Coaching Read */}
+                <CoachingCard paragraph={coaching} loading={coachLoad} />
               </div>
             </div>
           )}
