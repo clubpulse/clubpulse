@@ -2,6 +2,7 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { xiCreateUser } from "@/lib/xi/client";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
 
@@ -77,6 +78,25 @@ export async function completeSignup({
       success: false,
       error: `Could not save roles: ${rolesError.message}`,
     };
+  }
+
+  // ── Provision The XI account (silent — must not block sign-up) ───────────
+  // Creates a matching account on The XI so the player's rewards wallet and
+  // fantasy points are ready from their first match, with no extra sign-up step.
+  const xiResult = await xiCreateUser({
+    clubpulse_user_id: userId,
+    name: fullName,
+    email,
+  });
+
+  if (xiResult?.xi_user_id) {
+    // Store xi_user_id on the profile so sync-match can look it up later
+    await admin
+      .from('profiles')
+      .update({ xi_user_id: xiResult.xi_user_id })
+      .eq('id', userId);
+    // Intentionally not returning on update error — xi_user_id can be
+    // backfilled later; sign-up must succeed regardless.
   }
 
   return { success: true };
