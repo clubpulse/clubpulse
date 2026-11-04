@@ -347,7 +347,31 @@ export function AnalyseClient() {
     }
     setResults(metrics);
     setPhase('done');
-  }, []);
+
+    // Save pose results to history (best-effort)
+    const overall = Math.round(metrics.reduce((sum, m) => sum + m.score, 0) / metrics.length);
+    const resultJson = { mode, hand, frameCount: recording.frames.length, overall, metrics: metrics.map((m) => ({ key: m.key, label: m.label, value: m.value, score: m.score })) };
+
+    // Generate a coaching paragraph server-side, then save both
+    fetch('/api/analysis/coaching-read', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ pose: true, mode, hand, metrics: resultJson.metrics, overall }),
+    })
+      .then((r) => r.ok ? r.json() : null)
+      .then((coachData: { paragraph?: string } | null) => {
+        fetch('/api/analysis/save-result', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            analysis_type:      'pose',
+            result_json:        resultJson,
+            coaching_paragraph: coachData?.paragraph ?? null,
+          }),
+        }).catch(() => {/* silent */});
+      })
+      .catch(() => {/* silent */});
+  }, [mode, hand]);
 
   const startLoop = useCallback(() => {
     const tick = () => {

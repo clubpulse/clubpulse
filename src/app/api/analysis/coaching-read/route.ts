@@ -25,32 +25,62 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const {
-      speed_kph,
-      swing_px,
-      bounce_frame,
-      detections,
-      frames,
-      white_ball,
-    } = body as {
-      speed_kph:    number | null;
-      swing_px:     number;
-      bounce_frame: number | null;
-      detections:   number;
-      frames:       number;
-      white_ball:   boolean;
-    };
+    const body = await req.json() as Record<string, unknown>;
 
-    // Build a data summary to pass to the model
-    const speedStr   = speed_kph != null ? `${speed_kph} kph` : 'unknown (video angle may need adjustment)';
-    const swingAbs   = Math.abs(swing_px);
-    const swingDir   = swingAbs < 5 ? 'straight (no measurable swing)' : swing_px > 0 ? `${swingAbs.toFixed(0)} px of away swing` : `${swingAbs.toFixed(0)} px of in-swing`;
-    const bounceStr  = bounce_frame != null ? `at frame ${bounce_frame}` : 'not detected';
-    const coveragePct = frames > 0 ? Math.round((detections / frames) * 100) : 0;
-    const ballType   = white_ball ? 'white' : 'red';
+    let prompt: string;
 
-    const prompt = `You are a professional cricket coaching assistant. Based on the following ball-tracking data from a bowling delivery, write ONE concise coaching paragraph (3–5 sentences) that:
+    // ── Pose analysis branch ─────────────────────────────────────────────────
+    if (body.pose === true) {
+      const { mode, hand, metrics, overall } = body as {
+        mode:    string;
+        hand:    string;
+        metrics: Array<{ key: string; label: string; value: number; score: number }>;
+        overall: number;
+      };
+      const discipline = mode === 'bowling' ? 'bowling' : 'batting';
+      const handedness = hand === 'left' ? 'left-handed' : 'right-handed';
+      const metricLines = metrics
+        .map((m) => `- ${m.label}: score ${m.score}/100 (value ${typeof m.value === 'number' ? m.value.toFixed(1) : m.value})`)
+        .join('\n');
+
+      prompt = `You are a professional cricket coaching assistant. Based on the following pose-analysis scores from a ${handedness} ${discipline} session, write ONE concise coaching paragraph (3–5 sentences) that:
+- Praises the strongest metric
+- Identifies the weakest metric and explains why it matters
+- Ends with one specific drill or cue the player can use at their next practice
+
+Overall score: ${overall}/100
+
+Metric breakdown:
+${metricLines}
+
+Tone: warm, British, specific. No headings, no bullet points, no markdown. Speak directly to the player.`;
+
+    } else {
+      // ── Ball-track branch ────────────────────────────────────────────────────
+      const {
+        speed_kph,
+        swing_px,
+        bounce_frame,
+        detections,
+        frames,
+        white_ball,
+      } = body as {
+        speed_kph:    number | null;
+        swing_px:     number;
+        bounce_frame: number | null;
+        detections:   number;
+        frames:       number;
+        white_ball:   boolean;
+      };
+
+      const speedStr    = speed_kph != null ? `${speed_kph} kph` : 'unknown (video angle may need adjustment)';
+      const swingAbs    = Math.abs(swing_px);
+      const swingDir    = swingAbs < 5 ? 'straight (no measurable swing)' : swing_px > 0 ? `${swingAbs.toFixed(0)} px of away swing` : `${swingAbs.toFixed(0)} px of in-swing`;
+      const bounceStr   = bounce_frame != null ? `at frame ${bounce_frame}` : 'not detected';
+      const coveragePct = frames > 0 ? Math.round((detections / frames) * 100) : 0;
+      const ballType    = white_ball ? 'white' : 'red';
+
+      prompt = `You are a professional cricket coaching assistant. Based on the following ball-tracking data from a bowling delivery, write ONE concise coaching paragraph (3–5 sentences) that:
 - States what this delivery shows about the bowler's current form
 - Highlights the strongest aspect and one specific area to develop
 - Ends with one actionable drill or adjustment the bowler can try at next practice
@@ -65,6 +95,7 @@ Data:
 - Detection coverage: ${coveragePct}% (${detections} of ${frames} frames)
 
 Write only the paragraph — no headings, no bullet points, no markdown.`;
+    }
 
     const message = await client.messages.create({
       model:      'claude-haiku-4-5-20251001',

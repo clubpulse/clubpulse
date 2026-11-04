@@ -55,17 +55,51 @@ export async function chatWithCompanion(
   }
 
   const db = admin as SupabaseClient;
-  const [recent, wallet, streak] = await Promise.all([
+  const [recent, wallet, streak, analysisRows] = await Promise.all([
     getRecentActivity(db, userId, 8),
     fetchWallet(db, userId),
     getStreakInfo(db, userId),
+    admin
+      .from('analysis_results')
+      .select('created_at, analysis_type, result_json, coaching_paragraph')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => data ?? []),
   ]);
+
+  // Summarise recent analysis sessions for the coach
+  type AnalysisRow = { created_at: string; analysis_type: string; result_json: Record<string, unknown>; coaching_paragraph: string | null };
+  const analysisSummary = (analysisRows as AnalysisRow[]).map((r) => {
+    const date = r.created_at.slice(0, 10);
+    if (r.analysis_type === 'ball') {
+      const { speed_kph, swing_px } = r.result_json as { speed_kph?: number | null; swing_px?: number };
+      return {
+        type: 'ball-track',
+        date,
+        speed_kph: speed_kph ?? null,
+        swing_px: swing_px ?? null,
+        coaching: r.coaching_paragraph,
+      };
+    }
+    const { overall, mode, hand } = r.result_json as { overall?: number; mode?: string; hand?: string };
+    return {
+      type: 'pose',
+      date,
+      mode: mode ?? 'unknown',
+      hand: hand ?? 'unknown',
+      overall_score: overall ?? null,
+      coaching: r.coaching_paragraph,
+    };
+  });
+
   const context = {
     recentActivity: recent.map((r) => ({ what: r.title, scores: r.amount, when: r.occurred_at.slice(0, 10) })),
     wallet: wallet.success && wallet.data
       ? { flexi: wallet.data.flexi_balance, reward: wallet.data.reward_balance, lifetimeEarned: wallet.data.lifetime_earned }
       : null,
     streakDays: streak.streakDay,
+    recentAnalysis: analysisSummary,
   };
 
   // The API needs strictly alternating turns starting with the user
