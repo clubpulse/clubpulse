@@ -642,11 +642,8 @@ export default function HomePage() {
               <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-nav-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
+              <Link href="/features">Features</Link>
+              <Link href="/#compare">Compare</Link>
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
             </div>
@@ -667,11 +664,8 @@ export default function HomePage() {
 
         {/* ── MOBILE NAV ── */}
         <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
-          <Link href="/features/availability" onClick={() => setNavOpen(false)}>Availability</Link>
-          <Link href="/features/scorecard" onClick={() => setNavOpen(false)}>Scorecard</Link>
-          <Link href="/features/ai-coach" onClick={() => setNavOpen(false)}>AI Coach</Link>
-          <Link href="/features/scores" onClick={() => setNavOpen(false)}>Scores</Link>
-          <Link href="/features/finance" onClick={() => setNavOpen(false)}>Finance</Link>
+          <Link href="/features" onClick={() => setNavOpen(false)}>Features</Link>
+          <Link href="/#compare" onClick={() => setNavOpen(false)}>Compare</Link>
           <Link href="/about" onClick={() => setNavOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setNavOpen(false)}>Contact</Link>
           <div className="cp-mobile-nav-divider" />
@@ -693,36 +687,39 @@ export default function HomePage() {
                 Live at Slough CC · 2026 Season
               </div>
               <h1 className="cp-hero-h1">
-                The <span className="red">complete</span><br />
-                platform for<br />
-                grassroots cricket.
+                Cricket clubs<br />
+                run on <span className="red">ClubPulse</span><br />
+                now.
               </h1>
               <p className="cp-hero-sub">
-                Five tools. One app. Built by a cricketer, for cricketers. Availability, live scoring, AI coaching, loyalty rewards and club finance — everything your club has been doing manually, done properly.
+                48 features. One platform. Built by a cricketer who got tired of WhatsApp chains, lost scoresheets and unpaid fees. The generation shift your club has been waiting for.
               </p>
 
-              {/* 5 product pillars */}
+              {/* 8 feature pillars */}
               <div className="cp-pillars">
-                <Link href="/features/availability" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />📅 Availability
+                <Link href="/features#match" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />🏏 Match Intel
                 </Link>
-                <Link href="/features/scorecard" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />📋 Live Scorecard
+                <Link href="/features#ai" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />🤖 AI Tools
                 </Link>
-                <Link href="/features/ai-coach" className="cp-pillar">
-                  <span className="cp-pillar-dot road" />🎯 AI Coach
+                <Link href="/features#performance" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />📈 Performance
                 </Link>
-                <Link href="/features/scores" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />⭐ Scores
+                <Link href="/features#team" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />👥 Team Mgmt
                 </Link>
-                <Link href="/features/finance" className="cp-pillar">
-                  <span className="cp-pillar-dot road" />💷 Finance
+                <Link href="/features#finance" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />💰 Finance
+                </Link>
+                <Link href="/features#engagement" className="cp-pillar">
+                  <span className="cp-pillar-dot live" />🏅 Engagement
                 </Link>
               </div>
 
               <div className="cp-hero-btns">
                 <Link href="/contact" className="cp-btn-hero">Get started free →</Link>
-                <a href="#how-it-works" className="cp-btn-hero-ghost">See how it works</a>
+                <Link href="/features" className="cp-btn-hero-ghost">See all 48 features →</Link>
               </div>
               <div className="cp-hero-stats">
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
@@ -911,8 +908,8 @@ export default function HomePage() {
         <section className="cp-features" id="features">
           <div className="cp-features-inner">
             <p className="cp-eyebrow">The full platform</p>
-            <h2 className="cp-section-h2">Five tools. One platform.</h2>
-            <p className="cp-section-sub">Each feature works standalone. Together they eliminate every spreadsheet, WhatsApp chain, and Sunday-night admin task your club has.</p>
+            <h2 className="cp-section-h2">48 features. One platform.</h2>
+            <p className="cp-section-sub">Each feature works standalone. Together they eliminate every spreadsheet, WhatsApp chain, and Sunday-night admin task your club has. Here&apos;s a taste — <Link href="/features" style={{color:'var(--sky)',textDecoration:'none',fontWeight:600}}>explore all 48 →</Link></p>
 
             <div className="cp-feat-grid">
               {/* Availability — wide */}
@@ -928,7 +925,7 @@ export default function HomePage() {
                       <div className="cp-feat-card-bullet"><strong>Live squad count</strong> for captains in real time</div>
                       <div className="cp-feat-card-bullet"><strong>+5 Scores</strong> awarded automatically for responding</div>
                     </div>
-                    <Link href="/features/availability" className="cp-feat-card-link">Learn more →</Link>
+                    <Link href="/features#team" className="cp-feat-card-link">Learn more →</Link>
                   </div>
                   <div style={{background:'#04091A',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
@@ -963,7 +960,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>Career stats</strong> built automatically</div>
                   <div className="cp-feat-card-bullet"><strong>Shareable link</strong> for anyone outside the club</div>
                 </div>
-                <Link href="/features/scorecard" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features#match" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* Scores */}
@@ -977,7 +974,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>+200</strong> pay season fee · <strong>+100</strong> referral</div>
                   <div className="cp-feat-card-bullet"><strong>Bronze / Silver / Gold</strong> tier multipliers</div>
                 </div>
-                <Link href="/features/scores" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features#engagement" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* AI Coach */}
@@ -991,7 +988,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot feedback</div>
                   <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
                 </div>
-                <Link href="/features/ai-coach" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features#ai" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* Finance */}
@@ -1005,11 +1002,20 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, chase in one click</div>
                   <div className="cp-feat-card-bullet"><strong>One-click export</strong> for AGM or committee</div>
                 </div>
-                <Link href="/features/finance" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features#finance" className="cp-feat-card-link">Learn more →</Link>
               </div>
+            </div>
+            {/* See all features CTA */}
+            <div style={{textAlign:'center',marginTop:'40px'}}>
+              <Link href="/features" style={{display:'inline-flex',alignItems:'center',gap:'10px',padding:'14px 32px',background:'rgba(37,99,235,0.1)',border:'1px solid rgba(37,99,235,0.3)',borderRadius:'11px',color:'var(--sky)',fontSize:'15px',fontWeight:700,textDecoration:'none',transition:'all 0.15s'}}>
+                See all 48 features with live demos →
+              </Link>
             </div>
           </div>
         </section>
+
+        {/* ── COMPARISON TABLE ── */}
+        <ComparisonSection />
 
         {/* ── PERSONA / WHO IT'S FOR ── */}
         <section className="cp-personas">
@@ -1074,11 +1080,11 @@ export default function HomePage() {
               <span className="cp-footer-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
+              <Link href="/features#match">Match Intel</Link>
+              <Link href="/features#ai">AI Tools</Link>
+              <Link href="/features#performance">Performance</Link>
+              <Link href="/features#finance">Finance</Link>
+              <Link href="/features#rewards">Rewards</Link>
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/auth/sign-in">Sign in</Link>
@@ -1088,6 +1094,94 @@ export default function HomePage() {
         </footer>
       </div>
     </>
+  );
+}
+
+/* ── COMPARISON SECTION ── */
+function ComparisonSection() {
+  type Platform = 'clubpulse' | 'pitchero' | 'teamapp' | 'playcricket';
+  const platforms: { id: Platform; name: string; short: string }[] = [
+    { id: 'clubpulse', name: 'ClubPulse', short: 'CP' },
+    { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
+    { id: 'teamapp', name: 'TeamApp', short: 'TA' },
+    { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
+  ];
+
+  type Check = '✓' | '~' | '✕';
+  type Row = { label: string; cp: Check; pi: Check; ta: Check; pc: Check; note?: string };
+  const rows: Row[] = [
+    { label: 'Built for cricket only',          cp: '✓', pi: '~', ta: '✕', pc: '✓', note: 'Pitchero covers all sports; TeamApp is generic' },
+    { label: 'Live in-app scorecard',            cp: '✓', pi: '✓', ta: '✕', pc: '~', note: 'Play-Cricket is web-only, no native app' },
+    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse-exclusive: Claude-powered insights' },
+    { label: 'Availability & XI selection',      cp: '✓', pi: '✓', ta: '✓', pc: '✕' },
+    { label: 'Integrated fee & finance tracking', cp: '✓', pi: '~', ta: '~', pc: '✕', note: 'Others require third-party payment tools' },
+    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse Scores: earn, redeem, retain players' },
+    { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
+    { label: 'Free for players',                 cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
+    { label: 'Club plan from £9.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
+    { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
+  ];
+
+  const colStyle = (id: Platform): React.CSSProperties => id === 'clubpulse'
+    ? { background: 'rgba(37,99,235,0.08)', borderLeft: '1px solid rgba(37,99,235,0.3)', borderRight: '1px solid rgba(37,99,235,0.3)' }
+    : {};
+
+  const checkColor = (v: Check) =>
+    v === '✓' ? '#4ade80' : v === '~' ? '#facc15' : '#f87171';
+
+  return (
+    <section id="compare" style={{ padding: '80px 0', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
+        <p style={{ textAlign: 'center', color: 'var(--sky)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px' }}>
+          How we stack up
+        </p>
+        <h2 style={{ textAlign: 'center', fontFamily: "'Syne', sans-serif", fontSize: 'clamp(26px,4vw,38px)', fontWeight: 800, color: '#fff', margin: '0 0 12px' }}>
+          A generation ahead of the alternatives
+        </h2>
+        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: '16px', marginBottom: '48px', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
+          ClubPulse was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
+        </p>
+
+        <div style={{ overflowX: 'auto', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                <th style={{ padding: '14px 20px', textAlign: 'left', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.03)' }}>Feature</th>
+                {platforms.map(p => (
+                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'clubpulse' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'clubpulse' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
+                    <span style={{ display: 'none' }} aria-hidden="true">{p.short}</span>
+                    <span>{p.name}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={row.label} style={{ borderBottom: i < rows.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                  <td style={{ padding: '13px 20px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>
+                    {row.label}
+                    {row.note && <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>{row.note}</span>}
+                  </td>
+                  {(['cp','pi','ta','pc'] as const).map((k, ci) => {
+                    const val = row[k];
+                    const pid = platforms[ci].id;
+                    return (
+                      <td key={k} style={{ padding: '13px 16px', textAlign: 'center', fontSize: '17px', ...colStyle(pid) }}>
+                        <span style={{ color: checkColor(val), fontWeight: val === '✓' ? 700 : 400 }}>{val}</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+          ✓ full support · ~ partial / third-party · ✕ not available
+        </p>
+      </div>
+    </section>
   );
 }
 
