@@ -217,8 +217,81 @@ export default function HomePage() {
         .cp-hero-h1 .red { color:var(--red); }
         .cp-hero-sub {
           font-size:17px;color:var(--fg2);line-height:1.7;
-          max-width:500px;margin-bottom:32px;
+          max-width:520px;margin-bottom:32px;
         }
+
+        /* ── AUDIENCE SECTION ── */
+        .cp-audience {
+          padding:96px 0 80px;border-top:1px solid var(--border);
+        }
+        .cp-audience-inner {
+          max-width:1200px;margin:0 auto;padding:0 40px;
+        }
+        .cp-audience-grid {
+          display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:56px;
+        }
+        @media(max-width:720px){
+          .cp-audience-grid{grid-template-columns:1fr;}
+        }
+        .cp-aud-card {
+          background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+          padding:32px;position:relative;overflow:hidden;transition:border-color 0.2s;
+        }
+        .cp-aud-card:hover { border-color:rgba(255,255,255,0.14); }
+        .cp-aud-card::before {
+          content:'';position:absolute;inset:0;border-radius:16px;
+          background:radial-gradient(ellipse at top left,var(--aud-glow,rgba(37,99,235,0.08)) 0%,transparent 60%);
+          pointer-events:none;
+        }
+        .cp-aud-card.player  { --aud-glow:rgba(96,165,250,0.10); }
+        .cp-aud-card.club    { --aud-glow:rgba(239,200,74,0.09); }
+        .cp-aud-card.fed     { --aud-glow:rgba(34,197,94,0.08); }
+        .cp-aud-card.county  { --aud-glow:rgba(167,139,250,0.09); }
+
+        .cp-aud-icon {
+          width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+          font-size:22px;margin-bottom:20px;border:1px solid var(--border);
+          background:rgba(255,255,255,0.03);
+        }
+        .cp-aud-label {
+          font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;
+          margin-bottom:8px;
+        }
+        .cp-aud-label.player  { color:var(--sky); }
+        .cp-aud-label.club    { color:var(--gold); }
+        .cp-aud-label.fed     { color:var(--green); }
+        .cp-aud-label.county  { color:#a78bfa; }
+
+        .cp-aud-h {
+          font-family:'Syne',sans-serif;font-size:21px;font-weight:800;
+          color:var(--fg);margin-bottom:12px;line-height:1.15;
+        }
+        .cp-aud-body {
+          font-size:14px;color:var(--fg2);line-height:1.75;margin-bottom:20px;
+        }
+        .cp-aud-checks { display:flex;flex-direction:column;gap:8px; }
+        .cp-aud-check {
+          display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--fg2);
+        }
+        .cp-aud-check-icon {
+          flex-shrink:0;width:16px;height:16px;border-radius:50%;
+          display:grid;place-items:center;font-size:9px;font-weight:700;margin-top:1px;
+        }
+        .cp-aud-check-icon.player  { background:rgba(96,165,250,0.15);color:var(--sky); }
+        .cp-aud-check-icon.club    { background:rgba(239,200,74,0.15);color:var(--gold); }
+        .cp-aud-check-icon.fed     { background:rgba(34,197,94,0.15);color:var(--green); }
+        .cp-aud-check-icon.county  { background:rgba(167,139,250,0.15);color:#a78bfa; }
+
+        .cp-aud-cta {
+          display:inline-flex;align-items:center;gap:6px;
+          margin-top:24px;font-size:13px;font-weight:600;text-decoration:none;
+          transition:opacity 0.12s;
+        }
+        .cp-aud-cta:hover { opacity:0.75; }
+        .cp-aud-cta.player  { color:var(--sky); }
+        .cp-aud-cta.club    { color:var(--gold); }
+        .cp-aud-cta.fed     { color:var(--green); }
+        .cp-aud-cta.county  { color:#a78bfa; }
 
         /* 5 product pillars */
         .cp-pillars {
@@ -694,7 +767,7 @@ export default function HomePage() {
                 now.
               </h1>
               <p className="cp-hero-sub">
-                48 features. One platform. Built by a cricketer who got tired of WhatsApp chains, lost scoresheets and unpaid fees. The generation shift your club has been waiting for.
+                For players who want to improve, clubs that want to run properly, federations that need visibility across their leagues, and county associations that need data compliance — one platform built for the whole game.
               </p>
 
               {/* 8 feature pillars */}
@@ -1019,21 +1092,15 @@ export default function HomePage() {
         {/* ── COMPARISON TABLE ── */}
         <ComparisonSection />
 
-        {/* ── PERSONA / WHO IT'S FOR ── */}
-        <section className="cp-personas">
-          <p className="cp-eyebrow">Who it&apos;s for</p>
-          <h2 className="cp-section-h2">Built for every role in the club.</h2>
-          <p className="cp-section-sub">Whether you play, captain, or run the committee — ClubPulse is built around how you actually use it.</p>
-
-          <PersonaSection />
-        </section>
+        {/* ── AUDIENCE / WHO IT'S FOR ── */}
+        <AudienceSection />
 
         {/* ── PRICING ── */}
         <section className="cp-pricing">
           <div className="cp-pricing-inner">
             <p className="cp-eyebrow">Pricing</p>
-            <h2 className="cp-section-h2">Fair pricing for real clubs.</h2>
-            <p className="cp-section-sub">Two separate tracks — one for players, one for clubs. No hidden fees, no annual lock-in.</p>
+            <h2 className="cp-section-h2">Pricing that fits your role.</h2>
+            <p className="cp-section-sub">Players subscribe directly. Clubs choose how many player seats to sponsor. Federations and counties — talk to us.</p>
             <PricingSection />
           </div>
         </section>
@@ -1051,8 +1118,8 @@ export default function HomePage() {
         <section className="cp-cta-band">
           <div className="cp-cta-band-inner">
             <div>
-              <h2 className="cp-cta-h">Ready to run your club properly?</h2>
-              <p className="cp-cta-sub">Free for players. Club plans from £14.99/month. No contracts, no hidden fees.</p>
+              <h2 className="cp-cta-h">The platform your cricket ecosystem has been missing.</h2>
+              <p className="cp-cta-sub">Free for players. Club plans with sponsored seats. Federations and county boards — let&apos;s talk.</p>
             </div>
             <Link href="/contact" className="cp-cta-btn">Get started — it&apos;s free →</Link>
           </div>
@@ -1205,7 +1272,7 @@ function PricingSection() {
         <button
           className={`cp-pricing-toggle-btn${audience === 'club' ? ' active' : ''}`}
           onClick={() => setAudience('club')}
-        >🏟️ Club</button>
+        >🏟️ Club / Federation</button>
       </div>
 
       {/* ── PLAYER PRICING ── */}
@@ -1300,50 +1367,186 @@ function PricingSection() {
       {/* ── CLUB PRICING ── */}
       {audience === 'club' && (
         <>
-          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(2,1fr)'}}>
+          {/* How it works blurb */}
+          <div style={{
+            background:'rgba(37,99,235,0.07)',border:'1px solid rgba(37,99,235,0.2)',
+            borderRadius:'12px',padding:'20px 24px',marginBottom:'32px',
+            display:'flex',gap:'14px',alignItems:'flex-start',
+          }}>
+            <span style={{fontSize:'20px',flexShrink:0}}>💡</span>
+            <div>
+              <p style={{fontWeight:700,color:'var(--sky)',fontSize:'14px',marginBottom:'4px'}}>How club pricing works</p>
+              <p style={{fontSize:'13px',color:'var(--fg2)',lineHeight:1.7}}>
+                Your club subscribes to a base plan, then chooses how many <strong style={{color:'var(--fg)'}}>sponsored player seats</strong> to include. Players you sponsor get a full paid tier (Pro, Elite or Legend) covered by the club — they just log in and play. Players can also subscribe individually at any time.
+              </p>
+            </div>
+          </div>
+
+          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
             {/* Starter */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Starter</p>
-              <div className="cp-price-n"><span>£</span>9.99</div>
-              <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">Perfect for a single team getting started. Core availability, scoring and basic finance.</p>
+              <div className="cp-price-n"><span>£</span>19.99</div>
+              <p className="cp-price-period">per month · 1 team</p>
+              <p className="cp-price-desc">One team, all the essentials. Includes 10 Pro player seats — sponsor your starting XI.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>1 team · up to 25 players</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Availability management</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard &amp; XI selection</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>10 sponsored Pro seats</strong> included</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Availability &amp; XI selection</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Basic finance &amp; fee tracking</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores rewards for all players</span></div>
                 <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Multiple teams</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Full finance dashboard &amp; Wise payouts</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Full finance dashboard</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta ghost">Get started →</Link>
+              <Link href="/contact" className="cp-price-cta ghost">Get Starter →</Link>
             </div>
 
             {/* Club — featured */}
             <div className="cp-price-card featured">
-              <span className="cp-price-featured-chip">Recommended</span>
+              <span className="cp-price-featured-chip">Most popular</span>
               <p className="cp-price-plan">Club</p>
-              <div className="cp-price-n"><span>£</span>14.99</div>
-              <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">For established clubs with multiple teams. Unlimited players, full finance and every admin tool.</p>
+              <div className="cp-price-n"><span>£</span>49.99</div>
+              <p className="cp-price-period">per month · unlimited teams</p>
+              <p className="cp-price-desc">Your whole club on one platform. Includes 30 Pro seats — top up with Elite or Legend anytime.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Starter</strong></span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited teams &amp; players</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>30 sponsored Pro seats</strong> included</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Top-up Elite or Legend seats from £14.99/seat</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full admin dashboard</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full finance dashboard &amp; Wise payouts</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores management across all players</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full finance &amp; Wise payouts</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club-wide stats &amp; season reports</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta primary">Get started →</Link>
+              <Link href="/contact" className="cp-price-cta primary">Get Club →</Link>
+            </div>
+
+            {/* Federation / County */}
+            <div className="cp-price-card" style={{borderColor:'rgba(167,139,250,0.2)',background:'rgba(167,139,250,0.03)'}}>
+              <p className="cp-price-plan" style={{color:'#a78bfa'}}>Federation / County</p>
+              <div className="cp-price-n" style={{fontSize:'clamp(24px,4vw,32px)',paddingTop:'8px'}}>Let&apos;s talk</div>
+              <p className="cp-price-period">custom · annual contract</p>
+              <p className="cp-price-desc">For leagues, federations and county associations overseeing multiple clubs. Tailored to your structure.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Unlimited clubs under your umbrella</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Aggregated league standings &amp; stats</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Cross-club compliance reporting</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Club registration &amp; governance tools</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>ECB-ready data exports</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Dedicated account manager</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>SSO &amp; custom integrations</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta ghost" style={{borderColor:'rgba(167,139,250,0.3)',color:'#a78bfa'}}>Contact us →</Link>
             </div>
           </div>
-          <p className="cp-price-note">All club plans include free player accounts for your entire squad. No per-seat pricing.</p>
+          <p className="cp-price-note">Sponsored seats give your players a paid tier — covered by the club. Players can always self-subscribe too. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
         </>
       )}
     </>
+  );
+}
+
+/* ── AUDIENCE SECTION ── */
+function AudienceSection() {
+  const audiences = [
+    {
+      key: 'player',
+      icon: '🏏',
+      label: 'Players',
+      h: 'Your career, in your pocket.',
+      body: 'From your first boundary to your 1,000th run — track every innings, get AI coaching on your technique and earn Scores rewards your club actually values.',
+      checks: [
+        'Live scorecard & career stats',
+        'AI coaching tailored to your role',
+        'Video analysis with frame-by-frame breakdown',
+        'Performance trends & form index',
+        'Scores rewards — earn, redeem, retain',
+      ],
+      cta: 'Start free as a player',
+      href: '/auth/sign-up',
+    },
+    {
+      key: 'club',
+      icon: '🏟️',
+      label: 'Cricket Clubs',
+      h: 'Run your club. Not a spreadsheet.',
+      body: 'Availability, XI selection, finance, fee collection, kit tracking, Scores rewards — everything your committee handles on a Sunday, done in minutes. Sponsor player seats so your squad gets the best of ClubPulse included.',
+      checks: [
+        'Sponsor player seats — pay for your squad',
+        'Availability, XI selection & team logistics',
+        'Finance dashboard & Wise payouts',
+        'Club-wide stats & season reporting',
+        'Admin dashboard for every committee role',
+      ],
+      cta: 'See club pricing',
+      href: '/pricing',
+    },
+    {
+      key: 'fed',
+      icon: '🏆',
+      label: 'Federations & Leagues',
+      h: 'See every club. Run every league.',
+      body: 'Oversee results, standings and compliance across all your member clubs without chasing emails. Automated aggregation means your league tables update the moment a scorecard is closed.',
+      checks: [
+        'Aggregated standings across all member clubs',
+        'Cross-club results & performance reporting',
+        'Compliance monitoring & governance tools',
+        'Automated league table updates',
+        'Single dashboard for your entire federation',
+      ],
+      cta: 'Talk to us',
+      href: '/contact',
+    },
+    {
+      key: 'county',
+      icon: '🗺️',
+      label: 'County Associations',
+      h: 'County-wide visibility. ECB-ready.',
+      body: 'From club registration to end-of-season data submissions — ClubPulse gives county boards the structure, the data and the exports to run a compliant, well-governed cricket county.',
+      checks: [
+        'Club registration & affiliation management',
+        'ECB-ready data exports & compliance reports',
+        'County-wide player & match data',
+        'Cross-club governance & audit trails',
+        'Dedicated account manager & SSO',
+      ],
+      cta: 'Talk to us',
+      href: '/contact',
+    },
+  ];
+
+  return (
+    <section className="cp-audience">
+      <div className="cp-audience-inner">
+        <p className="cp-eyebrow">Who it&apos;s for</p>
+        <h2 className="cp-section-h2">Built for the whole cricket ecosystem.</h2>
+        <p className="cp-section-sub">Whether you bat, captain, govern or regulate — ClubPulse was built for how cricket actually works at every level.</p>
+
+        <div className="cp-audience-grid">
+          {audiences.map(aud => (
+            <div key={aud.key} className={`cp-aud-card ${aud.key}`}>
+              <div className="cp-aud-icon">{aud.icon}</div>
+              <p className={`cp-aud-label ${aud.key}`}>{aud.label}</p>
+              <h3 className="cp-aud-h">{aud.h}</h3>
+              <p className="cp-aud-body">{aud.body}</p>
+              <div className="cp-aud-checks">
+                {aud.checks.map(c => (
+                  <div key={c} className="cp-aud-check">
+                    <span className={`cp-aud-check-icon ${aud.key}`}>✓</span>
+                    <span>{c}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href={aud.href} className={`cp-aud-cta ${aud.key}`}>{aud.cta} →</Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
