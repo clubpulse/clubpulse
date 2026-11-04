@@ -643,6 +643,7 @@ export default function HomePage() {
             </Link>
             <div className="cp-nav-links">
               <Link href="/features">Features</Link>
+              <Link href="/pricing">Pricing</Link>
               <Link href="/#compare">Compare</Link>
               <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
@@ -665,6 +666,7 @@ export default function HomePage() {
         {/* ── MOBILE NAV ── */}
         <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
           <Link href="/features" onClick={() => setNavOpen(false)}>Features</Link>
+          <Link href="/pricing" onClick={() => setNavOpen(false)}>Pricing</Link>
           <Link href="/#compare" onClick={() => setNavOpen(false)}>Compare</Link>
           <Link href="/about" onClick={() => setNavOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setNavOpen(false)}>Contact</Link>
