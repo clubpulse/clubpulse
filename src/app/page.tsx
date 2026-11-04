@@ -1209,22 +1209,23 @@ function PricingSection() {
       {/* ── PLAYER PRICING ── */}
       {audience === 'player' && (
         <>
-          <div className="cp-pricing-grid">
+          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
             {/* Free */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Free</p>
               <div className="cp-price-n">£0</div>
               <p className="cp-price-period">Always free · no card needed</p>
-              <p className="cp-price-desc">Everything you need to play, track your stats and engage with your club.</p>
+              <p className="cp-price-desc">Get started — track your stats, follow the scorecard and earn Bronze Scores.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Mark availability</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard access</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Career batting &amp; bowling stats</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Earn &amp; track Scores (Bronze tier)</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>AI coaching sessions</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Performance insights &amp; trends</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Silver / Gold Scores multipliers</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard viewing</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Basic career stats</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Achievement badges</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores — Bronze (1×)</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 2/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Video upload — 7 lifetime</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Role-based coaching</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Performance trends</span></div>
               </div>
               <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
             </div>
@@ -1233,18 +1234,19 @@ function PricingSection() {
             <div className="cp-price-card featured">
               <span className="cp-price-featured-chip">Most popular</span>
               <p className="cp-price-plan">Pro</p>
-              <div className="cp-price-n"><span>£</span>2.99</div>
+              <div className="cp-price-n"><span>£</span>9.99</div>
               <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">For the serious club cricketer. AI coaching, deeper stats and Silver tier Scores rewards.</p>
+              <p className="cp-price-desc">Unlock AI coaching, drill recommendations and Silver tier Scores rewards.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Free</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching sessions (unlimited)</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Performance insights &amp; shot trends</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Silver tier</strong> — 2× Scores multiplier</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Session history &amp; progress tracking</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Gold tier Scores multiplier</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Priority rewards redemption</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 8/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Role-based coaching</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — 2/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Post-match self-assessment</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Video upload — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Form index — last 5</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Silver tier</strong> — 2× Scores</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta primary">Get Pro →</Link>
             </div>
@@ -1252,22 +1254,44 @@ function PricingSection() {
             {/* Elite */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Elite</p>
-              <div className="cp-price-n"><span>£</span>5.99</div>
+              <div className="cp-price-n"><span>£</span>22.99</div>
               <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">Max rewards, priority features and Gold tier status. For players who take their game seriously.</p>
+              <p className="cp-price-desc">Deep analysis — venue breakdowns, matchup records, detailed video reports and Gold Scores.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Gold tier</strong> — 3× Scores multiplier</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority rewards redemption</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Early access to new features</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Exportable stats &amp; season report</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Direct support line</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 20/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — 8/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Venue &amp; pitch condition analysis</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Head-to-head matchup records</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Detailed video AI report</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Season report &amp; stat exports</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Gold tier</strong> — 3× Scores</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta ghost">Get Elite →</Link>
             </div>
+
+            {/* Legend */}
+            <div className="cp-price-card">
+              <p className="cp-price-plan">Legend</p>
+              <div className="cp-price-n"><span>£</span>34.99</div>
+              <p className="cp-price-period">per month · cancel anytime</p>
+              <p className="cp-price-desc">The complete picture. Unlimited everything, full video analysis and Platinum Scores.</p>
+              <div className="cp-price-divider" />
+              <div className="cp-price-features">
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Elite</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full frame-by-frame video analysis</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>vs club &amp; regional avg comparison</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full history — all-time records</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Legend badge &amp; early access</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Platinum tier</strong> — 4× Scores</span></div>
+              </div>
+              <Link href="/contact" className="cp-price-cta ghost">Get Legend →</Link>
+            </div>
           </div>
-          <p className="cp-price-note">50 Scores = £1 value · Bronze (0–499 pts, 1×) · Silver (500–1,999 pts, 2×) · Gold (2,000+ pts, 3×)</p>
+          <p className="cp-price-note">50 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)</p>
         </>
       )}
 
