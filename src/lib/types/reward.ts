@@ -11,6 +11,9 @@ export type Reward = {
   stock_count:      number | null;
   is_active:        boolean;
   created_at:       string;
+  // Tango Card gift card fields
+  tango_utid:        string | null;
+  tango_amount_gbp:  number | null;
 };
 
 export type RedemptionResult = {

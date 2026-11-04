@@ -5,12 +5,16 @@ import type { RedemptionResult, Reward } from '@/lib/types/reward';
 
 import { isUuid } from '@/lib/utils/validate';
 
-export async function listActiveRewards(supabase: SupabaseClient): Promise<ActionResult<Reward[]>> {
-  const { data, error } = await supabase
+export async function listActiveRewards(supabase: SupabaseClient, category?: string): Promise<ActionResult<Reward[]>> {
+  let query = supabase
     .from('rewards_catalogue')
     .select('*')
     .eq('is_active', true)
     .order('creds_cost', { ascending: true });
+
+  if (category) query = query.eq('category', category);
+
+  const { data, error } = await query;
 
   if (error) return { success: false, error: error.message };
   return { success: true, data: (data ?? []) as Reward[] };
