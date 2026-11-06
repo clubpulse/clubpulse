@@ -34,8 +34,8 @@ CREATE POLICY IF NOT EXISTS "redemptions: own read"
 
 -- 3. Seed initial gift card catalogue ─────────────────────────────────────────
 -- Tango UTIDs are from the sandbox catalogue; replace with live UTIDs before go-live.
--- Scores cost: 100 Scores = £1.00 face value.
--- So a £5 Amazon voucher costs 500 Scores.
+-- Scores cost: 500 Scores = £1.00 face value.
+-- So a £5 Amazon voucher costs 2,500 Scores; a £10 voucher costs 5,000 Scores.
 
 INSERT INTO public.rewards_catalogue
   (title, description, image_url, creds_cost, category, tango_utid, tango_amount_gbp, is_active)
@@ -44,7 +44,7 @@ VALUES
     'Amazon Gift Card £5',
     'Spend on millions of products at Amazon.co.uk.',
     'https://assets.tangocard.com/amazon-uk.png',
-    500,
+    2500,
     'gift_card',
     'U793981',   -- Amazon UK £5 UTID (sandbox)
     5.00,
@@ -54,7 +54,7 @@ VALUES
     'Amazon Gift Card £10',
     'Spend on millions of products at Amazon.co.uk.',
     'https://assets.tangocard.com/amazon-uk.png',
-    1000,
+    5000,
     'gift_card',
     'U793982',   -- Amazon UK £10 UTID (sandbox)
     10.00,
@@ -64,7 +64,7 @@ VALUES
     'Tesco Gift Card £5',
     'Use in store or online at Tesco.com.',
     'https://assets.tangocard.com/tesco.png',
-    500,
+    2500,
     'gift_card',
     'U100001',   -- Tesco £5 UTID (sandbox)
     5.00,
@@ -74,7 +74,7 @@ VALUES
     'Nike Gift Card £10',
     'Kit, trainers and sportswear at Nike.com.',
     'https://assets.tangocard.com/nike.png',
-    1000,
+    5000,
     'gift_card',
     'U200001',   -- Nike £10 UTID (sandbox)
     10.00,
@@ -84,7 +84,7 @@ VALUES
     'JD Sports Gift Card £10',
     'The leading trainer and sports fashion retailer.',
     'https://assets.tangocard.com/jd-sports.png',
-    1000,
+    5000,
     'gift_card',
     'U300001',   -- JD Sports £10 UTID (sandbox)
     10.00,
@@ -94,7 +94,7 @@ VALUES
     'Deliveroo Gift Card £5',
     'Order food from your favourite local restaurants.',
     'https://assets.tangocard.com/deliveroo.png',
-    500,
+    2500,
     'gift_card',
     'U400001',   -- Deliveroo £5 UTID (sandbox)
     5.00,
