@@ -16,6 +16,7 @@ const FEATURE_GROUPS = [
       { href: '/admin/club/community-pot', icon: '🫙', label: 'Community Pot', desc: 'Club bonus pool & collective targets' },
       { href: '/admin/club/sponsor-a-kid', icon: '👦', label: 'Sponsor a Kid', desc: 'Parent/member sponsors a junior\'s kit' },
       { href: '/admin/club/raffle', icon: '🎟️', label: 'Raffle', desc: 'Scores-funded prize draws' },
+      { href: '/admin/club/scratch-cards', icon: '🎰', label: 'Scratch Cards', desc: 'Mystery prize reveal · weighted prize pool' },
     ],
   },
   {

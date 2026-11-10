@@ -34,6 +34,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             { href: '/admin/club/community-pot', label: 'Community pot' },
             { href: '/admin/club/sponsor-a-kid', label: 'Sponsor a kid' },
             { href: '/admin/club/raffle', label: 'Raffle' },
+            { href: '/admin/club/scratch-cards', label: 'Scratch cards 🎰' },
           ],
         },
         {
