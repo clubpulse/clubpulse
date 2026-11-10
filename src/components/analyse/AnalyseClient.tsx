@@ -36,8 +36,69 @@ type Hand = 'right' | 'left';
 type Phase = 'idle' | 'loading' | 'ready' | 'recording' | 'done';
 type Point = { x: number; y: number };
 
+// Shot types — each has different biomechanical targets
+type ShotType = 'drive' | 'pull' | 'cut' | 'sweep' | 'defence' | 'leave';
+
+const SHOT_TYPE_LABELS: Record<ShotType, string> = {
+  drive:   '🏏 Drive',
+  pull:    '💪 Pull / Hook',
+  cut:     '✂️ Cut',
+  sweep:   '🧹 Sweep',
+  defence: '🛡️ Defence',
+  leave:   '🚶 Leave',
+};
+
 type MetricDef = { key: string; label: string; unit: string; ideal: [number, number]; tolerance: number; tip: string };
 type MetricResult = MetricDef & { value: number; score: number };
+
+// Shot-type-aware ideal ranges for batting metrics.
+// Each entry overrides the default ideal for that shot.
+// Keys match the metric keys in METRICS.batting.
+const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, number]>>>> = {
+  pull: {
+    // Pull/hook: weight on back foot, front arm higher, big hip rotation, shoulder dips
+    frontElbow:     [100, 145],
+    kneeFlex:       [130, 155],  // more loaded back leg
+    shoulderLevel:  [5, 20],     // natural tilt playing a short ball
+    hipRotation:    [30, 60],    // powerful rotation through the ball
+    weightTransfer: [0.3, 0.6],  // weight stays back or only slightly transfers
+  },
+  cut: {
+    frontElbow:     [80, 120],
+    shoulderLevel:  [0, 15],
+    hipRotation:    [15, 40],
+    weightTransfer: [0.3, 0.65],
+  },
+  sweep: {
+    // Sweep: deep knee bend, front knee to the pitch, shoulder rotates hard
+    kneeFlex:       [110, 145],
+    frontElbow:     [70, 115],
+    hipRotation:    [25, 55],
+    weightTransfer: [0.55, 0.85],
+  },
+  defence: {
+    // Dead bat defence: minimal hip rotation, head right over the ball, high elbow
+    frontElbow:     [95, 130],
+    kneeFlex:       [145, 170],
+    hipRotation:    [5, 20],
+    weightTransfer: [0.6, 0.85],
+    headOverKnee:   [0, 0.15],  // tighter — head must be right over it
+  },
+  drive: {
+    // Classic straight/cover drive: full extension, weight fully transferred
+    frontElbow:     [90, 125],
+    kneeFlex:       [150, 170],
+    hipRotation:    [25, 50],
+    weightTransfer: [0.65, 0.9],
+  },
+  leave: {
+    // Leave: balanced, minimal movement, head still, weight centred
+    kneeFlex:       [150, 170],
+    hipRotation:    [0, 10],
+    weightTransfer: [0.4, 0.6],
+    headStability:  [0, 0.08],  // extra still on a leave
+  },
+};
 
 const METRICS: Record<Mode, MetricDef[]> = {
   bowling: [
@@ -51,16 +112,28 @@ const METRICS: Record<Mode, MetricDef[]> = {
       tip: 'Keep your eyes level and head still to stay accurate.' },
   ],
   batting: [
-    { key: 'frontElbow', label: 'Front elbow', unit: '°', ideal: [90, 130], tolerance: 40,
-      tip: 'Lead with a high front elbow to keep the bat face straight.' },
+    // ── Existing metrics (now shot-type aware) ────────────────────────────
+    { key: 'frontElbow', label: 'Front elbow height', unit: '°', ideal: [90, 130], tolerance: 40,
+      tip: 'Lead with a high front elbow — it keeps the bat face straight and the shot controlled.' },
     { key: 'kneeFlex', label: 'Knee flex', unit: '°', ideal: [140, 165], tolerance: 30,
-      tip: 'Stay slightly bent at the knees so you can move quickly either way.' },
-    { key: 'headOverKnee', label: 'Head over front knee', unit: '', ideal: [0, 0.3], tolerance: 0.6,
-      tip: 'Get your head over the front knee to control the shot and keep it down.' },
-    { key: 'shoulderLevel', label: 'Shoulder level', unit: '°', ideal: [0, 10], tolerance: 20,
-      tip: 'Keep your shoulders level in the stance for a balanced base.' },
+      tip: 'Maintain a slight bend at the knees so you can move powerfully in either direction.' },
+    { key: 'headOverKnee', label: 'Head position', unit: '', ideal: [0, 0.3], tolerance: 0.6,
+      tip: 'Get your head over the front knee to stay balanced and keep the ball down.' },
+    { key: 'shoulderLevel', label: 'Shoulder alignment', unit: '°', ideal: [0, 10], tolerance: 20,
+      tip: 'Level shoulders at the point of contact give you the most control over shot direction.' },
     { key: 'headStability', label: 'Head stability', unit: '', ideal: [0, 0.15], tolerance: 0.35,
-      tip: 'A still head gives you the best view of the ball.' },
+      tip: 'A still head is the single biggest predictor of clean contact — keep your eyes locked on the ball.' },
+    // ── New metrics ────────────────────────────────────────────────────────
+    { key: 'hipRotation', label: 'Hip rotation', unit: '°', ideal: [20, 50], tolerance: 25,
+      tip: 'The hips drive power — rotate them through the ball before your arms extend.' },
+    { key: 'weightTransfer', label: 'Weight transfer', unit: '', ideal: [0.55, 0.85], tolerance: 0.35,
+      tip: 'Shift weight from back to front foot as you play — it converts momentum into shot power.' },
+    { key: 'batSwingPlane', label: 'Bat swing plane', unit: '°', ideal: [70, 110], tolerance: 30,
+      tip: 'A straight bat plane (near vertical) gives more margin for error than a cross-bat swing.' },
+    { key: 'backElbow', label: 'Back elbow position', unit: '°', ideal: [60, 100], tolerance: 35,
+      tip: 'A raised back elbow at the top of the backswing powers the downswing — don\'t let it collapse.' },
+    { key: 'wristCock', label: 'Wrist cock', unit: '°', ideal: [100, 145], tolerance: 35,
+      tip: 'Cocked wrists at the top of backswing store energy — release them through impact for timing.' },
   ],
 };
 
@@ -96,13 +169,13 @@ function frameMetrics(lm: NormalizedLandmark[], mode: Mode, hand: Hand, w: numbe
   if (needed.some((i) => (lm[i]?.visibility ?? 0) < MIN_VISIBILITY)) return null;
 
   const p = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
-  // A right-hander bowls with the right arm and leads with the left side; mirror for left-handers.
+  // A right-hander bowls/bats with the right arm and leads with the left side; mirror for left-handers.
   const front = hand === 'right'
     ? { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist, hip: L.lHip, knee: L.lKnee, ankle: L.lAnkle }
     : { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist, hip: L.rHip, knee: L.rKnee, ankle: L.rAnkle };
   const back = hand === 'right'
-    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist }
-    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist };
+    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist, hip: L.rHip }
+    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist, hip: L.lHip };
 
   const shoulderMid = mid(p(L.lShoulder), p(L.rShoulder));
   const hipMid = mid(p(L.lHip), p(L.rHip));
@@ -113,6 +186,7 @@ function frameMetrics(lm: NormalizedLandmark[], mode: Mode, hand: Hand, w: numbe
     const trunk = Math.abs((Math.atan2(shoulderMid.x - hipMid.x, hipMid.y - shoulderMid.y) * 180) / Math.PI);
     return {
       noseX,
+      wristY: null,
       values: {
         frontKnee: angleAt(p(front.hip), p(front.knee), p(front.ankle)),
         armStraightness: angleAt(p(back.shoulder), p(back.elbow), p(back.wrist)),
@@ -121,42 +195,101 @@ function frameMetrics(lm: NormalizedLandmark[], mode: Mode, hand: Hand, w: numbe
     };
   }
 
+  // ── Batting metrics ────────────────────────────────────────────────────────
   const shoulderSlope = Math.abs(
     (Math.atan2(p(L.rShoulder).y - p(L.lShoulder).y, p(L.rShoulder).x - p(L.lShoulder).x) * 180) / Math.PI
   );
+
+  // Hip rotation: angle of hip line relative to shoulder line (larger = more rotation through the shot)
+  const shoulderAngle = Math.atan2(p(L.rShoulder).y - p(L.lShoulder).y, p(L.rShoulder).x - p(L.lShoulder).x);
+  const hipAngle = Math.atan2(p(L.rHip).y - p(L.lHip).y, p(L.rHip).x - p(L.lHip).x);
+  const hipRotation = Math.abs(((shoulderAngle - hipAngle) * 180) / Math.PI);
+
+  // Weight transfer: horizontal position of centre of mass (hipMid) relative to foot positions
+  // 0 = fully back foot, 1 = fully front foot
+  const frontAnkle = p(front.ankle);
+  const backAnkle = p(back.hip === L.rHip
+    ? (hand === 'right' ? L.rAnkle : L.lAnkle)
+    : (hand === 'right' ? L.lAnkle : L.rAnkle));
+  const footSpan = Math.abs(frontAnkle.x - backAnkle.x);
+  const weightTransfer = footSpan > 10
+    ? Math.min(1, Math.max(0, Math.abs(hipMid.x - backAnkle.x) / footSpan))
+    : 0.5;
+
+  // Bat swing plane: angle of the line from back wrist to front wrist relative to vertical
+  // Near 90° = vertical bat, deviating = cross-bat
+  const wristLine = Math.abs(
+    (Math.atan2(p(back.wrist).x - p(front.wrist).x, p(back.wrist).y - p(front.wrist).y) * 180) / Math.PI
+  );
+  const batSwingPlane = Math.min(wristLine, 180 - wristLine);
+
+  // Back elbow: angle at back elbow joint — raised = good, collapsed = tip to improve
+  const backElbow = angleAt(p(back.shoulder), p(back.elbow), p(back.wrist));
+
+  // Wrist cock: angle between back forearm and the line of the bat (approximated by wrist-to-wrist)
+  const wristCock = angleAt(p(back.elbow), p(back.wrist), p(front.wrist));
+
   return {
     noseX,
+    wristY: p(back.wrist).y / h,  // normalised — used for phase detection
     values: {
-      frontElbow: angleAt(p(front.shoulder), p(front.elbow), p(front.wrist)),
-      kneeFlex: mean([
+      frontElbow:    angleAt(p(front.shoulder), p(front.elbow), p(front.wrist)),
+      kneeFlex:      mean([
         angleAt(p(L.lHip), p(L.lKnee), p(L.lAnkle)),
         angleAt(p(L.rHip), p(L.rKnee), p(L.rAnkle)),
       ]),
-      headOverKnee: Math.abs(p(L.nose).x - p(front.knee).x) / shoulderWidth,
+      headOverKnee:  Math.abs(p(L.nose).x - p(front.knee).x) / shoulderWidth,
       shoulderLevel: Math.min(shoulderSlope, 180 - shoulderSlope),
+      hipRotation:   Math.min(hipRotation, 90),
+      weightTransfer,
+      batSwingPlane,
+      backElbow,
+      wristCock,
     } as Record<string, number>,
   };
 }
 
 // Averages each metric across all usable frames; head stability is the spread of head position over the clip.
-function analyse(frames: NormalizedLandmark[][], mode: Mode, hand: Hand, w: number, h: number): MetricResult[] | null {
+// For batting, shotType-aware ideal ranges override the defaults via SHOT_OVERRIDES.
+function analyse(frames: NormalizedLandmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType): MetricResult[] | null {
   const usable = frames.map((lm) => frameMetrics(lm, mode, hand, w, h)).filter((f) => f !== null);
   if (usable.length < MIN_FRAMES) return null;
 
   const noseMean = mean(usable.map((f) => f.noseX));
   const headSpread = Math.sqrt(mean(usable.map((f) => (f.noseX - noseMean) ** 2)));
 
+  // Phase detection from wrist vertical velocity: high wrist = backswing, low wrist = contact/follow-through
+  // We score contact-phase frames more heavily for batting metrics
+  const wristYValues = usable.map((f) => f.wristY).filter((y): y is number => y !== null);
+  const wristPeak = wristYValues.length > 0 ? Math.min(...wristYValues) : null; // smallest y = highest point (screen coords)
+
+  const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
+
   return METRICS[mode].map((def) => {
-    const value = def.key === 'headStability' ? headSpread : mean(usable.map((f) => f.values[def.key]));
-    return { ...def, value, score: scoreFor(value, def.ideal, def.tolerance) };
+    let value: number;
+    if (def.key === 'headStability') {
+      value = headSpread;
+    } else if (mode === 'batting' && def.key === 'batSwingPlane' && wristPeak !== null) {
+      // For swing plane, weight the contact phase (wrist descending) more than the backswing
+      const contactFrames = usable.filter((f) => f.wristY !== null && f.wristY > wristPeak + 0.05);
+      const pool = contactFrames.length >= MIN_FRAMES / 2 ? contactFrames : usable;
+      value = mean(pool.map((f) => f.values[def.key]).filter((v) => !isNaN(v)));
+    } else {
+      const raw = usable.map((f) => f.values[def.key]).filter((v) => v !== undefined && !isNaN(v));
+      value = raw.length > 0 ? mean(raw) : 0;
+    }
+
+    // Apply shot-type override if present
+    const ideal: [number, number] = overrides[def.key] ?? def.ideal;
+    return { ...def, ideal, value, score: scoreFor(value, ideal, def.tolerance) };
   });
 }
 
 // Highlight score for one segment: technique score scaled by the share of frames with a clearly visible pose,
 // so a strong but mostly occluded clip ranks below a clean, fully visible one.
-function segmentScore(frames: NormalizedLandmark[][], totalFrames: number, mode: Mode, hand: Hand, w: number, h: number) {
+function segmentScore(frames: NormalizedLandmark[][], totalFrames: number, mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType) {
   if (totalFrames === 0) return 0;
-  const metrics = analyse(frames, mode, hand, w, h);
+  const metrics = analyse(frames, mode, hand, w, h, shotType);
   if (!metrics) return 0;
   const usable = frames.filter((lm) => frameMetrics(lm, mode, hand, w, h) !== null).length;
   return Math.round(mean(metrics.map((m) => m.score)) * Math.min(1, usable / totalFrames));
@@ -188,10 +321,10 @@ function startSegment(session: Session, now: number): Segment {
   return segment;
 }
 
-function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now()) {
+function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), shotType?: ShotType) {
   const seconds = (now - segment.startedAt) / 1000;
   const long = seconds >= MIN_CLIP_SECONDS;
-  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height) : 0;
+  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined) : 0;
   if (long) session.segments += 1;
   segment.frames = [];
 
@@ -298,6 +431,7 @@ export function AnalyseClient() {
 
   const [mode, setMode] = useState<Mode>('bowling');
   const [hand, setHand] = useState<Hand>('right');
+  const [shotType, setShotType] = useState<ShotType>('drive');
   const [phase, setPhase] = useState<Phase>('idle');
   const [error, setError] = useState<string | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -305,11 +439,11 @@ export function AnalyseClient() {
   const [frameCount, setFrameCount] = useState(0);
   const [highlights, setHighlights] = useState<'idle' | 'uploading' | 'ready'>('idle');
 
-  // Mode/hand are read when a recording finishes, from inside the rAF loop
-  const settingsRef = useRef({ mode, hand });
+  // Mode/hand/shotType are read when a recording finishes, from inside the rAF loop
+  const settingsRef = useRef({ mode, hand, shotType });
   useEffect(() => {
-    settingsRef.current = { mode, hand };
-  }, [mode, hand]);
+    settingsRef.current = { mode, hand, shotType };
+  }, [mode, hand, shotType]);
 
   // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
@@ -337,8 +471,8 @@ export function AnalyseClient() {
     recordingRef.current = null;
     if (!recording || !video) return;
 
-    const { mode: m, hand: hd } = settingsRef.current;
-    const metrics = analyse(recording.frames, m, hd, video.videoWidth, video.videoHeight);
+    const { mode: m, hand: hd, shotType: st } = settingsRef.current;
+    const metrics = analyse(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined);
     setFrameCount(recording.frames.length);
     if (!metrics) {
       setError("We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
@@ -349,14 +483,14 @@ export function AnalyseClient() {
     setPhase('done');
 
     // Save pose results to history (best-effort)
-    const overall = Math.round(metrics.reduce((sum, m) => sum + m.score, 0) / metrics.length);
-    const resultJson = { mode, hand, frameCount: recording.frames.length, overall, metrics: metrics.map((m) => ({ key: m.key, label: m.label, value: m.value, score: m.score })) };
+    const overall = Math.round(metrics.reduce((sum, mk) => sum + mk.score, 0) / metrics.length);
+    const resultJson = { mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall, metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score })) };
 
     // Generate a coaching paragraph server-side, then save both
     fetch('/api/analysis/coaching-read', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ pose: true, mode, hand, metrics: resultJson.metrics, overall }),
+      body:    JSON.stringify({ pose: true, mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, metrics: resultJson.metrics, overall }),
     })
       .then((r) => r.ok ? r.json() : null)
       .then((coachData: { paragraph?: string } | null) => {
@@ -405,8 +539,8 @@ export function AnalyseClient() {
           session.current.totalFrames += 1;
           if (pose) session.current.frames.push(pose);
           if (now - session.current.startedAt >= SEGMENT_SECONDS * 1000) {
-            const { mode: m, hand: hd } = settingsRef.current;
-            finishSegment(session, session.current, m, hd, now);
+            const { mode: m, hand: hd, shotType: st } = settingsRef.current;
+            finishSegment(session, session.current, m, hd, now, st);
             session.current = startSegment(session, now);
           }
         }
@@ -478,7 +612,7 @@ export function AnalyseClient() {
     const session = sessionRef.current;
     sessionRef.current = null;
     if (session?.current) {
-      finishSegment(session, session.current, mode, hand);
+      finishSegment(session, session.current, mode, hand, undefined, mode === 'batting' ? shotType : undefined);
       session.current = null;
     }
     stopCamera();
@@ -595,6 +729,37 @@ export function AnalyseClient() {
           disabled={phase === 'recording'}
           options={[{ value: 'right', label: 'Right-handed' }, { value: 'left', label: 'Left-handed' }]} />
       </div>
+
+      {/* Shot type selector — batting only */}
+      {mode === 'batting' && (
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">Shot type</p>
+          <div className="flex flex-wrap gap-2">
+            {(Object.entries(SHOT_TYPE_LABELS) as [ShotType, string][]).map(([key, label]) => {
+              const active = shotType === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={phase === 'recording'}
+                  onClick={() => { setShotType(key); setResults(null); }}
+                  className="rounded-lg border px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+                  style={{
+                    borderColor: active ? GOLD : 'rgba(255,255,255,0.12)',
+                    background:  active ? 'rgba(239,200,74,0.12)' : 'rgba(255,255,255,0.03)',
+                    color:       active ? GOLD : 'rgba(255,255,255,0.65)',
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            Scoring targets adjust automatically for the selected shot — a pull and a drive have different ideal positions.
+          </p>
+        </div>
+      )}
 
       <Card>
         <div className="relative overflow-hidden rounded-xl bg-black" style={{ aspectRatio: '16 / 9' }}>

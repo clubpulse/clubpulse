@@ -31,29 +31,85 @@ export async function POST(req: NextRequest) {
 
     // ── Pose analysis branch ─────────────────────────────────────────────────
     if (body.pose === true) {
-      const { mode, hand, metrics, overall } = body as {
-        mode:    string;
-        hand:    string;
-        metrics: Array<{ key: string; label: string; value: number; score: number }>;
-        overall: number;
+      const { mode, hand, shotType, metrics, overall } = body as {
+        mode:      string;
+        hand:      string;
+        shotType?: string;
+        metrics:   Array<{ key: string; label: string; value: number; score: number }>;
+        overall:   number;
       };
       const discipline = mode === 'bowling' ? 'bowling' : 'batting';
       const handedness = hand === 'left' ? 'left-handed' : 'right-handed';
+
+      // Sort: worst first so the AI reasons about the most urgent issues
+      const sorted = [...metrics].sort((a, b) => a.score - b.score);
+      const worst  = sorted.slice(0, 3);
+      const best   = sorted[sorted.length - 1];
+
       const metricLines = metrics
-        .map((m) => `- ${m.label}: score ${m.score}/100 (value ${typeof m.value === 'number' ? m.value.toFixed(1) : m.value})`)
+        .map((m) => `- ${m.label}: ${m.score}/100  (measured ${typeof m.value === 'number' ? m.value.toFixed(2) : m.value})`)
         .join('\n');
 
-      prompt = `You are a professional cricket coaching assistant. Based on the following pose-analysis scores from a ${handedness} ${discipline} session, write ONE concise coaching paragraph (3–5 sentences) that:
-- Praises the strongest metric
-- Identifies the weakest metric and explains why it matters
-- Ends with one specific drill or cue the player can use at their next practice
+      if (discipline === 'batting') {
+        const shotLabel = shotType
+          ? { drive: 'drive', pull: 'pull/hook', cut: 'cut', sweep: 'sweep', defence: 'defensive push', leave: 'leave' }[shotType] ?? shotType
+          : 'batting shot';
+
+        // Identify meaningful combinations the AI should reason about
+        const combos: string[] = [];
+        const low  = (key: string) => (metrics.find(m => m.key === key)?.score ?? 100) < 55;
+        const high = (key: string) => (metrics.find(m => m.key === key)?.score ?? 0)   > 70;
+
+        if (low('frontElbow') && low('headStability'))
+          combos.push('low front elbow paired with head movement — the bat face opens AND the eyes lose the ball');
+        if (low('hipRotation') && low('weightTransfer'))
+          combos.push('insufficient hip rotation combined with weight staying back — this drains power from the shot and tends to push balls to the wrong side');
+        if (low('wristCock') && low('batSwingPlane'))
+          combos.push('collapsed wrist cock alongside a flattening swing plane — the bat is arriving late and from the wrong angle');
+        if (low('kneeFlex') && low('headOverKnee'))
+          combos.push('stiff knees and the head drifting behind the front knee — the player is reaching rather than getting to the pitch of the ball');
+        if (high('frontElbow') && low('hipRotation'))
+          combos.push('the front elbow is high but the hips are not following through — arm strength is doing the work instead of body rotation');
+
+        prompt = `You are an elite cricket batting coach. A ${handedness} batter just recorded a ${shotLabel} in pose analysis.
+
+Overall technique score: ${overall}/100
+
+Metric breakdown (score/100 — lower = needs work):
+${metricLines}
+
+Three weakest areas this session: ${worst.map(m => `${m.label} (${m.score}/100)`).join(', ')}
+Strongest area: ${best.label} (${best.score}/100)
+${combos.length > 0 ? `\nMechanical combinations to reason about:\n${combos.map(c => `- ${c}`).join('\n')}` : ''}
+
+Write ONE coaching paragraph (4–6 sentences) for this player. You must:
+1. Acknowledge their best point briefly (one phrase, not a full sentence)
+2. Focus the rest on the TWO most damaging weaknesses, explaining the mechanical chain (why each flaw produces the outcome it does for a ${shotLabel})
+3. If a combination above is relevant, name it — a specific combined diagnosis is more useful than two separate observations
+4. End with ONE concrete, phase-specific drill or mental cue for their very next session, tailored to the ${shotLabel}
+
+Tone: direct, knowledgeable, British. Use proper cricket terms (bat face, loading position, follow-through, trigger movement, etc.).
+No bullet points, no headings, no markdown. Speak directly to the player as "you". Under 120 words.`;
+
+      } else {
+        // Bowling prompt — improved but still concise
+        prompt = `You are a professional cricket coaching assistant. A ${handedness} bowler just recorded a pose-analysis session.
 
 Overall score: ${overall}/100
 
 Metric breakdown:
 ${metricLines}
 
-Tone: warm, British, specific. No headings, no bullet points, no markdown. Speak directly to the player.`;
+Weakest: ${worst[0].label} (${worst[0].score}/100)
+Strongest: ${best.label} (${best.score}/100)
+
+Write ONE coaching paragraph (3–5 sentences) that:
+- Praises the strongest metric in one phrase
+- Explains why the weakest metric matters mechanically for bowling (not just that it's low)
+- Ends with one specific drill or bowling cue
+
+Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to the player directly. Under 100 words.`;
+      }
 
     } else {
       // ── Ball-track branch ────────────────────────────────────────────────────
