@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { placeTangoOrder } from '@/lib/tango/client';
+import { isTangoApiConfigured, placeTangoOrder } from '@/lib/tango/client';
 import { AGE_GATE_MESSAGE, isActiveMember, isAdultPlayer } from '@/lib/scores/context';
 import { requireUser } from '@/lib/auth/server';
 import { getAdminContext } from '@/lib/auth/admin';
@@ -253,6 +253,13 @@ async function fulfilGiftCardPrize(
     await admin.from('scratch_cards').update({ fulfilment_status: 'failed', fulfilment_notes: note.slice(0, 500) }).eq('id', cardId);
     return null;
   };
+
+  // No API access yet: leave the card pending for a manual order (see /admin/gift-cards)
+  if (!isTangoApiConfigured()) {
+    await admin.from('scratch_cards').update({ fulfilment_notes: 'Waiting for manual order' })
+      .eq('id', cardId).eq('user_id', userId).eq('fulfilment_status', 'pending');
+    return null;
+  }
 
   // Only cards that belong to this player and are still waiting can be issued. A repeat request
   // for the same card is safe: the card id is the provider's external reference (see below).

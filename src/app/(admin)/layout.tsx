@@ -90,6 +90,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           : []),
       ];
 
+  // ClubPulse staff: gift cards waiting to be ordered by hand while Tango API access is off
+  if (ctx.isPlatformAdmin) {
+    sections.push({ label: 'ClubPulse staff', links: [{ href: '/admin/gift-cards', label: 'Gift card orders 🎁' }] });
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#04091A', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
 

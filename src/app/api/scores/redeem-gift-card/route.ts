@@ -26,7 +26,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SCORES_PER_GBP } from '@/lib/types/scores';
 import { createAdminClient }         from '@/lib/supabase/admin';
 import { getRequestAuth }            from '@/lib/supabase/request-auth';
-import { placeTangoOrder }           from '@/lib/tango/client';
+import { isTangoApiConfigured, placeTangoOrder } from '@/lib/tango/client';
 
 export async function POST(req: NextRequest) {
   // ── 1. Auth ────────────────────────────────────────────────────────────────
@@ -77,6 +77,26 @@ export async function POST(req: NextRequest) {
   }
 
   const redemptionId: string = rpc.redemption_id;
+
+  // ── 3b. No API access yet: queue the card for a manual order ───────────────
+  // The Scores are already deducted and the redemption row is 'pending'. A ClubPulse admin
+  // orders the card in the Tango portal from /admin/gift-cards and marks it sent.
+  if (!isTangoApiConfigured()) {
+    await admin
+      .from('reward_redemptions')
+      .update({ notes: 'Waiting for manual order' })
+      .eq('id', redemptionId);
+
+    return NextResponse.json({
+      ok:            true,
+      manual:        true,
+      redemption_id: redemptionId,
+      scores_spent:  rpc.creds_spent,
+      balance_after: rpc.balance,
+      voucher:       {},
+      message:       'Your gift card is on its way. We will email it to you within 2 working days.',
+    });
+  }
 
   // ── 4. Fetch player email (needed for Tango order) ─────────────────────────
   const { data: userData } = await admin.auth.admin.getUserById(user.id);

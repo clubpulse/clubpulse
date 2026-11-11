@@ -22,10 +22,13 @@ type VoucherResult = {
   redemption_id:          string;
   scores_spent:           number;
   balance_after:          number;
+  // manual: the card is ordered by hand and emailed later, so there is no code to show yet
+  manual?:                boolean;
+  message?:               string;
   voucher: {
-    token:                   string | null;
-    redemption_instructions: string | null;
-    expiry:                  string | null;
+    token?:                   string | null;
+    redemption_instructions?: string | null;
+    expiry?:                  string | null;
   };
 };
 
@@ -239,9 +242,19 @@ export default function GiftCardsPage() {
         <div>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <p style={{ fontSize: 48, margin: '0 0 8px' }}>🎉</p>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#04091A', margin: '0 0 4px' }}>Gift card issued!</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#04091A', margin: '0 0 4px' }}>
+              {voucher.manual ? 'Gift card ordered!' : 'Gift card issued!'}
+            </h2>
             <p style={{ color: '#6b7280', fontSize: 14 }}>{voucher.scores_spent.toLocaleString()} Scores spent</p>
           </div>
+
+          {voucher.manual && (
+            <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 14, padding: '16px 18px', marginBottom: 16, textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: 14, color: '#1E3A8A' }}>
+                {voucher.message ?? 'We will email your gift card to you within 2 working days.'}
+              </p>
+            </div>
+          )}
 
           {voucher.voucher.token && (
             <div style={{
