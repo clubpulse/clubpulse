@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { AGE_GATE_MESSAGE, isAdultPlayer } from '@/lib/scores/context';
 import type { ActionResult } from '@/lib/types/action';
 import type { Raffle, RaffleTicket, RaffleWinner } from '@/lib/types/raffle';
 
@@ -55,7 +57,12 @@ export async function buyTickets(
   quantity: number
 ): Promise<ActionResult<{ tickets_purchased: number; scores_spent: number; ticket_numbers: number[] }>> {
   const supabase = await createClient();
-  await requireUser();
+  const user = await requireUser();
+
+  // Age gate: raffles are chance-based, so they are for confirmed over-18s only
+  const { data: raffle } = await createAdminClient().from('raffles').select('club_id').eq('id', raffleId).maybeSingle();
+  if (!raffle) return { success: false, error: 'This raffle is no longer active.' };
+  if (!(await isAdultPlayer(user.id, raffle.club_id as string))) return { success: false, error: AGE_GATE_MESSAGE };
 
   const { data, error } = await supabase.rpc('buy_raffle_tickets', {
     p_raffle_id: raffleId,

@@ -34,6 +34,15 @@ function tangoHeaders(): HeadersInit {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Tango only enables API access once an account has processed $25,000 of rewards in a year.
+ * Until the three keys are set, gift cards are queued for a ClubPulse admin to order by hand
+ * in the Tango portal (see /admin/gift-cards).
+ */
+export function isTangoApiConfigured(): boolean {
+  return !!(process.env.TANGO_PLATFORM_NAME && process.env.TANGO_PLATFORM_KEY && process.env.TANGO_ACCOUNT_ID);
+}
+
 export type TangoCatalogItem = {
   utid:         string;
   rewardName:   string;

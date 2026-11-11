@@ -28,6 +28,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         {
           label: 'Scores & Rewards',
           links: [
+            { href: '/admin/club/scores-rules', label: 'Scores controls 🎛️' },
+            { href: '/admin/club/attendance', label: 'Training and fees' },
             { href: '/admin/club/multipliers', label: 'Multipliers' },
             { href: '/admin/club/sport-configs', label: 'Earning rules' },
             { href: '/admin/club/fee-offset', label: 'Fee offset' },
@@ -87,6 +89,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           ? [{ label: 'Finance', links: [{ href: '/admin/merchant', label: 'Merchant wallet' }] }]
           : []),
       ];
+
+  // ClubPulse staff: gift cards waiting to be ordered by hand while Tango API access is off
+  if (ctx.isPlatformAdmin) {
+    sections.push({ label: 'ClubPulse staff', links: [{ href: '/admin/gift-cards', label: 'Gift card orders 🎁' }] });
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#04091A', color: '#fff', fontFamily: "'Inter', sans-serif" }}>

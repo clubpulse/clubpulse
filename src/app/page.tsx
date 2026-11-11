@@ -47,7 +47,7 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const { ref: stat50Ref, count: stat50Count } = useCountUp(50);
+  const { ref: stat50Ref, count: stat50Count } = useCountUp(500);
 
   return (
     <>
@@ -1043,7 +1043,7 @@ export default function HomePage() {
                 <div className="cp-feat-card-icon">⭐</div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Scores rewards</h3>
-                <p className="cp-feat-card-body">Players earn Scores for every contribution — marking available, playing matches, paying fees, coaching sessions. 50 Scores = £1 toward kit, fee offsets and rewards.</p>
+                <p className="cp-feat-card-body">Players earn Scores for every contribution — marking available, playing matches, paying fees, coaching sessions. 500 Scores = £1 toward kit, fee offsets and rewards.</p>
                 <div className="cp-feat-card-bullets">
                   <div className="cp-feat-card-bullet"><strong>+5</strong> mark available · <strong>+50</strong> match played</div>
                   <div className="cp-feat-card-bullet"><strong>+200</strong> pay season fee · <strong>+100</strong> referral</div>
@@ -1360,7 +1360,7 @@ function PricingSection() {
               <Link href="/contact" className="cp-price-cta ghost">Get Legend →</Link>
             </div>
           </div>
-          <p className="cp-price-note">50 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)</p>
+          <p className="cp-price-note">500 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)</p>
         </>
       )}
 

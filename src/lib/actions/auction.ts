@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { AGE_GATE_MESSAGE, isAdultPlayer } from '@/lib/scores/context';
 import type { AuctionStatus } from '@/lib/types/auction';
 
 // ── Player-facing ─────────────────────────────────────────────────────────────
@@ -32,8 +34,14 @@ export async function getAuctionLots(auctionId: string) {
 }
 
 export async function placeBid(lotId: string, amount: number) {
-  await requireUser();
+  const user = await requireUser();
   const supabase = await createClient();
+
+  // Age gate: bidding Scores on an outcome is for confirmed over-18s only
+  const { data: lot } = await createAdminClient().from('auction_lots').select('auctions!inner(club_id)').eq('id', lotId).maybeSingle();
+  const lotClubId = (lot?.auctions as unknown as { club_id: string } | null)?.club_id;
+  if (!lotClubId) return { success: false as const, error: 'lot_not_found' };
+  if (!(await isAdultPlayer(user.id, lotClubId))) return { success: false as const, error: AGE_GATE_MESSAGE };
 
   const { data, error } = await supabase.rpc('place_auction_bid', {
     p_lot_id: lotId,

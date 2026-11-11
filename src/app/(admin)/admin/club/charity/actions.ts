@@ -5,6 +5,7 @@ import { getAllClubCharities, adminGetPendingDonations, adminGetDonationBatches,
 import type { ClubCharity, CharitySettings, CharityDonationBatch } from '@/lib/types/charity';
 import type { PendingDonationGroup } from '@/lib/actions/charity';
 import type { ActionResult } from '@/lib/types/action';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 
 interface AdminCharityPageData {
   clubId: string;
@@ -30,7 +31,7 @@ export async function getAdminCharityPageData(): Promise<ActionResult<AdminChari
         charities: charitiesRes.success ? charitiesRes.data : [],
         pending: pendingRes.success ? pendingRes.data : [],
         batches: batchesRes.success ? batchesRes.data : [],
-        settings: settingsRes.success ? settingsRes.data : { scores_per_pound: 1000, is_enabled: true },
+        settings: settingsRes.success ? settingsRes.data : { scores_per_pound: SCORES_PER_GBP, is_enabled: true },
       },
     };
   } catch {

@@ -626,7 +626,7 @@ export default function PricingPage() {
           )}
 
           <p className="cp-scores-note">
-            50 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)
+            500 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)
           </p>
         </>
       )}

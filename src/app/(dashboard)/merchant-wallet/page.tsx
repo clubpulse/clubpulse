@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+import { SCORES_PER_GBP, MIN_CASHOUT_SCORES, scoresToPence, cashoutPence } from '@/lib/types/scores';
 
 type WalletData = {
   scores_balance:      number;
@@ -130,7 +131,7 @@ export default function MerchantWalletPage() {
 
   async function handleCashout() {
     const amount = parseInt(cashoutAmt, 10);
-    if (!amount || amount < 100 || !clubId) return;
+    if (!amount || amount < MIN_CASHOUT_SCORES || !clubId) return;
     setLoading(true);
     const r = await fetch('/api/scores/cashout', {
       method:  'POST',
@@ -226,7 +227,7 @@ export default function MerchantWalletPage() {
                 {scanned.scores_amount.toLocaleString()} Scores
               </p>
               <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 13 }}>
-                ≈ £{(scanned.scores_amount / 100).toFixed(2)}
+                ≈ £{(scoresToPence(scanned.scores_amount) / 100).toFixed(2)}
               </p>
             </div>
             <input
@@ -304,12 +305,12 @@ export default function MerchantWalletPage() {
       <div style={{ background: '#f9fafb', borderRadius: 14, padding: 20, marginBottom: 20, border: '1.5px solid #e5e7eb' }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 4px', color: '#04091A' }}>Cash Out</h2>
         <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 14px' }}>
-          100 Scores = £0.80 · Minimum 100 Scores · 3 business days
+          {SCORES_PER_GBP} Scores = £{(cashoutPence(SCORES_PER_GBP) / 100).toFixed(2)} · Minimum {MIN_CASHOUT_SCORES} Scores · 3 business days
         </p>
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
           <input
             type="number"
-            min={100}
+            min={MIN_CASHOUT_SCORES}
             max={wallet?.scores_balance ?? 0}
             value={cashoutAmt}
             onChange={e => setCashout(e.target.value)}
@@ -321,7 +322,7 @@ export default function MerchantWalletPage() {
           />
           <button
             onClick={handleCashout}
-            disabled={loading || !cashoutAmt || parseInt(cashoutAmt) < 100}
+            disabled={loading || !cashoutAmt || parseInt(cashoutAmt) < MIN_CASHOUT_SCORES}
             style={{
               padding: '10px 20px', borderRadius: 8, border: 'none',
               background: '#2563EB', color: '#fff', fontWeight: 700,
@@ -334,7 +335,7 @@ export default function MerchantWalletPage() {
         </div>
         {cashoutAmt && parseInt(cashoutAmt) >= 100 && (
           <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 8px' }}>
-            You'll receive ≈ £{((parseInt(cashoutAmt) * 0.008)).toFixed(2)}
+            You'll receive ≈ £{(cashoutPence(parseInt(cashoutAmt)) / 100).toFixed(2)}
           </p>
         )}
         {cashoutMsg && <p style={{ fontSize: 13, margin: 0 }}>{cashoutMsg}</p>}

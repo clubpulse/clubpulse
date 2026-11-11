@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import type { ClubCharity, CharitySettings, CharityDonationBatch } from '@/lib/types/charity';
 import type { PendingDonationGroup } from '@/lib/actions/charity';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 import {
   getAllClubCharities, adminAddCharity, adminToggleCharity,
   adminUpdateCharitySettings, adminGetPendingDonations,
@@ -15,7 +16,7 @@ export default function AdminCharityPage() {
   const [charities, setCharities] = useState<ClubCharity[]>([]);
   const [pending, setPending] = useState<PendingDonationGroup[]>([]);
   const [batches, setBatches] = useState<CharityDonationBatch[]>([]);
-  const [settings, setSettings] = useState<CharitySettings>({ scores_per_pound: 1000, is_enabled: true });
+  const [settings, setSettings] = useState<CharitySettings>({ scores_per_pound: SCORES_PER_GBP, is_enabled: true });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +28,7 @@ export default function AdminCharityPage() {
   const [addError, setAddError] = useState<string | null>(null);
   const [isPendingAdd, startAdd] = useTransition();
 
-  const [scoresPerPound, setScoresPerPound] = useState('1000');
+  const [scoresPerPound, setScoresPerPound] = useState(String(SCORES_PER_GBP));
   const [donationsEnabled, setDonationsEnabled] = useState(true);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [isPendingSettings, startSettings] = useTransition();

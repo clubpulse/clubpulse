@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
+import { scoresToPence } from '@/lib/types/scores';
 
 type Step = 'amount' | 'qr' | 'confirmed' | 'error';
 
@@ -161,7 +162,7 @@ export default function ScoresPayPage() {
 
           {inputAmount && (
             <p style={{ color: '#6b7280', fontSize: 13, marginBottom: 16 }}>
-              ≈ £{(parseInt(inputAmount) / 100).toFixed(2)} equivalent
+              ≈ £{(scoresToPence(parseInt(inputAmount)) / 100).toFixed(2)} equivalent
             </p>
           )}
 
@@ -197,7 +198,7 @@ export default function ScoresPayPage() {
               {session.scores_amount.toLocaleString()} Scores
             </p>
             <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 13 }}>
-              ≈ £{(session.scores_amount / 100).toFixed(2)}
+              ≈ £{(scoresToPence(session.scores_amount) / 100).toFixed(2)}
             </p>
           </div>
 

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { updateFeeSettings } from '@/lib/actions/fee-offsets';
 import type { ClubFeeSettings } from '@/lib/types/fee-offsets';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 
 interface Props {
   clubId: string;
@@ -14,7 +15,7 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
     initialSettings ? (initialSettings.annual_fee_pence / 100).toFixed(2) : '50.00'
   );
   const [scoresPerPound, setScoresPerPound] = useState(
-    String(initialSettings?.scores_per_pound ?? 1000)
+    String(initialSettings?.scores_per_pound ?? SCORES_PER_GBP)
   );
   const [maxOffsetPercent, setMaxOffsetPercent] = useState(
     String(initialSettings?.max_offset_percent ?? 50)

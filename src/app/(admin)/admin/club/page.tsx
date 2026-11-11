@@ -10,6 +10,8 @@ const FEATURE_GROUPS = [
     bg: 'rgba(37,99,235,0.08)',
     border: 'rgba(37,99,235,0.18)',
     features: [
+      { href: '/admin/club/scores-rules', icon: '🎛️', label: 'Scores Controls', desc: 'Values, on/off switches and the weekly limit' },
+      { href: '/admin/club/attendance', icon: '🏋️', label: 'Training & Fees', desc: 'Mark attendance and fees paid · pays Scores' },
       { href: '/admin/club/multipliers', icon: '✖️', label: 'Tier Multipliers', desc: 'Bronze / Silver / Gold · Youth ×1.25' },
       { href: '/admin/club/sport-configs', icon: '⚙️', label: 'Earning Rules', desc: 'Configure Scores per action per sport' },
       { href: '/admin/club/fee-offset', icon: '💳', label: 'Fee Offset', desc: 'Let players pay match fees with Scores' },

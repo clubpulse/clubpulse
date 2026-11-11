@@ -23,9 +23,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 import { createAdminClient }         from '@/lib/supabase/admin';
 import { getRequestAuth }            from '@/lib/supabase/request-auth';
-import { placeTangoOrder }           from '@/lib/tango/client';
+import { isTangoApiConfigured, placeTangoOrder } from '@/lib/tango/client';
 
 export async function POST(req: NextRequest) {
   // ── 1. Auth ────────────────────────────────────────────────────────────────
@@ -77,12 +78,32 @@ export async function POST(req: NextRequest) {
 
   const redemptionId: string = rpc.redemption_id;
 
+  // ── 3b. No API access yet: queue the card for a manual order ───────────────
+  // The Scores are already deducted and the redemption row is 'pending'. A ClubPulse admin
+  // orders the card in the Tango portal from /admin/gift-cards and marks it sent.
+  if (!isTangoApiConfigured()) {
+    await admin
+      .from('reward_redemptions')
+      .update({ notes: 'Waiting for manual order' })
+      .eq('id', redemptionId);
+
+    return NextResponse.json({
+      ok:            true,
+      manual:        true,
+      redemption_id: redemptionId,
+      scores_spent:  rpc.creds_spent,
+      balance_after: rpc.balance,
+      voucher:       {},
+      message:       'Your gift card is on its way. We will email it to you within 2 working days.',
+    });
+  }
+
   // ── 4. Fetch player email (needed for Tango order) ─────────────────────────
   const { data: userData } = await admin.auth.admin.getUserById(user.id);
   const email = userData?.user?.email ?? 'player@clubpulse.app';
 
   // ── 5. Place Tango order ───────────────────────────────────────────────────
-  const amountGBP = reward.tango_amount_gbp ?? reward.creds_cost / 100; // fallback: 100 Scores = £1
+  const amountGBP = reward.tango_amount_gbp ?? reward.creds_cost / SCORES_PER_GBP; // fallback: app-wide rate
   const tangoResult = await placeTangoOrder(
     reward.tango_utid,
     amountGBP,
@@ -94,7 +115,7 @@ export async function POST(req: NextRequest) {
     // Tango failed — log it but don't re-deduct. Mark the redemption as pending.
     console.error('[redeem-gift-card] Tango order failed:', tangoResult.error);
     await admin
-      .from('redemptions')
+      .from('reward_redemptions')
       .update({ status: 'tango_pending', notes: tangoResult.error })
       .eq('id', redemptionId);
 
@@ -105,7 +126,7 @@ export async function POST(req: NextRequest) {
 
   // ── 6. Store voucher on redemption row ─────────────────────────────────────
   await admin
-    .from('redemptions')
+    .from('reward_redemptions')
     .update({
       status:               'fulfilled',
       tango_reference:      tangoResult.referenceOrderID,

@@ -1,4 +1,5 @@
 import { scoresToPence, formatScores, formatGBP } from '@/lib/utils/format';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 
 export function WalletSummary({ flexi, reward }: { flexi: number; reward: number }) {
   const total = flexi + reward;
@@ -29,7 +30,7 @@ export function WalletSummary({ flexi, reward }: { flexi: number; reward: number
         }}>{formatScores(total)}</p>
 
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '0 0 20px' }}>
-          ≈ {formatGBP(scoresToPence(total))} · 50 Scores = £1
+          ≈ {formatGBP(scoresToPence(total))} · {SCORES_PER_GBP} Scores = £1
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>

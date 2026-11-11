@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient }         from '@/lib/supabase/admin';
 import { getRequestAuth }            from '@/lib/supabase/request-auth';
+import { cashoutPence, MIN_CASHOUT_SCORES } from '@/lib/types/scores';
 
 async function assertClubAdmin(adminClient: ReturnType<typeof createAdminClient>, userId: string, clubId: string) {
   const { data } = await adminClient
@@ -49,8 +50,8 @@ export async function GET(req: NextRequest) {
     scores_balance:    wallet?.scores_balance    ?? 0,
     lifetime_received: wallet?.lifetime_received ?? 0,
     pending_cashout:   wallet?.pending_cashout   ?? 0,
-    // GBP equivalent at cashout rate (80p per 100 Scores = £0.008 per Score)
-    available_gbp_pence: Math.floor((wallet?.scores_balance ?? 0) * 0.008 * 100),
+    // GBP equivalent at the cashout rate (face value less the ClubPulse margin)
+    available_gbp_pence: cashoutPence(wallet?.scores_balance ?? 0),
   });
 }
 
@@ -64,9 +65,9 @@ export async function POST(req: NextRequest) {
   const club_id      = body.club_id      as string | undefined;
   const scores_amount = Number(body.scores_amount);
 
-  if (!club_id || !scores_amount || scores_amount < 100) {
+  if (!club_id || !scores_amount || scores_amount < MIN_CASHOUT_SCORES) {
     return NextResponse.json(
-      { error: 'Missing club_id or scores_amount (minimum 100 Scores)' },
+      { error: 'Missing club_id or scores_amount (minimum ' + MIN_CASHOUT_SCORES + ' Scores)' },
       { status: 400 },
     );
   }
