@@ -17,20 +17,20 @@ COMMENT ON COLUMN public.rewards_catalogue.tango_utid IS
 COMMENT ON COLUMN public.rewards_catalogue.tango_amount_gbp IS
   'Face value of the gift card in GBP. Used in the Tango order payload.';
 
--- 2. redemptions — add voucher + status fields ────────────────────────────────
-ALTER TABLE public.redemptions
-  ADD COLUMN IF NOT EXISTS status               TEXT NOT NULL DEFAULT 'pending'
-    CHECK (status IN ('pending', 'fulfilled', 'tango_pending', 'failed', 'refunded')),
+-- 2. reward_redemptions — add voucher + status fields ────────────────────────
+-- (This section originally targeted a table called "redemptions", which does not
+-- exist, and used CREATE POLICY IF NOT EXISTS, which PostgreSQL does not support.
+-- The same statements are repeated in 20261111000003 for databases where this
+-- file stopped at that error.)
+ALTER TABLE public.reward_redemptions DROP CONSTRAINT IF EXISTS reward_redemptions_status_check;
+ALTER TABLE public.reward_redemptions ADD CONSTRAINT reward_redemptions_status_check
+  CHECK (status IN ('pending', 'fulfilled', 'cancelled', 'refunded', 'tango_pending', 'failed'));
+ALTER TABLE public.reward_redemptions
   ADD COLUMN IF NOT EXISTS tango_reference      TEXT,  -- Tango referenceOrderID
   ADD COLUMN IF NOT EXISTS voucher_token        TEXT,  -- Redemption token / code
   ADD COLUMN IF NOT EXISTS voucher_instructions TEXT,  -- How to use the voucher
   ADD COLUMN IF NOT EXISTS voucher_expiry       TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS notes                TEXT;  -- Internal notes / error messages
-
--- Players can read their own redemption voucher details
-CREATE POLICY IF NOT EXISTS "redemptions: own read"
-  ON public.redemptions FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
 
 -- 3. Seed initial gift card catalogue ─────────────────────────────────────────
 -- Tango UTIDs are from the sandbox catalogue; replace with live UTIDs before go-live.

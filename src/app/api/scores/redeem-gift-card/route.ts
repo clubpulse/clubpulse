@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     // Tango failed — log it but don't re-deduct. Mark the redemption as pending.
     console.error('[redeem-gift-card] Tango order failed:', tangoResult.error);
     await admin
-      .from('redemptions')
+      .from('reward_redemptions')
       .update({ status: 'tango_pending', notes: tangoResult.error })
       .eq('id', redemptionId);
 
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 
   // ── 6. Store voucher on redemption row ─────────────────────────────────────
   await admin
-    .from('redemptions')
+    .from('reward_redemptions')
     .update({
       status:               'fulfilled',
       tango_reference:      tangoResult.referenceOrderID,
