@@ -11,11 +11,9 @@ export function formatDate(iso: string): string {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-// Takes pence. 50 Scores = £1, so 1 Score = 2p: formatGBP(scoresToPence(n)).
+// Takes pence: formatGBP(scoresToPence(n)). The rate lives in SCORES_PER_GBP.
 export function formatGBP(p: number): string {
   return gbpFormat.format(p / 100);
 }
 
-export function scoresToPence(scores: number): number {
-  return scores * 2;
-}
+export { scoresToPence } from '@/lib/types/scores';

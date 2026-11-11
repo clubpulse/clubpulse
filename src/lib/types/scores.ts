@@ -1,4 +1,20 @@
-export const SCORES_PER_GBP = 50;
+// The single Scores-to-pounds rate for the whole app: 500 Scores = £1 (1 Score = 0.2p).
+// The SQL payment functions use the same rate (see 20261111000001_scores_rate.sql).
+export const SCORES_PER_GBP = 500;
+
+// ClubPulse keeps 20% when a club cashes out Scores taken through Scores Pay.
+export const CASHOUT_MARGIN = 0.2;
+export const MIN_CASHOUT_SCORES = 500;
+
+/** Face value of Scores in pence at the app-wide rate. */
+export function scoresToPence(scores: number): number {
+  return Math.floor((scores * 100) / SCORES_PER_GBP);
+}
+
+/** What a club receives, in pence, for cashing out Scores (face value less the margin). */
+export function cashoutPence(scores: number): number {
+  return Math.floor(((scores * 100) / SCORES_PER_GBP) * (1 - CASHOUT_MARGIN));
+}
 
 export type ScoresWallet = {
   id:              string;

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getClubCharities, getMyDonations, getCharitySettings } from '@/lib/actions/charity';
 import { CharityCard } from '@/components/charity/CharityCard';
 import { DonationHistory } from '@/components/charity/DonationHistory';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 
 async function getClubId(userId: string): Promise<string | null> {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export default async function CharityPage() {
 
   const charities = charitiesResult.success ? charitiesResult.data : [];
   const donations = donationsResult.success ? donationsResult.data : [];
-  const settings = settingsResult.success ? settingsResult.data : { scores_per_pound: 1000, is_enabled: true };
+  const settings = settingsResult.success ? settingsResult.data : { scores_per_pound: SCORES_PER_GBP, is_enabled: true };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>

@@ -23,6 +23,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { SCORES_PER_GBP } from '@/lib/types/scores';
 import { createAdminClient }         from '@/lib/supabase/admin';
 import { getRequestAuth }            from '@/lib/supabase/request-auth';
 import { placeTangoOrder }           from '@/lib/tango/client';
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
   const email = userData?.user?.email ?? 'player@clubpulse.app';
 
   // ── 5. Place Tango order ───────────────────────────────────────────────────
-  const amountGBP = reward.tango_amount_gbp ?? reward.creds_cost / 100; // fallback: 100 Scores = £1
+  const amountGBP = reward.tango_amount_gbp ?? reward.creds_cost / SCORES_PER_GBP; // fallback: app-wide rate
   const tangoResult = await placeTangoOrder(
     reward.tango_utid,
     amountGBP,
