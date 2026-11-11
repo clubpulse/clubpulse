@@ -15,6 +15,9 @@ export const NAV_LINKS: NavLink[] = [
 
 // Club features: desktop sidebar only, under their own heading. The mobile bottom nav stays NAV_LINKS.
 export const CLUB_LINKS: NavLink[] = [
+  { href: '/play', label: 'Earn Scores', icon: '💰' },
+  { href: '/games', label: 'Games', icon: '🎮' },
+  { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️' },
   { href: '/mentor-match', label: 'Mentor Match', icon: '🎓' },
   { href: '/club-bible', label: 'Club Bible', icon: '📖' },
   { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },

@@ -2,15 +2,9 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { buyAndRevealScratchCard, revealExistingCard } from '@/lib/actions/scratch-cards';
-import type { ScratchCardConfig, ScratchCard } from '@/lib/actions/scratch-cards';
+import type { ScratchCardConfig, ScratchCard, ScratchPrize } from '@/lib/actions/scratch-cards';
 
-type Prize = {
-  type: string;
-  label: string;
-  scores_amount?: number;
-  reward_id?: string;
-  club_reward?: string;
-};
+type Prize = ScratchPrize;
 
 type Props = {
   clubId: string;
@@ -41,9 +35,9 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
   const [scratchProgress, setScratchProgress] = useState(0); // 0–100
   const [isScratching, setIsScratching] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pendingCardId = useRef<string | null>(
-    unscratched.length > 0 ? unscratched[0].id : null
-  );
+  // Free cards waiting to be scratched, oldest first. Each one is used before any card is bought.
+  const freeQueue = useRef<string[]>(unscratched.map((c) => c.id));
+  const [freeLeft, setFreeLeft] = useState(unscratched.length);
   const revealedRef = useRef(false);
 
   // Draw the scratch foil
@@ -112,15 +106,16 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
     setScratchProgress(0);
 
     // If there's a free unscratched card, use it; otherwise buy + reveal
-    if (pendingCardId.current) {
-      const cardId = pendingCardId.current;
+    if (freeQueue.current.length > 0) {
+      const cardId = freeQueue.current[0];
       startTransition(async () => {
         const res = await revealExistingCard(cardId);
         if (!res.success) { setError(res.error ?? 'Something went wrong'); setPhase('idle'); return; }
         // Wait for scratch animation
         await new Promise(r => setTimeout(r, 400));
         setPrize(res.data.prize);
-        pendingCardId.current = null;
+        freeQueue.current = freeQueue.current.slice(1);
+        setFreeLeft(freeQueue.current.length);
       });
     } else {
       startTransition(async () => {
@@ -140,7 +135,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
     setScratchProgress(0);
   }
 
-  const hasFreeCard = unscratched.length > 0 && pendingCardId.current;
+  const hasFreeCard = freeLeft > 0;
   const canAfford = walletBalance >= config.cost_scores;
 
   return (
@@ -203,7 +198,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
               )}
               {prize.type === 'gift_card' && (
                 <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-                  Your voucher will arrive shortly
+                  {prize.voucher?.token ? 'Your voucher code is below' : 'We are issuing your voucher. It will appear in your prizes.'}
                 </p>
               )}
               {prize.type === 'club_reward' && (
@@ -284,6 +279,21 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
           Scratch to reveal your prize…
         </p>
+      )}
+
+      {phase === 'revealed' && prize?.voucher?.token && (
+        <div style={{
+          width: '300px', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '12px',
+          background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.35)', textAlign: 'center',
+        }}>
+          <p style={{ margin: 0, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,0.45)' }}>Voucher code</p>
+          <p style={{ margin: '4px 0 0', fontFamily: 'monospace', fontSize: '15px', fontWeight: 700, color: '#fff', wordBreak: 'break-all', userSelect: 'all' }}>
+            {prize.voucher.token}
+          </p>
+          {prize.voucher.instructions && (
+            <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{prize.voucher.instructions}</p>
+          )}
+        </div>
       )}
 
       {phase === 'revealed' && prize && (

@@ -28,6 +28,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         {
           label: 'Scores & Rewards',
           links: [
+            { href: '/admin/club/scores-rules', label: 'Scores controls 🎛️' },
+            { href: '/admin/club/attendance', label: 'Training and fees' },
             { href: '/admin/club/multipliers', label: 'Multipliers' },
             { href: '/admin/club/sport-configs', label: 'Earning rules' },
             { href: '/admin/club/fee-offset', label: 'Fee offset' },
