@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "ClubPulse",
+    "slug": "clubpulse",
+    "scheme": "clubpulse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0A1128",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A1128"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.clubpulse.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health so you can earn Scores for staying active.",
+        "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
+        "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.clubpulse.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A1128"
+      },
+      "permissions": ["ACTIVITY_RECOGNITION", "ACCESS_FINE_LOCATION"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    },
+    "owner": "clubpulse"
+  }
+}
