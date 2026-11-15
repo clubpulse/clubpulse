@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
 import { api, ApiError, type Profile, type Wallet } from '../../lib/api';
@@ -51,11 +52,32 @@ export default function ProfileScreen() {
           </>
         )}
 
+        {/* Quick links */}
+        <View style={{ gap: spacing.sm }}>
+          <ProfileLink label="🛡️  Safeguarding" onPress={() => router.push('/safeguarding')} />
+          <ProfileLink label="💰  Wallet" onPress={() => router.push('/wallet' as any)} />
+          <ProfileLink label="🛒  Marketplace" onPress={() => router.push('/marketplace' as any)} />
+          <ProfileLink label="🤖  AI Coach" onPress={() => router.push('/companion' as any)} />
+          <ProfileLink label="📖  My Sporting Soul" onPress={() => router.push('/sporting-soul')} />
+        </View>
+
         <Pressable onPress={confirmSignOut} style={({ pressed }) => [styles.signOut, pressed && { opacity: 0.7 }]}>
           <Text style={{ color: colors.danger, fontWeight: '600' }}>Sign out</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function ProfileLink({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.profileLink, pressed && { opacity: 0.7 }]}
+    >
+      <Text style={fonts.regular}>{label}</Text>
+      <Text style={{ color: colors.brandSky, fontSize: 18 }}>›</Text>
+    </Pressable>
   );
 }
 
@@ -65,4 +87,15 @@ const styles = StyleSheet.create({
   avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.white, fontSize: 28, fontWeight: '700' },
   signOut: { borderWidth: 1, borderColor: colors.navyBorder, borderRadius: radius.md, paddingVertical: spacing.md, alignItems: 'center' },
+  profileLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.surface1,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border as string,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
 });

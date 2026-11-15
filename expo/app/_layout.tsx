@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { colors } from '../constants/theme';
@@ -20,12 +20,21 @@ function AuthGate() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={colors.gold} />
       </View>
     );
   }
-  return <Slot />;
+
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="sporting-soul" options={{ headerShown: true, title: 'My Sporting Soul', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="safeguarding" options={{ headerShown: true, title: 'Safeguarding', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="coach/[id]" options={{ headerShown: true, title: 'Coach', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
