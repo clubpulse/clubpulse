@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
+import { useRoles } from '../../hooks/useRoles';
 import { api } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
@@ -21,6 +22,7 @@ type Coach = {
 
 export default function CoachesScreen() {
   const { user } = useAuth();
+  const { isCoach } = useRoles();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -65,6 +67,29 @@ export default function CoachesScreen() {
           <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
             <Text style={fonts.heading}>Coach Marketplace</Text>
             <Text style={fonts.small}>Find ECB-qualified coaches for your club or personal training.</Text>
+
+            {/* Show own coaching profile if user is a coach */}
+            {isCoach && user && (
+              <View style={[styles.card, { borderColor: 'rgba(34,197,94,0.25)', marginTop: spacing.sm }]}>
+                <View style={styles.row}>
+                  <View style={[styles.avatar, { backgroundColor: 'rgba(34,197,94,0.15)' }]}>
+                    <Text style={[styles.avatarText, { color: colors.success }]}>
+                      {(user.user_metadata?.full_name ?? 'You').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={fonts.title}>{user.user_metadata?.full_name ?? 'You'}</Text>
+                    <View style={styles.badgeRow}>
+                      <View style={[styles.badge, { backgroundColor: colors.successDim }]}>
+                        <Text style={[styles.badgeText, { color: colors.success }]}>Your profile</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            <Text style={[fonts.title, { marginTop: spacing.md }]}>Available Coaches</Text>
           </View>
         }
         ListEmptyComponent={

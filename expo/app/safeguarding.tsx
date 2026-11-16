@@ -12,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Card } from '../components/Card';
 import { useAuth } from '../hooks/useAuth';
+import { useRoles } from '../hooks/useRoles';
+import { getJuniorAgeCategory, isParentLinkRequired } from '../lib/roles';
 import { supabase } from '../lib/supabase';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
@@ -19,8 +21,10 @@ type LinkedJunior = {
   id: string;
   full_name: string;
   age_group: string | null;
+  date_of_birth: string | null;
   consent_given: boolean;
   consent_date: string | null;
+  link_status: 'approved' | 'pending' | 'rejected';
 };
 
 type DbsRecord = {
@@ -33,6 +37,7 @@ type DbsRecord = {
 
 export default function SafeguardingScreen() {
   const { user } = useAuth();
+  const { isAdmin, isParent } = useRoles();
   const [juniors, setJuniors] = useState<LinkedJunior[]>([]);
   const [dbsRecords, setDbsRecords] = useState<DbsRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +49,7 @@ export default function SafeguardingScreen() {
       // Linked juniors (parent → child relationship)
       const { data: juniorRows } = await supabase
         .from('linked_juniors')
-        .select('id, full_name, age_group, consent_given, consent_date')
+        .select('id, full_name, age_group, date_of_birth, consent_given, consent_date, link_status')
         .eq('parent_id', user.id)
         .order('full_name');
 
@@ -75,6 +80,7 @@ export default function SafeguardingScreen() {
 
   const sections = [
     { key: 'header' },
+    { key: 'age-gating' },
     { key: 'juniors' },
     { key: 'dbs' },
     { key: 'policies' },
@@ -109,6 +115,37 @@ export default function SafeguardingScreen() {
                 </View>
               );
 
+            case 'age-gating':
+              return (
+                <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
+                  <Text style={fonts.title}>Age-Gated Parent Linking</Text>
+                  <Card>
+                    <View style={{ gap: spacing.md }}>
+                      <AgeRule
+                        emoji="🔴"
+                        label="Under 16 — Mandatory"
+                        description="Cannot participate without an approved linked parent. Account locked until parent is linked and admin-approved."
+                        color={colors.danger}
+                      />
+                      <View style={styles.divider} />
+                      <AgeRule
+                        emoji="🟡"
+                        label="16–17 — Optional"
+                        description="Can join independently but a parent may request to link. Admin approves each link."
+                        color={colors.orange}
+                      />
+                      <View style={styles.divider} />
+                      <AgeRule
+                        emoji="🟢"
+                        label="18+ — Not Applicable"
+                        description="Full adult member. No parent linking available."
+                        color={colors.success}
+                      />
+                    </View>
+                  </Card>
+                </View>
+              );
+
             case 'juniors':
               return (
                 <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
@@ -119,31 +156,71 @@ export default function SafeguardingScreen() {
                         <Text style={{ fontSize: 32 }}>👨‍👧</Text>
                         <Text style={fonts.regular}>No Linked Juniors</Text>
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
-                          Link your child's account to manage consent and track their activity safely.
+                          {isParent
+                            ? 'Your linked children will appear here once admin-approved.'
+                            : "Link your child's account to manage consent and track their activity safely."}
                         </Text>
                       </View>
                     </Card>
                   ) : (
-                    juniors.map((j) => (
-                      <View key={j.id} style={styles.card}>
-                        <View style={styles.row}>
-                          <View style={styles.juniorAvatar}>
-                            <Text style={styles.juniorAvatarText}>
-                              {j.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
-                            </Text>
+                    juniors.map((j) => {
+                      const ageCategory = j.date_of_birth ? getJuniorAgeCategory(j.date_of_birth) : null;
+                      const linkRequired = ageCategory ? isParentLinkRequired(ageCategory) : null;
+
+                      return (
+                        <View key={j.id} style={styles.card}>
+                          <View style={styles.row}>
+                            <View style={styles.juniorAvatar}>
+                              <Text style={styles.juniorAvatarText}>
+                                {j.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                              </Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                              <Text style={fonts.title}>{j.full_name}</Text>
+                              {j.age_group && <Text style={fonts.small}>{j.age_group}</Text>}
+                            </View>
+                            <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                              {/* Link status badge */}
+                              <View style={[styles.statusBadge, linkStatusStyle(j.link_status)]}>
+                                <Text style={[styles.statusText, { color: linkStatusColor(j.link_status) }]}>
+                                  {j.link_status === 'approved' ? '✓ Linked' : j.link_status === 'pending' ? '⏳ Pending' : '✗ Rejected'}
+                                </Text>
+                              </View>
+                              {/* Consent badge */}
+                              <View style={[styles.statusBadge, j.consent_given ? styles.statusGreen : styles.statusOrange]}>
+                                <Text style={[styles.statusText, { color: j.consent_given ? colors.success : colors.orange }]}>
+                                  {j.consent_given ? '✓ Consent' : 'No Consent'}
+                                </Text>
+                              </View>
+                            </View>
                           </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={fonts.title}>{j.full_name}</Text>
-                            {j.age_group && <Text style={fonts.small}>{j.age_group}</Text>}
-                          </View>
-                          <View style={[styles.statusBadge, j.consent_given ? styles.statusGreen : styles.statusOrange]}>
-                            <Text style={[styles.statusText, { color: j.consent_given ? colors.success : colors.orange }]}>
-                              {j.consent_given ? '✓ Consent' : 'Pending'}
-                            </Text>
-                          </View>
+
+                          {/* Age category indicator */}
+                          {ageCategory && (
+                            <View style={[styles.ageCategoryBar, { backgroundColor: ageCategoryBg(ageCategory) }]}>
+                              <Text style={{ fontSize: 12 }}>{ageCategoryEmoji(ageCategory)}</Text>
+                              <Text style={[styles.ageCategoryText, { color: ageCategoryColor(ageCategory) }]}>
+                                {ageCategory === 'under_16'
+                                  ? 'Under 16 — Parent link mandatory'
+                                  : ageCategory === '16_to_17'
+                                  ? '16–17 — Parent link optional'
+                                  : '18+ — No parent link needed'}
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* Warning for U16 without approved link */}
+                          {linkRequired === 'mandatory' && j.link_status !== 'approved' && (
+                            <View style={styles.warningBar}>
+                              <Text style={{ fontSize: 14 }}>⚠️</Text>
+                              <Text style={styles.warningText}>
+                                This junior cannot participate until this link is admin-approved.
+                              </Text>
+                            </View>
+                          )}
                         </View>
-                      </View>
-                    ))
+                      );
+                    })
                   )}
                 </View>
               );
@@ -211,6 +288,20 @@ export default function SafeguardingScreen() {
   );
 }
 
+/* ─── Helper Components ─── */
+
+function AgeRule({ emoji, label, description, color }: { emoji: string; label: string; description: string; color: string }) {
+  return (
+    <View style={{ gap: 4 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <Text style={{ fontSize: 16 }}>{emoji}</Text>
+        <Text style={[fonts.regular, { color, fontWeight: '600' }]}>{label}</Text>
+      </View>
+      <Text style={[fonts.small, { marginLeft: 28 }]}>{description}</Text>
+    </View>
+  );
+}
+
 function PolicyRow({ label, icon }: { label: string; icon: string }) {
   return (
     <Pressable style={({ pressed }) => [styles.policyRow, pressed && { opacity: 0.7 }]}>
@@ -221,10 +312,32 @@ function PolicyRow({ label, icon }: { label: string; icon: string }) {
   );
 }
 
+/* ─── Helpers ─── */
+
+function ageCategoryEmoji(cat: string) {
+  return cat === 'under_16' ? '🔴' : cat === '16_to_17' ? '🟡' : '🟢';
+}
+function ageCategoryColor(cat: string) {
+  return cat === 'under_16' ? colors.danger : cat === '16_to_17' ? colors.orange : colors.success;
+}
+function ageCategoryBg(cat: string) {
+  return cat === 'under_16' ? 'rgba(248,113,113,0.1)' : cat === '16_to_17' ? colors.orangeDim : colors.successDim;
+}
+
+function linkStatusColor(status: string) {
+  return status === 'approved' ? colors.success : status === 'pending' ? colors.orange : colors.danger;
+}
+function linkStatusStyle(status: string) {
+  return status === 'approved'
+    ? { backgroundColor: colors.successDim }
+    : status === 'pending'
+    ? { backgroundColor: colors.orangeDim }
+    : { backgroundColor: 'rgba(248,113,113,0.12)' };
+}
+
 function dbsColor(status: string): string {
   return status === 'verified' ? colors.success : status === 'pending' ? colors.orange : colors.danger;
 }
-
 function dbsStyle(status: string) {
   return status === 'verified'
     ? { backgroundColor: colors.successDim }
@@ -268,4 +381,31 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.xs,
   },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border as string,
+  },
+  ageCategoryBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    borderRadius: radius.sm,
+    marginTop: spacing.sm,
+  },
+  ageCategoryText: { fontSize: 11, fontWeight: '600' },
+  warningBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(248,113,113,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.25)',
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    marginTop: spacing.sm,
+  },
+  warningText: { fontSize: 11, fontWeight: '600', color: colors.danger, flex: 1 },
 });

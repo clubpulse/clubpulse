@@ -4,11 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
+import { useRoles } from '../../hooks/useRoles';
+import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import { api, ApiError, type Profile, type Wallet } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 export default function ProfileScreen() {
   const { signOut } = useAuth();
+  const { active, roles } = useRoles();
+  const pending = pendingRoles(roles);
   const [data, setData] = useState<{ profile: Profile; wallet: Wallet | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +46,26 @@ export default function ProfileScreen() {
               <View style={styles.avatar}><Text style={styles.avatarText}>{initial}</Text></View>
               <Text style={fonts.title}>{data.profile.full_name}</Text>
               <Text style={fonts.small}>{data.profile.email}</Text>
+
+              {/* Role badges */}
+              <View style={styles.roleBadgeRow}>
+                {active.map((role) => (
+                  <View key={role} style={[styles.roleBadge, { backgroundColor: ROLE_CONFIG[role].dimColor }]}>
+                    <Text style={[styles.roleBadgeText, { color: ROLE_CONFIG[role].color }]}>
+                      {ROLE_CONFIG[role].label}
+                    </Text>
+                  </View>
+                ))}
+                {pending.map((role) => (
+                  <View key={`p-${role}`} style={[styles.roleBadge, { backgroundColor: 'rgba(255,255,255,0.04)' }]}>
+                    <Text style={[styles.roleBadgeText, { color: colors.textMuted as string }]}>
+                      ⏳ {ROLE_CONFIG[role].label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </Card>
+
             <Card>
               <Text style={fonts.small}>LIFETIME SCORES EARNED</Text>
               <Text style={[fonts.title, { fontSize: 28, marginTop: spacing.xs }]}>
@@ -82,7 +105,7 @@ function ProfileLink({ label, onPress }: { label: string; onPress: () => void })
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.navy },
+  safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.lg },
   avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.white, fontSize: 28, fontWeight: '700' },
@@ -98,4 +121,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
+  roleBadgeRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xs },
+  roleBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill },
+  roleBadgeText: { fontSize: 11, fontWeight: '600' },
 });

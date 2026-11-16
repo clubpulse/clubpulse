@@ -10,8 +10,10 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
+import { useRoles } from '../../hooks/useRoles';
 import { api } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
@@ -32,6 +34,7 @@ type Tab = 'available' | 'my';
 
 export default function ShiftsScreen() {
   const { user } = useAuth();
+  const { isAdmin } = useRoles();
   const [tab, setTab] = useState<Tab>('available');
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,6 +94,20 @@ export default function ShiftsScreen() {
         ListHeaderComponent={
           <View style={{ gap: spacing.md, marginBottom: spacing.lg }}>
             <Text style={fonts.heading}>Volunteer Shifts</Text>
+
+            {/* Admin controls — only visible to club admins */}
+            {isAdmin && (
+              <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <Pressable style={styles.adminBtn}>
+                  <Ionicons name="add-circle" size={16} color={colors.brandSky} />
+                  <Text style={{ color: colors.brandSky, fontWeight: '600', fontSize: 13 }}>New Shift</Text>
+                </Pressable>
+                <Pressable style={styles.adminBtn}>
+                  <Ionicons name="list" size={16} color={colors.gold} />
+                  <Text style={{ color: colors.gold, fontWeight: '600', fontSize: 13 }}>Manage</Text>
+                </Pressable>
+              </View>
+            )}
 
             {/* Tab selector */}
             <View style={styles.tabBar}>
@@ -268,4 +285,16 @@ const styles = StyleSheet.create({
     borderColor: colors.brandSky,
   },
   btnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  adminBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.surface1,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border as string,
+    paddingVertical: spacing.sm,
+  },
 });
