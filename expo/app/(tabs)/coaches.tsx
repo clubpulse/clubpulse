@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Card } from '../../components/Card';
+import { UpsellBanner } from '../../components/UpsellBanner';
 import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
 import { api } from '../../lib/api';
@@ -89,6 +90,7 @@ export default function CoachesScreen() {
               </View>
             )}
 
+            <UpsellBanner trigger="coach_ai_tease" compact />
             <Text style={[fonts.title, { marginTop: spacing.md }]}>Available Coaches</Text>
           </View>
         }

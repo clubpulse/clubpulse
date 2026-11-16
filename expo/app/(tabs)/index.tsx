@@ -12,6 +12,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
 import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import type { UserRole } from '../../lib/roles';
+import { UpsellBanner } from '../../components/UpsellBanner';
 import { colors, fonts, spacing, radius } from '../../constants/theme';
 
 // ── Quick link definitions ──────────────────────────────────────────────────
@@ -20,8 +21,8 @@ type QuickLink = { label: string; icon: string; route: string; bg: string; fg: s
 const PLAYER_LINKS: QuickLink[] = [
   { label: 'Wallet',      icon: '⭐', route: '/wallet',       bg: colors.goldDim,         fg: colors.gold },
   { label: 'Marketplace',  icon: '🎁', route: '/marketplace',  bg: colors.brandPrimaryDim, fg: colors.brandSky },
+  { label: 'Store',        icon: '🏏', route: '/store',        bg: 'rgba(239,200,74,0.12)', fg: colors.gold },
   { label: 'Coach AI',     icon: '💬', route: '/companion',    bg: colors.successDim,      fg: colors.success },
-  { label: 'My Story',     icon: '📖', route: '/sporting-soul', bg: colors.orangeDim,       fg: colors.orange },
 ];
 
 // ── Main screen ─────────────────────────────────────────────────────────────
@@ -245,6 +246,9 @@ export default function HomeScreen() {
             </Pressable>
           ))}
         </View>
+
+        {/* ── SCRATCH CARD UPSELL ── */}
+        <UpsellBanner trigger="social_proof" />
       </ScrollView>
     </SafeAreaView>
   );
