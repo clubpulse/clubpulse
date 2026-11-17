@@ -1,4 +1,4 @@
-// POST /api/games/auction-room/finish  { results: [{ winner, price } × 20] }
+// POST /api/games/auction-room/finish  { results: [{ winner, price }, …] }
 // Checks the finished game against the seed it was started from and pays Scores for the place.
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   if (!user) return unauthorized();
 
   const results = parseResults(await readJson(req));
-  if (!results) return fail('Send one result for each of the 20 lots.', 400);
+  if (!results) return fail('Send one result for each lot.', 400);
 
   const finished = await finishAuctionRoom(user.id, results);
   if (!finished.ok) return fail(finished.error, finished.status);

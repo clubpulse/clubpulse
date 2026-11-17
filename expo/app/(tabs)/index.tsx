@@ -181,7 +181,7 @@ export default function HomeScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={fonts.title}>Auction Room</Text>
-              <Text style={fonts.small}>Build a squad and outbid three rival franchises</Text>
+              <Text style={fonts.small}>Complete your XI at a T20 franchise auction</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
           </View>

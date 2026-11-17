@@ -9,7 +9,7 @@
 import { randomInt } from 'node:crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AWARD_ERRORS, awardScores, getPrimaryClubId, ukToday } from '@/lib/scores/context';
-import { PLACE_MULTIPLIER, POOL_SIZE, replayGame, type LotResult } from '@/lib/games/auction-engine';
+import { BUDGET, PLACE_MULTIPLIER, POOL_SIZE, TEAM_COUNT, replayGame, type LotResult } from '@/lib/games/auction-engine';
 
 const GAME = 'auction';
 const RULE = 'game_auction';
@@ -22,7 +22,7 @@ type PlayRow = { id: string; state: PlayState; finished: boolean; score: number;
 export type AuctionRoomStatus = {
   /** Why the paid daily game is unavailable (practice still works), or null. */
   unavailable: string | null;
-  /** Scores for 1st, 2nd, 3rd and 4th place at this club. */
+  /** Scores for each finishing place at this club, 1st first. */
   prizes: number[];
   startsLeft: number;
   played: { place: number; score: number; amount: number } | null;
@@ -79,7 +79,7 @@ export async function getAuctionRoomStatus(userId: string): Promise<AuctionRoomS
     unavailable: null,
     prizes,
     startsLeft: Math.max(0, MAX_STARTS_PER_DAY - (play?.state.starts ?? 0)),
-    played: play?.finished ? { place: play.state.place ?? 4, score: play.score, amount: play.amount } : null,
+    played: play?.finished ? { place: play.state.place ?? TEAM_COUNT, score: play.score, amount: play.amount } : null,
   };
 }
 
@@ -120,16 +120,17 @@ export async function startAuctionRoom(
   return { ok: true, seed, startsLeft: MAX_STARTS_PER_DAY - starts - 1 };
 }
 
-/** Reads the results the app sent. Returns null unless it is exactly one well-formed result per lot. */
+/** Reads the results the app sent. Returns null unless every entry is a well-formed lot result. */
 export function parseResults(body: unknown): LotResult[] | null {
   const raw = (body as { results?: unknown } | null)?.results;
-  if (!Array.isArray(raw) || raw.length !== POOL_SIZE) return null;
+  // One result per lot, plus one more for each unsold player brought back in the accelerated round
+  if (!Array.isArray(raw) || raw.length < POOL_SIZE || raw.length > POOL_SIZE * 2) return null;
   const out: LotResult[] = [];
   for (const item of raw) {
     if (!item || typeof item !== 'object') return null;
     const { winner, price } = item as { winner?: unknown; price?: unknown };
     if (winner !== null && !(typeof winner === 'number' && Number.isInteger(winner))) return null;
-    if (!(typeof price === 'number' && Number.isInteger(price) && price >= 0 && price <= 1000)) return null;
+    if (!(typeof price === 'number' && Number.isInteger(price) && price >= 0 && price <= BUDGET)) return null;
     out.push({ winner: winner as number | null, price });
   }
   return out;
