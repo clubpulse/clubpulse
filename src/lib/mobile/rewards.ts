@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { AWARD_ERRORS, awardScores, getPrimaryClubId, ukToday } from '@/lib/scores/context';
 import { QUIZ_BANK, dailyQuestionIndex } from '@/lib/scores/quiz-bank';
 import {
-  SOURCES, addDays, allRewards, buildRewards, factsFrom, findReward, monthStart, weekStart,
+  SOURCES, addDays, allRewards, buildRewards, factsFrom, findReward, monthStart, progressFrom, weekStart,
   type Facts, type RewardSource, type Rewards, type Values,
 } from '@/lib/mobile/rewards-logic';
 
@@ -47,17 +47,19 @@ async function loadValues(admin: Admin, clubId: string): Promise<{ values: Value
 const fromTs = (date: string) => `${addDays(date, -1)}T23:00:00Z`;
 
 async function loadFacts(admin: Admin, userId: string, clubId: string, today: string): Promise<Facts> {
-  const from = factsFrom(today);
+  // Steps are read four weeks further back than everything else, to set personal step targets
+  const stepsFrom = factsFrom(today);
+  const from = progressFrom(today);
   const week = weekStart(today);
   const month = monthStart(today);
 
-  const [steps, checkins, plays, activity, ledger, earned, signups, attendance, shiftsDone, redemptions] = await Promise.all([
-    admin.from('steps_log').select('log_date, step_count, streak_day').eq('user_id', userId).gte('log_date', from).lte('log_date', today),
+  const [steps, checkins, plays, activity, ledger, earned, signups, attendance, shiftsDone, redemptions, lessons, plans] = await Promise.all([
+    admin.from('steps_log').select('log_date, step_count, streak_day').eq('user_id', userId).gte('log_date', stepsFrom).lte('log_date', today),
     admin.from('daily_checkins').select('checkin_date').eq('user_id', userId).gte('checkin_date', from),
-    admin.from('game_plays').select('play_date, state').eq('user_id', userId).eq('game', 'auction').eq('finished', true).gte('play_date', from),
+    admin.from('game_plays').select('play_date, state, score').eq('user_id', userId).eq('game', 'auction').eq('finished', true).gte('play_date', from),
     admin.from('app_activity').select('kind, activity_date, data').eq('user_id', userId).gte('activity_date', from),
     admin.from('scores_ledger').select('source, reference, created_at').eq('user_id', userId).in('source', ALL_SOURCES).gte('created_at', fromTs(from)),
-    admin.from('scores_ledger').select('amount, created_at').eq('user_id', userId).gte('created_at', fromTs(week)).limit(2000),
+    admin.from('scores_ledger').select('amount, created_at').eq('user_id', userId).gte('created_at', fromTs(from)).limit(5000),
     admin.from('volunteer_shift_signups').select('id, volunteer_shifts!inner(club_id)').eq('user_id', userId)
       .eq('volunteer_shifts.club_id', clubId).not('status', 'in', '(cancelled,no_show)').gte('signed_up_at', fromTs(week)).limit(1),
     admin.from('training_attendance').select('session_id, training_sessions!inner(club_id, session_date)').eq('user_id', userId)
@@ -67,7 +69,12 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
       .gte('volunteer_shifts.shift_date', month).lte('volunteer_shifts.shift_date', today),
     admin.from('reward_redemptions').select('id', { count: 'exact', head: true }).eq('user_id', userId)
       .not('status', 'in', '(cancelled,refunded)').gte('redeemed_at', fromTs(month)),
+    admin.from('academy_progress').select('updated_at, first_passed_at').eq('user_id', userId).gte('updated_at', fromTs(from)),
+    admin.from('academy_plans').select('created_at').eq('user_id', userId).gte('created_at', fromTs(from)),
   ]);
+
+  const ukDay = (ts: unknown) => ukToday(new Date(ts as string));
+  const earnedRows = (earned.data ?? []).map((r) => ({ date: ukDay(r.created_at), amount: r.amount as number }));
 
   const sessionDates = (attendance.data ?? []).map(
     (r) => (r.training_sessions as unknown as { session_date: string }).session_date,
@@ -84,7 +91,11 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
     auctions: (plays.data ?? []).map((r) => ({
       date: r.play_date as string,
       place: (r.state as { place?: number } | null)?.place ?? 99,
+      score: (r.score as number | null) ?? 0,
     })),
+    lessonAttempts: (lessons.data ?? []).map((r) => ukDay(r.updated_at)),
+    lessonPasses: (lessons.data ?? []).filter((r) => r.first_passed_at).map((r) => ukDay(r.first_passed_at)),
+    plansMade: (plans.data ?? []).map((r) => ukDay(r.created_at)),
     coachAi: acts.filter((a) => a.kind === 'coach_ai').map((a) => a.activity_date as string),
     questions: acts
       .filter((a) => a.kind === 'daily_question')
@@ -92,9 +103,8 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
     clubActionThisWeek: (signups.data ?? []).length > 0 || sessionDates.some((d) => d >= week),
     shiftsDoneThisMonth: (shiftsDone.data ?? []).length,
     trainingsThisMonth: sessionDates.filter((d) => d >= month).length,
-    earnedThisWeek: (earned.data ?? [])
-      .filter((r) => ukToday(new Date(r.created_at as string)) >= week)
-      .reduce((a, r) => a + (r.amount as number), 0),
+    earnedThisWeek: earnedRows.filter((r) => r.date >= week).reduce((a, r) => a + r.amount, 0),
+    earnedThisMonth: earnedRows.filter((r) => r.date >= month).reduce((a, r) => a + r.amount, 0),
     redemptionsThisMonth: redemptions.count ?? 0,
     claimed: (ledger.data ?? []).map((r) => ({
       source: r.source as string,
@@ -171,7 +181,7 @@ async function context(userId: string) {
   if (missing) return { admin, today, clubId, unavailable: 'Rewards are not switched on yet.', rewards: null };
 
   const facts = await loadFacts(admin, userId, clubId, today);
-  return { admin, today, clubId, unavailable: null, rewards: buildRewards(facts, values) };
+  return { admin, today, clubId, unavailable: null, rewards: buildRewards(facts, values, userId) };
 }
 
 export async function getRewards(userId: string): Promise<RewardsResponse> {

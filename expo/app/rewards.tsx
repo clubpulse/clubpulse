@@ -1,5 +1,5 @@
 // Rewards: five daily, five weekly and five monthly tasks, all different, plus a few "keep going"
-// tasks. Each one is something worth doing anyway (moving, learning, turning up, helping the club,
+// tasks. The tasks are drawn afresh each day, week and month and differ from player to player. Each one is something worth doing anyway (moving, learning, turning up, helping the club,
 // playing), each reward is claimed once, and missing a day costs nothing. The server decides what
 // is done; this screen only shows it and asks to claim.
 
@@ -255,7 +255,7 @@ export default function RewardsScreen() {
 
         {data?.rewards && (
           <Text style={[fonts.small, { textAlign: 'center' }]}>
-            Miss a day and nothing is lost. Weekly and monthly tasks leave room for rest days.
+            Your tasks change every day, week and month, and step targets follow how much you usually walk. Miss a day and nothing is lost.
           </Text>
         )}
       </ScrollView>
