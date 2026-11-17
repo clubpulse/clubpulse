@@ -15,6 +15,7 @@ export default function ProfileScreen() {
   const pending = pendingRoles(roles);
   const [data, setData] = useState<{ profile: Profile; wallet: Wallet | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     api<{ profile: Profile; wallet: Wallet | null }>('/api/profile')
@@ -27,6 +28,40 @@ export default function ProfileScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign out', style: 'destructive', onPress: () => signOut() },
     ]);
+  }
+
+  async function deleteAccount() {
+    setDeleting(true);
+    try {
+      await api<{ ok: true }>('/api/profile', { method: 'DELETE' });
+      await signOut();
+    } catch (e) {
+      setDeleting(false);
+      Alert.alert(
+        'Could not delete your account',
+        e instanceof ApiError ? e.message : 'Check your connection and try again.',
+      );
+    }
+  }
+
+  // Two steps, because this cannot be undone
+  function confirmDeleteAccount() {
+    Alert.alert(
+      'Delete your account?',
+      'Your profile, step history, roles and club memberships will be removed, and any Scores you have will be lost. Records your club has to keep, such as safeguarding records, stay with the club without your name on your profile.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () =>
+            Alert.alert('This cannot be undone', 'Delete your ClubPulse account permanently?', [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Delete account', style: 'destructive', onPress: deleteAccount },
+            ]),
+        },
+      ],
+    );
   }
 
   const initial = data?.profile.display_name?.[0]?.toUpperCase() ?? '?';
@@ -87,6 +122,18 @@ export default function ProfileScreen() {
         <Pressable onPress={confirmSignOut} style={({ pressed }) => [styles.signOut, pressed && { opacity: 0.7 }]}>
           <Text style={{ color: colors.danger, fontWeight: '600' }}>Sign out</Text>
         </Pressable>
+
+        <Pressable
+          onPress={confirmDeleteAccount}
+          disabled={deleting}
+          style={({ pressed }) => [styles.deleteAccount, pressed && { opacity: 0.7 }]}
+        >
+          {deleting ? (
+            <ActivityIndicator color={colors.textMuted as string} />
+          ) : (
+            <Text style={fonts.small}>Delete account</Text>
+          )}
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -110,6 +157,7 @@ const styles = StyleSheet.create({
   avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.white, fontSize: 28, fontWeight: '700' },
   signOut: { borderWidth: 1, borderColor: colors.navyBorder, borderRadius: radius.md, paddingVertical: spacing.md, alignItems: 'center' },
+  deleteAccount: { paddingVertical: spacing.md, alignItems: 'center' },
   profileLink: {
     flexDirection: 'row',
     alignItems: 'center',

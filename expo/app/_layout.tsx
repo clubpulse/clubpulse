@@ -26,6 +26,9 @@ function AuthGate() {
   useEffect(() => {
     if (loading) return;
     const inAuthGroup = segments[0] === 'auth';
+    // The emailed reset link signs the person in and then asks for a new password, so this
+    // screen has to stay put on both sides of that sign-in
+    if (segments[0] === 'reset-password') return;
     if (!session && !inAuthGroup) router.replace('/auth/sign-in');
     else if (session && inAuthGroup) router.replace('/');
   }, [session, loading, segments, router]);
@@ -42,6 +45,7 @@ function AuthGate() {
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="auth" />
+      <Stack.Screen name="reset-password" />
       <Stack.Screen name="sporting-soul" options={{ headerShown: true, title: 'My Sporting Soul', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="safeguarding" options={{ headerShown: true, title: 'Safeguarding', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="coach/[id]" options={{ headerShown: true, title: 'Coach', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />

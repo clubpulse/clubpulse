@@ -11,7 +11,7 @@ export class ApiError extends Error {
 // Calls the Next.js API with the Supabase access token as a Bearer token
 export async function api<T>(
   path: string,
-  options: { method?: 'GET' | 'POST' | 'PATCH' | 'PUT'; body?: unknown } = {}
+  options: { method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'; body?: unknown } = {}
 ): Promise<T> {
   if (!BASE_URL) throw new ApiError('EXPO_PUBLIC_API_URL is not set', 0);
 

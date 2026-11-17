@@ -25,6 +25,15 @@ const PLAYER_LINKS: QuickLink[] = [
   { label: 'Coach AI',     icon: '💬', route: '/companion',    bg: colors.successDim,      fg: colors.success },
 ];
 
+type RoleRow = {
+  role: UserRole;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  title: string;
+  subtitle: string;
+  count: number;
+  onPress: () => void;
+};
+
 // ── Main screen ─────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
@@ -32,11 +41,63 @@ export default function HomeScreen() {
   const { wallet, loading: walletLoading, refresh: refreshWallet } = useScoresWallet();
   const steps = useSteps();
   const router = useRouter();
-  const { roles, active, isAdmin, isCoach, isParent, isVolunteer, club, juniors, approvalQueue, refresh: refreshRoles } = useRoles();
+  const { roles, active, isAdmin, isCoach, isParent, isVolunteer, club, juniors, approvalQueue, error: rolesError, refresh: refreshRoles } = useRoles();
   const [refreshing, setRefreshing] = useState(false);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'Player';
   const pending = pendingRoles(roles);
+
+  // One row per role the person holds. count is the number of things waiting on them.
+  const pendingJuniors = juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
+  const approvedJuniors = juniors.filter((j) => j.link_status === 'approved');
+  const roleRows: RoleRow[] = [];
+  if (isAdmin && club) {
+    roleRows.push({
+      role: 'club_admin',
+      icon: 'shield-checkmark',
+      title: 'Club admin',
+      subtitle: `${club.member_count} member${club.member_count === 1 ? '' : 's'} · ${tierLabel(club.subscription_tier)}`,
+      count: approvalQueue.length,
+      onPress: () => router.push('/(tabs)/club'),
+    });
+  }
+  if (isCoach) {
+    roleRows.push({
+      role: 'coach',
+      icon: 'trophy',
+      title: 'Coaching',
+      subtitle: 'Bookings and availability',
+      count: 0,
+      onPress: () => router.push('/(tabs)/coaches'),
+    });
+  }
+  if (isParent) {
+    roleRows.push({
+      role: 'parent',
+      icon: 'people',
+      title: 'My children',
+      subtitle:
+        juniors.length === 0
+          ? 'Link your child'
+          : `${juniors.length} linked${pendingJuniors > 0 ? ` · ${pendingJuniors} need attention` : ''}`,
+      count: pendingJuniors,
+      // Straight to the child when there is exactly one and nothing is outstanding
+      onPress: () =>
+        juniors.length === 1 && approvedJuniors.length === 1 && pendingJuniors === 0
+          ? router.push({ pathname: '/junior/[id]', params: { id: approvedJuniors[0].junior_id } })
+          : router.push('/safeguarding'),
+    });
+  }
+  if (isVolunteer) {
+    roleRows.push({
+      role: 'volunteer',
+      icon: 'heart',
+      title: 'Volunteering',
+      subtitle: 'Browse and sign up for shifts',
+      count: 0,
+      onPress: () => router.push('/(tabs)/shifts'),
+    });
+  }
 
   const refreshAll = useCallback(async () => {
     setRefreshing(true);
@@ -82,146 +143,7 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* ── ADMIN SECTION ─────────────────────────────────────── */}
-        {isAdmin && club && (
-          <>
-            <SectionLabel label="Admin" />
-            <Pressable style={styles.card} onPress={() => router.push('/(tabs)/club')}>
-              <View style={styles.cardRow}>
-                <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG.club_admin.dimColor }]}>
-                  <Ionicons name="shield-checkmark" size={18} color={ROLE_CONFIG.club_admin.color} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={fonts.title}>Club overview</Text>
-                  <Text style={fonts.small}>{club.member_count} members · {tierLabel(club.subscription_tier)}</Text>
-                </View>
-                {approvalQueue.length > 0 && (
-                  <View style={styles.notifBadge}>
-                    <Text style={styles.notifText}>{approvalQueue.length}</Text>
-                  </View>
-                )}
-                <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-              </View>
-            </Pressable>
-            {approvalQueue.length > 0 && (
-              <Pressable style={styles.card} onPress={() => router.push('/(tabs)/club')}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: colors.orangeDim }]}>
-                    <Ionicons name="time" size={18} color={colors.orange} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>Pending approvals</Text>
-                    <Text style={fonts.small}>{approvalQueue.length} request{approvalQueue.length !== 1 ? 's' : ''} waiting</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-                </View>
-              </Pressable>
-            )}
-            <View style={styles.quickRow}>
-              <QuickAction icon="cash" label="Buy Scores" color={colors.gold} bg={colors.goldDim} />
-              <QuickAction icon="add-circle" label="Post shift" color={colors.brandSky} bg={colors.brandPrimaryDim} />
-            </View>
-          </>
-        )}
-
-        {/* ── COACH SECTION ─────────────────────────────────────── */}
-        {isCoach && (
-          <>
-            <SectionLabel label="Coaching" />
-            <Pressable style={styles.card} onPress={() => router.push('/(tabs)/coaches')}>
-              <View style={styles.cardRow}>
-                <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG.coach.dimColor }]}>
-                  <Ionicons name="trophy" size={18} color={ROLE_CONFIG.coach.color} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={fonts.title}>My sessions</Text>
-                  <Text style={fonts.small}>View bookings & availability</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-              </View>
-            </Pressable>
-          </>
-        )}
-
-        {/* ── PARENT SECTION ────────────────────────────────────── */}
-        {isParent && (
-          <>
-            <SectionLabel label="Parenting" />
-            {juniors.length === 0 ? (
-              <Pressable style={styles.card} onPress={() => router.push('/safeguarding')}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG.parent.dimColor }]}>
-                    <Ionicons name="people" size={18} color={ROLE_CONFIG.parent.color} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>Link your child</Text>
-                    <Text style={fonts.small}>Request to link a junior for safeguarding</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-                </View>
-              </Pressable>
-            ) : (
-              juniors.map((j) => (
-                <Pressable
-                  key={j.id}
-                  style={styles.card}
-                  onPress={() => {
-                    if (j.link_status === 'approved') {
-                      router.push({ pathname: '/junior/[id]', params: { id: j.junior_id } });
-                    }
-                  }}
-                >
-                  <View style={styles.cardRow}>
-                    <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG.parent.dimColor }]}>
-                      <Ionicons name="shield-checkmark" size={18} color={ROLE_CONFIG.parent.color} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={fonts.title}>{j.full_name}</Text>
-                      <Text style={fonts.small}>
-                        {j.age_group ? `${j.age_group} · ` : ''}
-                        Consent: {j.consent_given ? 'active' : 'pending'}
-                      </Text>
-                    </View>
-                    {j.link_status === 'pending' ? (
-                      <View style={[styles.statusPill, { backgroundColor: colors.orangeDim }]}>
-                        <Text style={[styles.statusPillText, { color: colors.orange }]}>Pending</Text>
-                      </View>
-                    ) : j.link_status === 'approved' ? (
-                      <>
-                        <View style={[styles.statusPill, { backgroundColor: colors.successDim }]}>
-                          <Text style={[styles.statusPillText, { color: colors.success }]}>Linked</Text>
-                        </View>
-                        <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-                      </>
-                    ) : null}
-                  </View>
-                </Pressable>
-              ))
-            )}
-          </>
-        )}
-
-        {/* ── VOLUNTEER SECTION ─────────────────────────────────── */}
-        {isVolunteer && (
-          <>
-            <SectionLabel label="Volunteering" />
-            <Pressable style={styles.card} onPress={() => router.push('/(tabs)/shifts')}>
-              <View style={styles.cardRow}>
-                <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG.volunteer.dimColor }]}>
-                  <Ionicons name="heart" size={18} color={ROLE_CONFIG.volunteer.color} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={fonts.title}>Volunteer shifts</Text>
-                  <Text style={fonts.small}>Browse & sign up for shifts</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
-              </View>
-            </Pressable>
-          </>
-        )}
-
-        {/* ── PLAYER SECTION (always shown — every user is a player) ── */}
-        <SectionLabel label="Player" />
+        {/* ── PLAYER (first: this is what everyone opens the app for) ── */}
         <StepsCard
           steps={steps.steps}
           source={steps.source}
@@ -248,6 +170,35 @@ export default function HomeScreen() {
           ))}
         </View>
 
+        {/* ── ROLES: one row each, so Home stays short however many roles someone holds ── */}
+        {(roleRows.length > 0 || rolesError) && <SectionLabel label="Your roles" />}
+        {rolesError && (
+          <View style={styles.card}>
+            <Text style={fonts.small}>
+              We couldn&apos;t load your club roles, so some sections may be missing. Pull down to try again.
+            </Text>
+          </View>
+        )}
+        {roleRows.map((row) => (
+          <Pressable key={row.role} style={styles.card} onPress={row.onPress}>
+            <View style={styles.cardRow}>
+              <View style={[styles.cardIcon, { backgroundColor: ROLE_CONFIG[row.role].dimColor }]}>
+                <Ionicons name={row.icon} size={18} color={ROLE_CONFIG[row.role].color} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={fonts.title}>{row.title}</Text>
+                <Text style={fonts.small}>{row.subtitle}</Text>
+              </View>
+              {row.count > 0 && (
+                <View style={styles.notifBadge}>
+                  <Text style={styles.notifText}>{row.count}</Text>
+                </View>
+              )}
+              <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+            </View>
+          </Pressable>
+        ))}
+
         {/* ── SCRATCH CARD UPSELL ── */}
         <UpsellBanner trigger="social_proof" />
       </ScrollView>
@@ -259,15 +210,6 @@ export default function HomeScreen() {
 
 function SectionLabel({ label }: { label: string }) {
   return <Text style={styles.sectionLabel}>{label.toUpperCase()}</Text>;
-}
-
-function QuickAction({ icon, label, color, bg }: { icon: string; label: string; color: string; bg: string }) {
-  return (
-    <Pressable style={[styles.quickCard, { backgroundColor: bg as string }]}>
-      <Ionicons name={icon as any} size={18} color={color} />
-      <Text style={[styles.quickCardText, { color }]}>{label}</Text>
-    </Pressable>
-  );
 }
 
 function getGreeting(): string {
