@@ -453,3 +453,197 @@ export async function approveRequest(userId: string, approvalId: string): Promis
 
   return { success: false, error: 'Request not found' };
 }
+
+/* ── Registering a child ───────────────────────────────────────────────────── */
+
+const GENDERS = ['male', 'female', 'other', 'prefer_not_to_say'] as const;
+const RELATIONSHIPS = ['parent', 'guardian', 'carer'] as const;
+export const CONSENT_TYPES = [
+  'photo_video',
+  'data_processing',
+  'medical_treatment',
+  'travel',
+  'social_media',
+  'coaching_observation',
+  'general_participation',
+] as const;
+export type ConsentTypeName = (typeof CONSENT_TYPES)[number];
+
+const MAX_CHILDREN_PER_PARENT = 10;
+
+export type RegisterJuniorInput = {
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  gender: (typeof GENDERS)[number] | null;
+  relationship: (typeof RELATIONSHIPS)[number];
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  medical_notes: string | null;
+  consents: ConsentTypeName[];
+  club_id: string | null;
+};
+
+const text = (value: unknown, max: number): string | null => {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim().replace(/\s+/g, ' ');
+  return trimmed.length > 0 && trimmed.length <= max ? trimmed : null;
+};
+
+function ageOn(dob: Date, now: Date): number {
+  const age = now.getUTCFullYear() - dob.getUTCFullYear();
+  const beforeBirthday =
+    now.getUTCMonth() < dob.getUTCMonth() || (now.getUTCMonth() === dob.getUTCMonth() && now.getUTCDate() < dob.getUTCDate());
+  return beforeBirthday ? age - 1 : age;
+}
+
+/** Checks and tidies the form the app sends. Everything here is untrusted input. */
+export function parseRegisterJunior(body: unknown): ActionResult<RegisterJuniorInput> {
+  const fail = (error: string) => ({ success: false as const, error });
+  if (typeof body !== 'object' || body === null) return fail('Invalid request');
+  const input = body as Record<string, unknown>;
+
+  const first_name = text(input.first_name, 60);
+  const last_name = text(input.last_name, 60);
+  if (!first_name || !last_name) return fail('Enter the child’s first and last name');
+
+  // A real calendar date, in the past, for someone under 18
+  const dobText = typeof input.date_of_birth === 'string' ? input.date_of_birth : '';
+  const dob = /^\d{4}-\d{2}-\d{2}$/.test(dobText) ? new Date(`${dobText}T00:00:00Z`) : null;
+  if (!dob || Number.isNaN(dob.getTime()) || dob.toISOString().slice(0, 10) !== dobText) {
+    return fail('Enter a valid date of birth');
+  }
+  const now = new Date();
+  if (dob.getTime() > now.getTime()) return fail('The date of birth can’t be in the future');
+  if (ageOn(dob, now) >= 18) return fail('Only under-18s can be registered as a child');
+
+  const gender = input.gender == null || input.gender === '' ? null : input.gender;
+  if (gender !== null && !(GENDERS as readonly unknown[]).includes(gender)) return fail('Invalid gender');
+
+  const relationship = input.relationship ?? 'parent';
+  if (!(RELATIONSHIPS as readonly unknown[]).includes(relationship)) return fail('Invalid relationship');
+
+  const nameGiven = input.emergency_contact_name != null && input.emergency_contact_name !== '';
+  const emergency_contact_name = nameGiven ? text(input.emergency_contact_name, 100) : null;
+  if (nameGiven && !emergency_contact_name) return fail('The emergency contact name is too long');
+
+  const phoneGiven = input.emergency_contact_phone != null && input.emergency_contact_phone !== '';
+  const emergency_contact_phone = phoneGiven ? text(input.emergency_contact_phone, 20) : null;
+  if (phoneGiven && (!emergency_contact_phone || !/^\+?[\d\s()-]{7,20}$/.test(emergency_contact_phone))) {
+    return fail('Enter a valid emergency contact phone number');
+  }
+
+  const notesGiven = input.medical_notes != null && input.medical_notes !== '';
+  const medical_notes = notesGiven ? text(input.medical_notes, 1000) : null;
+  if (notesGiven && !medical_notes) return fail('Medical notes can be up to 1,000 characters');
+
+  const rawConsents = Array.isArray(input.consents) ? input.consents : [];
+  if (rawConsents.some((c) => !(CONSENT_TYPES as readonly unknown[]).includes(c))) return fail('Invalid consent');
+
+  const club_id = input.club_id == null ? null : input.club_id;
+  if (club_id !== null && !isUuid(club_id)) return fail('Invalid club');
+
+  return {
+    success: true,
+    data: {
+      first_name,
+      last_name,
+      date_of_birth: dobText,
+      gender: gender as RegisterJuniorInput['gender'],
+      relationship: relationship as RegisterJuniorInput['relationship'],
+      emergency_contact_name,
+      emergency_contact_phone,
+      medical_notes,
+      consents: [...new Set(rawConsents as ConsentTypeName[])],
+      club_id,
+    },
+  };
+}
+
+/**
+ * Registers a child at one of the caller's clubs and links the caller as their parent.
+ * The link starts unverified: a club admin confirms it from the approvals queue.
+ * Consents ticked on the form are recorded as granted, with the caller's IP and device.
+ */
+export async function registerJunior(
+  userId: string,
+  input: RegisterJuniorInput,
+  meta: { ip_address?: string; user_agent?: string },
+): Promise<ActionResult<{ id: string }>> {
+  const sb = createAdminClient();
+
+  const { data: memberships } = await sb
+    .from('club_members')
+    .select('club_id, role, joined_at')
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .order('joined_at', { ascending: true });
+  const clubs = memberships ?? [];
+  if (clubs.length === 0) return { success: false, error: 'Join a club before registering a child' };
+
+  // Same choice of club as the rest of the app unless the request names one of the caller's clubs
+  const clubId = input.club_id ?? ((clubs.find((c) => c.role === 'club_admin') ?? clubs[0]).club_id as string);
+  if (!clubs.some((c) => c.club_id === clubId)) return { success: false, error: 'You are not a member of that club' };
+
+  const { data: links } = await sb
+    .from('parent_child_links')
+    .select('child_profiles ( club_id, first_name, last_name, date_of_birth )')
+    .eq('parent_id', userId);
+  const existing = (links ?? []).map((l) => one(l.child_profiles)).filter((c) => c !== null);
+  if (existing.length >= MAX_CHILDREN_PER_PARENT) {
+    return { success: false, error: 'You have reached the limit for children on one account. Contact your club.' };
+  }
+  const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+  const duplicate = existing.some(
+    (c) =>
+      c.club_id === clubId &&
+      c.date_of_birth === input.date_of_birth &&
+      same(c.first_name as string, input.first_name) &&
+      same(c.last_name as string, input.last_name),
+  );
+  if (duplicate) return { success: false, error: `${input.first_name} is already registered on your account` };
+
+  const { data: child, error: childError } = await sb
+    .from('child_profiles')
+    .insert({
+      club_id: clubId,
+      first_name: input.first_name,
+      last_name: input.last_name,
+      date_of_birth: input.date_of_birth,
+      gender: input.gender,
+      medical_notes: input.medical_notes,
+      emergency_contact_name: input.emergency_contact_name,
+      emergency_contact_phone: input.emergency_contact_phone,
+      photo_consent: input.consents.includes('photo_video'),
+      data_consent: input.consents.includes('data_processing'),
+    })
+    .select('id')
+    .single();
+  if (childError || !child) return { success: false, error: 'Could not register your child. Please try again.' };
+
+  const { error: linkError } = await sb
+    .from('parent_child_links')
+    .insert({ parent_id: userId, child_id: child.id, relationship: input.relationship, is_primary: true });
+  if (linkError) {
+    // Without the link nobody could see or manage this record, so don't leave it behind
+    await sb.from('child_profiles').delete().eq('id', child.id);
+    return { success: false, error: 'Could not register your child. Please try again.' };
+  }
+
+  if (input.consents.length > 0) {
+    // A failure here leaves the child registered with consents still off, which the parent
+    // can see and switch on from the child's screen, so it does not undo the registration
+    await sb.from('consent_records').insert(
+      input.consents.map((consent_type) => ({
+        child_id: child.id,
+        parent_id: userId,
+        consent_type,
+        action: 'granted',
+        ip_address: meta.ip_address ?? null,
+        user_agent: meta.user_agent ?? null,
+      })),
+    );
+  }
+
+  return { success: true, data: { id: child.id as string } };
+}
