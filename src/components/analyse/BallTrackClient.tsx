@@ -3,7 +3,7 @@
 /**
  * BallTrackClient
  * ---------------
- * Upload a bowling video → call /api/analysis/ball-track →
+ * Pick a bowling video → track the ball on this device (lib/analysis/ball-track) →
  * show results in two sub-tabs:
  *   • Video Overlay — original video with ball circle + trail drawn on canvas
  *   • Pitch Map     — top-down pitch view with trajectory & bounce point
@@ -14,47 +14,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
+import { trackBallInVideo, type BallPosition as TrackedBall, type TrackResult } from '@/lib/analysis/ball-track';
 
 // PitchMap uses canvas — load client-side only
 const PitchMap = dynamic(() => import('@/components/analysis/PitchMap'), { ssr: false });
 
 // ── Types (mirror the Python output) ─────────────────────────────────────────
 
-interface BallPosition {
-  frame:      number;
-  x:          number;
-  y:          number;
-  radius:     number;
-  confidence: number;
-}
-
-interface TrajectoryPoint { x: number; y: number }
-interface Resolution      { w: number; h: number }
-interface PitchCoord      { px: number; py: number }
-
-interface TrackResult {
-  frames_processed: number;
-  fps:              number;
-  resolution:       Resolution;
-  ball_positions:   BallPosition[];
-  trajectory:       TrajectoryPoint[];
-  bounce_frame:     number | null;
-  bounce_point:     { x: number; y: number } | null;
-  speed_kph:        number | null;
-  swing_px:         number;
-  pitch_map:        PitchCoord | null;
-  calibration?: {
-    valid:      boolean;
-    px_per_m:   number | null;
-    method:     string;
-    confidence: number;
-  } | null;
-}
+type BallPosition = TrackedBall;
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const MAX_MB    = 100;
-const MAX_BYTES = MAX_MB * 1024 * 1024;
+const MAX_MB    = 300;
 const ACCEPTED  = 'video/mp4,video/quicktime,video/x-msvideo,video/webm';
 
 const GOLD    = '#EFC84A';
@@ -310,9 +281,7 @@ function DeliverySummary({ result }: { result: TrackResult }) {
     ? 'Straight'
     : result.swing_px > 0 ? 'Away swing' : 'In-swing';
 
-  const calNote = result.calibration?.valid
-    ? `Speed calibrated (${result.calibration.method}, ${(result.calibration.confidence * 100).toFixed(0)}% conf)`
-    : 'Speed estimated (uncalibrated — side-on angle improves accuracy)';
+  const calNote = 'Speed is a rough estimate. It is closest when filmed side-on with the whole pitch in the picture.';
 
   const rows: [string, string][] = [
     ['Speed',      result.speed_kph != null ? `${result.speed_kph} kph` : '—'],
@@ -451,20 +420,14 @@ export function BallTrackClient() {
     setResult(null);
     setCoaching(null);
     setErrMsg(null);
-    setProgress('Uploading video…');
-
-    const form = new FormData();
-    form.append('video',      f);
-    form.append('white_ball', String(whiteBall));
+    setProgress('Reading video…');
 
     try {
-      setProgress('Detecting ball…');
-      const res  = await fetch('/api/analysis/ball-track', { method: 'POST', body: form });
-      const data = await res.json() as TrackResult & { error?: string };
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error ?? `Server error ${res.status}`);
-      }
+      // Runs on this device; the video is not uploaded
+      const data = await trackBallInVideo(f, {
+        whiteBall,
+        onProgress: (done) => setProgress(`Finding the ball… ${Math.round(done * 100)}%`),
+      });
 
       setResult(data);
       setStatus('done');
@@ -507,7 +470,10 @@ export function BallTrackClient() {
         }),
       }).catch(() => {/* silent — history is a nice-to-have */});
     } catch (err) {
-      setErrMsg(err instanceof Error ? err.message : 'Analysis failed — try again');
+      const message = err instanceof Error ? err.message : '';
+      setErrMsg(message.startsWith('No ball detected')
+        ? `We couldn't find a moving ${whiteBall ? 'white' : 'red'} ball in that video. Film from side-on in good light, keep the phone still, and check the ball colour above.`
+        : message || 'Analysis failed. Try again.');
       setStatus('error');
       setCoachLoad(false);
     }
@@ -540,8 +506,9 @@ export function BallTrackClient() {
           Ball Tracking
         </h2>
         <p style={{ fontSize: '13px', color: 'rgba(240,236,228,0.5)', lineHeight: 1.6 }}>
-          Upload a bowling clip. ClubPulse detects the ball frame-by-frame, tracks its
-          trajectory, finds the bounce point and estimates speed and swing — all server-side.
+          Pick a bowling clip. ClubPulse finds the ball frame by frame, tracks its path, finds the
+          bounce point and estimates speed and swing. It reads the first 10 seconds, on this device:
+          the video is not uploaded. Keep the phone still and film from side-on for the best result.
         </p>
       </div>
 
