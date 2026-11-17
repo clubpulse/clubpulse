@@ -418,6 +418,85 @@ export function generateMatchDayCard(): ScratchCardResult {
   return { cardTier: 'match_day', panels, totalRuns, isWicket, wicketBall, prizeTier: tier, prize };
 }
 
+/* ── Published odds ── */
+
+export interface PrizeOdds {
+  label: string;
+  /** Chance of this prize on any one card, 0–1 */
+  probability: number;
+}
+
+export interface TierOdds {
+  name: PrizeTierName;
+  label: string;
+  /** Chance of landing in this tier on any one card, 0–1 */
+  probability: number;
+  prizes: PrizeOdds[];
+}
+
+/**
+ * Exact odds for a card, derived from the same weights and tier tables the
+ * generators above use, so the published figures cannot drift from the game.
+ * App Store guideline 3.1.1 requires these to be shown before purchase.
+ */
+export function getCardOdds(cardTier: CardTier): TierOdds[] {
+  const outcomes = cardTier === 'match_day' ? MATCH_DAY_OUTCOMES : NET_SESSION_OUTCOMES;
+  const tiers = cardTier === 'match_day' ? MATCH_DAY_TIERS : NET_SESSION_TIERS;
+  const balls = cardTier === 'match_day' ? 6 : 3;
+  const totalWeight = outcomes.reduce((s, o) => s + o.weight, 0);
+
+  // live: innings still in progress, keyed by runs so far. done: finished innings, keyed by
+  // the value the generator looks the tier up with (-1 for a first-ball wicket).
+  let live = new Map<number, number>([[0, 1]]);
+  const done = new Map<number, number>();
+  const add = (map: Map<number, number>, key: number, p: number) => map.set(key, (map.get(key) ?? 0) + p);
+
+  for (let ball = 0; ball < balls; ball++) {
+    const next = new Map<number, number>();
+    for (const [runs, p] of live) {
+      for (const o of outcomes) {
+        const q = (p * o.weight) / totalWeight;
+        if (o.outcome === 'wicket') add(done, ball === 0 ? -1 : runs, q);
+        else add(next, runs + o.runs, q);
+      }
+    }
+    live = next;
+  }
+  for (const [runs, p] of live) add(done, runs, p);
+
+  const tierProbability = new Map<PrizeTierName, number>();
+  for (const [lookupRuns, p] of done) {
+    const tier = tiers.find((t) => lookupRuns >= t.minRuns && lookupRuns <= t.maxRuns) ?? tiers[0];
+    tierProbability.set(tier.name, (tierProbability.get(tier.name) ?? 0) + p);
+  }
+
+  return tiers.map((tier) => {
+    const probability = tierProbability.get(tier.name) ?? 0;
+    // Each entry in the pool is equally likely; brand discounts are grouped into one line
+    const share = probability / tier.possiblePrizes.length;
+    const byLabel = new Map<string, number>();
+    for (const prize of tier.possiblePrizes) {
+      const label = prize.type === 'awin_deal' ? 'Brand discount code' : prize.label;
+      byLabel.set(label, (byLabel.get(label) ?? 0) + share);
+    }
+    return {
+      name: tier.name,
+      label: tier.label,
+      probability,
+      prizes: [...byLabel].map(([label, p]) => ({ label, probability: p })),
+    };
+  });
+}
+
+/** Formats a 0–1 probability for display, keeping rare prizes from rounding to 0%. */
+export function formatOdds(probability: number): string {
+  const pct = probability * 100;
+  if (pct >= 10) return `${pct.toFixed(0)}%`;
+  if (pct >= 0.1) return `${pct.toFixed(1)}%`;
+  if (pct >= 0.001) return `${pct.toFixed(3)}%`;
+  return `1 in ${Math.round(1 / probability).toLocaleString('en-GB')}`;
+}
+
 /* ── Ball display helpers ── */
 
 export const BALL_DISPLAY: Record<BallOutcome, { label: string; emoji: string; color: string; bgColor: string }> = {

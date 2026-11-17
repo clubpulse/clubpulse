@@ -55,6 +55,11 @@ export default function StoreScreen() {
           />
         </View>
 
+        {/* Odds must be reachable before purchase (App Store guideline 3.1.1) */}
+        <Pressable onPress={() => router.push('/odds')} hitSlop={8}>
+          <Text style={styles.oddsLink}>See the odds of every prize</Text>
+        </Pressable>
+
         {/* Awin discount categories preview */}
         <View style={{ gap: spacing.md }}>
           <Text style={fonts.title}>Win discounts from these categories</Text>
@@ -229,6 +234,15 @@ const styles = StyleSheet.create({
     borderColor: colors.border as string,
   },
   categoryChipText: { fontSize: 12, fontWeight: '600' },
+
+  oddsLink: {
+    color: colors.brandSky,
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+    marginTop: -spacing.md,
+  },
 
   browseDealsCta: {
     backgroundColor: 'rgba(37,99,235,0.1)',
