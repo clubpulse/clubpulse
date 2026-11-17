@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
+import { unregisterStepsBackgroundSync } from '../lib/backgroundSync';
 import { supabase } from '../lib/supabase';
 
 type AuthResult = { error: string | null };
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    await unregisterStepsBackgroundSync();
     await supabase.auth.signOut();
   }, []);
 

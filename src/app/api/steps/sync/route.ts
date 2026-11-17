@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // POST /api/steps/sync
-// Expo app calls this to log today's step count.
+// Expo app calls this to log a day's step count (today or yesterday, phone-local date).
 // Auth: Bearer access token (Expo) or cookie session (web).
 // Calculates Scores + streak, writes steps_log, awards only the delta
 // between the new total and what was already awarded for that day.
@@ -19,24 +19,26 @@ export async function POST(req: NextRequest) {
   const { stepCount, logDate, source = 'apple_health' } = body as {
     stepCount: number;
     logDate:   string;   // 'YYYY-MM-DD'
-    source?:   'apple_health' | 'google_fit' | 'expo_sensors';
+    source?:   'apple_health' | 'health_connect' | 'google_fit' | 'expo_sensors';
   };
 
   if (!stepCount || !logDate) {
     return NextResponse.json({ error: 'stepCount and logDate required' }, { status: 400 });
   }
 
-  // Only today or yesterday (UTC; allows for timezones and a late sync), and a believable count.
-  // Without this a client could sync every past date and farm the daily Scores.
+  // logDate is the phone's local date, for today or yesterday there. Local dates run up to a
+  // day either side of UTC, so that is UTC-2 to UTC+1 days. A day can only be awarded once, so
+  // the wider window cannot be used to earn more; without any window a client could sync
+  // every past date and farm the daily Scores.
   const utcDate = (offsetDays: number) =>
     new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10);
-  if (logDate !== utcDate(0) && logDate !== utcDate(-1)) {
-    return NextResponse.json({ error: 'logDate must be today or yesterday (YYYY-MM-DD, UTC)' }, { status: 400 });
+  if (![-2, -1, 0, 1].some((offset) => logDate === utcDate(offset))) {
+    return NextResponse.json({ error: "logDate must be today's or yesterday's date (YYYY-MM-DD)" }, { status: 400 });
   }
   if (!Number.isInteger(stepCount) || stepCount < 1 || stepCount > 100_000) {
     return NextResponse.json({ error: 'stepCount must be a whole number from 1 to 100000' }, { status: 400 });
   }
-  if (!['apple_health', 'google_fit', 'expo_sensors'].includes(source)) {
+  if (!['apple_health', 'health_connect', 'google_fit', 'expo_sensors'].includes(source)) {
     return NextResponse.json({ error: 'Invalid source' }, { status: 400 });
   }
 

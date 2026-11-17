@@ -29,6 +29,7 @@ const FEATURE_GROUPS = [
     features: [
       { href: '/admin/club/availability', icon: '📅', label: 'Availability', desc: 'Player availability grid for all fixtures' },
       { href: '/admin/club/volunteers', icon: '🙋', label: 'Volunteers', desc: 'Approve volunteer check-ins & hours' },
+      { href: '/admin/club/volunteer-shifts', icon: '📋', label: 'Shift Scheduling', desc: 'Create shifts, manage sign-ups & track hours' },
       { href: '/admin/club/travel', icon: '🚗', label: 'Travel', desc: 'Car shares & away match logistics' },
       { href: '/admin/club/match-mood', icon: '🌡️', label: 'Match Mood', desc: 'Pre/post match sentiment tracker' },
       { href: '/admin/club/gut-feeling', icon: '🧠', label: 'Selection Gut Feeling', desc: 'AI-assisted team selection notes' },
@@ -48,7 +49,8 @@ const FEATURE_GROUPS = [
       { href: '/admin/club/health-report', icon: '📊', label: 'Health Report', desc: 'Full engagement & attendance breakdown' },
       { href: '/admin/club/wellbeing', icon: '🧘', label: 'Wellbeing', desc: 'Player wellbeing check-ins & flags' },
       { href: '/admin/club/injury-intel', icon: '🩹', label: 'Injury Intel', desc: 'Injury log, return dates & risk flags' },
-      { href: '/admin/club/qualifications', icon: '🎓', label: 'Qualifications', desc: 'DBS, coaching certs & renewal alerts' },
+      { href: '/admin/club/coaches', icon: '🎓', label: 'Coach Management', desc: 'Approve coaches, verify certs & analytics' },
+      { href: '/admin/club/qualifications', icon: '📜', label: 'Qualifications', desc: 'DBS, coaching certs & renewal alerts' },
       { href: '/admin/club/school', icon: '🏫', label: 'School & Juniors', desc: 'Youth pathway, school links & U18 gate' },
     ],
   },
@@ -74,6 +76,7 @@ const FEATURE_GROUPS = [
       { href: '/admin/club/members', icon: '👥', label: 'Members', desc: 'Roster, roles, Scores balances' },
       { href: '/admin/club/waiting-list', icon: '⏳', label: 'Waiting List', desc: 'Manage membership applications' },
       { href: '/admin/club/alumni', icon: '🏆', label: 'Alumni', desc: 'Former members & hall of fame' },
+      { href: '/admin/club/safeguarding', icon: '🛡️', label: 'Safeguarding', desc: 'Junior welfare, consents, DBS & incidents' },
     ],
   },
   {
@@ -84,6 +87,16 @@ const FEATURE_GROUPS = [
     features: [
       { href: '/admin/club/finance', icon: '💷', label: 'Finance Overview', desc: 'Payments, fees & cashflow summary' },
       { href: '/admin/merchant', icon: '🏦', label: 'Merchant Wallet', desc: 'Club Scores balance & cashout to bank' },
+      { href: '/admin/club/scores-packs', icon: '⭐', label: 'Buy Scores Packs', desc: 'Purchase Scores for your club pool' },
+    ],
+  },
+  {
+    section: 'Settings',
+    color: '#94a3b8',
+    bg: 'rgba(148,163,184,0.06)',
+    border: 'rgba(148,163,184,0.14)',
+    features: [
+      { href: '/admin/club/settings', icon: '⚙️', label: 'Club Settings', desc: 'Profile, subscription, Stripe & onboarding' },
     ],
   },
 ];
