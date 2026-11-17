@@ -16,7 +16,7 @@ function AuthGate() {
   const router = useRouter();
 
   // Register push notifications once authenticated
-  usePushNotifications();
+  usePushNotifications(!!session);
 
   // Keep steps syncing while the app is closed, for signed-in users only
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
+import { afterFirstStepsSync } from '../lib/stepsSync';
 import { supabase } from '../lib/supabase';
 
 Notifications.setNotificationHandler({
@@ -43,16 +44,20 @@ async function registerForPushNotifications(): Promise<string | null> {
 /**
  * Registers push token and stores it in Supabase for server-side sends.
  * Returns the token and a boolean for whether push is enabled.
+ * Nothing is asked until the person is signed in, and then only after the steps permission
+ * sheet has been answered, so the two prompts appear one at a time.
  */
-export function usePushNotifications() {
+export function usePushNotifications(signedIn: boolean) {
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [enabled, setEnabled] = useState(false);
   const notificationListener = useRef<Notifications.EventSubscription | null>(null);
   const responseListener = useRef<Notifications.EventSubscription | null>(null);
 
   useEffect(() => {
-    registerForPushNotifications().then(async (token) => {
-      if (!token) return;
+    if (!signedIn) return;
+    let cancelled = false;
+    afterFirstStepsSync().then(() => (cancelled ? null : registerForPushNotifications())).then(async (token) => {
+      if (!token || cancelled) return;
       setPushToken(token);
       setEnabled(true);
 
@@ -79,10 +84,11 @@ export function usePushNotifications() {
     });
 
     return () => {
+      cancelled = true;
       if (notificationListener.current) notificationListener.current.remove();
       if (responseListener.current) responseListener.current.remove();
     };
-  }, []);
+  }, [signedIn]);
 
   return { pushToken, enabled };
 }

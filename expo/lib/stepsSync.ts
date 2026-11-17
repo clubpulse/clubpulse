@@ -32,11 +32,24 @@ async function loadSent(): Promise<Sent> {
 
 let inFlight: Promise<SyncOutcome> | null = null;
 
+// Resolved once the first on-screen sync has finished, which is when its permission sheet
+// (if any) has been answered. Other prompts wait for this so two never stack up.
+let markFirstSyncDone: () => void = () => {};
+const firstSyncDone = new Promise<void>((resolve) => {
+  markFirstSyncDone = resolve;
+});
+
+/** Waits for the first on-screen steps sync, or for the time limit if it never happens. */
+export function afterFirstStepsSync(limitMs = 120_000): Promise<void> {
+  return Promise.race([firstSyncDone, new Promise<void>((resolve) => setTimeout(resolve, limitMs))]);
+}
+
 /** Reads today's and yesterday's steps and sends whatever has gone up. Throws if a send fails. */
 export function syncSteps(options: { interactive: boolean }): Promise<SyncOutcome> {
   // The screen and the background task can both fire as the app is opened; share one run
   inFlight ??= run(options).finally(() => {
     inFlight = null;
+    if (options.interactive) markFirstSyncDone();
   });
   return inFlight;
 }
