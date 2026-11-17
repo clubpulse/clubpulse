@@ -212,6 +212,20 @@ export default function HomeScreen() {
           </View>
         </Pressable>
 
+        {/* ── Academy ───────────────────────────────────────────── */}
+        <Pressable style={styles.card} onPress={() => router.push('/academy')}>
+          <View style={styles.cardRow}>
+            <View style={[styles.cardIcon, { backgroundColor: colors.brandPrimaryDim }]}>
+              <Ionicons name="school" size={18} color={colors.brandSky} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={fonts.title}>Academy</Text>
+              <Text style={fonts.small}>Two-minute lessons and a practice plan built for you</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+          </View>
+        </Pressable>
+
         {/* ── Games ─────────────────────────────────────────────── */}
         <Pressable style={[styles.card, { borderColor: colors.goldBorder }]} onPress={() => router.push('/auction-room')}>
           <View style={styles.cardRow}>
