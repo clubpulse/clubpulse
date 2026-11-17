@@ -31,6 +31,13 @@ const SAMPLE_DEALS: { merchantId: string; code: string; discountPct: number; tit
   { merchantId: '3022',  code: 'EBAY10OFF',   discountPct: 10, title: '10% off sporting goods',         expiresAt: null },
 ];
 
+// The deals below are sample data. The route stays dark until AWIN_DEALS_ENABLED=true,
+// which should only be set once the advertisers are approved and the codes are real.
+function dealsDisabled(): NextResponse | null {
+  if (process.env.AWIN_DEALS_ENABLED === 'true') return null;
+  return NextResponse.json({ error: 'Deals are not available yet' }, { status: 404 });
+}
+
 function merchantById(id: string): AwinMerchantWithCategory | undefined {
   return AWIN_MERCHANTS.find((m) => m.id === id);
 }
@@ -62,6 +69,9 @@ function buildDealResponse(
 }
 
 export async function GET(request: NextRequest) {
+  const disabled = dealsDisabled();
+  if (disabled) return disabled;
+
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category') as AwinCategory | null;
   const userId   = searchParams.get('userId') ?? undefined;
@@ -108,6 +118,9 @@ export async function GET(request: NextRequest) {
  * Returns a single random deal for scratch card prize redemption.
  */
 export async function POST(request: NextRequest) {
+  const disabled = dealsDisabled();
+  if (disabled) return disabled;
+
   try {
     const body = await request.json();
     const { userId, category: requestedCategory } = body as {

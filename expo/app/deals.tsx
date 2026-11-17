@@ -4,12 +4,14 @@ import {
   FlatList,
   Linking,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
+import { DEALS_ENABLED } from '../constants/features';
 import { Card } from '../components/Card';
 import { useDeals, type AwinCategory, type AwinDeal } from '../hooks/useDeals';
 import { colors, fonts, radius, spacing } from '../constants/theme';
@@ -24,6 +26,12 @@ const CATEGORY_FILTERS: { key: AwinCategory | 'all'; label: string; icon: string
 ];
 
 export default function DealsScreen() {
+  // Deep links and stale navigation can still reach this route while the flag is off
+  if (!DEALS_ENABLED) return <Redirect href="/store" />;
+  return <DealsList />;
+}
+
+function DealsList() {
   const [activeFilter, setActiveFilter] = useState<AwinCategory | 'all'>('all');
   const category = activeFilter === 'all' ? undefined : activeFilter;
   const { deals, loading, error, refresh } = useDeals(category);
@@ -45,8 +53,13 @@ export default function DealsScreen() {
         }}
       />
 
-      {/* Category filter chips */}
-      <View style={styles.filterRow}>
+      {/* Category filter chips — scroll sideways, six don't fit a phone's width */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterScroll}
+        contentContainerStyle={styles.filterRow}
+      >
         {CATEGORY_FILTERS.map((f) => (
           <Pressable
             key={f.key}
@@ -67,7 +80,7 @@ export default function DealsScreen() {
             </Text>
           </Pressable>
         ))}
-      </View>
+      </ScrollView>
 
       {loading ? (
         <View style={styles.center}>
@@ -121,6 +134,7 @@ function DealCard({ deal, onPress }: { deal: AwinDeal; onPress: () => void }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
+  filterScroll: { flexGrow: 0 },
   filterRow: {
     flexDirection: 'row',
     paddingHorizontal: spacing.md,

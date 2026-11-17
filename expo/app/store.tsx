@@ -9,6 +9,7 @@ import {
   IAP_PRODUCTS_099,
   type IAPProduct,
 } from '../lib/iap';
+import { DEALS_ENABLED } from '../constants/features';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 export default function StoreScreen() {
@@ -68,17 +69,19 @@ export default function StoreScreen() {
             )}
           </View>
           <Text style={[fonts.small, { textAlign: 'center' }]}>
-            New Balance · Castore · Gray-Nicolls · MyProtein · Garmin · Currys · and more
+            Partner brands are announced here as they join.
           </Text>
         </View>
 
         {/* Browse all deals CTA */}
-        <Pressable
-          onPress={() => router.push('/deals')}
-          style={({ pressed }) => [styles.browseDealsCta, pressed && { opacity: 0.8 }]}
-        >
-          <Text style={styles.browseDealsText}>Browse All Deals & Discounts →</Text>
-        </Pressable>
+        {DEALS_ENABLED && (
+          <Pressable
+            onPress={() => router.push('/deals')}
+            style={({ pressed }) => [styles.browseDealsCta, pressed && { opacity: 0.8 }]}
+          >
+            <Text style={styles.browseDealsText}>Browse All Deals & Discounts →</Text>
+          </Pressable>
+        )}
 
         {/* Divider */}
         <View style={styles.divider} />
