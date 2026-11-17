@@ -22,6 +22,9 @@ const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 
 const RECORD_MS = 5000;
+// An uploaded clip is analysed from the start up to this length
+const MAX_UPLOAD_MS = 20000;
+const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
 const MIN_FRAMES = 10;
 // Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
 const MIN_CLIP_SECONDS = 2;
@@ -438,6 +441,13 @@ export function AnalyseClient() {
   const [results, setResults] = useState<MetricResult[] | null>(null);
   const [frameCount, setFrameCount] = useState(0);
   const [highlights, setHighlights] = useState<'idle' | 'uploading' | 'ready'>('idle');
+  // Where the frames come from: the live camera, or a clip the player picked
+  const [source, setSource] = useState<'camera' | 'file'>('camera');
+  const sourceRef = useRef<'camera' | 'file'>('camera');
+  // 'user' is the selfie camera; 'environment' is the back camera, for when someone else films
+  const [facing, setFacing] = useState<'user' | 'environment'>('user');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileUrlRef = useRef<string | null>(null);
 
   // Mode/hand/shotType are read when a recording finishes, from inside the rAF loop
   const settingsRef = useRef({ mode, hand, shotType });
@@ -455,6 +465,15 @@ export function AnalyseClient() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     recordingRef.current = null;
+    const video = videoRef.current;
+    if (video) {
+      video.pause();
+      video.onended = null;
+      video.srcObject = null;
+      if (fileUrlRef.current) video.removeAttribute('src');
+    }
+    if (fileUrlRef.current) URL.revokeObjectURL(fileUrlRef.current);
+    fileUrlRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -471,12 +490,22 @@ export function AnalyseClient() {
     recordingRef.current = null;
     if (!recording || !video) return;
 
+    const fromFile = sourceRef.current === 'file';
+    if (fromFile) {
+      // An uploaded clip is read once: stop on its last analysed frame
+      video.pause();
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
     const { mode: m, hand: hd, shotType: st } = settingsRef.current;
     const metrics = analyse(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined);
     setFrameCount(recording.frames.length);
     if (!metrics) {
-      setError("We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
-      setPhase('ready');
+      setError(fromFile
+        ? "We couldn't see a whole body clearly enough in that video. Use a clip filmed side-on with head to ankles in frame, in good light."
+        : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
+      setPhase(fromFile ? 'idle' : 'ready');
       return;
     }
     setResults(metrics);
@@ -550,23 +579,29 @@ export function AnalyseClient() {
     tick();
   }, [finishRecording]);
 
-  async function startCamera() {
+  async function loadLandmarker() {
+    if (landmarkerRef.current) return;
+    const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
+    const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+    landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
+      baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
+      runningMode: 'VIDEO',
+      numPoses: 1,
+    });
+    connectionsRef.current = PoseLandmarker.POSE_CONNECTIONS;
+  }
+
+  async function startCamera(useFacing: 'user' | 'environment' = facing) {
     setError(null);
     setPhase('loading');
+    stopCamera();
+    sourceRef.current = 'camera';
+    setSource('camera');
     try {
-      if (!landmarkerRef.current) {
-        const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-        const vision = await FilesetResolver.forVisionTasks(WASM_URL);
-        landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
-          runningMode: 'VIDEO',
-          numPoses: 1,
-        });
-        connectionsRef.current = PoseLandmarker.POSE_CONNECTIONS;
-      }
+      await loadLandmarker();
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: useFacing, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -596,6 +631,53 @@ export function AnalyseClient() {
       setError(denied
         ? 'Camera access was blocked. Allow camera access in your browser settings and try again.'
         : `Couldn't start motion analysis: ${err instanceof Error ? err.message : 'unknown error'}`);
+      setPhase('idle');
+    }
+  }
+
+  // Swaps between the selfie and back cameras. Any highlight session in progress is dropped.
+  function flipCamera() {
+    const next = facing === 'user' ? 'environment' : 'user';
+    setFacing(next);
+    setResults(null);
+    void startCamera(next);
+  }
+
+  // Runs the same body tracking over a clip from the player's device. Nothing is uploaded:
+  // the video is read on the device, and only the scores are saved.
+  async function analyseFile(file: File) {
+    setError(null);
+    setResults(null);
+    if (!file.type.startsWith('video/')) {
+      setError('Choose a video file.');
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setError('That video is too large. Trim it to the delivery or shot you want checked (under 200 MB).');
+      return;
+    }
+    stopCamera();
+    canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    sourceRef.current = 'file';
+    setSource('file');
+    setPhase('loading');
+    try {
+      await loadLandmarker();
+      const video = videoRef.current;
+      if (!video) return;
+      const url = URL.createObjectURL(file);
+      fileUrlRef.current = url;
+      video.srcObject = null;
+      video.src = url;
+      video.onended = () => finishRecording();
+      await video.play();
+      lastVideoTimeRef.current = -1;
+      recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [] };
+      setPhase('recording');
+      startLoop();
+    } catch (err) {
+      stopCamera();
+      setError(`Couldn't read that video: ${err instanceof Error ? err.message : 'unknown error'}. MP4 and MOV clips work best.`);
       setPhase('idle');
     }
   }
@@ -661,7 +743,10 @@ export function AnalyseClient() {
     }
   }
 
-  const cameraOn = phase === 'ready' || phase === 'recording' || phase === 'done';
+  const cameraOn = source === 'camera' && (phase === 'ready' || phase === 'recording' || phase === 'done');
+  const fileShown = source === 'file' && (phase === 'recording' || phase === 'done');
+  // The selfie camera is shown as a mirror; the back camera and uploaded clips are shown as filmed
+  const mirrored = source === 'camera' && facing === 'user';
   const overall = results ? Math.round(mean(results.map((r) => r.score))) : null;
 
   return (
@@ -765,15 +850,16 @@ export function AnalyseClient() {
         <div className="relative overflow-hidden rounded-xl bg-black" style={{ aspectRatio: '16 / 9' }}>
           {/* Mirrored so it behaves like a mirror; landmarks are computed on the unmirrored frame */}
           <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-contain"
-            style={{ transform: 'scaleX(-1)' }} />
+            style={{ transform: mirrored ? 'scaleX(-1)' : undefined }} />
           <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-            style={{ transform: 'scaleX(-1)' }} />
+            style={{ transform: mirrored ? 'scaleX(-1)' : undefined }} />
 
-          {!cameraOn && (
+          {!cameraOn && !fileShown && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               <span className="text-4xl" aria-hidden>🎯</span>
               <p className="max-w-sm text-sm text-neutral-400">
                 Set your phone or laptop side-on, step back so your whole body is in frame, then start the camera.
+                Or upload a clip you have already filmed.
               </p>
             </div>
           )}
@@ -781,21 +867,36 @@ export function AnalyseClient() {
           {phase === 'recording' && (
             <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-sm font-medium">
               <span className="h-2.5 w-2.5 animate-pulse rounded-full" style={{ background: CRIMSON }} aria-hidden />
-              Recording · {secondsLeft}s
+              {source === 'file' ? 'Analysing your video…' : `Recording · ${secondsLeft}s`}
             </div>
           )}
         </div>
 
         <div className="mt-4 flex flex-wrap gap-3">
           {!cameraOn && (
-            <Button onClick={startCamera} loading={phase === 'loading'}>
-              {phase === 'loading' ? 'Loading pose model…' : 'Start camera'}
-            </Button>
+            <>
+              <Button onClick={() => startCamera()} loading={phase === 'loading'} disabled={phase === 'recording'}>
+                {phase === 'loading' ? 'Loading pose model…' : 'Start camera'}
+              </Button>
+              <Button variant="secondary" onClick={() => fileInputRef.current?.click()}
+                disabled={phase === 'loading' || phase === 'recording'}>
+                {fileShown && phase === 'done' ? 'Upload another video' : 'Upload a video'}
+              </Button>
+              <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = '';
+                  if (file) void analyseFile(file);
+                }} />
+            </>
           )}
           {cameraOn && (
             <>
               <Button onClick={startRecording} disabled={phase === 'recording'}>
                 {phase === 'done' ? 'Record again' : 'Record 5 seconds'}
+              </Button>
+              <Button variant="secondary" onClick={flipCamera} disabled={phase === 'recording'}>
+                {facing === 'user' ? 'Use back camera' : 'Use front camera'}
               </Button>
               <Button variant="secondary" onClick={turnOff} disabled={phase === 'recording'}>Stop camera</Button>
             </>
@@ -812,7 +913,7 @@ export function AnalyseClient() {
       {results && overall !== null && (
         <Card
           title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
-          description={`Averaged over ${frameCount} frames`}
+          description={`Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}`}
           action={
             <div className="text-right">
               <div className="text-3xl font-bold" style={{ color: scoreColour(overall) }}>{overall}</div>

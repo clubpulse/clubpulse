@@ -55,6 +55,8 @@ function AuthGate() {
       <Stack.Screen name="academy" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'Academy' }} />
       <Stack.Screen name="academy-plan" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'My practice plan' }} />
       <Stack.Screen name="lesson/[id]" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'Lesson' }} />
+      <Stack.Screen name="coaching" options={{ headerShown: true, title: 'Coaching and video', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="web" options={{ headerShown: true, title: 'ClubPulse', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="rewards" options={{ headerShown: true, title: 'Rewards', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="auction-room" options={{ headerShown: true, title: 'Auction Room', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="store" options={{ headerShown: true, title: 'Store', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />

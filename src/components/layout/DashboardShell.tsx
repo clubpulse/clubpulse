@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
+import { APP_VIEW_COOKIE } from '@/lib/auth/app-view';
 import { getAdminContext, getAdminSession } from '@/lib/auth/admin';
 import { createClient } from '@/lib/supabase/server';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
@@ -10,6 +12,16 @@ import { BottomNav } from '@/components/layout/BottomNav';
 
 // Signed-in app chrome, shared by the (dashboard) layout and public routes that also serve signed-in users.
 export async function DashboardShell({ user, children }: { user: User; children: ReactNode }) {
+  // Inside the phone app the page is shown in a web view under the app's own header and tabs,
+  // so the website's navigation is left out.
+  if ((await cookies()).get(APP_VIEW_COOKIE)?.value === '1') {
+    return (
+      <div className="min-h-screen bg-[#0B0B0B] text-white">
+        <main className="mx-auto max-w-3xl px-4 py-5 pb-10">{children}</main>
+      </div>
+    );
+  }
+
   const supabase = await createClient();
 
   const [profile, wallet, adminCtx, platformAdmin, membershipRow] = await Promise.all([
