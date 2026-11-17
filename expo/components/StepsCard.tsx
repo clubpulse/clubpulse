@@ -3,11 +3,13 @@ import { Card } from './Card';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 import type { StepsSyncResponse } from '../lib/api';
 import type { StepsStatus } from '../hooks/useSteps';
+import type { StepSource } from '../lib/health';
 
 const GOAL = 10000;
 
 type Props = {
   steps: number;
+  source?: StepSource | null;
   status: StepsStatus;
   syncing: boolean;
   result: StepsSyncResponse | null;
@@ -15,7 +17,7 @@ type Props = {
   onSync: () => void;
 };
 
-export function StepsCard({ steps, status, syncing, result, error, onSync }: Props) {
+export function StepsCard({ steps, source, status, syncing, result, error, onSync }: Props) {
   const progress = Math.min(1, steps / GOAL);
 
   return (
@@ -26,7 +28,7 @@ export function StepsCard({ steps, status, syncing, result, error, onSync }: Pro
         <Text style={fonts.small}>Step tracking isn&apos;t available on this device yet.</Text>
       )}
       {status === 'denied' && (
-        <Text style={fonts.small}>Allow motion access in Settings to earn Scores for your steps.</Text>
+        <Text style={fonts.small}>Allow Health or Motion access in Settings to earn Scores for your steps.</Text>
       )}
       {(status === 'ready' || status === 'loading') && (
         <>
@@ -37,6 +39,13 @@ export function StepsCard({ steps, status, syncing, result, error, onSync }: Pro
           <Text style={styles.hint}>
             {steps >= GOAL ? `Daily goal reached 🎉` : `${(GOAL - steps).toLocaleString('en-GB')} to your ${GOAL.toLocaleString('en-GB')} goal`}
           </Text>
+          {source && (
+            <Text style={styles.hint}>
+              {source === 'apple_health'
+                ? 'From Apple Health, including your watch and any apps that share steps with it.'
+                : 'From this iPhone only. Allow Apple Health to count your watch or wearable too.'}
+            </Text>
+          )}
           {result && !!result.totalScoresToday && (
             <Text style={styles.earned}>+{result.totalScoresToday} Scores earned today</Text>
           )}

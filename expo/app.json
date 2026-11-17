@@ -19,7 +19,6 @@
       "bundleIdentifier": "com.clubpulse.app",
       "buildNumber": "1",
       "infoPlist": {
-        "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health so you can earn Scores for staying active.",
         "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
         "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer.",
         "ITSAppUsesNonExemptEncryption": false
@@ -31,7 +30,10 @@
     "android": {
       "package": "com.clubpulse.app",
       "versionCode": 1,
-      "permissions": ["ACTIVITY_RECOGNITION", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "ACTIVITY_RECOGNITION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "extra": {
       "eas": {
@@ -58,6 +60,14 @@
         {
           "icon": "./assets/icon.png",
           "color": "#EFC84A"
+        }
+      ],
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health, including steps from your watch or other wearables, so you can earn Scores for staying active.",
+          "NSHealthUpdateUsageDescription": false,
+          "background": false
         }
       ]
     ]

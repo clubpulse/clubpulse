@@ -1,63 +1,69 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Platform } from 'react-native';
-import { Pedometer } from 'expo-sensors';
+import { AppState } from 'react-native';
 import { api, ApiError, type StepsSyncResponse } from '../lib/api';
+import { localDay, readSteps, type StepSource } from '../lib/health';
 
 export type StepsStatus = 'loading' | 'ready' | 'unavailable' | 'denied';
 
-// Reads today's steps from the phone's motion coprocessor (iOS CoreMotion via expo-sensors) and
-// syncs them to /api/steps/sync. Apple Health proper needs a native HealthKit module (e.g.
-// react-native-health) in a development build; there is no "expo-health" package. Android's
-// pedometer API has no step history, so it needs Health Connect and is reported as unavailable.
+// Reads steps from Apple Health when it is available (covering Apple Watch, WHOOP, Garmin and
+// any other app that shares steps with Health) and otherwise from the phone's motion sensor,
+// then syncs them to /api/steps/sync. See lib/health.ts for how the sources are combined.
+//
+// Yesterday is synced as well as today: some wearables (WHOOP, for one) only write a day's
+// steps to Health overnight, so yesterday's total can still rise the next morning.
 export function useSteps() {
   const [steps, setSteps] = useState(0);
+  const [source, setSource] = useState<StepSource | null>(null);
   const [status, setStatus] = useState<StepsStatus>('loading');
   const [syncing, setSyncing] = useState(false);
   const [result, setResult] = useState<StepsSyncResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const lastSynced = useRef(0);
+  // Highest count already sent for each local date, so an unchanged total is not re-sent
+  const lastSynced = useRef<Record<string, number>>({});
+  const running = useRef(false);
 
   const refresh = useCallback(async () => {
-    if (Platform.OS !== 'ios') {
-      setStatus('unavailable');
-      return;
-    }
+    if (running.current) return;
+    running.current = true;
     try {
-      if (!(await Pedometer.isAvailableAsync())) {
-        setStatus('unavailable');
-        return;
-      }
-      const permission = await Pedometer.requestPermissionsAsync();
-      if (!permission.granted) {
-        setStatus('denied');
-        return;
-      }
+      const today = localDay(0);
+      const todayRead = await readSteps(today.start, today.end);
+      setStatus(todayRead.access);
+      if (todayRead.access !== 'ready') return;
+      setSteps(todayRead.steps);
+      setSource(todayRead.source);
 
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      const { steps: count } = await Pedometer.getStepCountAsync(start, new Date());
-      setSteps(count);
-      setStatus('ready');
+      const yesterday = localDay(-1);
+      const yesterdayRead = await readSteps(yesterday.start, yesterday.end);
 
-      if (count >= 1 && count > lastSynced.current) {
-        setSyncing(true);
-        setError(null);
-        try {
-          // The server dates streaks in UTC, so send the UTC date
+      // Yesterday goes first: the server builds today's streak on yesterday's entry
+      const days = [
+        { day: yesterday, read: yesterdayRead, isToday: false },
+        { day: today, read: todayRead, isToday: true },
+      ].filter(({ day, read }) => read.steps >= 1 && read.steps > (lastSynced.current[day.date] ?? 0));
+      if (days.length === 0) return;
+
+      setSyncing(true);
+      setError(null);
+      try {
+        for (const { day, read, isToday } of days) {
+          // The date is the phone's local date, matching the window the steps were counted over
           const response = await api<StepsSyncResponse>('/api/steps/sync', {
             method: 'POST',
-            body: { stepCount: count, logDate: new Date().toISOString().slice(0, 10), source: 'expo_sensors' },
+            body: { stepCount: read.steps, logDate: day.date, source: read.source },
           });
-          lastSynced.current = count;
-          setResult(response);
-        } catch (e) {
-          setError(e instanceof ApiError ? e.message : 'Could not sync your steps');
-        } finally {
-          setSyncing(false);
+          lastSynced.current[day.date] = read.steps;
+          if (isToday) setResult(response);
         }
+      } catch (e) {
+        setError(e instanceof ApiError ? e.message : 'Could not sync your steps');
+      } finally {
+        setSyncing(false);
       }
     } catch {
       setError('Could not read your steps');
+    } finally {
+      running.current = false;
     }
   }, []);
 
@@ -69,5 +75,5 @@ export function useSteps() {
     return () => subscription.remove();
   }, [refresh]);
 
-  return { steps, status, syncing, result, error, refresh };
+  return { steps, source, status, syncing, result, error, refresh };
 }

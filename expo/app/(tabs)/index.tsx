@@ -224,6 +224,7 @@ export default function HomeScreen() {
         <SectionLabel label="Player" />
         <StepsCard
           steps={steps.steps}
+          source={steps.source}
           status={steps.status}
           syncing={steps.syncing}
           result={steps.result}
