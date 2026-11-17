@@ -40,7 +40,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
   net_session_card: {
     id: 'net_session_card',
     name: 'Net Session Card',
-    description: 'Scratch 3 panels — win brand discounts, gift card discounts, shields and badges!',
+    description: 'Scratch 3 panels, then choose the discount you want. Some cards carry a bonus prize too.',
     priceGBP: 0.49,
     type: 'consumable',
     icon: '🏏',
@@ -49,7 +49,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
   match_day_card: {
     id: 'match_day_card',
     name: 'Match Day Card',
-    description: 'Face a full over — 6 balls, bigger prizes, but a wicket ends your innings!',
+    description: 'Face a full over for bigger discounts to choose from. A wicket ends your innings!',
     priceGBP: 0.99,
     type: 'consumable',
     icon: '🏟️',
@@ -219,8 +219,14 @@ export interface PrizeTier {
   emoji: string;
   minRuns: number;
   maxRuns: number;
-  /** Pool of possible prizes — engine picks one at random */
-  possiblePrizes: Prize[];
+  /** The card offers one brand discount from each of these categories */
+  discountCategories: AwinCategory[];
+  /** Gift card discount offered alongside the brand discounts, or null for none */
+  giftCardPct: number | null;
+  /** Chance (0–1) that the card also carries a bonus prize on top of the chosen discount */
+  bonusChance: number;
+  /** Pool the bonus is drawn from, by weight */
+  bonuses: Prize[];
 }
 
 /* ── Ball generation ── */
@@ -252,10 +258,6 @@ function weightedRandom<T extends { weight: number }>(items: T[]): T {
   return items[items.length - 1];
 }
 
-function pickPrize(prizes: Prize[]): Prize {
-  return weightedRandom(prizes.map((prize) => ({ prize, weight: prize.weight ?? 1 }))).prize;
-}
-
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -269,115 +271,104 @@ function pickAwinDeal(category?: AwinCategory): AwinDeal {
 
 /* ── Prize tier definitions ── */
 
-function awinPrize(label: string, category?: AwinCategory, weight = 1): Prize {
-  const deal = pickAwinDeal(category);
-  return { type: 'awin_deal', label: `${deal.discountLabel} ${deal.brand} — ${deal.description}`, awinDeal: deal, weight };
-}
-
 /**
- * Prize mix: cards pay out discounts first. Brand discount codes and gift card
- * discounts make up the bulk of every tier, with a few cosmetics and boosts.
- * Scores are deliberately very rare (well under 1 card in 100) and appear only
- * in the top tiers. Each prize's weight is its share of its tier.
+ * Every card is worth having: the player always chooses one discount from the
+ * two or three on offer, and better innings unlock bigger gift card discounts.
+ * On top of that, some cards carry a bonus prize. Scores are deliberately very
+ * rare (well under 1 card in 100) and only ever appear as a top-tier bonus.
  */
-function giftCardDiscount(pct: number, weight: number): Prize {
-  return { type: 'gift_card_discount', label: `${pct}% off a gift card`, value: pct, weight };
-}
-
 export const NET_SESSION_TIERS: PrizeTier[] = [
   {
     name: 'bowled', label: 'Bowled!', emoji: '😬', minRuns: 0, maxRuns: 2,
-    possiblePrizes: [
-      awinPrize('Grocery deal', 'groceries', 5),
-      awinPrize('Value deal', 'general_value', 5),
-    ],
+    discountCategories: ['groceries', 'general_value', 'sports_equipment'], giftCardPct: null,
+    bonusChance: 0, bonuses: [],
   },
   {
     name: 'steady_start', label: 'Steady Start', emoji: '👏', minRuns: 3, maxRuns: 8,
-    possiblePrizes: [
-      awinPrize('Sports gear deal', 'sports_equipment', 4),
-      awinPrize('Grocery deal', 'groceries', 4),
-      giftCardDiscount(5, 3),
-      { type: 'streak_shield', label: 'Streak Shield', value: 1, weight: 1 },
-    ],
+    discountCategories: ['sports_equipment', 'groceries'], giftCardPct: 5,
+    bonusChance: 0.1,
+    bonuses: [{ type: 'streak_shield', label: 'Streak Shield', value: 1 }],
   },
   {
     name: 'building', label: 'Building an Innings', emoji: '🔥', minRuns: 9, maxRuns: 12,
-    possiblePrizes: [
-      awinPrize('Apparel deal', 'sports_apparel', 4),
-      awinPrize('Electronics deal', 'electronics', 3),
-      giftCardDiscount(10, 3),
-      { type: 'profile_badge', label: 'Collectible Badge', value: 1, weight: 1 },
-    ],
+    discountCategories: ['sports_apparel', 'electronics'], giftCardPct: 10,
+    bonusChance: 0.15,
+    bonuses: [{ type: 'profile_badge', label: 'Collectible Badge', value: 1 }],
   },
   {
     name: 'on_fire', label: 'On Fire!', emoji: '🏆', minRuns: 13, maxRuns: 17,
-    possiblePrizes: [
-      awinPrize('Premium apparel deal', 'sports_apparel', 4),
-      awinPrize('Equipment deal', 'sports_equipment', 4),
-      giftCardDiscount(15, 3),
-      { type: 'profile_badge', label: 'Rare Badge', value: 1, weight: 1 },
+    discountCategories: ['sports_apparel', 'sports_equipment'], giftCardPct: 15,
+    bonusChance: 0.25,
+    bonuses: [
+      { type: 'profile_badge', label: 'Rare Badge', value: 1, weight: 3 },
       { type: 'scores', label: '75 Scores', value: 75, weight: 1 },
     ],
   },
   {
     name: 'hat_trick_sixes', label: 'HAT-TRICK OF SIXES!', emoji: '💥', minRuns: 18, maxRuns: 18,
-    possiblePrizes: [
-      { type: 'scores', label: '150 Scores + Exclusive Badge', value: 150 },
-    ],
+    discountCategories: ['sports_apparel', 'sports_equipment'], giftCardPct: 20,
+    bonusChance: 1,
+    bonuses: [{ type: 'scores', label: '150 Scores + Exclusive Badge', value: 150 }],
   },
 ];
 
 export const MATCH_DAY_TIERS: PrizeTier[] = [
   {
     name: 'golden_duck', label: 'Golden Duck', emoji: '🦆', minRuns: -1, maxRuns: 0,
-    possiblePrizes: [
-      awinPrize('Consolation deal', 'groceries', 3),
-      { type: 'profile_badge', label: 'Golden Duck Badge', value: 1, weight: 1 },
-    ],
+    discountCategories: ['groceries', 'general_value', 'sports_equipment'], giftCardPct: null,
+    bonusChance: 1,
+    bonuses: [{ type: 'profile_badge', label: 'Golden Duck Badge', value: 1 }],
   },
   {
     name: 'cameo', label: 'Cameo', emoji: '👋', minRuns: 1, maxRuns: 6,
-    possiblePrizes: [
-      awinPrize('Grocery deal', 'groceries', 4),
-      awinPrize('Value deal', 'general_value', 4),
-      giftCardDiscount(5, 3),
-    ],
+    discountCategories: ['groceries', 'general_value'], giftCardPct: 5,
+    bonusChance: 0, bonuses: [],
   },
   {
     name: 'useful_knock', label: 'Useful Knock', emoji: '💪', minRuns: 7, maxRuns: 14,
-    possiblePrizes: [
-      awinPrize('Equipment deal', 'sports_equipment', 4),
-      awinPrize('Electronics deal', 'electronics', 3),
-      giftCardDiscount(10, 3),
-      { type: 'coach_ai_session', label: 'Coach AI Session', value: 1, weight: 1 },
-    ],
+    discountCategories: ['sports_equipment', 'electronics'], giftCardPct: 10,
+    bonusChance: 0.1,
+    bonuses: [{ type: 'coach_ai_session', label: 'Coach AI Session', value: 1 }],
   },
   {
     name: 'match_winner', label: 'Match Winner', emoji: '🏆', minRuns: 15, maxRuns: 24,
-    possiblePrizes: [
-      awinPrize('Premium apparel deal', 'sports_apparel', 4),
-      awinPrize('Premium equipment deal', 'sports_equipment', 4),
-      giftCardDiscount(15, 3),
-      { type: 'streak_shield', label: 'Streak Shield', value: 1, weight: 1 },
-    ],
+    discountCategories: ['sports_apparel', 'sports_equipment'], giftCardPct: 15,
+    bonusChance: 0.15,
+    bonuses: [{ type: 'streak_shield', label: 'Streak Shield', value: 1 }],
   },
   {
     name: 'player_of_match', label: 'Player of the Match', emoji: '⭐', minRuns: 25, maxRuns: 35,
-    possiblePrizes: [
-      awinPrize('Premium deal', 'sports_apparel', 3),
-      giftCardDiscount(20, 3),
-      { type: 'sporting_soul_theme', label: 'Sporting Soul Theme', value: 1, weight: 1 },
+    discountCategories: ['sports_apparel', 'sports_equipment'], giftCardPct: 20,
+    bonusChance: 0.5,
+    bonuses: [
+      { type: 'sporting_soul_theme', label: 'Sporting Soul Theme', value: 1, weight: 3 },
       { type: 'scores', label: '200 Scores', value: 200, weight: 1 },
     ],
   },
   {
     name: 'yuvraj_moment', label: 'YUVRAJ MOMENT!', emoji: '🔥', minRuns: 36, maxRuns: 36,
-    possiblePrizes: [
-      { type: 'scores', label: '500 Scores + Exclusive Frame + Coach AI 3-Pack', value: 500 },
-    ],
+    discountCategories: ['sports_apparel', 'sports_equipment'], giftCardPct: 20,
+    bonusChance: 1,
+    bonuses: [{ type: 'scores', label: '500 Scores + Exclusive Frame + Coach AI 3-Pack', value: 500 }],
   },
 ];
+
+/** The discounts a card in this tier offers. The player keeps one. */
+function buildChoices(tier: PrizeTier): Prize[] {
+  const choices: Prize[] = tier.discountCategories.map((category) => {
+    const deal = pickAwinDeal(category);
+    return { type: 'awin_deal', label: `${deal.discountLabel} at ${deal.brand}`, awinDeal: deal };
+  });
+  if (tier.giftCardPct !== null) {
+    choices.push({ type: 'gift_card_discount', label: `${tier.giftCardPct}% off a gift card`, value: tier.giftCardPct });
+  }
+  return choices;
+}
+
+function drawBonus(tier: PrizeTier): Prize | null {
+  if (tier.bonuses.length === 0 || Math.random() >= tier.bonusChance) return null;
+  return weightedRandom(tier.bonuses.map((prize) => ({ prize, weight: prize.weight ?? 1 }))).prize;
+}
 
 /* ── Core engine ── */
 
@@ -388,7 +379,10 @@ export interface ScratchCardResult {
   isWicket: boolean;          // Match Day: innings ended by wicket
   wicketBall: number | null;  // which ball (0-indexed) was the wicket
   prizeTier: PrizeTier;
-  prize: Prize;
+  /** Discounts on offer — the player keeps one */
+  choices: Prize[];
+  /** Extra prize on top of the chosen discount, if the card carries one */
+  bonus: Prize | null;
 }
 
 export function generateNetSessionCard(): ScratchCardResult {
@@ -400,9 +394,10 @@ export function generateNetSessionCard(): ScratchCardResult {
   const totalRuns = panels.reduce((s, p) => s + p.runs, 0);
   const tier = NET_SESSION_TIERS.find((t) => totalRuns >= t.minRuns && totalRuns <= t.maxRuns)
     ?? NET_SESSION_TIERS[0];
-  const prize = pickPrize(tier.possiblePrizes);
+  const choices = buildChoices(tier);
+  const bonus = drawBonus(tier);
 
-  return { cardTier: 'net_session', panels, totalRuns, isWicket: false, wicketBall: null, prizeTier: tier, prize };
+  return { cardTier: 'net_session', panels, totalRuns, isWicket: false, wicketBall: null, prizeTier: tier, choices, bonus };
 }
 
 export function generateMatchDayCard(): ScratchCardResult {
@@ -431,9 +426,10 @@ export function generateMatchDayCard(): ScratchCardResult {
   const lookupRuns = isWicket && wicketBall === 0 ? -1 : totalRuns;
   const tier = MATCH_DAY_TIERS.find((t) => lookupRuns >= t.minRuns && lookupRuns <= t.maxRuns)
     ?? MATCH_DAY_TIERS[0];
-  const prize = pickPrize(tier.possiblePrizes);
+  const choices = buildChoices(tier);
+  const bonus = drawBonus(tier);
 
-  return { cardTier: 'match_day', panels, totalRuns, isWicket, wicketBall, prizeTier: tier, prize };
+  return { cardTier: 'match_day', panels, totalRuns, isWicket, wicketBall, prizeTier: tier, choices, bonus };
 }
 
 /* ── Published odds ── */
@@ -449,7 +445,10 @@ export interface TierOdds {
   label: string;
   /** Chance of landing in this tier on any one card, 0–1 */
   probability: number;
-  prizes: PrizeOdds[];
+  /** Discounts every card in this tier offers; the player keeps one */
+  choices: string[];
+  /** Bonus prizes, each with its chance on any one card */
+  bonuses: PrizeOdds[];
 }
 
 /**
@@ -490,18 +489,18 @@ export function getCardOdds(cardTier: CardTier): TierOdds[] {
 
   return tiers.map((tier) => {
     const probability = tierProbability.get(tier.name) ?? 0;
-    // Prizes are drawn by weight within the tier; brand discounts are grouped into one line
-    const tierWeight = tier.possiblePrizes.reduce((sum, prize) => sum + (prize.weight ?? 1), 0);
-    const byLabel = new Map<string, number>();
-    for (const prize of tier.possiblePrizes) {
-      const label = prize.type === 'awin_deal' ? 'Brand discount code' : prize.label;
-      byLabel.set(label, (byLabel.get(label) ?? 0) + (probability * (prize.weight ?? 1)) / tierWeight);
-    }
+    const choices = tier.discountCategories.map((c) => `${AWIN_CATEGORY_CONFIG[c].label} brand discount`);
+    if (tier.giftCardPct !== null) choices.push(`${tier.giftCardPct}% off a gift card`);
+    const bonusWeight = tier.bonuses.reduce((sum, prize) => sum + (prize.weight ?? 1), 0);
     return {
       name: tier.name,
       label: tier.label,
       probability,
-      prizes: [...byLabel].map(([label, p]) => ({ label, probability: p })),
+      choices,
+      bonuses: tier.bonuses.map((prize) => ({
+        label: prize.label,
+        probability: (probability * tier.bonusChance * (prize.weight ?? 1)) / bonusWeight,
+      })),
     };
   });
 }

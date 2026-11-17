@@ -36,6 +36,7 @@ export default function ScratchCardScreen() {
   );
   const [showPrize, setShowPrize] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false);
+  const [chosen, setChosen] = useState<number | null>(null);
   const prizeScale = useRef(new Animated.Value(0)).current;
   const allRevealed = revealedPanels.every(Boolean);
   const inningsOver = useRef(false);
@@ -90,6 +91,7 @@ export default function ScratchCardScreen() {
   );
 
   const upsell = cardTier === 'net_session' ? getUpsell('post_scratch') : null;
+  const chosenPrize = chosen === null ? null : result.choices[chosen];
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -155,34 +157,53 @@ export default function ScratchCardScreen() {
               {/* Prize details */}
               <View style={styles.prizeDivider} />
 
-              <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xs }]}>YOU WON</Text>
-              <Text style={[fonts.title, { textAlign: 'center', fontSize: 18 }]}>
-                {result.prize.label}
+              <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.sm }]}>
+                {chosenPrize ? 'YOUR DISCOUNT' : `CHOOSE 1 OF ${result.choices.length}`}
               </Text>
 
+              {/* Discount choices: the player keeps one */}
+              {!chosenPrize && (
+                <View style={{ gap: spacing.sm }}>
+                  {result.choices.map((choice, idx) => (
+                    <Pressable
+                      key={idx}
+                      onPress={() => setChosen(idx)}
+                      style={({ pressed }) => [styles.choiceRow, pressed && { opacity: 0.7 }]}
+                    >
+                      <Text style={{ fontSize: 20 }}>
+                        {choice.awinDeal ? AWIN_CATEGORY_CONFIG[choice.awinDeal.category].icon : '🎁'}
+                      </Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={fonts.title}>{choice.label}</Text>
+                        <Text style={fonts.small}>
+                          {choice.awinDeal ? choice.awinDeal.description : 'Use it in the Marketplace'}
+                        </Text>
+                      </View>
+                      <Text style={styles.choicePick}>Pick</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+
+              {chosenPrize && (
+                <Text style={[fonts.title, { textAlign: 'center', fontSize: 18 }]}>{chosenPrize.label}</Text>
+              )}
+
               {/* Awin deal details */}
-              {result.prize.awinDeal && (
+              {chosenPrize?.awinDeal && (
                 <View style={styles.awinDealCard}>
                   <View style={styles.awinCategoryBadge}>
-                    <Text style={{ fontSize: 14 }}>
-                      {AWIN_CATEGORY_CONFIG[result.prize.awinDeal.category].icon}
-                    </Text>
+                    <Text style={{ fontSize: 14 }}>{AWIN_CATEGORY_CONFIG[chosenPrize.awinDeal.category].icon}</Text>
                     <Text style={styles.awinCategoryText}>
-                      {AWIN_CATEGORY_CONFIG[result.prize.awinDeal.category].label}
+                      {AWIN_CATEGORY_CONFIG[chosenPrize.awinDeal.category].label}
                     </Text>
                   </View>
-                  <Text style={[fonts.title, { textAlign: 'center', marginTop: spacing.sm }]}>
-                    {result.prize.awinDeal.discountLabel}
+                  <Text style={[fonts.small, { textAlign: 'center', marginTop: spacing.sm }]}>
+                    {chosenPrize.awinDeal.description}
                   </Text>
-                  <Text style={[fonts.regular, { textAlign: 'center' }]}>
-                    {result.prize.awinDeal.brand}
-                  </Text>
-                  <Text style={[fonts.small, { textAlign: 'center' }]}>
-                    {result.prize.awinDeal.description}
-                  </Text>
-                  {result.prize.awinDeal.code && (
+                  {chosenPrize.awinDeal.code && (
                     <View style={styles.codeBox}>
-                      <Text style={styles.codeText}>{result.prize.awinDeal.code}</Text>
+                      <Text style={styles.codeText}>{chosenPrize.awinDeal.code}</Text>
                     </View>
                   )}
                   <Pressable style={({ pressed }) => [styles.redeemBtn, pressed && { opacity: 0.7 }]}>
@@ -191,17 +212,18 @@ export default function ScratchCardScreen() {
                 </View>
               )}
 
-              {/* Scores prize display */}
-              {result.prize.type === 'scores' && result.prize.value && (
+              {/* Bonus prize on top of the chosen discount */}
+              {result.bonus && (
                 <View style={styles.scoresPrizeRow}>
-                  <Text style={styles.scoresPrizeIcon}>🪙</Text>
-                  <Text style={styles.scoresPrizeValue}>+{result.prize.value} Scores</Text>
+                  <Text style={styles.scoresPrizeIcon}>{result.bonus.type === 'scores' ? '🪙' : '🎉'}</Text>
+                  <Text style={styles.scoresPrizeValue}>Bonus: {result.bonus.label}</Text>
                 </View>
               )}
 
               <Pressable
                 onPress={() => router.back()}
-                style={({ pressed }) => [styles.doneBtn, pressed && { opacity: 0.7 }]}
+                disabled={!chosenPrize}
+                style={({ pressed }) => [styles.doneBtn, (pressed || !chosenPrize) && { opacity: 0.5 }]}
               >
                 <Text style={styles.doneBtnText}>Collect & Close</Text>
               </Pressable>
@@ -402,7 +424,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   scoresPrizeIcon: { fontSize: 24 },
-  scoresPrizeValue: { color: colors.gold, fontSize: 22, fontWeight: '800' },
+  choiceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.surface2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border as string,
+    padding: spacing.md,
+  },
+  choicePick: { color: colors.brandSky, fontWeight: '700', fontSize: 14 },
+  scoresPrizeValue: { color: colors.gold, fontSize: 18, fontWeight: '800', flexShrink: 1 },
 
   doneBtn: {
     backgroundColor: colors.success,

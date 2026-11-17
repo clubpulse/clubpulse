@@ -28,8 +28,8 @@ export default function StoreScreen() {
         <View style={{ gap: spacing.sm }}>
           <Text style={fonts.heading}>Scratch & Win 🏏</Text>
           <Text style={fonts.small}>
-            Every card wins. Most prizes are brand discounts or money off gift cards, with streak shields
-            and exclusive badges in the mix.
+            Every card wins, and you choose the prize: pick the brand discount or gift card discount you want.
+            Some cards add a bonus streak shield or exclusive badge.
           </Text>
         </View>
 

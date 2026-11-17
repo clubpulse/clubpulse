@@ -34,8 +34,9 @@ export default function OddsScreen() {
       />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={fonts.small}>
-          Every card wins one prize. The outcome is random and is not affected by skill, by how you scratch,
-          or by earlier cards. These are the chances for a single card.
+          Every card lets you choose one discount from those shown for its tier. Some cards also carry a bonus
+          prize. The tier and the bonus are random and are not affected by skill, by how you scratch, or by
+          earlier cards. These are the chances for a single card.
         </Text>
         {CARDS.map((card) => (
           <OddsTable key={card.tier} {...card} />
@@ -61,9 +62,11 @@ function OddsTable({ tier, title, price, how }: (typeof CARDS)[number]) {
             <Text style={[fonts.regular, styles.tierLabel]}>{t.label}</Text>
             <Text style={styles.tierOdds}>{formatOdds(t.probability)}</Text>
           </View>
-          {t.prizes.map((p) => (
+          <Text style={fonts.small}>Choose 1 of {t.choices.length}: {t.choices.join(', ')}</Text>
+          {t.bonuses.length === 0 && <Text style={fonts.small}>No bonus prize in this tier</Text>}
+          {t.bonuses.map((p) => (
             <View key={p.label} style={styles.row}>
-              <Text style={[fonts.small, { flex: 1 }]}>{p.label}</Text>
+              <Text style={[fonts.small, { flex: 1 }]}>Bonus: {p.label}</Text>
               <Text style={fonts.small}>{formatOdds(p.probability)}</Text>
             </View>
           ))}
