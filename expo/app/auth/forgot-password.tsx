@@ -44,7 +44,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             <TextInput
               value={email} onChangeText={setEmail} placeholder="Email" placeholderTextColor={colors.textMuted}
-              autoCapitalize="none" autoComplete="email" keyboardType="email-address" style={styles.input}
+              autoCapitalize="none" autoComplete="email" keyboardType="email-address" autoCorrect={false} spellCheck={false} style={styles.input}
               onSubmitEditing={submit} returnKeyType="send"
             />
             {error && <Text style={styles.error}>{error}</Text>}

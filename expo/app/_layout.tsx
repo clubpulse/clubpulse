@@ -43,7 +43,8 @@ function AuthGate() {
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-      <Stack.Screen name="(tabs)" />
+      {/* The title is what the back button says on screens opened from the tabs */}
+      <Stack.Screen name="(tabs)" options={{ title: 'Home' }} />
       <Stack.Screen name="auth" />
       <Stack.Screen name="reset-password" />
       <Stack.Screen name="sporting-soul" options={{ headerShown: true, title: 'My Sporting Soul', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />

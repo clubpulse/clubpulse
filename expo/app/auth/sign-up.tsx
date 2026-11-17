@@ -43,7 +43,7 @@ export default function SignUpScreen() {
           <TextInput value={fullName} onChangeText={setFullName} placeholder="Full name" placeholderTextColor={colors.textMuted}
             autoComplete="name" style={styles.input} />
           <TextInput value={email} onChangeText={setEmail} placeholder="Email" placeholderTextColor={colors.textMuted}
-            autoCapitalize="none" autoComplete="email" keyboardType="email-address" style={styles.input} />
+            autoCapitalize="none" autoComplete="email" keyboardType="email-address" autoCorrect={false} spellCheck={false} style={styles.input} />
           <TextInput value={password} onChangeText={setPassword} placeholder="Password (8+ characters)" placeholderTextColor={colors.textMuted}
             secureTextEntry autoComplete="new-password" style={styles.input} />
 

@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 import { ApiError, type StepsSyncResponse } from '../lib/api';
 import type { StepSource } from '../lib/health';
 import { syncSteps } from '../lib/stepsSync';
+import { useAuth } from './useAuth';
 
 export type StepsStatus = 'loading' | 'ready' | 'unavailable' | 'denied';
 
@@ -17,8 +18,13 @@ export function useSteps() {
   const [syncing, setSyncing] = useState(false);
   const [result, setResult] = useState<StepsSyncResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { session } = useAuth();
+  const signedIn = !!session;
 
   const refresh = useCallback(async () => {
+    // Home can be on screen for a moment before a signed-out person is sent to sign-in.
+    // Asking for Health access then would put a permission sheet over the sign-in screen.
+    if (!signedIn) return;
     setSyncing(true);
     setError(null);
     try {
@@ -34,7 +40,7 @@ export function useSteps() {
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [signedIn]);
 
   useEffect(() => {
     refresh();
