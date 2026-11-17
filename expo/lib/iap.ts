@@ -6,7 +6,8 @@
  *  2. Awin affiliate commission (3-15% on redeemed discount codes)
  *  3. Engagement retention (scratch cards drive daily opens)
  *
- * Scores are NEVER sold directly — only earned or won through scratch cards.
+ * Scores are NEVER sold directly. They are earned through participation; scratch cards
+ * pay out discounts, and a Scores prize is a very rare top-tier bonus.
  */
 
 /* ── IAP Products ── */
@@ -39,7 +40,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
   net_session_card: {
     id: 'net_session_card',
     name: 'Net Session Card',
-    description: 'Scratch 3 panels — win Scores, shields, badges and brand discounts!',
+    description: 'Scratch 3 panels — win brand discounts, gift card discounts, shields and badges!',
     priceGBP: 0.49,
     type: 'consumable',
     icon: '🏏',
@@ -202,12 +203,13 @@ export type PrizeTierName =
   // Match Day tiers
   | 'golden_duck' | 'cameo' | 'useful_knock' | 'match_winner' | 'player_of_match' | 'yuvraj_moment';
 
-export type PrizeType = 'scores' | 'streak_shield' | 'coach_ai_session' | 'profile_badge' | 'sporting_soul_theme' | 'profile_frame' | 'awin_deal';
+export type PrizeType = 'scores' | 'streak_shield' | 'coach_ai_session' | 'profile_badge' | 'sporting_soul_theme' | 'profile_frame' | 'awin_deal' | 'gift_card_discount';
 
 export interface Prize {
   type: PrizeType;
   label: string;
-  value?: number;       // Scores amount, or quantity for shields/sessions
+  value?: number;       // Scores amount, quantity for shields/sessions, or % for gift card discounts
+  weight?: number;      // share of the tier's draws; defaults to 1
   awinDeal?: AwinDeal;  // populated when type === 'awin_deal'
 }
 
@@ -250,6 +252,10 @@ function weightedRandom<T extends { weight: number }>(items: T[]): T {
   return items[items.length - 1];
 }
 
+function pickPrize(prizes: Prize[]): Prize {
+  return weightedRandom(prizes.map((prize) => ({ prize, weight: prize.weight ?? 1 }))).prize;
+}
+
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -263,45 +269,55 @@ function pickAwinDeal(category?: AwinCategory): AwinDeal {
 
 /* ── Prize tier definitions ── */
 
-function awinPrize(label: string, category?: AwinCategory): Prize {
+function awinPrize(label: string, category?: AwinCategory, weight = 1): Prize {
   const deal = pickAwinDeal(category);
-  return { type: 'awin_deal', label: `${deal.discountLabel} ${deal.brand} — ${deal.description}`, awinDeal: deal };
+  return { type: 'awin_deal', label: `${deal.discountLabel} ${deal.brand} — ${deal.description}`, awinDeal: deal, weight };
+}
+
+/**
+ * Prize mix: cards pay out discounts first. Brand discount codes and gift card
+ * discounts make up the bulk of every tier, with a few cosmetics and boosts.
+ * Scores are deliberately very rare (well under 1 card in 100) and appear only
+ * in the top tiers. Each prize's weight is its share of its tier.
+ */
+function giftCardDiscount(pct: number, weight: number): Prize {
+  return { type: 'gift_card_discount', label: `${pct}% off a gift card`, value: pct, weight };
 }
 
 export const NET_SESSION_TIERS: PrizeTier[] = [
   {
     name: 'bowled', label: 'Bowled!', emoji: '😬', minRuns: 0, maxRuns: 2,
     possiblePrizes: [
-      { type: 'scores', label: '5 Scores', value: 5 },
-      awinPrize('Discount deal', 'groceries'),
-      awinPrize('Discount deal', 'general_value'),
+      awinPrize('Grocery deal', 'groceries', 5),
+      awinPrize('Value deal', 'general_value', 5),
     ],
   },
   {
     name: 'steady_start', label: 'Steady Start', emoji: '👏', minRuns: 3, maxRuns: 8,
     possiblePrizes: [
-      { type: 'scores', label: '25 Scores', value: 25 },
-      { type: 'streak_shield', label: 'Streak Shield', value: 1 },
-      awinPrize('Sports gear deal', 'sports_equipment'),
-      awinPrize('Grocery deal', 'groceries'),
+      awinPrize('Sports gear deal', 'sports_equipment', 4),
+      awinPrize('Grocery deal', 'groceries', 4),
+      giftCardDiscount(5, 3),
+      { type: 'streak_shield', label: 'Streak Shield', value: 1, weight: 1 },
     ],
   },
   {
     name: 'building', label: 'Building an Innings', emoji: '🔥', minRuns: 9, maxRuns: 12,
     possiblePrizes: [
-      { type: 'scores', label: '50 Scores', value: 50 },
-      { type: 'profile_badge', label: 'Collectible Badge', value: 1 },
-      awinPrize('Apparel deal', 'sports_apparel'),
-      awinPrize('Electronics deal', 'electronics'),
+      awinPrize('Apparel deal', 'sports_apparel', 4),
+      awinPrize('Electronics deal', 'electronics', 3),
+      giftCardDiscount(10, 3),
+      { type: 'profile_badge', label: 'Collectible Badge', value: 1, weight: 1 },
     ],
   },
   {
     name: 'on_fire', label: 'On Fire!', emoji: '🏆', minRuns: 13, maxRuns: 17,
     possiblePrizes: [
-      { type: 'scores', label: '75 Scores', value: 75 },
-      { type: 'profile_badge', label: 'Rare Badge', value: 1 },
-      awinPrize('Premium apparel deal', 'sports_apparel'),
-      awinPrize('Equipment deal', 'sports_equipment'),
+      awinPrize('Premium apparel deal', 'sports_apparel', 4),
+      awinPrize('Equipment deal', 'sports_equipment', 4),
+      giftCardDiscount(15, 3),
+      { type: 'profile_badge', label: 'Rare Badge', value: 1, weight: 1 },
+      { type: 'scores', label: '75 Scores', value: 75, weight: 1 },
     ],
   },
   {
@@ -316,41 +332,43 @@ export const MATCH_DAY_TIERS: PrizeTier[] = [
   {
     name: 'golden_duck', label: 'Golden Duck', emoji: '🦆', minRuns: -1, maxRuns: 0,
     possiblePrizes: [
-      { type: 'scores', label: '10 Scores + Golden Duck Badge', value: 10 },
-      awinPrize('Consolation deal', 'groceries'),
+      awinPrize('Consolation deal', 'groceries', 3),
+      { type: 'profile_badge', label: 'Golden Duck Badge', value: 1, weight: 1 },
     ],
   },
   {
     name: 'cameo', label: 'Cameo', emoji: '👋', minRuns: 1, maxRuns: 6,
     possiblePrizes: [
-      { type: 'scores', label: '25 Scores', value: 25 },
-      awinPrize('Grocery deal', 'groceries'),
-      awinPrize('Value deal', 'general_value'),
+      awinPrize('Grocery deal', 'groceries', 4),
+      awinPrize('Value deal', 'general_value', 4),
+      giftCardDiscount(5, 3),
     ],
   },
   {
     name: 'useful_knock', label: 'Useful Knock', emoji: '💪', minRuns: 7, maxRuns: 14,
     possiblePrizes: [
-      { type: 'scores', label: '100 Scores', value: 100 },
-      { type: 'coach_ai_session', label: 'Coach AI Session', value: 1 },
-      awinPrize('Equipment deal', 'sports_equipment'),
-      awinPrize('Electronics deal', 'electronics'),
+      awinPrize('Equipment deal', 'sports_equipment', 4),
+      awinPrize('Electronics deal', 'electronics', 3),
+      giftCardDiscount(10, 3),
+      { type: 'coach_ai_session', label: 'Coach AI Session', value: 1, weight: 1 },
     ],
   },
   {
     name: 'match_winner', label: 'Match Winner', emoji: '🏆', minRuns: 15, maxRuns: 24,
     possiblePrizes: [
-      { type: 'scores', label: '150 Scores + Streak Shield', value: 150 },
-      awinPrize('Premium apparel deal', 'sports_apparel'),
-      awinPrize('Premium equipment deal', 'sports_equipment'),
+      awinPrize('Premium apparel deal', 'sports_apparel', 4),
+      awinPrize('Premium equipment deal', 'sports_equipment', 4),
+      giftCardDiscount(15, 3),
+      { type: 'streak_shield', label: 'Streak Shield', value: 1, weight: 1 },
     ],
   },
   {
     name: 'player_of_match', label: 'Player of the Match', emoji: '⭐', minRuns: 25, maxRuns: 35,
     possiblePrizes: [
-      { type: 'scores', label: '200 Scores', value: 200 },
-      { type: 'sporting_soul_theme', label: 'Sporting Soul Theme', value: 1 },
-      awinPrize('Premium deal', 'sports_apparel'),
+      awinPrize('Premium deal', 'sports_apparel', 3),
+      giftCardDiscount(20, 3),
+      { type: 'sporting_soul_theme', label: 'Sporting Soul Theme', value: 1, weight: 1 },
+      { type: 'scores', label: '200 Scores', value: 200, weight: 1 },
     ],
   },
   {
@@ -382,7 +400,7 @@ export function generateNetSessionCard(): ScratchCardResult {
   const totalRuns = panels.reduce((s, p) => s + p.runs, 0);
   const tier = NET_SESSION_TIERS.find((t) => totalRuns >= t.minRuns && totalRuns <= t.maxRuns)
     ?? NET_SESSION_TIERS[0];
-  const prize = pickRandom(tier.possiblePrizes);
+  const prize = pickPrize(tier.possiblePrizes);
 
   return { cardTier: 'net_session', panels, totalRuns, isWicket: false, wicketBall: null, prizeTier: tier, prize };
 }
@@ -413,7 +431,7 @@ export function generateMatchDayCard(): ScratchCardResult {
   const lookupRuns = isWicket && wicketBall === 0 ? -1 : totalRuns;
   const tier = MATCH_DAY_TIERS.find((t) => lookupRuns >= t.minRuns && lookupRuns <= t.maxRuns)
     ?? MATCH_DAY_TIERS[0];
-  const prize = pickRandom(tier.possiblePrizes);
+  const prize = pickPrize(tier.possiblePrizes);
 
   return { cardTier: 'match_day', panels, totalRuns, isWicket, wicketBall, prizeTier: tier, prize };
 }
@@ -472,12 +490,12 @@ export function getCardOdds(cardTier: CardTier): TierOdds[] {
 
   return tiers.map((tier) => {
     const probability = tierProbability.get(tier.name) ?? 0;
-    // Each entry in the pool is equally likely; brand discounts are grouped into one line
-    const share = probability / tier.possiblePrizes.length;
+    // Prizes are drawn by weight within the tier; brand discounts are grouped into one line
+    const tierWeight = tier.possiblePrizes.reduce((sum, prize) => sum + (prize.weight ?? 1), 0);
     const byLabel = new Map<string, number>();
     for (const prize of tier.possiblePrizes) {
       const label = prize.type === 'awin_deal' ? 'Brand discount code' : prize.label;
-      byLabel.set(label, (byLabel.get(label) ?? 0) + share);
+      byLabel.set(label, (byLabel.get(label) ?? 0) + (probability * (prize.weight ?? 1)) / tierWeight);
     }
     return {
       name: tier.name,
@@ -552,19 +570,19 @@ export function getUpsell(trigger: UpsellTrigger, context?: { streakDays?: numbe
     case 'post_scratch':
       return {
         trigger, title: 'Think bigger? 🏟️',
-        message: "The Match Day card's jackpot is 500 Scores + exclusive frame + 40% off premium gear.",
+        message: 'Match Day cards carry bigger brand discounts and up to 20% off gift cards.',
         ctaLabel: 'Match Day Card · £0.99', ctaProduct: 'match_day_card',
       };
     case 'wallet_nudge':
       return {
-        trigger, title: 'Want more Scores?',
-        message: "You can't buy them — but you can win them 🏏",
+        trigger, title: 'Fancy a discount? 🏏',
+        message: 'Scratch a card for brand discounts and money off gift cards.',
         ctaLabel: 'Scratch a Card', ctaProduct: 'net_session_card',
       };
     case 'marketplace_short':
       return {
         trigger, title: `${context?.scoresShort ?? 0} Scores short?`,
-        message: 'Scratch a Match Day card — you could win up to 500.',
+        message: 'Keep earning through steps and club activity. Meanwhile, a scratch card could cut the price with a gift card discount.',
         ctaLabel: 'Match Day Card · £0.99', ctaProduct: 'match_day_card',
         altCtaLabel: 'Net Session · £0.49', altCtaProduct: 'net_session_card',
       };
@@ -578,7 +596,7 @@ export function getUpsell(trigger: UpsellTrigger, context?: { streakDays?: numbe
     case 'weekly_drop':
       return {
         trigger, title: 'Your weekly scratch card is here 🏏',
-        message: "This week's brands: New Balance, MyProtein, Garmin. What will you win?",
+        message: 'Brand discounts and gift card discounts are up for grabs. What will you win?',
         ctaLabel: 'Match Day Card · £0.99', ctaProduct: 'match_day_card',
         altCtaLabel: 'Net Session · £0.49', altCtaProduct: 'net_session_card',
       };
@@ -591,13 +609,13 @@ export function getUpsell(trigger: UpsellTrigger, context?: { streakDays?: numbe
     case 'social_proof':
       return {
         trigger, title: '🎉 A club member just won big!',
-        message: 'See what you could win — prizes include Scores, brand discounts, and exclusive badges.',
+        message: 'See what you could win — brand discounts, gift card discounts, and exclusive badges.',
         ctaLabel: 'Try a Card', ctaProduct: 'net_session_card',
       };
     case 'free_hit':
       return {
         trigger, title: 'Welcome to ClubPulse! 🏏',
-        message: "Here's your free Net Session scratch card — scratch to win Scores, discounts and more.",
+        message: "Here's your free Net Session scratch card — scratch to win discounts and more.",
         ctaLabel: 'Scratch Your Free Card', ctaProduct: 'net_session_card',
       };
   }

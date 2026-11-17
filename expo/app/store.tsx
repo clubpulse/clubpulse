@@ -28,8 +28,8 @@ export default function StoreScreen() {
         <View style={{ gap: spacing.sm }}>
           <Text style={fonts.heading}>Scratch & Win 🏏</Text>
           <Text style={fonts.small}>
-            Every card wins. Prizes include Scores, streak shields, exclusive badges, and brand discounts
-            from top sports, grocery, and electronics brands.
+            Every card wins. Most prizes are brand discounts or money off gift cards, with streak shields
+            and exclusive badges in the mix.
           </Text>
         </View>
 
@@ -40,7 +40,7 @@ export default function StoreScreen() {
             subtitle="3 panels"
             price="£0.49"
             emoji="🏏"
-            topPrize="Up to 150 Scores"
+            topPrize="Up to 15% off gift cards"
             highlight={false}
             onPress={() => router.push('/scratch-card/net_session')}
           />
@@ -49,7 +49,7 @@ export default function StoreScreen() {
             subtitle="6 balls · wicket ends innings"
             price="£0.99"
             emoji="🏟️"
-            topPrize="Up to 500 Scores + frame"
+            topPrize="Up to 20% off gift cards"
             highlight
             onPress={() => router.push('/scratch-card/match_day')}
           />
