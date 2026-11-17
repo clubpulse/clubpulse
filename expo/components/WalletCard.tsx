@@ -4,7 +4,7 @@ import { colors, fonts, radius, spacing } from '../constants/theme';
 import type { Wallet } from '../lib/api';
 
 const gbp = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
-const scoresToGbp = (scores: number) => gbp.format(scores / 50);   // 50 Scores = £1
+const scoresToGbp = (scores: number) => gbp.format(scores / 500);   // 500 Scores = £1
 
 export function WalletCard({ wallet, loading }: { wallet: Wallet | null; loading: boolean }) {
   const flexi = wallet?.flexi_balance ?? 0;
@@ -19,7 +19,7 @@ export function WalletCard({ wallet, loading }: { wallet: Wallet | null; loading
       ) : (
         <>
           <Text style={fonts.big}>{total.toLocaleString('en-GB')}</Text>
-          <Text style={fonts.small}>≈ {scoresToGbp(total)} · 50 Scores = £1</Text>
+          <Text style={fonts.small}>≈ {scoresToGbp(total)} · 500 Scores = £1</Text>
           <View style={styles.row}>
             <View style={styles.tile}>
               <Text style={styles.tileLabel}>Flexi</Text>

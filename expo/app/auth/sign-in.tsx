@@ -38,6 +38,8 @@ export default function SignInScreen() {
           {loading ? <ActivityIndicator color={colors.navy} /> : <Text style={styles.buttonText}>Sign in</Text>}
         </Pressable>
 
+        <Link href="/auth/forgot-password" style={styles.forgot}>Forgot your password?</Link>
+
         <View style={styles.footer}>
           <Text style={fonts.small}>New to ClubPulse? </Text>
           <Link href="/auth/sign-up" style={{ color: colors.gold, fontWeight: '600' }}>Create an account</Link>
@@ -57,5 +59,6 @@ const styles = StyleSheet.create({
   },
   button: { backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: spacing.lg, alignItems: 'center', marginTop: spacing.sm },
   buttonText: { color: colors.navy, fontWeight: '700', fontSize: 16 },
+  forgot: { color: colors.brandSky, textAlign: 'center', marginTop: spacing.sm, fontSize: 14 },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg },
 });

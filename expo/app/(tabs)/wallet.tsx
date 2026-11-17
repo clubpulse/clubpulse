@@ -5,6 +5,7 @@ import { WalletCard } from '../../components/WalletCard';
 import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
+import { UpsellBanner } from '../../components/UpsellBanner';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 type HistoryItem = { id: string; title: string; amount: number; at: string };
@@ -61,6 +62,7 @@ export default function WalletScreen() {
           <View style={{ gap: spacing.lg, marginBottom: spacing.sm }}>
             <Text style={fonts.heading}>Wallet</Text>
             <WalletCard wallet={wallet} loading={loading} />
+            <UpsellBanner trigger="wallet_nudge" compact />
             <Text style={[fonts.title, { marginTop: spacing.sm }]}>History</Text>
           </View>
         }

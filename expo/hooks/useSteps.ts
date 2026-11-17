@@ -1,63 +1,38 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Platform } from 'react-native';
-import { Pedometer } from 'expo-sensors';
-import { api, ApiError, type StepsSyncResponse } from '../lib/api';
+import { useCallback, useEffect, useState } from 'react';
+import { AppState } from 'react-native';
+import { ApiError, type StepsSyncResponse } from '../lib/api';
+import type { StepSource } from '../lib/health';
+import { syncSteps } from '../lib/stepsSync';
 
 export type StepsStatus = 'loading' | 'ready' | 'unavailable' | 'denied';
 
-// Reads today's steps from the phone's motion coprocessor (iOS CoreMotion via expo-sensors) and
-// syncs them to /api/steps/sync. Apple Health proper needs a native HealthKit module (e.g.
-// react-native-health) in a development build; there is no "expo-health" package. Android's
-// pedometer API has no step history, so it needs Health Connect and is reported as unavailable.
+// Shows today's steps and syncs them whenever the app is opened or brought forward.
+// Steps come from Apple Health on iPhone and Health Connect on Android, which cover watches
+// and wearable apps (see lib/health.ts). The same sync also runs in the background
+// (lib/backgroundSync.ts).
 export function useSteps() {
   const [steps, setSteps] = useState(0);
+  const [source, setSource] = useState<StepSource | null>(null);
   const [status, setStatus] = useState<StepsStatus>('loading');
   const [syncing, setSyncing] = useState(false);
   const [result, setResult] = useState<StepsSyncResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const lastSynced = useRef(0);
 
   const refresh = useCallback(async () => {
-    if (Platform.OS !== 'ios') {
-      setStatus('unavailable');
-      return;
-    }
+    setSyncing(true);
+    setError(null);
     try {
-      if (!(await Pedometer.isAvailableAsync())) {
-        setStatus('unavailable');
-        return;
+      const outcome = await syncSteps({ interactive: true });
+      setStatus(outcome.access);
+      if (outcome.access === 'ready') {
+        setSteps(outcome.steps);
+        setSource(outcome.source);
+        if (outcome.today) setResult(outcome.today);
       }
-      const permission = await Pedometer.requestPermissionsAsync();
-      if (!permission.granted) {
-        setStatus('denied');
-        return;
-      }
-
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      const { steps: count } = await Pedometer.getStepCountAsync(start, new Date());
-      setSteps(count);
-      setStatus('ready');
-
-      if (count >= 1 && count > lastSynced.current) {
-        setSyncing(true);
-        setError(null);
-        try {
-          // The server dates streaks in UTC, so send the UTC date
-          const response = await api<StepsSyncResponse>('/api/steps/sync', {
-            method: 'POST',
-            body: { stepCount: count, logDate: new Date().toISOString().slice(0, 10), source: 'expo_sensors' },
-          });
-          lastSynced.current = count;
-          setResult(response);
-        } catch (e) {
-          setError(e instanceof ApiError ? e.message : 'Could not sync your steps');
-        } finally {
-          setSyncing(false);
-        }
-      }
-    } catch {
-      setError('Could not read your steps');
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Could not sync your steps');
+    } finally {
+      setSyncing(false);
     }
   }, []);
 
@@ -69,5 +44,5 @@ export function useSteps() {
     return () => subscription.remove();
   }, [refresh]);
 
-  return { steps, status, syncing, result, error, refresh };
+  return { steps, source, status, syncing, result, error, refresh };
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RewardListItem } from '../../components/RewardListItem';
+import { UpsellBanner } from '../../components/UpsellBanner';
 import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { api, ApiError, type Reward } from '../../lib/api';
 import { colors, fonts, spacing } from '../../constants/theme';
@@ -64,6 +65,7 @@ export default function MarketplaceScreen() {
           <View style={{ marginBottom: spacing.sm }}>
             <Text style={fonts.heading}>Marketplace</Text>
             <Text style={fonts.small}>You have {total.toLocaleString('en-GB')} Scores</Text>
+            <UpsellBanner trigger="marketplace_short" compact context={{ scoresShort: 100 }} />
           </View>
         }
         ListEmptyComponent={
