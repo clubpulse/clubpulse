@@ -4,6 +4,9 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+// Imported for its side effect too: it defines the background task, which must exist as soon
+// as the JS loads because the OS can start the app headless just to run it.
+import { registerStepsBackgroundSync } from '../lib/backgroundSync';
 import { colors } from '../constants/theme';
 
 // Sends signed-out users to sign-in and signed-in users away from the auth screens
@@ -14,6 +17,11 @@ function AuthGate() {
 
   // Register push notifications once authenticated
   usePushNotifications();
+
+  // Keep steps syncing while the app is closed, for signed-in users only
+  useEffect(() => {
+    if (session) registerStepsBackgroundSync();
+  }, [session]);
 
   useEffect(() => {
     if (loading) return;

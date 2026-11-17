@@ -32,7 +32,9 @@
       "versionCode": 1,
       "permissions": [
         "ACTIVITY_RECOGNITION",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"
       ]
     },
     "extra": {
@@ -68,6 +70,16 @@
           "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health, including steps from your watch or other wearables, so you can earn Scores for staying active.",
           "NSHealthUpdateUsageDescription": false,
           "background": false
+        }
+      ],
+      "expo-background-task",
+      "react-native-health-connect",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
         }
       ]
     ]

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const { stepCount, logDate, source = 'apple_health' } = body as {
     stepCount: number;
     logDate:   string;   // 'YYYY-MM-DD'
-    source?:   'apple_health' | 'google_fit' | 'expo_sensors';
+    source?:   'apple_health' | 'health_connect' | 'google_fit' | 'expo_sensors';
   };
 
   if (!stepCount || !logDate) {
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   if (!Number.isInteger(stepCount) || stepCount < 1 || stepCount > 100_000) {
     return NextResponse.json({ error: 'stepCount must be a whole number from 1 to 100000' }, { status: 400 });
   }
-  if (!['apple_health', 'google_fit', 'expo_sensors'].includes(source)) {
+  if (!['apple_health', 'health_connect', 'google_fit', 'expo_sensors'].includes(source)) {
     return NextResponse.json({ error: 'Invalid source' }, { status: 400 });
   }
 

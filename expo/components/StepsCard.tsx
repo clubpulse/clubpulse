@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 import type { StepsSyncResponse } from '../lib/api';
@@ -25,10 +25,18 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
       <Text style={styles.label}>TODAY&apos;S STEPS</Text>
 
       {status === 'unavailable' && (
-        <Text style={fonts.small}>Step tracking isn&apos;t available on this device yet.</Text>
+        <Text style={fonts.small}>
+          {Platform.OS === 'android'
+            ? 'Install or update Health Connect from Google Play to earn Scores for your steps.'
+            : 'Step tracking isn\u2019t available on this device.'}
+        </Text>
       )}
       {status === 'denied' && (
-        <Text style={fonts.small}>Allow Health or Motion access in Settings to earn Scores for your steps.</Text>
+        <Text style={fonts.small}>
+          {Platform.OS === 'android'
+            ? 'Allow ClubPulse to read Steps in Health Connect to earn Scores for your steps.'
+            : 'Allow Health or Motion access in Settings to earn Scores for your steps.'}
+        </Text>
       )}
       {(status === 'ready' || status === 'loading') && (
         <>
@@ -43,7 +51,9 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
             <Text style={styles.hint}>
               {source === 'apple_health'
                 ? 'From Apple Health, including your watch and any apps that share steps with it.'
-                : 'From this iPhone only. Allow Apple Health to count your watch or wearable too.'}
+                : source === 'health_connect'
+                  ? 'From Health Connect, including your watch and any apps that share steps with it.'
+                  : 'From this iPhone only. Allow Apple Health to count your watch or wearable too.'}
             </Text>
           )}
           {result && !!result.totalScoresToday && (
