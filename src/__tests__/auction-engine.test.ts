@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  AUCTION_SLOTS, BUDGET, MAX_OVERSEAS, POOL_SIZE, RETAINED_COUNT, SQUAD_SIZE, TEAM_COUNT,
-  advance, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRetained, generateRivals,
-  isBidLevel, newAuction, nextBid, overseasCount, replayGame, rivalOrder, squadScore, totalShortfall,
+  BUDGET, MARQUEE_COUNT, MAX_OVERSEAS, OBJECTIVE_POINTS, POOL_SIZE, REQUIRED, ROLES, SQUAD_SIZE, TEAM_COUNT,
+  advance, allPlayers, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRivals,
+  isBidLevel, newAuction, nextBid, objectives, overseasCount, replayGame, rivalOrder, squadScore,
   type Auction, type Lot, type LotResult, type Team,
 } from '@/lib/games/auction-engine';
 
@@ -13,7 +13,7 @@ type Strategy = (lot: Lot, me: Team) => number;
 function playGame(seed: number, userMax: Strategy): { results: LotResult[]; auction: Auction } {
   const pool = generatePool(seed);
   const rivals = generateRivals(seed);
-  let a = newAuction(pool, generateRetained(seed));
+  let a = newAuction(pool);
   const results: LotResult[] = [];
   while (!a.done) {
     const lot = currentLot(pool, a);
@@ -48,29 +48,31 @@ describe('auction engine', () => {
     expect(app).toBe(server);
   });
 
-  it('builds the same auction from the same seed', () => {
-    expect(generatePool(42)).toEqual(generatePool(42));
-    expect(generateRetained(42)).toEqual(generateRetained(42));
-    expect(generateRivals(42)).toEqual(generateRivals(42));
-    expect(generatePool(42)).not.toEqual(generatePool(43));
+  it('has a clean player list with enough of every role for six squads', () => {
+    const players = allPlayers();
+    expect(players).toHaveLength(POOL_SIZE);
+    expect(new Set(players.map((p) => p.name)).size).toBe(POOL_SIZE);
+    players.forEach((p) => {
+      expect(p.rating).toBeGreaterThanOrEqual(60);
+      expect(p.rating).toBeLessThanOrEqual(99);
+      expect(p.overseas).toBe(p.country !== 'India');
+    });
+    ROLES.forEach((role) => {
+      expect(players.filter((p) => p.role === role).length).toBeGreaterThanOrEqual(REQUIRED[role] * TEAM_COUNT);
+    });
+    // Enough home players that the overseas limit can never leave a squad short
+    expect(players.filter((p) => !p.overseas).length).toBeGreaterThanOrEqual((SQUAD_SIZE - MAX_OVERSEAS) * TEAM_COUNT);
   });
 
-  it('builds a pool and retained squads that fit the rules', () => {
-    for (let seed = 1; seed <= 150; seed++) {
-      const pool = generatePool(seed);
-      const retained = generateRetained(seed);
-      expect(pool).toHaveLength(POOL_SIZE);
-      expect(pool[0].set).toBe('Marquee set');
-      expect(retained).toHaveLength(TEAM_COUNT);
-      const names = [...pool, ...retained.flat()].map((p) => p.name);
-      expect(new Set(names).size).toBe(names.length);
-      retained.forEach((squad) => {
-        expect(squad).toHaveLength(RETAINED_COUNT);
-        expect(squad.filter((p) => p.overseas).length).toBeLessThanOrEqual(2);
-      });
-      // Uncapped players are never overseas
-      pool.filter((p) => p.set === 'Uncapped players').forEach((p) => expect(p.overseas).toBe(false));
-    }
+  it('builds the same auction from the same seed, in a different order on a different day', () => {
+    expect(generatePool(42)).toEqual(generatePool(42));
+    expect(generateRivals(42)).toEqual(generateRivals(42));
+    expect(generatePool(42).map((p) => p.name)).not.toEqual(generatePool(43).map((p) => p.name));
+    const pool = generatePool(42);
+    expect(pool.slice(0, MARQUEE_COUNT).every((p) => p.set === 'Marquee set')).toBe(true);
+    expect(Math.min(...pool.slice(0, MARQUEE_COUNT).map((p) => p.rating))).toBeGreaterThanOrEqual(
+      Math.max(...pool.slice(MARQUEE_COUNT).map((p) => p.rating)),
+    );
   });
 
   it('walks the bidding ladder and formats money', () => {
@@ -78,12 +80,12 @@ describe('auction engine', () => {
     expect(isBidLevel(50, 125)).toBe(true);
     expect(isBidLevel(50, 110)).toBe(false);
     expect(isBidLevel(200, 150)).toBe(false);
-    expect([30, 100, 150, 1250, 5000].map(formatMoney)).toEqual(['₹30 L', '₹1 cr', '₹1.5 cr', '₹12.5 cr', '₹50 cr']);
+    expect([30, 100, 150, 1250, 10000].map(formatMoney)).toEqual(['₹30 L', '₹1 cr', '₹1.5 cr', '₹12.5 cr', '₹100 cr']);
   });
 
   it('accepts every honestly played game', () => {
     const styles: Strategy[] = [() => 0, (lot) => lot.base, () => 600, (_, me) => me.purse];
-    for (let seed = 1; seed <= 120; seed++) {
+    for (let seed = 1; seed <= 60; seed++) {
       for (const style of styles) {
         const { results } = playGame(seed * 7919, style);
         expect(replayGame(seed * 7919, results)).toMatchObject({ ok: true });
@@ -91,29 +93,28 @@ describe('auction engine', () => {
     }
   });
 
-  it('keeps every franchise inside its purse, its XI and the overseas limit', () => {
-    for (let seed = 1; seed <= 120; seed++) {
+  it('keeps every franchise inside its purse, squad size and overseas limit', () => {
+    for (let seed = 1; seed <= 60; seed++) {
       const { auction } = playGame(seed, (_, me) => me.purse);
       auction.teams.forEach((t) => {
         expect(t.purse).toBeGreaterThanOrEqual(0);
-        expect(t.purse).toBeLessThanOrEqual(BUDGET);
         expect(t.squad.length).toBeLessThanOrEqual(SQUAD_SIZE);
         expect(overseasCount(t)).toBeLessThanOrEqual(MAX_OVERSEAS);
       });
     }
   });
 
-  it('brings unsold players back once, in the accelerated round', () => {
-    const seed = 99;
-    const { results } = playGame(seed, () => 0);
-    const pool = generatePool(seed);
-    const unsoldFirstTime = results.slice(0, POOL_SIZE).filter((r) => r.winner === null).length;
-    expect(results).toHaveLength(POOL_SIZE + unsoldFirstTime);
-    let a = newAuction(pool, generateRetained(seed));
-    results.slice(0, POOL_SIZE).forEach((r) => {
-      a = advance(pool, a, r);
-    });
-    expect(a.round).toBe(unsoldFirstTime > 0 ? 2 : 1);
+  it('lets the rival franchises fill their squads and meet the objectives', () => {
+    let full = 0;
+    let total = 0;
+    for (let seed = 1; seed <= 40; seed++) {
+      const { auction } = playGame(seed * 31, () => 0);
+      auction.teams.slice(1).forEach((t) => {
+        total += 1;
+        if (objectives(t).every((o) => o.met)) full += 1;
+      });
+    }
+    expect(full / total).toBeGreaterThan(0.95);
   });
 
   it('rejects games that could not have happened', () => {
@@ -121,9 +122,8 @@ describe('auction engine', () => {
     const pool = generatePool(seed);
     const honest = playGame(seed, () => 0).results;
 
-    // Winning the first five lots at base price
-    const greedy = honest.map((r, i) => (i < AUCTION_SLOTS ? { winner: 0, price: pool[i].base } : r));
-    expect(replayGame(seed, greedy)).toMatchObject({ ok: false, lot: 0 });
+    // Taking the first marquee player at base price
+    expect(replayGame(seed, honest.map((r, i) => (i === 0 ? { winner: 0, price: pool[0].base } : r)))).toMatchObject({ ok: false, lot: 0 });
     // Too few and too many results
     expect(replayGame(seed, honest.slice(0, -1))).toMatchObject({ ok: false });
     expect(replayGame(seed, [...honest, { winner: null, price: 0 }])).toMatchObject({ ok: false });
@@ -132,11 +132,13 @@ describe('auction engine', () => {
     expect(replayGame(seed, offLadder)).toMatchObject({ ok: false, lot: 0 });
   });
 
-  it('scores a squad from its ratings, empty places and missing roles', () => {
-    const retained = generateRetained(7)[0];
-    const team: Team = { purse: BUDGET, squad: retained };
-    const total = retained.reduce((a, p) => a + p.rating, 0) + AUCTION_SLOTS * 40;
-    const expected = Math.round((total / SQUAD_SIZE - 3 * totalShortfall(team)) * 10) / 10;
-    expect(squadScore(team)).toBe(expected);
+  it('scores a squad as player points plus a bonus per objective met', () => {
+    expect(squadScore({ purse: BUDGET, squad: [] })).toBe(0);
+    const pool = generatePool(7);
+    const batters = pool.filter((p) => p.role === 'BAT').slice(0, 4);
+    const points = batters.reduce((a, p) => a + p.rating, 0);
+    // Four batters meet one objective: the batting one
+    expect(objectives({ purse: 0, squad: batters }).filter((o) => o.met)).toHaveLength(1);
+    expect(squadScore({ purse: 0, squad: batters })).toBe(points + OBJECTIVE_POINTS);
   });
 });

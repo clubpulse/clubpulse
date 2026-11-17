@@ -1,7 +1,8 @@
-// Auction Room: a T20 franchise mini-auction. Ten franchises each arrive with six retained players
-// and a pretend ₹50 crore purse, and bid for the five players that complete their XI. One game a
-// day pays Scores for where the squad finishes; practice games are unlimited and pay nothing.
-// The purse only exists inside the game. Franchises and players are invented.
+// Auction Room: a T20 franchise auction in the style of the IPL's. Six franchises each have a
+// pretend ₹100 crore purse and bid for real players to build a squad of 15 that meets a set of
+// objectives. Every player is worth points; the squad with the most points wins. One game a day
+// pays Scores to the top three; practice games are unlimited and pay nothing. The purse only
+// exists inside the game. Franchises are invented; players appear by name, country and role only.
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -10,10 +11,10 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
 import {
-  AUCTION_SLOTS, BUDGET, MAX_OVERSEAS, MIN_BASE, RETAINED_COUNT, ROLE_LABEL, ROLES, SQUAD_SIZE, TEAM_COUNT,
-  advance, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRetained, generateRivals,
-  newAuction, nextBid, overseasCount, rivalOrder, shortfall, squadScore, standings, totalShortfall, upcomingLots,
-  type Auction, type Lot, type LotResult, type Rival, type Role, type Standing,
+  BUDGET, MAX_OVERSEAS, MIN_BASE, OBJECTIVE_POINTS, ROLE_LABEL, ROLES, SQUAD_SIZE, TEAM_COUNT,
+  advance, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRivals,
+  newAuction, nextBid, objectives, overseasCount, rivalOrder, shortfall, squadScore, standings, totalShortfall, upcomingLots,
+  type Auction, type Lot, type LotResult, type Rival, type Role, type Standing, type Team,
 } from '../lib/auctionEngine';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
@@ -57,14 +58,6 @@ const ROLE_COLOR: Record<Role, string> = {
   PACE: colors.orange,
   SPIN: '#C084FC',
 };
-const ROLE_PLURAL: Record<Role, string> = {
-  BAT: 'batters',
-  WK: 'wicketkeepers',
-  AR: 'all-rounders',
-  PACE: 'fast bowlers',
-  SPIN: 'spinners',
-};
-
 function ordinal(n: number): string {
   const tail = n % 100;
   if (tail >= 11 && tail <= 13) return `${n}th`;
@@ -87,7 +80,7 @@ function openLot(seed: number, rivals: Rival[], pool: Lot[], auction: Auction): 
 function newGame(mode: Mode, seed: number): Game {
   const pool = generatePool(seed);
   const rivals = generateRivals(seed);
-  const auction = newAuction(pool, generateRetained(seed));
+  const auction = newAuction(pool);
   return { mode, seed, pool, rivals, auction, results: [], bid: openLot(seed, rivals, pool, auction) };
 }
 
@@ -126,13 +119,6 @@ function moveOn(game: Game): Game {
   const result = resultOf(game.bid);
   const auction = advance(game.pool, game.auction, result);
   return { ...game, auction, results: [...game.results, result], bid: openLot(game.seed, game.rivals, game.pool, auction) };
-}
-
-function needsLine(short: Record<Role, number>): string {
-  const parts = ROLES.filter((r) => short[r] > 0).map(
-    (r) => `${short[r]} ${short[r] === 1 ? ROLE_LABEL[r].toLowerCase() : ROLE_PLURAL[r]}`,
-  );
-  return parts.length ? `Still need: ${parts.join(', ')}` : 'Every role covered. Buy the best players left.';
 }
 
 export default function AuctionRoomScreen() {
@@ -175,18 +161,18 @@ export default function AuctionRoomScreen() {
     if (bid.done) {
       // Linger on a sale the player was part of; move briskly past the rest
       const mine = bid.holder === 0 || !bid.userOut;
-      const timer = setTimeout(() => setGame((g) => (g && g.bid === bid ? moveOn(g) : g)), mine ? 1300 : 650);
+      const timer = setTimeout(() => setGame((g) => (g && g.bid === bid ? moveOn(g) : g)), mine ? 1300 : 450);
       return () => clearTimeout(timer);
     }
 
     const ask = askingPrice(lot, bid);
     const userCanBid = bid.holder !== 0 && !bid.userOut && !cannotBuy(me, lot, ask);
     // With the player out of it, the rivals settle the lot at once
-    if (!userCanBid && bid.holder !== 0) return set(settled(lot, { ...bid, userOut: true }), 200);
+    if (!userCanBid && bid.holder !== 0) return set(settled(lot, { ...bid, userOut: true }), 150);
 
     const rival = nextRival(lot, bid);
     if (rival !== undefined) {
-      return set({ ...bid, price: ask, holder: rival + 1, count: 0 }, 420 + Math.random() * 380);
+      return set({ ...bid, price: ask, holder: rival + 1, count: 0 }, 280 + Math.random() * 320);
     }
     // Nobody else will raise: going once, going twice, sold
     if (bid.count >= 2) return set({ ...bid, done: true }, bid.holder === 0 ? 600 : 1000);
@@ -318,18 +304,18 @@ function Lobby(props: {
         <Text style={{ fontSize: 44 }}>🔨</Text>
         <Text style={[fonts.heading, { marginTop: spacing.sm }]}>Auction Room</Text>
         <Text style={[fonts.small, { textAlign: 'center', marginTop: 4 }]}>
-          A T20 franchise auction. Ten franchises, one purse each, and everyone wants the same players.
+          A T20 franchise auction. Six franchises, ₹100 crore each, and everyone wants the same players.
         </Text>
       </View>
 
       <View style={styles.card}>
         <Text style={fonts.title}>How it works</Text>
-        <Rule n="1" text={`Your franchise has ${RETAINED_COUNT} retained players and a ${formatMoney(BUDGET)} purse. The purse only exists in this game.`} />
-        <Rule n="2" text={`Buy ${AUCTION_SLOTS} more to complete your XI. Players come up in sets: marquee first, then batters, all-rounders, keepers, fast bowlers, spinners and uncapped players.`} />
-        <Rule n="3" text="Tap Bid to raise the paddle, or Pass to let the other franchises fight it out." />
-        <Rule n="4" text={`An XI needs 3 batters, a keeper, 2 all-rounders, 2 fast bowlers and a spinner, with no more than ${MAX_OVERSEAS} overseas players.`} />
-        <Rule n="5" text="Unsold players come back once in an accelerated round at the end." />
-        <Rule n="6" text="Your squad score is the average rating of your XI, less 3 for each required player missing. An empty place counts as 40. Highest score wins." />
+        <Rule n="1" text={`You have a ${formatMoney(BUDGET)} purse to sign a squad of ${SQUAD_SIZE}. The purse only exists in this game.`} />
+        <Rule n="2" text="Players come up in sets: marquee first, then batters, all-rounders, wicketkeepers, fast bowlers, spinners and value picks. Tap Bid to raise the paddle, or Pass to let the others fight it out." />
+        <Rule n="3" text="Every player is worth points. Your team points are your players' points added together." />
+        <Rule n="4" text={`Objectives: sign all ${SQUAD_SIZE}, with at least 4 batters, 2 wicketkeepers, 3 all-rounders, 3 fast bowlers and 2 spinners. Each objective met adds ${OBJECTIVE_POINTS} points.`} />
+        <Rule n="5" text={`No more than ${MAX_OVERSEAS} overseas players. Unsold players come back once in an accelerated round.`} />
+        <Rule n="6" text="The franchise with the most team points wins. The top three earn Scores in the daily game." />
       </View>
 
       <View style={[styles.card, { borderColor: colors.goldBorder }]}>
@@ -356,7 +342,7 @@ function Lobby(props: {
             </View>
             {status.played ? (
               <Text style={[fonts.regular, { marginTop: spacing.md }]}>
-                Played today: {ordinal(status.played.place)} of {TEAM_COUNT} with a squad score of {status.played.score}
+                Played today: {ordinal(status.played.place)} of {TEAM_COUNT} with {status.played.score} team points
                 {status.played.amount > 0 ? `, ${status.played.amount} Scores earned.` : '.'} Back tomorrow for a new
                 auction.
               </Text>
@@ -425,12 +411,12 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
   const call = bid.done || bid.count === 0 ? '' : bid.count === 1 ? 'Going once…' : 'Going twice…';
 
   let hint = '';
-  if (slots === 0) hint = 'Your XI is complete.';
+  if (slots === 0) hint = 'Your squad is complete.';
   else if (bid.userOut) hint = 'You passed on this player.';
   else if (bid.holder === 0) hint = 'Your bid. Waiting on the other franchises.';
   else if (blocked === 'overseas limit reached') hint = `You already have ${MAX_OVERSEAS} overseas players.`;
   else if (blocked === 'not enough purse') hint = `You can't afford ${formatMoney(ask)}.`;
-  else if (short[lot.role] === 0 && slots <= need) hint = `Careful: your last ${slots === 1 ? 'place is' : `${slots} places are`} needed for other roles.`;
+  else if (short[lot.role] === 0 && slots <= need) hint = `Careful: your last ${slots === 1 ? 'place is' : `${slots} places are`} needed to meet your objectives.`;
 
   return (
     <View style={{ flex: 1 }}>
@@ -462,13 +448,12 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
               </View>
               <Text style={styles.lotName}>{lot.name}</Text>
               <Text style={fonts.small}>
-                {lot.flag} {lot.country} · {lot.trait}
+                {lot.flag} {lot.country} · base price {formatMoney(lot.base)}
               </Text>
-              <Text style={[fonts.small, { marginTop: 2 }]}>Base price {formatMoney(lot.base)}</Text>
             </View>
             <View style={styles.ratingBox}>
               <Text style={styles.ratingNum}>{lot.rating}</Text>
-              <Text style={styles.ratingLabel}>RATING</Text>
+              <Text style={styles.ratingLabel}>POINTS</Text>
             </View>
           </View>
 
@@ -482,7 +467,7 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
         {/* Your franchise */}
         <View style={styles.card}>
           <View style={styles.topRow}>
-            <Text style={fonts.title}>Your XI</Text>
+            <Text style={fonts.title}>Your squad</Text>
             <Text style={styles.purse}>{formatMoney(me.purse)} left</Text>
           </View>
           <View style={styles.slotRow}>
@@ -505,10 +490,10 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
               );
             })}
           </View>
-          <Text style={[fonts.small, { marginTop: spacing.sm }]}>{needsLine(short)}</Text>
-          <Text style={[fonts.small, { marginTop: 2 }]}>
-            {slots} place{slots === 1 ? '' : 's'} to fill · overseas {overseasCount(me)}/{MAX_OVERSEAS} · squad score {squadScore(me)}
+          <Text style={[fonts.small, { marginTop: spacing.sm }]}>
+            {slots} place{slots === 1 ? '' : 's'} to fill · overseas {overseasCount(me)}/{MAX_OVERSEAS} · {squadScore(me)} team points
           </Text>
+          <ObjectiveList team={me} />
         </View>
 
         {/* What is still to come */}
@@ -525,7 +510,7 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
             <Text key={p.id} style={[fonts.small, { marginTop: 4 }]} numberOfLines={1}>
               {i === 0 ? 'Next: ' : ''}
               {p.name}
-              {p.overseas ? ' ✈' : ''} · {ROLE_LABEL[p.role]} · {p.rating}
+              {p.overseas ? ' ✈' : ''} · {ROLE_LABEL[p.role]} · {p.rating} pts
             </Text>
           ))}
           {auction.round === 1 && auction.unsold.length > 0 && (
@@ -578,6 +563,19 @@ function BiddingView(props: { game: Game; bid: Bidding; onBid: () => void; onPas
   );
 }
 
+function ObjectiveList({ team }: { team: Team }) {
+  return (
+    <View style={styles.objectiveWrap}>
+      {objectives(team).map((o) => (
+        <View key={o.label} style={styles.objectiveRow}>
+          <Ionicons name={o.met ? 'checkmark-circle' : 'ellipse-outline'} size={14} color={o.met ? colors.success : colors.textSubtle} />
+          <Text style={[styles.objectiveText, o.met && { color: colors.text }]}>{o.label}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 // ── Result ───────────────────────────────────────────────────────────────────
 
 function ResultView(props: {
@@ -596,17 +594,15 @@ function ResultView(props: {
   // What the player paid for each player they bought, by replaying the order the lots came up in
   const paid = useMemo(() => {
     const prices = new Map<number, number>();
-    let a = newAuction(game.pool, generateRetained(game.seed));
+    let a = newAuction(game.pool);
     game.results.forEach((r) => {
       if (a.done) return;
       if (r.winner === 0) prices.set(currentLot(game.pool, a).id, r.price);
       a = advance(game.pool, a, r);
     });
     return prices;
-  }, [game.results, game.pool, game.seed]);
-  const short = shortfall(me);
-  const missing = totalShortfall(me);
-  const empty = SQUAD_SIZE - me.squad.length;
+  }, [game.results, game.pool]);
+  const met = objectives(me).filter((o) => o.met).length;
   const trophy = mine.place === 1 ? '🏆' : mine.place === 2 ? '🥈' : mine.place === 3 ? '🥉' : '🏏';
 
   return (
@@ -615,7 +611,7 @@ function ResultView(props: {
         <Text style={{ fontSize: 44 }}>{trophy}</Text>
         <Text style={[fonts.big, { marginTop: spacing.xs }]}>{ordinal(mine.place)}</Text>
         <Text style={fonts.small}>
-          of {TEAM_COUNT} franchises · squad score {mine.score}
+          of {TEAM_COUNT} franchises · {mine.score} team points
         </Text>
       </View>
 
@@ -633,7 +629,7 @@ function ResultView(props: {
               ? `⭐ ${payout.amount} Scores earned${payout.capped ? ' (your weekly limit trimmed this)' : ''}.`
               : payout.capped
                 ? "You've reached your club's weekly Scores limit, so nothing was added. It resets on Monday."
-                : 'Scores go to the top five. A new auction opens tomorrow.'}
+                : 'Scores go to the top three. A new auction opens tomorrow.'}
           </Text>
         )}
         {payout.state === 'failed' && (
@@ -655,13 +651,14 @@ function ResultView(props: {
               {row.name}
             </Text>
             <Text style={fonts.small}>{formatMoney(row.purse)} left</Text>
-            <Text style={[styles.tableScore, row.team === 0 && { color: colors.gold }]}>{row.score.toFixed(1)}</Text>
+            <Text style={[styles.tableScore, row.team === 0 && { color: colors.gold }]}>{row.score}</Text>
           </View>
         ))}
       </View>
 
       <View style={styles.card}>
-        <Text style={fonts.title}>Your XI</Text>
+        <Text style={fonts.title}>Your squad</Text>
+        {me.squad.length === 0 && <Text style={[fonts.small, { marginTop: spacing.sm }]}>You didn&apos;t sign anyone.</Text>}
         {me.squad.map((p) => (
           <View key={p.id} style={styles.tableRow}>
             <Text style={[styles.slotRole, { color: ROLE_COLOR[p.role], width: 40 }]}>{ROLE_SHORT[p.role]}</Text>
@@ -669,16 +666,14 @@ function ResultView(props: {
               {p.name}
               {p.overseas ? ' ✈' : ''}
             </Text>
-            <Text style={fonts.small}>{paid.has(p.id) ? formatMoney(paid.get(p.id)!) : 'Retained'}</Text>
+            <Text style={fonts.small}>{formatMoney(paid.get(p.id) ?? 0)}</Text>
             <Text style={styles.tableScore}>{p.rating}</Text>
           </View>
         ))}
-        {(empty > 0 || missing > 0) && (
-          <Text style={[fonts.small, { marginTop: spacing.md }]}>
-            {empty > 0 ? `${empty} empty place${empty === 1 ? '' : 's'} counted as 40. ` : ''}
-            {missing > 0 ? `${needsLine(short).replace('Still need', 'Missing')}: −${missing * 3}.` : ''}
-          </Text>
-        )}
+        <ObjectiveList team={me} />
+        <Text style={[fonts.small, { marginTop: spacing.sm }]}>
+          Players {squadScore(me) - met * OBJECTIVE_POINTS} + objectives {met * OBJECTIVE_POINTS} = {squadScore(me)} team points
+        </Text>
         <Text style={[fonts.small, { marginTop: spacing.sm }]}>{formatMoney(me.purse)} of your purse unspent</Text>
       </View>
 
@@ -752,7 +747,7 @@ const styles = StyleSheet.create({
   purse: { color: colors.gold, fontSize: 16, fontWeight: '800' },
   slotRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.md },
   slot: {
-    width: '15%', height: 48, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.navyBorder, borderStyle: 'dashed',
+    width: '18%', height: 46, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.navyBorder, borderStyle: 'dashed',
     alignItems: 'center', justifyContent: 'center',
   },
   slotRole: { fontSize: 10, fontWeight: '800' },
@@ -778,5 +773,9 @@ const styles = StyleSheet.create({
 
   tableRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
   tablePlace: { color: colors.textMuted as string, fontSize: 15, fontWeight: '800', width: 20 },
-  tableScore: { color: colors.white, fontSize: 16, fontWeight: '800', width: 44, textAlign: 'right' },
+  tableScore: { color: colors.white, fontSize: 16, fontWeight: '800', width: 48, textAlign: 'right' },
+
+  objectiveWrap: { flexDirection: 'row', flexWrap: 'wrap', marginTop: spacing.sm },
+  objectiveRow: { flexDirection: 'row', alignItems: 'center', gap: 6, width: '50%', marginTop: 6 },
+  objectiveText: { color: colors.textMuted as string, fontSize: 12, flexShrink: 1 },
 });

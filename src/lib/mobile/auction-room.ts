@@ -124,7 +124,8 @@ export async function startAuctionRoom(
 export function parseResults(body: unknown): LotResult[] | null {
   const raw = (body as { results?: unknown } | null)?.results;
   // One result per lot, plus one more for each unsold player brought back in the accelerated round
-  if (!Array.isArray(raw) || raw.length < POOL_SIZE || raw.length > POOL_SIZE * 2) return null;
+  // (the auction can also end early, once every squad is full)
+  if (!Array.isArray(raw) || raw.length < 1 || raw.length > POOL_SIZE * 2) return null;
   const out: LotResult[] = [];
   for (const item of raw) {
     if (!item || typeof item !== 'object') return null;

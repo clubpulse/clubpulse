@@ -6,25 +6,23 @@
 // honest games fail the check. src/__tests__/auction-engine.test.ts fails if they differ.
 //
 // Everything here is a pure function of the seed and what has happened so far. No imports.
-// Franchises and players are invented. Money is in lakhs of pretend rupees (100 lakh = 1 crore)
-// and exists only inside the game; it has nothing to do with Scores.
 //
-// It is a mini-auction: every franchise arrives with six retained players and ₹50 crore, and
-// buys the other five places in its XI.
+// Players are real cricketers, by name, country and role only: no photos, no team badges, and
+// nothing that suggests they endorse the game. The points next to each are ClubPulse's own
+// estimate of T20 value, not an official figure. Franchises are invented. Money is in lakhs of
+// pretend rupees (100 lakh = 1 crore) and exists only inside the game; it is nothing to do with Scores.
 
-export const BUDGET = 5_000; // ₹50 crore to spend at the auction
-export const SQUAD_SIZE = 11;
-export const RETAINED_COUNT = 6;
-export const AUCTION_SLOTS = SQUAD_SIZE - RETAINED_COUNT;
-export const RIVAL_COUNT = 9;
+export const BUDGET = 10_000; // ₹100 crore
+export const SQUAD_SIZE = 15;
+export const RIVAL_COUNT = 5;
 export const TEAM_COUNT = RIVAL_COUNT + 1; // team 0 is the player
-export const POOL_SIZE = 60;
-export const MAX_OVERSEAS = 4;
-export const EMPTY_SLOT_RATING = 40;
-export const SHORTFALL_PENALTY = 3; // per required player a squad lacks
+export const POOL_SIZE = 126;
+export const MAX_OVERSEAS = 6;
+/** Team points for each squad objective met. */
+export const OBJECTIVE_POINTS = 30;
 export const MIN_BASE = 30;
-/** Multiplier applied to the club's Scores value for finishing 1st, 2nd, … 10th. */
-export const PLACE_MULTIPLIER = [5, 3, 2, 1, 1, 0, 0, 0, 0, 0] as const;
+/** Multiplier applied to the club's Scores value for finishing 1st, 2nd, … 6th. Top three are paid. */
+export const PLACE_MULTIPLIER = [5, 3, 2, 0, 0, 0] as const;
 
 export type Role = 'BAT' | 'WK' | 'AR' | 'PACE' | 'SPIN';
 export const ROLES: readonly Role[] = ['BAT', 'WK', 'AR', 'PACE', 'SPIN'];
@@ -35,20 +33,20 @@ export const ROLE_LABEL: Record<Role, string> = {
   PACE: 'Fast bowler',
   SPIN: 'Spinner',
 };
-/** What an XI must contain. The other two places can be anyone. */
-export const REQUIRED: Record<Role, number> = { BAT: 3, WK: 1, AR: 2, PACE: 2, SPIN: 1 };
+/** The squad objectives by role. The fifteenth place can be anyone. */
+export const REQUIRED: Record<Role, number> = { BAT: 4, WK: 2, AR: 3, PACE: 3, SPIN: 2 };
 
 export type Lot = {
   id: number;
   name: string;
   role: Role;
+  /** Points the player is worth to a squad, 60 to 99. */
   rating: number;
-  trait: string;
   base: number;
   overseas: boolean;
   country: string;
   flag: string;
-  /** The auction set the player comes up in, or 'Retained'. */
+  /** The auction set the player comes up in. */
   set: string;
 };
 export type Team = { purse: number; squad: Lot[] };
@@ -57,6 +55,7 @@ export type LotResult = { winner: number | null; price: number };
 export type RivalStyle = 'stars' | 'value' | 'balanced';
 export type Rival = { name: string; style: RivalStyle };
 export type Standing = { team: number; name: string; score: number; purse: number; place: number };
+export type Objective = { label: string; met: boolean };
 /** Where the auction has got to. Round 2 is the accelerated round for players unsold in round 1. */
 export type Auction = { teams: Team[]; round: 1 | 2; queue: number[]; unsold: number[]; done: boolean };
 
@@ -89,75 +88,66 @@ function shuffled<T>(items: readonly T[], rand: () => number): T[] {
   return out;
 }
 
-function pick<T>(items: readonly T[], rand: () => number): T {
-  return items[Math.floor(rand() * items.length)];
-}
+// ── The player pool ──────────────────────────────────────────────────────────
 
-// ── The player pool (all invented) ───────────────────────────────────────────
+const COUNTRY: Record<string, { name: string; flag: string }> = {
+  IND: { name: 'India', flag: '🇮🇳' },
+  AUS: { name: 'Australia', flag: '🇦🇺' },
+  ENG: { name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  NZ: { name: 'New Zealand', flag: '🇳🇿' },
+  SA: { name: 'South Africa', flag: '🇿🇦' },
+  WI: { name: 'West Indies', flag: '🌴' },
+  SL: { name: 'Sri Lanka', flag: '🇱🇰' },
+  AFG: { name: 'Afghanistan', flag: '🇦🇫' },
+};
 
-type NameSet = { country: string; flag: string; first: readonly string[]; last: readonly string[] };
-
-const HOME: NameSet = {
-  country: 'India',
-  flag: '🇮🇳',
-  first: [
-    'Aarav', 'Vihaan', 'Kabir', 'Arnav', 'Dhruv', 'Reyansh', 'Advait', 'Rudra', 'Yuvan', 'Samar', 'Tejas', 'Omkar',
-    'Pranav', 'Siddharth', 'Nakul', 'Harsh', 'Jai', 'Keshav', 'Laksh', 'Manav', 'Naveen', 'Parth', 'Raghav', 'Sahil',
-    'Tanmay', 'Utkarsh', 'Vedant', 'Zubin', 'Anirudh', 'Bharat', 'Chirag', 'Darshan', 'Eshan', 'Faisal', 'Gautam',
-    'Imran', 'Junaid', 'Karan', 'Lokesh', 'Mihir', 'Nikhil', 'Ojas', 'Pratik', 'Rishabh', 'Sarthak', 'Tarun',
+// name|country|points. Points are ClubPulse's own estimate of T20 value: edit them here (in both
+// copies of this file) as form changes. Anyone not from India counts as an overseas player.
+const PLAYERS: Record<Role, readonly string[]> = {
+  BAT: [
+    'Virat Kohli|IND|95', 'Suryakumar Yadav|IND|93', 'Abhishek Sharma|IND|93', 'Yashasvi Jaiswal|IND|92',
+    'Shubman Gill|IND|91', 'Shreyas Iyer|IND|90', 'Tilak Varma|IND|89', 'Rohit Sharma|IND|88',
+    'Sai Sudharsan|IND|88', 'Ruturaj Gaikwad|IND|86', 'Rinku Singh|IND|84', 'Rajat Patidar|IND|84',
+    'Priyansh Arya|IND|82', 'Shashank Singh|IND|80', 'Devdutt Padikkal|IND|78', 'Ayush Mhatre|IND|78',
+    'Nehal Wadhera|IND|76', 'Angkrish Raghuvanshi|IND|76', 'Ayush Badoni|IND|74', 'Nitish Rana|IND|74',
+    'Ajinkya Rahane|IND|72', 'Travis Head|AUS|92', 'Harry Brook|ENG|86', 'Tim David|AUS|85',
+    'Dewald Brevis|SA|84', 'David Miller|SA|82', 'Aiden Markram|SA|82', 'Shimron Hetmyer|WI|80',
+    'Finn Allen|NZ|80', 'Pathum Nissanka|SL|80', 'Jake Fraser-McGurk|AUS|74', 'Rovman Powell|WI|74',
   ],
-  last: [
-    'Deshmukh', 'Bhaskar', 'Rangan', 'Menon', 'Nambiar', 'Shetty', 'Hegde', 'Joshi', 'Trivedi', 'Bhatt', 'Chatterjee',
-    'Banerjee', 'Naidu', 'Pillai', 'Kapoor', 'Malhotra', 'Sethi', 'Gokhale', 'Sawant', 'Parekh', 'Dalal', 'Mehra',
-    'Saxena', 'Tandon', 'Bose', 'Dutta', 'Barua', 'Mahanta', 'Thapa', 'Rawat', 'Negi', 'Bisht', 'Solanki', 'Rathore',
-    'Shekhawat', 'Chauhan', 'Tomar', 'Dhillon', 'Sandhu', 'Grewal', 'Fernandes', 'Lobo', 'Iyengar', 'Subramanian',
-    'Venkatesh', 'Krishnan', 'Gowda', 'Nayak', 'Pawar', 'Shinde', 'Kadam',
+  WK: [
+    'KL Rahul|IND|89', 'Rishabh Pant|IND|88', 'Sanju Samson|IND|87', 'Ishan Kishan|IND|82',
+    'Prabhsimran Singh|IND|81', 'Jitesh Sharma|IND|80', 'Dhruv Jurel|IND|79', 'MS Dhoni|IND|75',
+    'Abishek Porel|IND|74', 'Jos Buttler|ENG|93', 'Heinrich Klaasen|SA|92', 'Nicholas Pooran|WI|92',
+    'Phil Salt|ENG|90', 'Quinton de Kock|SA|82', 'Tristan Stubbs|SA|82', 'Josh Inglis|AUS|82',
+    'Ryan Rickelton|SA|81', 'Rahmanullah Gurbaz|AFG|78',
+  ],
+  AR: [
+    'Hardik Pandya|IND|93', 'Axar Patel|IND|89', 'Ravindra Jadeja|IND|86', 'Nitish Kumar Reddy|IND|82',
+    'Shivam Dube|IND|82', 'Riyan Parag|IND|82', 'Washington Sundar|IND|80', 'Krunal Pandya|IND|80',
+    'Venkatesh Iyer|IND|76', 'Harpreet Brar|IND|72', 'Ramandeep Singh|IND|70', 'Shahbaz Ahmed|IND|68',
+    'Sunil Narine|WI|91', 'Mitchell Marsh|AUS|88', 'Cameron Green|AUS|86', 'Marco Jansen|SA|86',
+    'Marcus Stoinis|AUS|82', 'Will Jacks|ENG|82', 'Andre Russell|WI|82', 'Sam Curran|ENG|80',
+    'Jacob Bethell|ENG|80', 'Rachin Ravindra|NZ|80', 'Mitchell Santner|NZ|80', 'Azmatullah Omarzai|AFG|80',
+    'Glenn Maxwell|AUS|78', 'Liam Livingstone|ENG|78',
+  ],
+  PACE: [
+    'Jasprit Bumrah|IND|99', 'Arshdeep Singh|IND|89', 'Mohammed Siraj|IND|86', 'Prasidh Krishna|IND|84',
+    'Mohammed Shami|IND|80', 'Harshal Patel|IND|80', 'Bhuvneshwar Kumar|IND|80', 'Harshit Rana|IND|78',
+    'Khaleel Ahmed|IND|76', 'Deepak Chahar|IND|74', 'Avesh Khan|IND|74', 'T Natarajan|IND|74',
+    'Mayank Yadav|IND|74', 'Yash Dayal|IND|74', 'Vaibhav Arora|IND|74', 'Mukesh Kumar|IND|72',
+    'Sandeep Sharma|IND|72', 'Tushar Deshpande|IND|70', 'Mitchell Starc|AUS|90', 'Josh Hazlewood|AUS|90',
+    'Pat Cummins|AUS|88', 'Kagiso Rabada|SA|88', 'Trent Boult|NZ|87', 'Jofra Archer|ENG|86',
+    'Matheesha Pathirana|SL|84', 'Lockie Ferguson|NZ|80', 'Matt Henry|NZ|80', 'Anrich Nortje|SA|78',
+    'Nathan Ellis|AUS|78', 'Fazalhaq Farooqi|AFG|78',
+  ],
+  SPIN: [
+    'Varun Chakaravarthy|IND|91', 'Kuldeep Yadav|IND|90', 'Yuzvendra Chahal|IND|84', 'Ravi Bishnoi|IND|82',
+    'Sai Kishore|IND|78', 'Digvesh Rathi|IND|74', 'Suyash Sharma|IND|72', 'Vipraj Nigam|IND|70',
+    'Rahul Chahar|IND|68', 'Harsh Dubey|IND|68', 'Mayank Markande|IND|66', 'Rashid Khan|AFG|92',
+    'Noor Ahmad|AFG|86', 'Adam Zampa|AUS|82', 'Wanindu Hasaranga|SL|82', 'Maheesh Theekshana|SL|80',
+    'Adil Rashid|ENG|80', 'Mujeeb Ur Rahman|AFG|76', 'Keshav Maharaj|SA|76', 'Akeal Hosein|WI|76',
   ],
 };
-const ANGLO_FIRST = ['Jack', 'Oliver', 'Lachlan', 'Cooper', 'Riley', 'Hamish', 'Angus', 'Callum', 'Ethan', 'Lewis', 'Reece', 'Toby', 'Archie', 'Fraser'];
-const ANGLO_LAST = ['Whitlock', 'Marlowe', 'Pennant', 'Ashdown', 'Thackeray', 'Rowntree', 'Hallam', 'Quayle', 'Draycott', 'Abernathy', 'Kestrel', 'Dalby', 'Tremaine', 'Wexford', 'Brackley', 'Summerhay'];
-const OVERSEAS: readonly NameSet[] = [
-  { country: 'Australia', flag: '🇦🇺', first: ANGLO_FIRST, last: ANGLO_LAST },
-  { country: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', first: ANGLO_FIRST, last: ANGLO_LAST },
-  { country: 'New Zealand', flag: '🇳🇿', first: ANGLO_FIRST, last: ANGLO_LAST },
-  {
-    country: 'South Africa',
-    flag: '🇿🇦',
-    first: ['Ruan', 'Pieter', 'Wian', 'Thabo', 'Sipho', 'Lwazi', 'Jaco'],
-    last: ['van Rensburg', 'Coetzer', 'Marais', 'Nkosi', 'Dlamini', 'Steenkamp', 'Mokoena'],
-  },
-  {
-    country: 'West Indies',
-    flag: '🌴',
-    first: ['Jermaine', 'Akeem', 'Rashawn', 'Tyrell', 'Dequan', 'Kemani'],
-    last: ['Baptiste', 'Lafleur', 'Prescod', 'Alleyne', 'Gittens', 'Fontaine'],
-  },
-  {
-    country: 'Sri Lanka',
-    flag: '🇱🇰',
-    first: ['Dinuka', 'Sahan', 'Kasun', 'Nuwan', 'Tharindu', 'Isuru'],
-    last: ['Wickramaratne', 'Jayakody', 'Abeysekara', 'Gunasekara', 'Dissanayake', 'Ratnayake'],
-  },
-  {
-    country: 'Afghanistan',
-    flag: '🇦🇫',
-    first: ['Farid', 'Zubair', 'Naveed', 'Samiullah', 'Hamid', 'Yama'],
-    last: ['Noorzai', 'Hotak', 'Wardak', 'Sahak', 'Amiri', 'Popal'],
-  },
-];
-const TRAITS: Record<Role, readonly string[]> = {
-  BAT: ['Opens the innings', 'Finisher', 'Anchors the chase', 'Clears the ropes', 'Plays spin well', 'Powerplay hitter'],
-  WK: ['Keeps to spin', 'Keeper who opens', 'Safe hands', 'Finisher with the gloves'],
-  AR: ['Bats five, bowls four', 'Seam-bowling all-rounder', 'Spin-bowling all-rounder', 'Gun fielder'],
-  PACE: ['Death-overs specialist', 'Swings the new ball', 'Hits the deck hard', 'Left-arm quick', 'Yorker machine'],
-  SPIN: ['Left-arm spin', 'Leg-spinner', 'Mystery spinner', 'Miserly in the middle', 'Off-spinner'],
-};
-const RIVAL_NAMES = [
-  'Indore Ironhawks', 'Nagpur Nighthawks', 'Goa Gladiators', 'Vizag Vipers', 'Surat Stallions', 'Bhopal Blazers',
-  'Mysuru Monarchs', 'Ranchi Raiders', 'Madurai Mavericks', 'Kanpur Comets', 'Shimla Snow Leopards', 'Kochi Kingfishers',
-  'Guwahati Rhinos', 'Raipur Rangers',
-];
-const ROLE_COUNT: Record<Role, number> = { BAT: 16, WK: 8, AR: 12, PACE: 14, SPIN: 10 };
 const ROLE_SET: Record<Role, string> = {
   BAT: 'Batters',
   AR: 'All-rounders',
@@ -166,98 +156,51 @@ const ROLE_SET: Record<Role, string> = {
   SPIN: 'Spinners',
 };
 const SET_ORDER: readonly Role[] = ['BAT', 'AR', 'WK', 'PACE', 'SPIN'];
-export const MARQUEE_COUNT = 6;
-export const UNCAPPED_BELOW = 68;
+export const MARQUEE_COUNT = 10;
+/** Players below this come up last, in the value set. */
+export const VALUE_SET_BELOW = 76;
+const RIVAL_NAMES = [
+  'Indore Ironhawks', 'Nagpur Nighthawks', 'Goa Gladiators', 'Vizag Vipers', 'Surat Stallions', 'Bhopal Blazers',
+  'Mysuru Monarchs', 'Ranchi Raiders', 'Madurai Mavericks', 'Kanpur Comets', 'Shimla Snow Leopards', 'Kochi Kingfishers',
+  'Guwahati Rhinos', 'Raipur Rangers',
+];
 
-/** Base price in lakhs for a player of this rating. */
+/** Base price in lakhs for a player worth this many points. */
 export function basePrice(rating: number): number {
   if (rating >= 90) return 200;
   if (rating >= 84) return 150;
-  if (rating >= 76) return 100;
-  if (rating >= UNCAPPED_BELOW) return 50;
+  if (rating >= VALUE_SET_BELOW) return 100;
+  if (rating >= 70) return 50;
   return MIN_BASE;
 }
 
-type World = { pool: Lot[]; retained: Lot[][] };
-
-function buildWorld(seed: number): World {
-  const rand = rng(mix(seed, 1));
-  const used = new Set<string>();
-  const make = (role: Role, rating: number, overseas: boolean) => {
-    const names = overseas ? pick(OVERSEAS, rand) : HOME;
-    let name = '';
-    do {
-      name = `${pick(names.first, rand)} ${pick(names.last, rand)}`;
-    } while (used.has(name));
-    used.add(name);
-    return {
-      name,
-      role,
-      rating,
-      trait: pick(TRAITS[role], rand),
-      base: basePrice(rating),
-      overseas,
-      country: names.country,
-      flag: names.flag,
-    };
-  };
-
-  // The auction pool
-  const ratings: number[] = [];
-  for (let i = 0; i < MARQUEE_COUNT; i++) ratings.push(90 + Math.floor(rand() * 7));
-  for (let i = 0; i < 14; i++) ratings.push(80 + Math.floor(rand() * 10));
-  for (let i = 0; i < 24; i++) ratings.push(UNCAPPED_BELOW + Math.floor(rand() * 12));
-  for (let i = 0; i < 16; i++) ratings.push(56 + Math.floor(rand() * 12));
-  const mixedRatings = shuffled(ratings, rand);
-  const roles = shuffled(
-    ROLES.flatMap((r) => Array.from({ length: ROLE_COUNT[r] }, () => r)),
-    rand,
+/** Every player on the books. */
+export function allPlayers(): Array<Omit<Lot, 'id' | 'set'>> {
+  return ROLES.flatMap((role) =>
+    PLAYERS[role].map((entry) => {
+      const [name, code, points] = entry.split('|');
+      const rating = Number(points);
+      return { name, role, rating, base: basePrice(rating), overseas: code !== 'IND', country: COUNTRY[code].name, flag: COUNTRY[code].flag };
+    }),
   );
-  // About four in ten capped players are overseas; uncapped players are all home-grown
-  const players = roles.map((role, i) => make(role, mixedRatings[i], mixedRatings[i] >= UNCAPPED_BELOW && rand() < 0.42));
+}
 
+/** Every player in the order they come up that day: marquee set, a set per role, then the value set. */
+export function generatePool(seed: number): Lot[] {
+  const rand = rng(mix(seed, 1));
+  const players = shuffled(allPlayers(), rand);
+
+  // Ties for the last marquee places fall differently each day because of the shuffle above
   const marquee = [...players].sort((a, b) => b.rating - a.rating).slice(0, MARQUEE_COUNT);
   const rest = players.filter((p) => !marquee.includes(p));
   const ordered = [
     ...shuffled(marquee, rand).map((p) => ({ ...p, set: 'Marquee set' })),
     ...SET_ORDER.flatMap((role) =>
-      rest.filter((p) => p.role === role && p.rating >= UNCAPPED_BELOW).map((p) => ({ ...p, set: ROLE_SET[role] })),
+      shuffled(rest.filter((p) => p.role === role && p.rating >= VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: ROLE_SET[role] })),
     ),
-    ...SET_ORDER.flatMap((role) =>
-      rest.filter((p) => p.role === role && p.rating < UNCAPPED_BELOW).map((p) => ({ ...p, set: 'Uncapped players' })),
-    ),
+    ...shuffled(rest.filter((p) => p.rating < VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: 'Value picks' })),
   ];
-  const pool = ordered.map((p, id) => ({ id, ...p }));
-
-  // Six retained players per franchise: the same spread of ratings for everyone, different roles,
-  // so each franchise comes to the auction needing different things
-  const retained: Lot[][] = [];
-  for (let team = 0; team < TEAM_COUNT; team++) {
-    const teamRoles = shuffled<Role>(['BAT', 'BAT', 'BAT', 'WK', 'AR', 'AR', 'PACE', 'PACE', 'SPIN'], rand).slice(0, RETAINED_COUNT);
-    const teamRatings = shuffled(
-      [84 + Math.floor(rand() * 5), 78 + Math.floor(rand() * 5), 78 + Math.floor(rand() * 5), 70 + Math.floor(rand() * 6), 70 + Math.floor(rand() * 6), 70 + Math.floor(rand() * 6)],
-      rand,
-    );
-    let overseas = 0;
-    retained.push(
-      teamRoles.map((role, i) => {
-        const isOverseas = overseas < 2 && rand() < 0.3;
-        if (isOverseas) overseas += 1;
-        return { id: 1000 + team * RETAINED_COUNT + i, ...make(role, teamRatings[i], isOverseas), base: 0, set: 'Retained' };
-      }),
-    );
-  }
-  return { pool, retained };
-}
-
-/** The players up for auction, in order: marquee set, then a set per role, then uncapped players. */
-export function generatePool(seed: number): Lot[] {
-  return buildWorld(seed).pool;
-}
-
-/** Each franchise's six retained players. Index 0 is the player's franchise. */
-export function generateRetained(seed: number): Lot[][] {
-  return buildWorld(seed).retained;
+  return ordered.map((p, id) => ({ id, ...p }));
 }
 
 export function generateRivals(seed: number): Rival[] {
@@ -268,8 +211,8 @@ export function generateRivals(seed: number): Rival[] {
   return names.map((name, i) => ({ name, style: styles[(i + offset) % 3] }));
 }
 
-export function newTeams(retained: readonly Lot[][]): Team[] {
-  return retained.map((squad) => ({ purse: BUDGET, squad: [...squad] }));
+export function newTeams(): Team[] {
+  return Array.from({ length: TEAM_COUNT }, () => ({ purse: BUDGET, squad: [] }));
 }
 
 // ── The bidding ladder ───────────────────────────────────────────────────────
@@ -337,8 +280,8 @@ export function cannotBuy(team: Team, lot: Lot, price: number): string | null {
 
 /** What a player of this rating is worth to an average franchise, in lakhs. */
 function worth(rating: number): number {
-  const x = Math.max(0, Math.min(1, (rating - 55) / 40));
-  return 30 + 1900 * Math.pow(x, 1.5);
+  const x = Math.max(0, Math.min(1, (rating - 60) / 39));
+  return 30 + 1500 * Math.pow(x, 1.5);
 }
 
 /**
@@ -371,9 +314,9 @@ export function rivalLimits(
     }
 
     // A franchise with money to spend waits for better players while enough of them are still to come
-    const richness = team.purse / slots / (BUDGET / AUCTION_SLOTS);
+    const richness = team.purse / slots / (BUDGET / SQUAD_SIZE);
     if (round === 1) {
-      const bar = 64 + 9 * Math.max(0, Math.min(1.5, richness - 0.7));
+      const bar = 62 + 8 * Math.max(0, Math.min(1.5, richness - 0.7));
       const betterToCome = upcoming.filter((p) => p.role === lot.role && p.rating >= bar).length;
       if (lot.rating < bar && betterToCome >= (needsRole ? short[lot.role] : 1) + 3) {
         out.push(0);
@@ -383,9 +326,9 @@ export function rivalLimits(
 
     const style = rivals[r].style;
     // Rivals bid a little under a player's worth, which leaves room for a sharp bidder
-    let m = 0.8;
-    if (style === 'stars') m *= lot.rating >= 86 ? 1.25 : 0.85;
-    else if (style === 'value') m *= lot.rating >= 72 && lot.rating <= 85 ? 1.12 : 0.9;
+    let m = 0.7;
+    if (style === 'stars') m *= lot.rating >= 88 ? 1.25 : 0.85;
+    else if (style === 'value') m *= lot.rating >= 74 && lot.rating <= 87 ? 1.12 : 0.9;
 
     m *= needsRole ? 1.15 : 0.92;
     // Few chances left at a role the squad lacks
@@ -398,8 +341,8 @@ export function rivalLimits(
     let limit = Math.round(worth(lot.rating) * m);
     // Money that would otherwise go unspent gets used once the players are running out
     if (round === 2 || upcoming.length < slots * 4) limit = Math.max(limit, Math.round((team.purse / slots) * 0.5));
-    // No single player takes more than 60% of a full purse
-    limit = Math.min(limit, BUDGET * 0.6);
+    // No single player takes more than 30% of a full purse
+    limit = Math.min(limit, BUDGET * 0.3);
     // Leave at least the lowest base price for every other empty place
     limit = Math.min(limit, team.purse - MIN_BASE * (slots - 1));
     out.push(floorToLevel(lot.base, limit));
@@ -417,8 +360,8 @@ export function rivalOrder(seed: number, lot: Lot, round: 1 | 2): number[] {
 
 // ── Running the auction ──────────────────────────────────────────────────────
 
-export function newAuction(pool: readonly Lot[], retained: readonly Lot[][]): Auction {
-  return { teams: newTeams(retained), round: 1, queue: pool.map((p) => p.id), unsold: [], done: pool.length === 0 };
+export function newAuction(pool: readonly Lot[]): Auction {
+  return { teams: newTeams(), round: 1, queue: pool.map((p) => p.id), unsold: [], done: pool.length === 0 };
 }
 
 /** The player on the block. Only call while the auction is not done. */
@@ -464,6 +407,8 @@ export function advance(pool: readonly Lot[], a: Auction, result: LotResult): Au
   const teams = a.teams.map((t, i) =>
     i === result.winner ? { purse: t.purse - result.price, squad: [...t.squad, lot] } : { purse: t.purse, squad: [...t.squad] },
   );
+  // Once every squad is full there is nobody left to bid
+  if (teams.every((t) => t.squad.length >= SQUAD_SIZE)) return { teams, round: a.round, queue: [], unsold: [], done: true };
   const queue = a.queue.slice(1);
   const unsold = result.winner === null && a.round === 1 ? [...a.unsold, lot.id] : a.unsold;
   if (queue.length > 0) return { teams, round: a.round, queue, unsold, done: false };
@@ -471,12 +416,23 @@ export function advance(pool: readonly Lot[], a: Auction, result: LotResult): Au
   return { teams, round: a.round, queue: [], unsold: [], done: true };
 }
 
-/** Squad score out of 100: average rating over eleven places, less a penalty for each required player missing. */
+/** The squad objectives and whether this squad meets each one. */
+export function objectives(team: Team): Objective[] {
+  const count = (role: Role) => team.squad.filter((p) => p.role === role).length;
+  return [
+    { label: `Sign all ${SQUAD_SIZE} players`, met: team.squad.length >= SQUAD_SIZE },
+    { label: `${REQUIRED.BAT} or more batters`, met: count('BAT') >= REQUIRED.BAT },
+    { label: `${REQUIRED.WK} or more wicketkeepers`, met: count('WK') >= REQUIRED.WK },
+    { label: `${REQUIRED.AR} or more all-rounders`, met: count('AR') >= REQUIRED.AR },
+    { label: `${REQUIRED.PACE} or more fast bowlers`, met: count('PACE') >= REQUIRED.PACE },
+    { label: `${REQUIRED.SPIN} or more spinners`, met: count('SPIN') >= REQUIRED.SPIN },
+  ];
+}
+
+/** Team points: every player's points added up, plus a bonus for each objective met. */
 export function squadScore(team: Team): number {
-  const squad = team.squad.slice(0, SQUAD_SIZE);
-  const total = squad.reduce((a, p) => a + p.rating, 0) + (SQUAD_SIZE - squad.length) * EMPTY_SLOT_RATING;
-  const exact = total / SQUAD_SIZE - SHORTFALL_PENALTY * totalShortfall({ purse: 0, squad });
-  return Math.max(0, Math.round(exact * 10) / 10);
+  const players = team.squad.slice(0, SQUAD_SIZE).reduce((a, p) => a + p.rating, 0);
+  return players + OBJECTIVE_POINTS * objectives(team).filter((o) => o.met).length;
 }
 
 /** Final table, best first. Ties go to the team with more purse left, then to the player. */
@@ -503,7 +459,7 @@ export type Replay =
 export function replayGame(seed: number, results: readonly LotResult[]): Replay {
   const pool = generatePool(seed);
   const rivals = generateRivals(seed);
-  let a = newAuction(pool, generateRetained(seed));
+  let a = newAuction(pool);
   let used = 0;
   while (!a.done) {
     if (used >= results.length) return { ok: false, error: 'too few results', lot: used };
