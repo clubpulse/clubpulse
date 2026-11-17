@@ -176,6 +176,20 @@ export default function HomeScreen() {
           ))}
         </View>
 
+        {/* ── Games ─────────────────────────────────────────────── */}
+        <Pressable style={[styles.card, { borderColor: colors.goldBorder }]} onPress={() => router.push('/auction-room')}>
+          <View style={styles.cardRow}>
+            <View style={[styles.cardIcon, { backgroundColor: colors.goldDim }]}>
+              <Ionicons name="hammer" size={18} color={colors.gold} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={fonts.title}>Auction Room</Text>
+              <Text style={fonts.small}>Build a squad of 15 at a T20 franchise auction</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+          </View>
+        </Pressable>
+
         {/* ── ROLES: one row each, so Home stays short however many roles someone holds ── */}
         {(roleRows.length > 0 || rolesError) && <SectionLabel label="Your roles" />}
         {rolesError && (
