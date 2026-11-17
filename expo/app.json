@@ -74,6 +74,13 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d45db8c3-4bfa-4e3e-a487-c5dd8dc6f75c"
+      }
+    },
+    "owner": "clubpulseadmin"
   }
 }
