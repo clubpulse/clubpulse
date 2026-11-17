@@ -72,6 +72,14 @@ export default function StoreScreen() {
           </Text>
         </View>
 
+        {/* Browse all deals CTA */}
+        <Pressable
+          onPress={() => router.push('/deals')}
+          style={({ pressed }) => [styles.browseDealsCta, pressed && { opacity: 0.8 }]}
+        >
+          <Text style={styles.browseDealsText}>Browse All Deals & Discounts →</Text>
+        </Pressable>
+
         {/* Divider */}
         <View style={styles.divider} />
 
@@ -218,6 +226,16 @@ const styles = StyleSheet.create({
     borderColor: colors.border as string,
   },
   categoryChipText: { fontSize: 12, fontWeight: '600' },
+
+  browseDealsCta: {
+    backgroundColor: 'rgba(37,99,235,0.1)',
+    borderWidth: 1,
+    borderColor: colors.brandPrimary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center' as const,
+  },
+  browseDealsText: { color: colors.brandSky, fontWeight: '700', fontSize: 14 },
 
   divider: { height: 1, backgroundColor: colors.border as string },
 

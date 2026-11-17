@@ -6,20 +6,44 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0A1128",
+    "backgroundColor": "#04091A",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#04091A"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.clubpulse.app",
+      "buildNumber": "1",
       "infoPlist": {
         "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health so you can earn Scores for staying active.",
         "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
-        "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer."
+        "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.clubpulse.app",
+      "versionCode": 1,
       "permissions": ["ACTIVITY_RECOGNITION", "ACCESS_FINE_LOCATION"]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    },
+    "owner": "clubpulse",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_WITH_EAS_PROJECT_ID"
     },
     "plugins": [
       "expo-router",
@@ -27,6 +51,13 @@
         "expo-sensors",
         {
           "motionPermission": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#EFC84A"
         }
       ]
     ]
