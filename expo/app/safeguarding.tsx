@@ -125,7 +125,15 @@ export default function SafeguardingScreen() {
             case 'juniors':
               return (
                 <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
-                  <Text style={fonts.title}>Linked Juniors</Text>
+                  <View style={styles.row}>
+                    <Text style={[fonts.title, { flex: 1 }]}>Linked Juniors</Text>
+                    <Pressable
+                      onPress={() => router.push('/register-child')}
+                      style={({ pressed }) => [styles.addChildBtn, pressed && { opacity: 0.7 }]}
+                    >
+                      <Text style={styles.addChildText}>+ Add a child</Text>
+                    </Pressable>
+                  </View>
                   {juniors.length === 0 ? (
                     <Card>
                       <View style={{ alignItems: 'center', gap: spacing.sm, padding: spacing.md }}>
@@ -134,7 +142,7 @@ export default function SafeguardingScreen() {
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
                           {isParent
                             ? 'Children you register with your club will appear here.'
-                            : 'Ask your club to register your child and link them to you.'}
+                            : 'Add your child to manage their consents and details with your club.'}
                         </Text>
                       </View>
                     </Card>
@@ -327,6 +335,14 @@ function dbsStyle(status: string) {
 }
 
 const styles = StyleSheet.create({
+  addChildBtn: {
+    borderWidth: 1,
+    borderColor: colors.brandPrimary,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  addChildText: { color: colors.brandSky, fontWeight: '600', fontSize: 13 },
   safe: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   content: { padding: spacing.lg },

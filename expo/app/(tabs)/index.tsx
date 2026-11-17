@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StepsCard } from '../../components/StepsCard';
 import { WalletCard } from '../../components/WalletCard';
@@ -47,6 +47,9 @@ export default function HomeScreen() {
   const { roles, active, isAdmin, isCoach, isParent, isVolunteer, club, juniors, approvalQueue, error: rolesError, refresh: refreshRoles } = useRoles();
   const [refreshing, setRefreshing] = useState(false);
 
+  // Roles change elsewhere in the app (adding a child, approving a request), so reload on return
+  useFocusEffect(useCallback(() => { refreshRoles(); }, [refreshRoles]));
+
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'Player';
   const pending = pendingRoles(roles);
 
@@ -81,7 +84,7 @@ export default function HomeScreen() {
       title: 'My children',
       subtitle:
         juniors.length === 0
-          ? 'Link your child'
+          ? 'Add your child'
           : `${juniors.length} linked${pendingJuniors > 0 ? ` · ${pendingJuniors} need attention` : ''}`,
       count: pendingJuniors,
       // Straight to the child when there is exactly one and nothing is outstanding

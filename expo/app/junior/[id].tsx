@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Switc
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { api, ApiError } from '../../lib/api';
+import { CONSENTS } from '../../lib/consents';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 // A child is a record their parent manages, not an account of their own: they have no
@@ -23,17 +24,6 @@ type Junior = {
   link_verified: boolean;
   consents: Record<string, ConsentState>;
 };
-
-// Mirrors the consent_type enum on the server
-const CONSENTS: { type: string; label: string; detail: string }[] = [
-  { type: 'general_participation', label: 'Taking part', detail: 'Training, matches and club activities' },
-  { type: 'data_processing', label: 'Data processing', detail: 'The club holding and using their details' },
-  { type: 'medical_treatment', label: 'Emergency medical treatment', detail: 'If you can’t be reached in an emergency' },
-  { type: 'photo_video', label: 'Photos and video', detail: 'Being photographed or filmed at club events' },
-  { type: 'social_media', label: 'Social media', detail: 'Appearing in the club’s posts' },
-  { type: 'travel', label: 'Travel to away fixtures', detail: 'Travelling with the team' },
-  { type: 'coaching_observation', label: 'One-to-one coaching', detail: 'Individual sessions with a club coach' },
-];
 
 function formatDate(iso: string | null): string {
   if (!iso) return 'Not given';

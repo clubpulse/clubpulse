@@ -49,6 +49,7 @@ function AuthGate() {
       <Stack.Screen name="sporting-soul" options={{ headerShown: true, title: 'My Sporting Soul', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="safeguarding" options={{ headerShown: true, title: 'Safeguarding', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="coach/[id]" options={{ headerShown: true, title: 'Coach', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="register-child" options={{ headerShown: true, title: 'Add a child', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="junior/[id]" options={{ headerShown: true, title: 'Junior', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="store" options={{ headerShown: true, title: 'Store', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="odds" options={{ headerShown: true, title: 'Prize odds', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
