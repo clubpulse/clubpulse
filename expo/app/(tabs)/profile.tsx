@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
 import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import { api, ApiError, type Profile, type Wallet } from '../../lib/api';
+import { PRIVACY_URL, TERMS_URL } from '../../constants/features';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 export default function ProfileScreen() {
@@ -117,6 +119,8 @@ export default function ProfileScreen() {
           <ProfileLink label="🛒  Marketplace" onPress={() => router.push('/marketplace' as any)} />
           <ProfileLink label="🤖  AI Coach" onPress={() => router.push('/companion' as any)} />
           <ProfileLink label="📖  My Sporting Soul" onPress={() => router.push('/sporting-soul')} />
+          {PRIVACY_URL && <ProfileLink label="🔒  Privacy policy" onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL!)} />}
+          {TERMS_URL && <ProfileLink label="📄  Terms of use" onPress={() => WebBrowser.openBrowserAsync(TERMS_URL!)} />}
         </View>
 
         <Pressable onPress={confirmSignOut} style={({ pressed }) => [styles.signOut, pressed && { opacity: 0.7 }]}>

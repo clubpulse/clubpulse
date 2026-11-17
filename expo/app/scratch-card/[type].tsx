@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Redirect, Stack, router, useLocalSearchParams } from 'expo-router';
 import { Card } from '../../components/Card';
 import {
   AWIN_CATEGORY_CONFIG,
@@ -20,9 +20,16 @@ import {
   generateNetSessionCard,
   getUpsell,
 } from '../../lib/iap';
+import { STORE_ENABLED } from '../../constants/features';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 export default function ScratchCardScreen() {
+  // Reachable by deep link even with the Store switched off
+  if (!STORE_ENABLED) return <Redirect href="/" />;
+  return <ScratchCardScreenContent />;
+}
+
+function ScratchCardScreenContent() {
   const { type } = useLocalSearchParams<{ type: string }>();
   const cardTier: CardTier = type === 'match_day' ? 'match_day' : 'net_session';
 

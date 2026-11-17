@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, router } from 'expo-router';
+import { Redirect, Stack, router } from 'expo-router';
 import { Card } from '../components/Card';
 import {
   AWIN_CATEGORY_CONFIG,
@@ -9,10 +9,16 @@ import {
   IAP_PRODUCTS_099,
   type IAPProduct,
 } from '../lib/iap';
-import { DEALS_ENABLED } from '../constants/features';
+import { DEALS_ENABLED, STORE_ENABLED } from '../constants/features';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 export default function StoreScreen() {
+  // Reachable by deep link even with the Store switched off
+  if (!STORE_ENABLED) return <Redirect href="/" />;
+  return <StoreScreenContent />;
+}
+
+function StoreScreenContent() {
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <Stack.Screen

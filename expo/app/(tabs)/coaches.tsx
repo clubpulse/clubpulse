@@ -67,7 +67,8 @@ export default function CoachesScreen() {
         ListHeaderComponent={
           <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
             <Text style={fonts.heading}>Coach Marketplace</Text>
-            <Text style={fonts.small}>Find ECB-qualified coaches for your club or personal training.</Text>
+            <Text style={fonts.small}>Coaches approved by your club.</Text>
+            {error && <Text style={{ color: colors.danger }}>{error}. Pull down to try again.</Text>}
 
             {/* Show own coaching profile if user is a coach */}
             {isCoach && user && (
@@ -100,7 +101,7 @@ export default function CoachesScreen() {
               <Text style={{ fontSize: 36 }}>🏏</Text>
               <Text style={fonts.title}>No Coaches Available</Text>
               <Text style={[fonts.small, { textAlign: 'center' }]}>
-                Coaches will appear here once they register on ClubPulse. Check back soon!
+                Coaches appear here once your club has approved them.
               </Text>
             </View>
           </Card>
@@ -145,9 +146,9 @@ function CoachCard({ coach }: { coach: Coach }) {
         {coach.hourly_rate != null && (
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={[fonts.regular, { color: colors.gold, fontWeight: '700' }]}>
-              £{coach.hourly_rate}
+              {coach.hourly_rate}
             </Text>
-            <Text style={fonts.small}>/hour</Text>
+            <Text style={fonts.small}>Scores/hour</Text>
           </View>
         )}
       </View>

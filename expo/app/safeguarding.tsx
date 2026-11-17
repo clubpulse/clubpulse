@@ -9,23 +9,13 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Card } from '../components/Card';
 import { useAuth } from '../hooks/useAuth';
 import { useRoles } from '../hooks/useRoles';
 import { getJuniorAgeCategory, isParentLinkRequired } from '../lib/roles';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { colors, fonts, radius, spacing } from '../constants/theme';
-
-type LinkedJunior = {
-  id: string;
-  full_name: string;
-  age_group: string | null;
-  date_of_birth: string | null;
-  consent_given: boolean;
-  consent_date: string | null;
-  link_status: 'approved' | 'pending' | 'rejected';
-};
 
 type DbsRecord = {
   id: string;
@@ -37,8 +27,8 @@ type DbsRecord = {
 
 export default function SafeguardingScreen() {
   const { user } = useAuth();
-  const { isAdmin, isParent } = useRoles();
-  const [juniors, setJuniors] = useState<LinkedJunior[]>([]);
+  // Linked children come with the roles; see GET /api/profile/roles
+  const { isAdmin, isParent, juniors, refresh: refreshRoles } = useRoles();
   const [dbsRecords, setDbsRecords] = useState<DbsRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -46,25 +36,11 @@ export default function SafeguardingScreen() {
   const load = useCallback(async () => {
     if (!user) return;
     try {
-      // Linked juniors (parent → child relationship)
-      const { data: juniorRows } = await supabase
-        .from('linked_juniors')
-        .select('id, full_name, age_group, date_of_birth, consent_given, consent_date, link_status')
-        .eq('parent_id', user.id)
-        .order('full_name');
-
-      setJuniors(juniorRows ?? []);
-
-      // DBS records visible to this user (their own club's staff)
-      const { data: dbsRows } = await supabase
-        .from('dbs_records')
-        .select('id, holder_name, dbs_status, expiry_date, role')
-        .order('expiry_date', { ascending: true })
-        .limit(20);
-
-      setDbsRecords(dbsRows ?? []);
+      // Admins get their club's DBS checks; everyone else only their own
+      const { dbs } = await api<{ dbs: DbsRecord[] }>('/api/safeguarding');
+      setDbsRecords(dbs);
     } catch {
-      // non-critical — tables may not exist yet
+      setDbsRecords([]);
     } finally {
       setLoading(false);
     }
@@ -74,7 +50,7 @@ export default function SafeguardingScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await load();
+    await Promise.all([load(), refreshRoles()]);
     setRefreshing(false);
   };
 
@@ -157,8 +133,8 @@ export default function SafeguardingScreen() {
                         <Text style={fonts.regular}>No Linked Juniors</Text>
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
                           {isParent
-                            ? 'Your linked children will appear here once admin-approved.'
-                            : "Link your child's account to manage consent and track their activity safely."}
+                            ? 'Children you register with your club will appear here.'
+                            : 'Ask your club to register your child and link them to you.'}
                         </Text>
                       </View>
                     </Card>
@@ -168,7 +144,11 @@ export default function SafeguardingScreen() {
                       const linkRequired = ageCategory ? isParentLinkRequired(ageCategory) : null;
 
                       return (
-                        <View key={j.id} style={styles.card}>
+                        <Pressable
+                          key={j.id}
+                          style={({ pressed }) => [styles.card, pressed && { opacity: 0.8 }]}
+                          onPress={() => router.push({ pathname: '/junior/[id]', params: { id: j.junior_id } })}
+                        >
                           <View style={styles.row}>
                             <View style={styles.juniorAvatar}>
                               <Text style={styles.juniorAvatarText}>
@@ -218,7 +198,7 @@ export default function SafeguardingScreen() {
                               </Text>
                             </View>
                           )}
-                        </View>
+                        </Pressable>
                       );
                     })
                   )}
@@ -235,7 +215,7 @@ export default function SafeguardingScreen() {
                         <Text style={{ fontSize: 32 }}>🛡️</Text>
                         <Text style={fonts.regular}>No DBS Records</Text>
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
-                          DBS checks for coaches and volunteers will appear here.
+                          {isAdmin ? 'DBS checks for your coaches and volunteers will appear here.' : 'Your own DBS check will appear here once your club records it.'}
                         </Text>
                       </View>
                     </Card>

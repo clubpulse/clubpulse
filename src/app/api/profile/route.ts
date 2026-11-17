@@ -57,7 +57,7 @@ export async function DELETE(req: NextRequest) {
   // A club must not be left without an admin while it still has members
   const { data: adminOf, error: adminError } = await admin
     .from('club_members')
-    .select('club_id, clubs ( name )')
+    .select('club_id')
     .eq('user_id', user.id)
     .eq('role', 'club_admin')
     .eq('is_active', true);
@@ -74,8 +74,8 @@ export async function DELETE(req: NextRequest) {
 
     const rows = others ?? [];
     if (rows.length > 0 && !rows.some((row) => row.role === 'club_admin')) {
-      const club = Array.isArray(membership.clubs) ? membership.clubs[0] : membership.clubs;
-      const name = (club as { name?: string } | null)?.name ?? 'your club';
+      const { data: club } = await admin.from('clubs').select('name').eq('id', membership.club_id).maybeSingle();
+      const name = (club?.name as string | undefined) ?? 'your club';
       return fail(`You are the only admin of ${name}. Make another member an admin before deleting your account.`, 409);
     }
   }

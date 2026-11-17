@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Card } from '../../components/Card';
@@ -23,7 +23,6 @@ export default function CoachDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [coach, setCoach] = useState<CoachDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -32,21 +31,6 @@ export default function CoachDetailScreen() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
-
-  const bookSession = async () => {
-    if (!coach) return;
-    setBooking(true);
-    try {
-      await api('/api/coaches/book', {
-        method: 'POST',
-        body: JSON.stringify({ coachId: coach.id }),
-      });
-    } catch {
-      // handle error
-    } finally {
-      setBooking(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -107,8 +91,8 @@ export default function CoachDetailScreen() {
             </View>
             {coach.hourly_rate != null && (
               <View style={styles.stat}>
-                <Text style={[styles.statVal, { color: colors.success }]}>£{coach.hourly_rate}</Text>
-                <Text style={fonts.small}>Per hour</Text>
+                <Text style={[styles.statVal, { color: colors.success }]}>{coach.hourly_rate}</Text>
+                <Text style={fonts.small}>Scores per hour</Text>
               </View>
             )}
           </View>
@@ -136,18 +120,21 @@ export default function CoachDetailScreen() {
           </Card>
         )}
 
-        {/* Book button */}
-        <Pressable
-          style={({ pressed }) => [styles.bookBtn, pressed && { opacity: 0.85 }]}
-          onPress={bookSession}
-          disabled={booking}
-        >
-          {booking ? (
-            <ActivityIndicator color="#fff" />
+        {/* Availability */}
+        <Card>
+          <Text style={fonts.title}>Availability</Text>
+          {coach.availability.length === 0 ? (
+            <Text style={[fonts.small, { marginTop: spacing.sm }]}>No regular slots listed yet.</Text>
           ) : (
-            <Text style={styles.bookBtnText}>Book a Session</Text>
+            coach.availability.map((slot) => (
+              <Text key={slot} style={[fonts.regular, { marginTop: spacing.sm }]}>{slot}</Text>
+            ))
           )}
-        </Pressable>
+        </Card>
+
+        <Text style={[fonts.small, { textAlign: 'center' }]}>
+          To book a session, speak to {coach.full_name.split(' ')[0]} or your club. Booking in the app is coming.
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

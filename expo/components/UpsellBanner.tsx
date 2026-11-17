@@ -1,3 +1,4 @@
+import { STORE_ENABLED } from '../constants/features';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { type UpsellConfig, type UpsellTrigger, getUpsell } from '../lib/iap';
@@ -20,6 +21,9 @@ interface UpsellBannerProps {
  *   <UpsellBanner trigger="marketplace_short" context={{ scoresShort: 87 }} />
  */
 export function UpsellBanner({ trigger, context, config: overrideConfig, compact }: UpsellBannerProps) {
+  // Every banner sells something from the Store
+  if (!STORE_ENABLED) return null;
+
   const cfg = overrideConfig ?? getUpsell(trigger, context);
 
   const productToRoute: Record<string, string> = {

@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
-import { api } from '../../lib/api';
+import { api, ApiError } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 type Shift = {
@@ -40,13 +40,16 @@ export default function ShiftsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
       const data = await api<Shift[]>(`/api/shifts?tab=${tab}`);
       setShifts(data ?? []);
+      setError(null);
     } catch {
-      // silently fail — list will be empty
+      setShifts([]);
+      setError('Could not load shifts. Pull down to try again.');
     } finally {
       setLoading(false);
     }
@@ -63,10 +66,12 @@ export default function ShiftsScreen() {
   const signUp = async (shiftId: string) => {
     setBusyId(shiftId);
     try {
-      await api('/api/shifts/sign-up', { method: 'POST', body: JSON.stringify({ shiftId }) });
+      await api('/api/shifts/sign-up', { method: 'POST', body: { shiftId } });
       await load();
-    } catch {
-      Alert.alert('Error', 'Could not sign up for this shift.');
+    } catch (e) {
+      // The server says why, e.g. the shift filled up while the list was open
+      Alert.alert('Not signed up', e instanceof ApiError ? e.message : 'Could not sign up for this shift.');
+      await load();
     } finally {
       setBusyId(null);
     }
@@ -75,10 +80,10 @@ export default function ShiftsScreen() {
   const cancel = async (shiftId: string) => {
     setBusyId(shiftId);
     try {
-      await api('/api/shifts/cancel', { method: 'POST', body: JSON.stringify({ shiftId }) });
+      await api('/api/shifts/cancel', { method: 'POST', body: { shiftId } });
       await load();
-    } catch {
-      Alert.alert('Error', 'Could not cancel this shift.');
+    } catch (e) {
+      Alert.alert('Not cancelled', e instanceof ApiError ? e.message : 'Could not cancel this shift.');
     } finally {
       setBusyId(null);
     }
@@ -95,18 +100,8 @@ export default function ShiftsScreen() {
           <View style={{ gap: spacing.md, marginBottom: spacing.lg }}>
             <Text style={fonts.heading}>Volunteer Shifts</Text>
 
-            {/* Admin controls — only visible to club admins */}
             {isAdmin && (
-              <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                <Pressable style={styles.adminBtn}>
-                  <Ionicons name="add-circle" size={16} color={colors.brandSky} />
-                  <Text style={{ color: colors.brandSky, fontWeight: '600', fontSize: 13 }}>New Shift</Text>
-                </Pressable>
-                <Pressable style={styles.adminBtn}>
-                  <Ionicons name="list" size={16} color={colors.gold} />
-                  <Text style={{ color: colors.gold, fontWeight: '600', fontSize: 13 }}>Manage</Text>
-                </Pressable>
-              </View>
+              <Text style={fonts.small}>Create and manage shifts from the club dashboard on the web.</Text>
             )}
 
             {/* Tab selector */}
@@ -137,9 +132,10 @@ export default function ShiftsScreen() {
                   {tab === 'available' ? 'No Shifts Available' : 'No Upcoming Shifts'}
                 </Text>
                 <Text style={[fonts.small, { textAlign: 'center' }]}>
-                  {tab === 'available'
-                    ? 'Check back later — your club admin will post shifts here.'
-                    : "You haven't signed up for any shifts yet."}
+                  {error ??
+                    (tab === 'available'
+                      ? 'Check back later — your club admin will post shifts here.'
+                      : "You haven't signed up for any shifts yet.")}
                 </Text>
               </View>
             </Card>

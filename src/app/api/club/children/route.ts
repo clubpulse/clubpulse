@@ -92,6 +92,15 @@ export async function PATCH(req: NextRequest) {
     const { linkId } = await req.json();
     if (!linkId) return NextResponse.json({ error: 'linkId required' }, { status: 400 });
 
+    // Without this an admin of one club could verify a parent link at another
+    const { data: link } = await createAdminClient()
+      .from('parent_child_links')
+      .select('id, child_profiles ( club_id )')
+      .eq('id', linkId)
+      .maybeSingle();
+    const child = Array.isArray(link?.child_profiles) ? link.child_profiles[0] : link?.child_profiles;
+    if (!child || child.club_id !== clubId) return NextResponse.json({ error: 'Link not found' }, { status: 404 });
+
     const result = await verifyParentLink(linkId, user.id);
     if (!result.success) return NextResponse.json({ error: result.error }, { status: 400 });
 

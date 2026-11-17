@@ -60,7 +60,7 @@ export default function ClubScreen() {
   const handleApproval = async (requestId: string, action: 'approve' | 'reject') => {
     setBusyId(requestId);
     try {
-      await api(`/api/approvals/${requestId}`, { method: 'POST', body: { action } });
+      await api(`/api/approvals/${encodeURIComponent(requestId)}`, { method: 'POST', body: { action } });
       await refresh();
     } catch {
       Alert.alert('Error', `Could not ${action} this request.`);
@@ -213,16 +213,8 @@ function ApprovalCard({
           </Text>
         </View>
       </View>
+      <Text style={[fonts.small, { fontSize: 11 }]}>To decline, use the club dashboard on the web.</Text>
       <View style={styles.approvalActions}>
-        <Pressable
-          style={[styles.actionBtn, styles.rejectBtn]}
-          onPress={onReject}
-          disabled={busy}
-        >
-          {busy ? <ActivityIndicator size="small" color={colors.danger} /> : (
-            <Text style={[styles.actionBtnText, { color: colors.danger }]}>Reject</Text>
-          )}
-        </Pressable>
         <Pressable
           style={[styles.actionBtn, styles.approveBtn]}
           onPress={onApprove}

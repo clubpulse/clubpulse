@@ -1,96 +1,64 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useAuth } from '../../hooks/useAuth';
-import { supabase } from '../../lib/supabase';
+import { api, ApiError } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
-type JuniorProfile = {
+// A child is a record their parent manages, not an account of their own: they have no
+// sign-in, steps or wallet. This screen shows the record and lets the parent give or
+// withdraw each consent. Served by GET /api/juniors/:id, which only answers for a linked parent.
+
+type ConsentState = 'granted' | 'withdrawn';
+
+type Junior = {
+  id: string;
   full_name: string;
-  age_group: string | null;
-  consent_given: boolean;
-  consent_date: string | null;
   date_of_birth: string | null;
+  gender: string | null;
+  medical_notes: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  relationship: string;
+  link_verified: boolean;
+  consents: Record<string, ConsentState>;
 };
 
-type JuniorStats = {
-  steps_today: number;
-  steps_goal: number;
-  scores_balance: number;
-  lifetime_scores: number;
-  streak_day: number;
-  upcoming_sessions: number;
-};
+// Mirrors the consent_type enum on the server
+const CONSENTS: { type: string; label: string; detail: string }[] = [
+  { type: 'general_participation', label: 'Taking part', detail: 'Training, matches and club activities' },
+  { type: 'data_processing', label: 'Data processing', detail: 'The club holding and using their details' },
+  { type: 'medical_treatment', label: 'Emergency medical treatment', detail: 'If you can’t be reached in an emergency' },
+  { type: 'photo_video', label: 'Photos and video', detail: 'Being photographed or filmed at club events' },
+  { type: 'social_media', label: 'Social media', detail: 'Appearing in the club’s posts' },
+  { type: 'travel', label: 'Travel to away fixtures', detail: 'Travelling with the team' },
+  { type: 'coaching_observation', label: 'One-to-one coaching', detail: 'Individual sessions with a club coach' },
+];
 
-export default function JuniorDashboardScreen() {
+function formatDate(iso: string | null): string {
+  if (!iso) return 'Not given';
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+export default function JuniorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { user } = useAuth();
-  const [junior, setJunior] = useState<JuniorProfile | null>(null);
-  const [stats, setStats] = useState<JuniorStats | null>(null);
+  const [junior, setJunior] = useState<Junior | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!user || !id) return;
+    if (!id) return;
     try {
-      // Load junior profile from linked_juniors (parent can only see their linked children)
-      const { data: link } = await supabase
-        .from('linked_juniors')
-        .select('full_name, age_group, consent_given, consent_date, date_of_birth')
-        .eq('parent_id', user.id)
-        .eq('junior_id', id)
-        .eq('link_status', 'approved')
-        .maybeSingle();
-
-      if (link) {
-        setJunior(link);
-
-        // Load junior's wallet / stats
-        const { data: wallet } = await supabase
-          .from('wallets')
-          .select('flexi_balance, reward_balance, lifetime_earned')
-          .eq('user_id', id)
-          .maybeSingle();
-
-        // Load junior's step data for today
-        const today = new Date().toISOString().split('T')[0];
-        const { data: stepRow } = await supabase
-          .from('daily_steps')
-          .select('step_count, streak_day')
-          .eq('user_id', id)
-          .eq('date', today)
-          .maybeSingle();
-
-        // Count upcoming coaching sessions
-        const { count: sessionCount } = await supabase
-          .from('coaching_bookings')
-          .select('id', { count: 'exact', head: true })
-          .eq('player_id', id)
-          .gte('session_date', new Date().toISOString());
-
-        setStats({
-          steps_today: stepRow?.step_count ?? 0,
-          steps_goal: 10000,
-          scores_balance: (wallet?.flexi_balance ?? 0) + (wallet?.reward_balance ?? 0),
-          lifetime_scores: wallet?.lifetime_earned ?? 0,
-          streak_day: stepRow?.streak_day ?? 0,
-          upcoming_sessions: sessionCount ?? 0,
-        });
-      }
-    } catch {
-      // silently fail
+      setJunior(await api<Junior>(`/api/juniors/${id}`));
+      setError(null);
+    } catch (e) {
+      setError(e instanceof ApiError && e.status === 404 ? 'This junior is not linked to your account.' : 'Could not load this junior.');
     } finally {
       setLoading(false);
     }
-  }, [user, id]);
+  }, [id]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -100,12 +68,24 @@ export default function JuniorDashboardScreen() {
     setRefreshing(false);
   };
 
-  const initials = junior?.full_name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() ?? '?';
+  async function setConsent(type: string, granted: boolean) {
+    if (!junior) return;
+    const action: ConsentState = granted ? 'granted' : 'withdrawn';
+    const before = junior.consents;
+    setSaving(type);
+    setJunior({ ...junior, consents: { ...before, [type]: action } });
+    try {
+      await api('/api/club/consent', { method: 'POST', body: { childId: junior.id, consentType: type, action } });
+    } catch (e) {
+      // Put the switch back: a consent that didn't save must not look saved
+      setJunior((current) => (current ? { ...current, consents: before } : current));
+      Alert.alert('Not saved', e instanceof ApiError ? e.message : 'Check your connection and try again.');
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  const initials = junior?.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -121,112 +101,57 @@ export default function JuniorDashboardScreen() {
         <View style={styles.center}><ActivityIndicator color={colors.brandSky} /></View>
       ) : !junior ? (
         <View style={styles.center}>
-          <Text style={fonts.title}>Not found</Text>
-          <Text style={fonts.small}>This junior is not linked to your account.</Text>
+          <Text style={fonts.title}>Not available</Text>
+          <Text style={[fonts.small, { textAlign: 'center' }]}>{error}</Text>
         </View>
       ) : (
         <ScrollView
           contentContainerStyle={styles.content}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brandSky} />}
         >
-          {/* Read-only banner */}
-          <View style={styles.banner}>
-            <Text style={styles.bannerText}>👁️ Viewing as parent · Read-only</Text>
-          </View>
-
-          {/* Junior header */}
           <View style={styles.profileCard}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{initials}</Text>
-            </View>
+            <View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>
             <Text style={fonts.title}>{junior.full_name}</Text>
-            {junior.age_group && <Text style={fonts.small}>{junior.age_group}</Text>}
-            <View style={[styles.statusPill, junior.consent_given ? styles.greenPill : styles.orangePill]}>
-              <Text style={[styles.statusText, { color: junior.consent_given ? colors.success : colors.orange }]}>
-                {junior.consent_given ? '✓ Consent active' : '⏳ Consent pending'}
+            <Text style={fonts.small}>Born {formatDate(junior.date_of_birth)}</Text>
+            <View style={[styles.pill, junior.link_verified ? styles.greenPill : styles.orangePill]}>
+              <Text style={[styles.pillText, { color: junior.link_verified ? colors.success : colors.orange }]}>
+                {junior.link_verified ? `Verified ${junior.relationship}` : 'Waiting for your club to verify you'}
               </Text>
             </View>
           </View>
 
-          {stats && (
-            <>
-              {/* Steps */}
-              <Text style={styles.sectionLabel}>ACTIVITY</Text>
-              <View style={styles.card}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: 'rgba(96,165,250,0.12)' }]}>
-                    <Text style={{ fontSize: 16 }}>🏃</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>{stats.steps_today.toLocaleString('en-GB')} steps</Text>
-                    <Text style={fonts.small}>{Math.round((stats.steps_today / stats.steps_goal) * 100)}% of daily goal</Text>
-                  </View>
+          <Text style={styles.sectionLabel}>CONSENTS</Text>
+          <View style={styles.card}>
+            {CONSENTS.map((c, index) => (
+              <View key={c.type} style={[styles.consentRow, index > 0 && styles.divider]}>
+                <View style={{ flex: 1 }}>
+                  <Text style={fonts.regular}>{c.label}</Text>
+                  <Text style={fonts.small}>{c.detail}</Text>
                 </View>
-                <View style={styles.progressBar}>
-                  <View style={[styles.progressFill, { width: `${Math.min(100, (stats.steps_today / stats.steps_goal) * 100)}%` }]} />
-                </View>
+                <Switch
+                  value={junior.consents[c.type] === 'granted'}
+                  onValueChange={(value) => setConsent(c.type, value)}
+                  disabled={saving !== null}
+                  trackColor={{ true: colors.success, false: colors.navyBorder }}
+                />
               </View>
+            ))}
+          </View>
+          <Text style={fonts.small}>
+            Each change is recorded with the date and your name, and your club can see it. You can withdraw a consent at any time.
+          </Text>
 
-              {/* Streak */}
-              <View style={styles.card}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: colors.orangeDim }]}>
-                    <Text style={{ fontSize: 16 }}>🔥</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>{stats.streak_day} day streak</Text>
-                    <Text style={fonts.small}>Consecutive active days</Text>
-                  </View>
-                </View>
-              </View>
+          <Text style={styles.sectionLabel}>EMERGENCY CONTACT</Text>
+          <View style={styles.card}>
+            <Text style={fonts.regular}>{junior.emergency_contact_name ?? 'Not given'}</Text>
+            {junior.emergency_contact_phone && <Text style={fonts.small}>{junior.emergency_contact_phone}</Text>}
+          </View>
 
-              {/* Scores / Wallet */}
-              <Text style={styles.sectionLabel}>SCORES & WALLET</Text>
-              <View style={styles.card}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: colors.goldDim as string }]}>
-                    <Text style={{ fontSize: 16 }}>⭐</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[fonts.title, { color: colors.gold }]}>
-                      {stats.scores_balance.toLocaleString('en-GB')} Scores
-                    </Text>
-                    <Text style={fonts.small}>Lifetime: {stats.lifetime_scores.toLocaleString('en-GB')}</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Coaching sessions */}
-              <Text style={styles.sectionLabel}>COACHING</Text>
-              <View style={styles.card}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: colors.successDim }]}>
-                    <Text style={{ fontSize: 16 }}>🏏</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>
-                      {stats.upcoming_sessions} upcoming session{stats.upcoming_sessions !== 1 ? 's' : ''}
-                    </Text>
-                    <Text style={fonts.small}>Booked coaching sessions</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Sporting Soul placeholder */}
-              <Text style={styles.sectionLabel}>SPORTING SOUL</Text>
-              <View style={styles.card}>
-                <View style={styles.cardRow}>
-                  <View style={[styles.cardIcon, { backgroundColor: 'rgba(96,165,250,0.12)' }]}>
-                    <Text style={{ fontSize: 16 }}>📖</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={fonts.title}>Personality profile</Text>
-                    <Text style={fonts.small}>View your child's Sporting Soul AI profile</Text>
-                  </View>
-                </View>
-              </View>
-            </>
-          )}
+          <Text style={styles.sectionLabel}>MEDICAL NOTES</Text>
+          <View style={styles.card}>
+            <Text style={fonts.regular}>{junior.medical_notes?.trim() || 'None recorded'}</Text>
+          </View>
+          <Text style={fonts.small}>To change these details, contact your club.</Text>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -235,52 +160,27 @@ export default function JuniorDashboardScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.sm },
   content: { padding: spacing.lg, gap: spacing.md },
-
-  banner: {
-    backgroundColor: 'rgba(249,115,22,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(249,115,22,0.25)',
-    borderRadius: radius.md,
-    padding: spacing.sm,
-    alignItems: 'center',
-  },
-  bannerText: { color: colors.orange, fontSize: 13, fontWeight: '600' },
-
   profileCard: {
+    alignItems: 'center',
+    gap: spacing.xs,
     backgroundColor: colors.surface1,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border as string,
-    padding: spacing.xl,
-    alignItems: 'center',
-    gap: spacing.xs,
+    padding: spacing.lg,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(96,165,250,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
+    width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.orangeDim, marginBottom: spacing.xs,
   },
-  avatarText: { color: colors.brandSky, fontSize: 20, fontWeight: '700' },
-
-  statusPill: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: radius.pill, marginTop: spacing.xs },
+  avatarText: { color: colors.orange, fontSize: 22, fontWeight: '700' },
+  pill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill, marginTop: spacing.xs },
   greenPill: { backgroundColor: colors.successDim },
   orangePill: { backgroundColor: colors.orangeDim },
-  statusText: { fontSize: 12, fontWeight: '600' },
-
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: 'rgba(232,237,245,0.4)',
-    letterSpacing: 0.5,
-    marginTop: spacing.sm,
-  },
-
+  pillText: { fontSize: 12, fontWeight: '600' },
+  sectionLabel: { fontSize: 11, fontWeight: '600', color: 'rgba(232,237,245,0.4)', letterSpacing: 0.5, marginTop: spacing.sm },
   card: {
     backgroundColor: colors.surface1,
     borderRadius: radius.md,
@@ -288,21 +188,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border as string,
     padding: spacing.md,
   },
-  cardRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  cardIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  progressBar: {
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 2,
-    marginTop: spacing.sm,
-    overflow: 'hidden',
-  },
-  progressFill: { height: '100%', backgroundColor: colors.brandSky, borderRadius: 2 },
+  consentRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm },
+  divider: { borderTopWidth: 1, borderTopColor: colors.border as string },
 });

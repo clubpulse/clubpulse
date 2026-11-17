@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { listApprovals } from '@/lib/mobile/club-data';
 import { unauthorized } from '@/lib/utils/http';
 
 const APP_ROLES = ['player', 'coach', 'parent', 'volunteer', 'club_admin'] as const;
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
     admin.from('user_roles').select('role').eq('user_id', user.id),
     admin
       .from('club_members')
-      .select('club_id, role, joined_at, clubs ( id, name )')
+      .select('club_id, role, joined_at')
       .eq('user_id', user.id)
       .eq('is_active', true)
       .order('joined_at', { ascending: true }),
@@ -72,14 +73,15 @@ export async function GET(req: NextRequest) {
   const primary = members.find((m) => m.role === 'club_admin') ?? members[0] ?? null;
   let club: { id: string; name: string; subscription_tier: string | null; member_count: number } | null = null;
   if (primary) {
-    const clubRow = Array.isArray(primary.clubs) ? primary.clubs[0] : primary.clubs;
-    const [{ count }, subscription] = await Promise.all([
+    // Looked up separately: club_members has no foreign key to clubs to embed through
+    const [{ data: clubRow }, { count }, subscription] = await Promise.all([
+      admin.from('clubs').select('name').eq('id', primary.club_id).maybeSingle(),
       admin.from('club_members').select('id', { count: 'exact', head: true }).eq('club_id', primary.club_id).eq('is_active', true),
       admin.from('club_subscriptions').select('tier').eq('club_id', primary.club_id).maybeSingle(),
     ]);
     club = {
       id: primary.club_id as string,
-      name: (clubRow as { name?: string } | null)?.name ?? 'Your club',
+      name: (clubRow?.name as string | undefined) ?? 'Your club',
       subscription_tier: (subscription.data?.tier as string | undefined) ?? null,
       member_count: count ?? 0,
     };
@@ -103,6 +105,7 @@ export async function GET(req: NextRequest) {
     .filter((j) => j !== null)
     .sort((a, b) => a.full_name.localeCompare(b.full_name));
 
-  // There is no approvals table in the schema yet, so the queue is always empty
-  return NextResponse.json({ roles, club, juniors, approvalQueue: [] });
+  // Unverified parent links and unapproved coaches, for club admins; empty for everyone else
+  const approvalQueue = held.has('club_admin') ? await listApprovals(user.id) : [];
+  return NextResponse.json({ roles, club, juniors, approvalQueue });
 }
