@@ -13,7 +13,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
     },
     "preview": {
@@ -24,7 +24,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
     },
     "production": {
@@ -35,7 +35,7 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
     }
   },
