@@ -12,7 +12,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
-        "EXPO_PUBLIC_SUPABASE_URL": "REPLACE_WITH_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
       }
     },
@@ -23,7 +23,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
-        "EXPO_PUBLIC_SUPABASE_URL": "REPLACE_WITH_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
       }
     },
@@ -34,7 +34,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://clubpulse.co",
-        "EXPO_PUBLIC_SUPABASE_URL": "REPLACE_WITH_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY"
       }
     }
@@ -42,7 +42,6 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "REPLACE_WITH_APPLE_ID",
         "ascAppId": "6835967730",
         "appleTeamId": "3XUZY4DRXB"
       }
