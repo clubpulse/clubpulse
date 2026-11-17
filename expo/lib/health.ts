@@ -114,8 +114,11 @@ async function sensorSteps(start: Date, end: Date, { interactive }: ReadOptions)
  */
 async function readIosSteps(start: Date, end: Date, options: ReadOptions): Promise<StepsRead> {
   const fromHealth = await healthKitSteps(start, end, options);
-  // The motion sensor only keeps about a week of history, which covers today and yesterday
-  const sensor = await sensorSteps(start, end, options).catch(() => ({ access: 'unavailable' as StepsAccess, steps: 0 }));
+  // The motion sensor only keeps about a week of history, which covers today and yesterday.
+  // When Health is available it is the one thing we ask for; the sensor is then read only if
+  // the person has already allowed it, so a new user sees one permission sheet, not two.
+  const sensorOptions = fromHealth === null ? options : { ...options, interactive: false };
+  const sensor = await sensorSteps(start, end, sensorOptions).catch(() => ({ access: 'unavailable' as StepsAccess, steps: 0 }));
 
   if (fromHealth !== null && fromHealth > 0 && fromHealth >= sensor.steps) {
     return { access: 'ready', steps: fromHealth, source: 'apple_health' };

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -50,6 +50,12 @@ export default function HomeScreen() {
 
   // Roles change elsewhere in the app (adding a child, approving a request), so reload on return
   useFocusEffect(useCallback(() => { refreshRoles(); }, [refreshRoles]));
+
+  // A steps sync can add Scores a moment after Home opens, so reload the wallet when one lands
+  const stepsScoresToday = steps.result?.totalScoresToday;
+  useEffect(() => {
+    if (stepsScoresToday !== undefined) refreshWallet();
+  }, [stepsScoresToday, refreshWallet]);
 
   // How many rewards are waiting to be claimed. Also refreshed on return, and the wallet with it,
   // since claiming a reward or finishing a game elsewhere changes both.

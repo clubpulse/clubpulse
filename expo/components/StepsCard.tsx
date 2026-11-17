@@ -45,7 +45,9 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
             <View style={[styles.fill, { width: `${progress * 100}%` }]} />
           </View>
           <Text style={styles.hint}>
-            {steps >= GOAL ? `Daily goal reached 🎉` : `${(GOAL - steps).toLocaleString('en-GB')} to your ${GOAL.toLocaleString('en-GB')} goal`}
+            {steps >= GOAL
+              ? '10,000 reached: bonus Scores earned 🎉'
+              : `${(GOAL - steps).toLocaleString('en-GB')} more for your ${GOAL.toLocaleString('en-GB')}-step bonus. You earn 1 Score per 1,000 steps.`}
           </Text>
           {source && (
             <Text style={styles.hint}>
@@ -54,6 +56,11 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
                 : source === 'health_connect'
                   ? 'From Health Connect, including your watch and any apps that share steps with it.'
                   : 'From this iPhone only. Allow Apple Health to count your watch or wearable too.'}
+            </Text>
+          )}
+          {Platform.OS === 'ios' && status === 'ready' && steps === 0 && !syncing && (
+            <Text style={styles.hint}>
+              Showing 0 after a walk? In the Health app go to your profile, then Apps, then ClubPulse, and turn on Steps.
             </Text>
           )}
           {result && !!result.totalScoresToday && (
