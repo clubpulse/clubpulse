@@ -25,6 +25,34 @@ export const QUIZ_BANK: QuizQuestion[] = [
   { q: 'Where does a yorker pitch?', options: ['Halfway down the pitch', 'At the batter\'s feet', 'Outside the wide line'], answer: 1 },
   { q: 'How many balls does each side face in a match of The Hundred?', options: ['100', '120', '150'], answer: 0 },
   { q: 'Which two countries play for the Ashes?', options: ['England and India', 'Australia and New Zealand', 'England and Australia'], answer: 2 },
+  { q: 'What is the maximum width of a cricket bat?', options: ['3.75 inches', '4.25 inches', '5 inches'], answer: 1 },
+  { q: 'What is a full-pitched ball that reaches the batter above waist height without bouncing called?', options: ['A beamer', 'A bouncer', 'A yorker'], answer: 0 },
+  { q: 'What is a short ball that rises towards the batter\'s head called?', options: ['A beamer', 'A bouncer', 'A full toss'], answer: 1 },
+  { q: 'In limited-overs cricket, what does the batting side get on the ball after a no-ball?', options: ['A free hit', 'Two extra runs', 'A powerplay'], answer: 0 },
+  { q: 'What does DRS stand for?', options: ['Direct Replay System', 'Decision Review System', 'Dismissal Referral Service'], answer: 1 },
+  { q: 'Under the Laws, how many penalty runs is a no-ball worth?', options: ['One', 'Two', 'None'], answer: 0 },
+  { q: 'What is a lower-order batter sent in late in the day to protect a better batter called?', options: ['A pinch hitter', 'A nightwatchman', 'A sweeper'], answer: 1 },
+  { q: 'How many balls does each side face in The Hundred?', options: ['100', '120', '150'], answer: 0 },
+  { q: 'What does "c & b" mean on a scorecard?', options: ['Caught behind', 'Caught and bowled', 'Clean bowled'], answer: 1 },
+  { q: 'Which of these is not a way of being out?', options: ['Timed out', 'Hit wicket', 'Foot fault'], answer: 2 },
+  { q: 'How much does a men\'s cricket ball weigh?', options: ['4.5 to 4.75 ounces', '5.5 to 5.75 ounces', '6.5 to 6.75 ounces'], answer: 1 },
+  { q: 'What colour ball is used in day-night Test matches?', options: ['White', 'Pink', 'Orange'], answer: 1 },
+  { q: 'A score of 111 is known as what?', options: ['A Nelson', 'A Devil\'s number', 'A triple'], answer: 0 },
+  { q: 'What is a batter\'s score of 100 or more called?', options: ['A ton-up', 'A century', 'A full house'], answer: 1 },
+  { q: 'What is it called when a bowler takes five wickets in an innings?', options: ['A five-for', 'A handful', 'A hat-trick'], answer: 0 },
+  { q: 'What is a dot ball?', options: ['A ball that hits the stumps', 'A ball no run is scored from', 'A ball bowled by a spinner'], answer: 1 },
+  { q: 'Which ball from an off-spinner turns the opposite way to their usual one?', options: ['The doosra', 'The googly', 'The flipper'], answer: 0 },
+  { q: 'Which ball from a leg-spinner turns the opposite way to their usual one?', options: ['The doosra', 'The googly', 'The arm ball'], answer: 1 },
+  { q: 'In a T20 powerplay, how many fielders may stand outside the 30-yard circle?', options: ['Two', 'Four', 'Five'], answer: 0 },
+  { q: 'What does the umpire signal by holding one arm out sideways?', options: ['Wide', 'No-ball', 'Bye'], answer: 1 },
+  { q: 'What does the umpire signal by raising one index finger?', options: ['Out', 'One short', 'Last over'], answer: 0 },
+  { q: 'What does the umpire signal by holding both arms out sideways?', options: ['No-ball', 'Dead ball', 'Wide'], answer: 2 },
+  { q: 'What is the "corridor of uncertainty"?', options: ['The line just outside off stump', 'The gap between slip and gully', 'The walk back to the pavilion'], answer: 0 },
+  { q: 'What is a leg bye?', options: ['A run after the ball hits the batter\'s body, not the bat', 'A run taken to the leg side', 'A no-ball down the leg side'], answer: 0 },
+  { q: 'For a right-handed batter, which is the off side?', options: ['The side behind their legs', 'The side their bat faces as they take guard', 'Behind the wicketkeeper'], answer: 1 },
+  { q: 'What is a tailender?', options: ['An opening batter', 'A batter low in the order, usually a bowler', 'The last fielder to arrive'], answer: 1 },
+  { q: 'Under the Laws, how many penalty runs is a wide worth?', options: ['One', 'Two', 'None'], answer: 0 },
+  { q: 'How many overs does each side bat in a Twenty20 match?', options: ['Ten', 'Twenty', 'Fifty'], answer: 1 },
 ];
 
 // Three questions per day, the same for everyone, chosen from the date so no state is needed.
@@ -38,4 +66,15 @@ export function dailyQuestionIndexes(day: string): [number, number, number] {
     if (!picked.includes(i)) picked.push(i);
   }
   return picked as [number, number, number];
+}
+
+/** The single question of the day for the mobile app's daily task. Different from the quiz's three. */
+export function dailyQuestionIndex(day: string): number {
+  let seed = 7;
+  for (const ch of `${day}:one`) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+  // Scramble the bits: neighbouring dates differ only in their last character
+  seed = Math.imul(seed ^ (seed >>> 16), 0x45d9f3b) >>> 0;
+  seed = Math.imul(seed ^ (seed >>> 16), 0x45d9f3b) >>> 0;
+  seed = (seed ^ (seed >>> 16)) >>> 0;
+  return seed % QUIZ_BANK.length;
 }

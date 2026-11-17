@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { chatWithCompanion } from '@/lib/ai/companion';
+import { logActivity } from '@/lib/mobile/rewards';
 import { fail, readJson, unauthorized } from '@/lib/utils/http';
 
 export async function POST(req: NextRequest) {
@@ -18,5 +19,7 @@ export async function POST(req: NextRequest) {
 
   const result = await chatWithCompanion(user.id, body.message, (body.conversationId as string | null | undefined) ?? undefined);
   if (!result.success) return fail(result.error, result.status);
+  // Counts toward the daily "Ask Coach AI" task
+  await logActivity(user.id, 'coach_ai');
   return NextResponse.json(result.data);
 }

@@ -10,6 +10,7 @@ import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { useSteps } from '../../hooks/useSteps';
 import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
+import { api } from '../../lib/api';
 import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import type { UserRole } from '../../lib/roles';
 import { UpsellBanner } from '../../components/UpsellBanner';
@@ -49,6 +50,18 @@ export default function HomeScreen() {
 
   // Roles change elsewhere in the app (adding a child, approving a request), so reload on return
   useFocusEffect(useCallback(() => { refreshRoles(); }, [refreshRoles]));
+
+  // How many rewards are waiting to be claimed. Also refreshed on return, and the wallet with it,
+  // since claiming a reward or finishing a game elsewhere changes both.
+  const [rewardsReady, setRewardsReady] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      api<{ ready: number }>('/api/rewards')
+        .then((r) => setRewardsReady(r.ready))
+        .catch(() => setRewardsReady(0));
+      refreshWallet();
+    }, [refreshWallet]),
+  );
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'Player';
   const pending = pendingRoles(roles);
@@ -175,6 +188,29 @@ export default function HomeScreen() {
             </Pressable>
           ))}
         </View>
+
+        {/* ── Rewards ───────────────────────────────────────────── */}
+        <Pressable style={styles.card} onPress={() => router.push('/rewards')}>
+          <View style={styles.cardRow}>
+            <View style={[styles.cardIcon, { backgroundColor: colors.successDim }]}>
+              <Ionicons name="gift" size={18} color={colors.success} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={fonts.title}>Rewards</Text>
+              <Text style={fonts.small}>
+                {rewardsReady > 0
+                  ? `${rewardsReady} ready to claim`
+                  : 'Daily, weekly and monthly goals'}
+              </Text>
+            </View>
+            {rewardsReady > 0 && (
+              <View style={styles.notifBadge}>
+                <Text style={styles.notifText}>{rewardsReady}</Text>
+              </View>
+            )}
+            <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+          </View>
+        </Pressable>
 
         {/* ── Games ─────────────────────────────────────────────── */}
         <Pressable style={[styles.card, { borderColor: colors.goldBorder }]} onPress={() => router.push('/auction-room')}>
