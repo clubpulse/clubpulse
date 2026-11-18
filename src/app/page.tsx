@@ -1400,7 +1400,7 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club noticeboard</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Coaching marketplace</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Finance tracker</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£2.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£2.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta ghost">Talk to us about Pro →</Link>
             </div>
@@ -1419,7 +1419,7 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club Bible and documents</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player form guide and Scout Mode</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Community pot and Sponsor a Kid</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£4.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£4.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta primary">Talk to us about Elite →</Link>
             </div>
@@ -1437,12 +1437,12 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club federation</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player auction and transfer window</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£6.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£6.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta ghost">Talk to us about Legend →</Link>
             </div>
           </div>
-          <p className="cp-price-note">Prices are per month under a fixed-term club agreement, with annual terms at ten months&apos; price. A member who wants the full analysis adds it for £2.99, £4.99 or £6.99 a month, depending on the club&apos;s plan. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
+          <p className="cp-price-note">Prices are per month under a fixed-term club agreement, with annual terms at ten months&apos; price. A member who wants analysis on their own phone, with coaching and AI analysis sessions, adds it for £2.99, £4.99 or £6.99 a month, depending on the club&apos;s plan. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
         </>
       )}
     </>

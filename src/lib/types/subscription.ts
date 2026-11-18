@@ -87,8 +87,8 @@ export const TIER_CONFIG: Record<
     maxMembers: number;
     maxScoresPerMonth: number;
     /**
-     * What a member of a club on this plan pays each month to unlock the full analysis for
-     * themselves, in pence. 0 where the plan has no such add-on.
+     * What a member of a club on this plan pays each month, in pence, for analysis on their own
+     * phone plus access to coaching and AI analysis sessions. 0 where the plan has no such add-on.
      */
     memberAnalysisAddOnPence: number;
     features: string[];
