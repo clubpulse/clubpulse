@@ -186,7 +186,7 @@ export default function ContactPage() {
         <div>
           <p className="section-tag">Get in touch</p>
           <h1 className="page-h">Bring ClubPulse<br />to your club</h1>
-          <p className="page-sub">Every club runs differently, so we do not sell ClubPulse off the shelf. Tell us what your club needs, we agree a plan and a fixed term with you, and we set the platform up to match.</p>
+          <p className="page-sub">Club plans start at £19.99 a month and are set up under an agreement rather than bought online. Tell us what your club needs, we confirm the plan and a fixed term with you, and we set the platform up to match.</p>
 
           <div className="contact-method">
             <div className="method-icon">✉️</div>
