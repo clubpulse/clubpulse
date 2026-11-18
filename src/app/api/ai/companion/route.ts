@@ -6,10 +6,13 @@ import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { chatWithCompanion } from '@/lib/ai/companion';
 import { logActivity } from '@/lib/mobile/rewards';
 import { fail, readJson, unauthorized } from '@/lib/utils/http';
+import { getPaidAccess } from '@/lib/billing/access';
+import { PAID_FEATURE_MESSAGE } from '@/lib/billing/access-logic';
 
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  if (!(await getPaidAccess(user.id, user.email)).allowed) return fail(PAID_FEATURE_MESSAGE, 402);
 
   const body = (await readJson(req)) as { message?: unknown; conversationId?: unknown } | null;
   if (typeof body?.message !== 'string') return fail('message is required', 400);

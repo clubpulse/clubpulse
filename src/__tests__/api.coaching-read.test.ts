@@ -19,6 +19,18 @@ jest.mock('@anthropic-ai/sdk', () => {
   }));
 });
 
+// ── Mock sign-in and paid access ─────────────────────────────────────────────
+
+const mockAuth = jest.fn();
+const mockAccess = jest.fn();
+jest.mock('@/lib/supabase/request-auth', () => ({ getRequestAuth: (...args: unknown[]) => mockAuth(...args) }));
+jest.mock('@/lib/billing/access', () => ({ getPaidAccess: (...args: unknown[]) => mockAccess(...args) }));
+
+beforeEach(() => {
+  mockAuth.mockResolvedValue({ user: { id: 'user-1', email: 'player@example.org' } });
+  mockAccess.mockResolvedValue({ allowed: true, reason: 'open' });
+});
+
 // ── Import AFTER mock ─────────────────────────────────────────────────────────
 
 import { POST } from '@/app/api/analysis/coaching-read/route';
@@ -151,5 +163,21 @@ describe('POST /api/analysis/coaching-read', () => {
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({ max_tokens: 300 })
     );
+  });
+});
+
+describe('POST /api/analysis/coaching-read: who may call it', () => {
+  it('refuses someone who is not signed in, without calling the AI', async () => {
+    mockAuth.mockResolvedValue({ user: null });
+    const res = await POST(makeRequest({ speed_kph: 100, swing_px: 0, detections: 10, frames: 20 }));
+    expect(res.status).toBe(401);
+    expect(mockCreate).not.toHaveBeenCalled();
+  });
+
+  it('refuses a signed-in player with no paid access, without calling the AI', async () => {
+    mockAccess.mockResolvedValue({ allowed: false, reason: 'none' });
+    const res = await POST(makeRequest({ speed_kph: 100, swing_px: 0, detections: 10, frames: 20 }));
+    expect(res.status).toBe(402);
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 });
