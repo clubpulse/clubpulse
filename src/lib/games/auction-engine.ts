@@ -16,7 +16,12 @@ export const BUDGET = 10_000; // ₹100 crore
 export const SQUAD_SIZE = 15;
 export const RIVAL_COUNT = 5;
 export const TEAM_COUNT = RIVAL_COUNT + 1; // team 0 is the player
-export const POOL_SIZE = 126;
+export const POOL_SIZE = 148;
+/**
+ * Goes up whenever the pool or the rules change. The app and the server must be on the same
+ * version, or a game played on one cannot be checked by the other.
+ */
+export const ENGINE_VERSION = 2;
 export const MAX_OVERSEAS = 6;
 /** Team points for each squad objective met. */
 export const OBJECTIVE_POINTS = 30;
@@ -35,6 +40,8 @@ export const ROLE_LABEL: Record<Role, string> = {
 };
 /** The squad objectives by role. The fifteenth place can be anyone. */
 export const REQUIRED: Record<Role, number> = { BAT: 4, WK: 2, AR: 3, PACE: 3, SPIN: 2 };
+/** Uncapped players a squad needs for the uncapped objective. They count towards their role as well. */
+export const UNCAPPED_REQUIRED = 2;
 
 export type Lot = {
   id: number;
@@ -44,6 +51,8 @@ export type Lot = {
   rating: number;
   base: number;
   overseas: boolean;
+  /** An Indian player who had not played for India when the 2026 season's squads were named. */
+  uncapped: boolean;
   country: string;
   flag: string;
   /** The auction set the player comes up in. */
@@ -56,7 +65,7 @@ export type RivalStyle = 'stars' | 'value' | 'balanced';
 export type Rival = { name: string; style: RivalStyle };
 export type Standing = { team: number; name: string; score: number; purse: number; place: number };
 /** A squad target, with how many the squad has so far and how many it needs. */
-export type Objective = { key: 'squad' | Role; label: string; short: string; have: number; need: number; met: boolean };
+export type Objective = { key: 'squad' | 'uncapped' | Role; label: string; short: string; have: number; need: number; met: boolean };
 /** Where the auction has got to. Round 2 is the accelerated round for players unsold in round 1. */
 export type Auction = { teams: Team[]; round: 1 | 2; queue: number[]; unsold: number[]; done: boolean };
 
@@ -102,30 +111,37 @@ const COUNTRY: Record<string, { name: string; flag: string }> = {
   AFG: { name: 'Afghanistan', flag: '🇦🇫' },
 };
 
-// name|country|points. Points are ClubPulse's own estimate of T20 value: edit them here (in both
-// copies of this file) as form changes. Anyone not from India counts as an overseas player.
+// name|country|points, with |U on the end for an uncapped player. Points are ClubPulse's own
+// estimate of T20 value: edit them here (in both copies of this file) as form changes. Anyone not
+// from India counts as an overseas player.
+//
+// Uncapped means an Indian player listed as uncapped in the squads for the 2026 IPL season. A
+// player who has since played for India should have the |U taken off.
 const PLAYERS: Record<Role, readonly string[]> = {
   BAT: [
     'Virat Kohli|IND|95', 'Suryakumar Yadav|IND|93', 'Abhishek Sharma|IND|93', 'Yashasvi Jaiswal|IND|92',
     'Shubman Gill|IND|91', 'Shreyas Iyer|IND|90', 'Tilak Varma|IND|89', 'Rohit Sharma|IND|88',
     'Sai Sudharsan|IND|88', 'Ruturaj Gaikwad|IND|86', 'Rinku Singh|IND|84', 'Rajat Patidar|IND|84',
-    'Priyansh Arya|IND|82', 'Shashank Singh|IND|80', 'Devdutt Padikkal|IND|78', 'Ayush Mhatre|IND|78',
-    'Nehal Wadhera|IND|76', 'Angkrish Raghuvanshi|IND|76', 'Ayush Badoni|IND|74', 'Nitish Rana|IND|74',
-    'Ajinkya Rahane|IND|72', 'Travis Head|AUS|92', 'Harry Brook|ENG|86', 'Tim David|AUS|85',
+    'Priyansh Arya|IND|82|U', 'Shashank Singh|IND|80|U', 'Devdutt Padikkal|IND|78', 'Ayush Mhatre|IND|78|U',
+    'Nehal Wadhera|IND|76|U', 'Angkrish Raghuvanshi|IND|76|U', 'Ayush Badoni|IND|74', 'Nitish Rana|IND|74',
+    'Ajinkya Rahane|IND|72', 'Ashutosh Sharma|IND|76|U', 'Abdul Samad|IND|74|U', 'Aniket Verma|IND|74|U',
+    'Sameer Rizvi|IND|72|U', 'Travis Head|AUS|92', 'Harry Brook|ENG|86', 'Tim David|AUS|85',
     'Dewald Brevis|SA|84', 'David Miller|SA|82', 'Aiden Markram|SA|82', 'Shimron Hetmyer|WI|80',
     'Finn Allen|NZ|80', 'Pathum Nissanka|SL|80', 'Jake Fraser-McGurk|AUS|74', 'Rovman Powell|WI|74',
   ],
   WK: [
     'KL Rahul|IND|89', 'Rishabh Pant|IND|88', 'Sanju Samson|IND|87', 'Ishan Kishan|IND|82',
-    'Prabhsimran Singh|IND|81', 'Jitesh Sharma|IND|80', 'Dhruv Jurel|IND|79', 'MS Dhoni|IND|75',
-    'Abishek Porel|IND|74', 'Jos Buttler|ENG|93', 'Heinrich Klaasen|SA|92', 'Nicholas Pooran|WI|92',
+    'Prabhsimran Singh|IND|81|U', 'Jitesh Sharma|IND|80', 'Dhruv Jurel|IND|79', 'MS Dhoni|IND|75',
+    'Abishek Porel|IND|74|U', 'Kartik Sharma|IND|76|U', 'Urvil Patel|IND|74|U', 'Vishnu Vinod|IND|68|U',
+    'Jos Buttler|ENG|93', 'Heinrich Klaasen|SA|92', 'Nicholas Pooran|WI|92',
     'Phil Salt|ENG|90', 'Quinton de Kock|SA|82', 'Tristan Stubbs|SA|82', 'Josh Inglis|AUS|82',
     'Ryan Rickelton|SA|81', 'Rahmanullah Gurbaz|AFG|78',
   ],
   AR: [
     'Hardik Pandya|IND|93', 'Axar Patel|IND|89', 'Ravindra Jadeja|IND|86', 'Nitish Kumar Reddy|IND|82',
     'Shivam Dube|IND|82', 'Riyan Parag|IND|82', 'Washington Sundar|IND|80', 'Krunal Pandya|IND|80',
-    'Venkatesh Iyer|IND|76', 'Harpreet Brar|IND|72', 'Ramandeep Singh|IND|70', 'Shahbaz Ahmed|IND|68',
+    'Venkatesh Iyer|IND|76', 'Harpreet Brar|IND|72|U', 'Ramandeep Singh|IND|70', 'Shahbaz Ahmed|IND|68',
+    'Prashant Veer|IND|76|U', 'Naman Dhir|IND|76|U', 'Musheer Khan|IND|70|U', 'Anukul Roy|IND|66|U', 'Swapnil Singh|IND|66|U',
     'Sunil Narine|WI|91', 'Mitchell Marsh|AUS|88', 'Cameron Green|AUS|86', 'Marco Jansen|SA|86',
     'Marcus Stoinis|AUS|82', 'Will Jacks|ENG|82', 'Andre Russell|WI|82', 'Sam Curran|ENG|80',
     'Jacob Bethell|ENG|80', 'Rachin Ravindra|NZ|80', 'Mitchell Santner|NZ|80', 'Azmatullah Omarzai|AFG|80',
@@ -135,16 +151,19 @@ const PLAYERS: Record<Role, readonly string[]> = {
     'Jasprit Bumrah|IND|99', 'Arshdeep Singh|IND|89', 'Mohammed Siraj|IND|86', 'Prasidh Krishna|IND|84',
     'Mohammed Shami|IND|80', 'Harshal Patel|IND|80', 'Bhuvneshwar Kumar|IND|80', 'Harshit Rana|IND|78',
     'Khaleel Ahmed|IND|76', 'Deepak Chahar|IND|74', 'Avesh Khan|IND|74', 'T Natarajan|IND|74',
-    'Mayank Yadav|IND|74', 'Yash Dayal|IND|74', 'Vaibhav Arora|IND|74', 'Mukesh Kumar|IND|72',
-    'Sandeep Sharma|IND|72', 'Tushar Deshpande|IND|70', 'Mitchell Starc|AUS|90', 'Josh Hazlewood|AUS|90',
+    'Mayank Yadav|IND|74', 'Yash Dayal|IND|74|U', 'Vaibhav Arora|IND|74|U', 'Mukesh Kumar|IND|72',
+    'Sandeep Sharma|IND|72', 'Tushar Deshpande|IND|70', 'Auqib Nabi|IND|76|U', 'Vyshak Vijaykumar|IND|72|U',
+    'Yash Thakur|IND|72|U', 'Rasikh Salam|IND|70|U', 'Ashwani Kumar|IND|70|U', 'Mukesh Choudhary|IND|68|U',
+    'Kartik Tyagi|IND|68|U', 'Gurjapneet Singh|IND|66|U', 'Mitchell Starc|AUS|90', 'Josh Hazlewood|AUS|90',
     'Pat Cummins|AUS|88', 'Kagiso Rabada|SA|88', 'Trent Boult|NZ|87', 'Jofra Archer|ENG|86',
     'Matheesha Pathirana|SL|84', 'Lockie Ferguson|NZ|80', 'Matt Henry|NZ|80', 'Anrich Nortje|SA|78',
     'Nathan Ellis|AUS|78', 'Fazalhaq Farooqi|AFG|78',
   ],
   SPIN: [
     'Varun Chakaravarthy|IND|91', 'Kuldeep Yadav|IND|90', 'Yuzvendra Chahal|IND|84', 'Ravi Bishnoi|IND|82',
-    'Sai Kishore|IND|78', 'Digvesh Rathi|IND|74', 'Suyash Sharma|IND|72', 'Vipraj Nigam|IND|70',
-    'Rahul Chahar|IND|68', 'Harsh Dubey|IND|68', 'Mayank Markande|IND|66', 'Rashid Khan|AFG|92',
+    'Sai Kishore|IND|78', 'Digvesh Rathi|IND|74|U', 'Suyash Sharma|IND|72|U', 'Vipraj Nigam|IND|70|U',
+    'Rahul Chahar|IND|68', 'Harsh Dubey|IND|68|U', 'Mayank Markande|IND|66', 'Shreyas Gopal|IND|68|U',
+    'Vignesh Puthur|IND|68|U', 'Rashid Khan|AFG|92',
     'Noor Ahmad|AFG|86', 'Adam Zampa|AUS|82', 'Wanindu Hasaranga|SL|82', 'Maheesh Theekshana|SL|80',
     'Adil Rashid|ENG|80', 'Mujeeb Ur Rahman|AFG|76', 'Keshav Maharaj|SA|76', 'Akeal Hosein|WI|76',
   ],
@@ -179,14 +198,17 @@ export function basePrice(rating: number): number {
 export function allPlayers(): Array<Omit<Lot, 'id' | 'set'>> {
   return ROLES.flatMap((role) =>
     PLAYERS[role].map((entry) => {
-      const [name, code, points] = entry.split('|');
+      const [name, code, points, mark] = entry.split('|');
       const rating = Number(points);
-      return { name, role, rating, base: basePrice(rating), overseas: code !== 'IND', country: COUNTRY[code].name, flag: COUNTRY[code].flag };
+      return {
+        name, role, rating, base: basePrice(rating), overseas: code !== 'IND', uncapped: mark === 'U',
+        country: COUNTRY[code].name, flag: COUNTRY[code].flag,
+      };
     }),
   );
 }
 
-/** Every player in the order they come up that day: marquee set, a set per role, then the value set. */
+/** Every player in the order they come up that day: marquee set, the uncapped set, a set per role, then the value set. */
 export function generatePool(seed: number): Lot[] {
   const rand = rng(mix(seed, 1));
   const players = shuffled(allPlayers(), rand);
@@ -196,10 +218,13 @@ export function generatePool(seed: number): Lot[] {
   const rest = players.filter((p) => !marquee.includes(p));
   const ordered = [
     ...shuffled(marquee, rand).map((p) => ({ ...p, set: 'Marquee set' })),
+    // The uncapped set comes up early, while every franchise still has places and money for it.
+    // Later on, squads are nearly full of capped players and the uncapped objective is out of reach.
+    ...shuffled(rest.filter((p) => p.uncapped), rand).map((p) => ({ ...p, set: 'Uncapped players' })),
     ...SET_ORDER.flatMap((role) =>
-      shuffled(rest.filter((p) => p.role === role && p.rating >= VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: ROLE_SET[role] })),
+      shuffled(rest.filter((p) => !p.uncapped && p.role === role && p.rating >= VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: ROLE_SET[role] })),
     ),
-    ...shuffled(rest.filter((p) => p.rating < VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: 'Value picks' })),
+    ...shuffled(rest.filter((p) => !p.uncapped && p.rating < VALUE_SET_BELOW), rand).map((p) => ({ ...p, set: 'Value picks' })),
   ];
   return ordered.map((p, id) => ({ id, ...p }));
 }
@@ -253,6 +278,10 @@ export function formatMoney(lakhs: number): string {
 
 export function overseasCount(team: Team): number {
   return team.squad.filter((p) => p.overseas).length;
+}
+
+export function uncappedCount(team: Team): number {
+  return team.squad.filter((p) => p.uncapped).length;
 }
 
 /** How many more of each role the squad needs to meet REQUIRED. */
@@ -313,13 +342,22 @@ export function rivalLimits(
       out.push(0);
       continue;
     }
+    // And for the uncapped players it still lacks
+    const uncappedShort = Math.max(0, UNCAPPED_REQUIRED - uncappedCount(team));
+    const needsUncapped = lot.uncapped && uncappedShort > 0;
+    // (only while there are uncapped players still to come, or the places would never be filled)
+    if (!lot.uncapped && slots <= uncappedShort && upcoming.some((p) => p.uncapped)) {
+      out.push(0);
+      continue;
+    }
 
     // A franchise with money to spend waits for better players while enough of them are still to come
     const richness = team.purse / slots / (BUDGET / SQUAD_SIZE);
     if (round === 1) {
       const bar = 62 + 8 * Math.max(0, Math.min(1.5, richness - 0.7));
       const betterToCome = upcoming.filter((p) => p.role === lot.role && p.rating >= bar).length;
-      if (lot.rating < bar && betterToCome >= (needsRole ? short[lot.role] : 1) + 3) {
+      // An uncapped player the squad needs is not passed over to wait for a better one
+      if (!needsUncapped && lot.rating < bar && betterToCome >= (needsRole ? short[lot.role] : 1) + 3) {
         out.push(0);
         continue;
       }
@@ -328,10 +366,15 @@ export function rivalLimits(
     const style = rivals[r].style;
     // Rivals bid a little under a player's worth, which leaves room for a sharp bidder
     let m = 0.7;
-    if (style === 'stars') m *= lot.rating >= 88 ? 1.25 : 0.85;
+    if (style === 'stars') m *= lot.rating >= 88 ? 1.25 : needsUncapped ? 1 : 0.85;
     else if (style === 'value') m *= lot.rating >= 74 && lot.rating <= 87 ? 1.12 : 0.9;
 
     m *= needsRole ? 1.15 : 0.92;
+    if (needsUncapped) {
+      // Worth paying over the odds for, and more so as the uncapped players run out
+      const left = upcoming.filter((p) => p.uncapped).length;
+      m *= left <= uncappedShort * 4 ? 2.2 : 1.45;
+    }
     // Few chances left at a role the squad lacks
     if (needsRole && upcoming.filter((p) => p.role === lot.role).length <= 4) m *= 1.3;
     // Spend in line with what is left for each remaining place
@@ -432,6 +475,10 @@ export function objectives(team: Team): Objective[] {
     of('AR', `${REQUIRED.AR} or more all-rounders`, 'All-rounders'),
     of('PACE', `${REQUIRED.PACE} or more fast bowlers`, 'Fast bowlers'),
     of('SPIN', `${REQUIRED.SPIN} or more spinners`, 'Spinners'),
+    {
+      key: 'uncapped', label: `${UNCAPPED_REQUIRED} or more uncapped players`, short: 'Uncapped',
+      have: uncappedCount(team), need: UNCAPPED_REQUIRED, met: uncappedCount(team) >= UNCAPPED_REQUIRED,
+    },
   ];
 }
 
