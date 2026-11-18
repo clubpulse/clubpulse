@@ -11,6 +11,7 @@ import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights'
 import { seedDemoHighlights } from '@/app/analyse/actions';
 import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
+import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
   MIN_VISIBILITY, SHOT_TYPE_LABELS, analyseDetailed, mean, segmentScore,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType,
@@ -772,16 +773,55 @@ export function AnalyseClient() {
             </p>
           )}
 
-          {detail && (
-            <div className="mb-5">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">Body position · {detail.keyLabel}</p>
-              <PoseFigure pose={detail.pose} width={detail.width} height={detail.height} metrics={results} mode={mode} hand={hand}
-                mirrored={mirrored} />
-              <p className="mt-2 text-center text-xs text-neutral-500">
-                Coloured limbs are the angles measured here. Gold is on target, amber is close, red needs work.
-              </p>
-            </div>
-          )}
+          {detail && (() => {
+            const reference = getReference(mode, mode === 'batting' ? shotType : undefined);
+            return (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">You · {detail.keyLabel}</p>
+                    <PoseFigure pose={detail.pose} width={detail.width} height={detail.height} metrics={results} mode={mode} hand={hand}
+                      mirrored={mirrored} size={300} />
+                  </div>
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>
+                      {reference.title} · {reference.moment}
+                    </p>
+                    <PoseFigure pose={referencePose(reference, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={results}
+                      mode={mode} hand={hand} labels="target" bat={referenceBat(reference, hand)} size={300}
+                      label={`Diagram of the ${reference.title.toLowerCase()} with the target joint angles marked`} />
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-neutral-500">
+                  On your figure, gold is on target, amber is close, red needs work. The textbook figure shows the range to aim for at
+                  the same joints. It is drawn {hand === 'right' ? 'right' : 'left'}-handed from side-on, so it may face the other way
+                  from your video.
+                </p>
+
+                <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3" open>
+                  <summary className="cursor-pointer text-sm font-medium text-white">What the textbook says</summary>
+                  <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-neutral-300">
+                    {reference.checkpoints.map((point) => <li key={point}>{point}</li>)}
+                  </ul>
+                  {reference.sources.length > 0 && (
+                    <p className="mt-3 text-xs text-neutral-500">
+                      Based on:{' '}
+                      {reference.sources.map((sourceItem, i) => (
+                        <span key={sourceItem.url}>
+                          {i > 0 && '; '}
+                          <a href={sourceItem.url} target="_blank" rel="noreferrer" className="underline hover:text-neutral-300">{sourceItem.label}</a>
+                        </span>
+                      ))}
+                      , and standard coaching practice.
+                    </p>
+                  )}
+                  {reference.sources.length === 0 && (
+                    <p className="mt-3 text-xs text-neutral-500">Based on standard coaching practice.</p>
+                  )}
+                </details>
+              </div>
+            );
+          })()}
 
           <ul className="space-y-5">
             {results.map((m) => (
