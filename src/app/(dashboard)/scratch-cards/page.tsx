@@ -69,10 +69,10 @@ export default async function ScratchCardsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
             <div style={card}>
               <p style={cardTitle}>Your cards</p>
-              <div style={row}><span style={{ flex: 1, fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Free cards ready</span><strong style={{ color: '#EFC84A' }}>{unscratched.length}</strong></div>
-              <div style={{ ...row, borderBottom: 'none' }}><span style={{ flex: 1, fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Price of a card</span><strong style={{ color: '#fff' }}>{formatScores(config.cost_scores)} Scores</strong></div>
+              <div style={{ ...row, borderBottom: 'none' }}><span style={{ flex: 1, fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Cards ready to open</span><strong style={{ color: '#EFC84A' }}>{unscratched.length}</strong></div>
+              <p style={{ ...muted, marginTop: '8px' }}>Scratch cards are earned, never bought. Keep a seven-day check-in streak, or be awarded one by your club.</p>
               {config.milestone_scores ? (
-                <p style={{ ...muted, marginTop: '8px' }}>You get a free card every {formatScores(config.milestone_scores)} Scores you earn.</p>
+                <p style={{ ...muted, marginTop: '8px' }}>You also get a card every {formatScores(config.milestone_scores)} Scores you earn.</p>
               ) : null}
             </div>
 
