@@ -1,6 +1,6 @@
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getScoresPacksForClub } from '@/lib/admin/club-service';
-import { ScoresPacksPanel } from '@/components/club/ScoresPacksPanel';
+import { ClubPlanCard } from '@/components/club/ClubPlanCard';
 import { h1, muted } from '@/components/play/ui';
 
 export default async function ScoresPacksPage() {
@@ -15,6 +15,8 @@ export default async function ScoresPacksPage() {
     );
   }
 
+  const { poolBalance } = result.data;
+
   return (
     <div
       style={{
@@ -25,18 +27,14 @@ export default async function ScoresPacksPage() {
       }}
     >
       <div>
-        <h1 style={{ ...h1, fontSize: '22px', marginBottom: '2px' }}>⭐ Scores packs</h1>
-        <p style={muted}>
-          Buy Scores to reward your members — they arrive instantly in your club pool
-        </p>
+        <h1 style={{ ...h1, fontSize: '22px', marginBottom: '2px' }}>⭐ Scores for your club</h1>
+        <p style={muted}>The Scores your club has to reward its members</p>
       </div>
 
-      <ScoresPacksPanel
-        clubId={clubId}
-        packs={result.data.packs}
-        poolBalance={result.data.poolBalance}
-        recentPurchases={result.data.recentPurchases}
-      />
+      <ClubPlanCard title="Club pool" current={`${poolBalance.toLocaleString('en-GB')} Scores`}>
+        Scores for your club are arranged as part of your agreement with ClubPulse, not bought here. If you would like more Scores
+        for your members, or a different way of funding them, tell us and we will sort it out with you.
+      </ClubPlanCard>
     </div>
   );
 }

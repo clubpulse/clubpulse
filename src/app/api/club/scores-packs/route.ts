@@ -21,9 +21,14 @@ export async function GET() {
   return NextResponse.json({ packs });
 }
 
+// Buying Scores by card is switched off: Scores are arranged as part of a club's agreement.
+// Set CLUB_SELF_CHECKOUT=on to bring it back. The code below is kept for that.
+const SELF_CHECKOUT = process.env.CLUB_SELF_CHECKOUT === 'on';
+
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!SELF_CHECKOUT) return NextResponse.json({ error: 'Club plans and Scores are arranged directly with ClubPulse. Tell us what your club needs at clubpulse.co/contact.' }, { status: 403 });
 
   let body: { club_id?: string; pack_id?: string };
   try {
