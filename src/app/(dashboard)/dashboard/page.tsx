@@ -1,268 +1,224 @@
 import Link from 'next/link';
+import type { CSSProperties, ReactNode } from 'react';
 import { requireUser } from '@/lib/auth/server';
-import { getUserRoles } from '@/lib/auth/admin';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchProfile, fetchWallet } from '@/lib/profile/service';
 import { getRecentActivity } from '@/lib/activity/service';
+import { getPrimaryClubId } from '@/lib/scores/context';
+import { getPlaySummary } from '@/lib/actions/scores-engine';
+import { getGamesState } from '@/lib/actions/games';
+import { getMyFixtures } from '@/lib/actions/availability';
+import { getMyScratchCards } from '@/lib/scratch/service';
 import { totalBalance } from '@/lib/types/scores';
-import { EarningNudges } from '@/components/dashboard/EarningNudges';
-import { RecentActivity } from '@/components/dashboard/RecentActivity';
-import { CoachingInsightsCard } from '@/components/dashboard/CoachingInsightsCard';
+import { formatScores } from '@/lib/utils/format';
+import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
 import type { CoachingInsight } from '@/lib/types/coaching-insights';
+
+const SYNE = "'Syne', sans-serif";
+const tile: CSSProperties = {
+  display: 'block', background: 'var(--surface-1)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px',
+  padding: '22px', textDecoration: 'none', color: 'inherit', minWidth: 0,
+};
+const big: CSSProperties = { fontFamily: SYNE, fontWeight: 800, fontSize: '40px', lineHeight: 1, letterSpacing: '-0.02em', margin: '10px 0 8px' };
+const label: CSSProperties = { fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0 };
+const hint: CSSProperties = { fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' };
+const grid: CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' };
+
+const ordinal = (n: number) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'}`;
+
+function Tile({ href, icon, children }: { href: string; icon: string; children: ReactNode }) {
+  return (
+    <Link href={href} style={tile} className="cp-home-tile">
+      <span aria-hidden style={{ fontSize: '22px', lineHeight: 1 }}>{icon}</span>
+      {children}
+    </Link>
+  );
+}
 
 export default async function DashboardPage() {
   const user = await requireUser();
   const supabase = await createClient();
+  const clubId = await getPrimaryClubId(user.id);
 
-  const [profile, wallet, activity, roles, insights] = await Promise.all([
+  const [profile, wallet, play, games, fixtures, cards, club, insights, activity] = await Promise.all([
     fetchProfile(supabase, user.id),
     fetchWallet(supabase, user.id),
-    getRecentActivity(supabase, user.id, 6),
-    getUserRoles(user.id),
+    getPlaySummary(),
+    getGamesState(),
+    clubId ? getMyFixtures(clubId) : Promise.resolve([]),
+    getMyScratchCards(user.id),
+    clubId ? createAdminClient().from('clubs').select('name').eq('id', clubId).maybeSingle() : Promise.resolve({ data: null }),
     supabase
       .from('coaching_insights')
       .select('id, player_id, match_id, generated_at, tier, insight_type, finding, recommendation, acknowledged')
       .eq('player_id', user.id)
       .order('generated_at', { ascending: false })
-      .limit(3)
+      .limit(2)
       .returns<CoachingInsight[]>(),
+    getRecentActivity(supabase, user.id, 5),
   ]);
 
   const walletData = wallet.success ? wallet.data : null;
   const balance = totalBalance(walletData);
-  const flexi = walletData?.flexi_balance ?? 0;
-  const reward = walletData?.reward_balance ?? 0;
   const name = profile.success
     ? (profile.data.display_name || profile.data.full_name || 'Player').split(' ')[0]
     : user.email?.split('@')[0] ?? 'Player';
+  const clubName = (club.data?.name as string | undefined) ?? 'Your club';
 
-  const hour = new Date().getHours();
+  // UK time, so the greeting is right whatever clock the server keeps
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Europe/London' }).format(new Date()));
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
+  // Day streak
+  const checkin = play.success ? play.data.checkin : null;
+  const streak = checkin?.lastDay ?? 0;
+
+  // Club league
+  const league = play.success ? play.data.league : [];
+  const me = league.find((r) => r.isMe) ?? null;
+  const ahead = me && me.rank > 1 ? league.find((r) => r.rank === me.rank - 1) ?? null : null;
+
+  // Scratch cards
+  const cardsOn = !cards.unavailable && cards.gate !== 'junior';
+  const lifetime = walletData?.lifetime_earned ?? 0;
+  const milestone = cards.milestone && cards.milestone > 0 ? cards.milestone : null;
+  const intoMilestone = milestone ? lifetime % milestone : 0;
+
+  // Games
+  const gameList = games.success ? Object.values(games.data.games).filter((g) => g.enabled) : [];
+  const toPlay = gameList.filter((g) => !g.played && !g.locked).length;
+  const earnedToday = games.success ? games.data.earnedToday : 0;
+
+  // Recent: the Scores ledger when there is one, otherwise matches and steps
+  const recent: Array<{ id: string; title: string; amount: number }> = play.success && play.data.recent.length > 0
+    ? play.data.recent.slice(0, 5).map((r) => ({ id: r.id, title: r.label, amount: r.amount }))
+    : activity.map((a) => ({ id: a.id, title: a.title, amount: a.amount }));
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', fontFamily: "'Inter', sans-serif" }}>
+      <style>{`.cp-home-tile{transition:border-color .15s,transform .15s}.cp-home-tile:hover{border-color:rgba(96,165,250,.45)!important;transform:translateY(-1px)}`}</style>
 
-      {/* ── Greeting ── */}
-      <div>
-        <h1 style={{
-          fontFamily: "'Syne', sans-serif",
-          fontWeight: 800,
-          fontSize: '22px',
-          color: '#fff',
-          margin: '0 0 4px',
-          letterSpacing: '-0.3px',
-        }}>
-          {greeting}, {name}
-        </h1>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
-          Slough CC · 2026 Season
-        </p>
+      <h1 style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '26px', color: '#fff', margin: '4px 0 6px', letterSpacing: '-0.3px' }}>
+        {greeting}, {name}
+      </h1>
+
+      <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} />
+
+      <div style={grid}>
+        <Tile href="/play" icon="⭐">
+          <p style={{ ...big, color: '#EFC84A' }}>{formatScores(balance)}</p>
+          <p style={label}>Scores</p>
+          <p style={hint}>≈ £{(balance / 50).toFixed(2)} to spend</p>
+        </Tile>
+
+        <Tile href="/play" icon="🔥">
+          <p style={{ ...big, color: '#fff' }}>{streak}</p>
+          <p style={label}>Day streak</p>
+          <p style={hint}>
+            {!checkin?.enabled ? 'Check in daily to build one'
+              : checkin.doneToday ? 'Checked in today'
+              : streak > 0 ? 'Check in to keep it' : 'Check in to start one'}
+          </p>
+        </Tile>
+
+        <Tile href="/leaderboard" icon="🏆">
+          <p style={{ ...big, color: '#fff' }}>{me ? ordinal(me.rank) : '–'}</p>
+          <p style={label}>Club league</p>
+          <p style={hint}>
+            {!me ? 'Earn Scores to join the table'
+              : ahead ? `${formatScores(Math.max(1, ahead.total - me.total))} behind ${ordinal(ahead.rank)}`
+              : 'Top of the table'}
+          </p>
+        </Tile>
       </div>
 
-      {/* ── Quick actions ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-        {[
-          { href: '/scorecard',   icon: '📋', label: 'Live scorecard' },
-          { href: '/analyse',     icon: '🎯', label: 'AI Coach' },
-          { href: '/highlights',  icon: '🎬', label: 'Highlights' },
-          { href: '/marketplace', icon: '🛍️', label: 'Redeem' },
-        ].map(a => (
-          <Link
-            key={a.href}
-            href={a.href}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '16px 10px',
-              background: 'var(--surface-1)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              textDecoration: 'none',
-              transition: 'border-color 0.15s',
-            }}
-          >
-            <span style={{ fontSize: '22px', lineHeight: 1 }}>{a.icon}</span>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 1.3 }}>{a.label}</span>
-          </Link>
-        ))}
-      </div>
+      <div style={grid}>
+        {cardsOn ? (
+          <Tile href="/scratch-cards" icon="🎟️">
+            <p style={{ ...label, margin: '12px 0 10px' }}>{cards.waiting.length > 0 ? 'Scratch cards' : 'Next scratch card'}</p>
+            {cards.waiting.length > 0 ? (
+              <>
+                <p style={{ ...big, fontSize: '23px', color: '#EFC84A', margin: '0 0 6px' }}>{cards.waiting.length} to open</p>
+                <p style={hint}>Tap to scratch</p>
+              </>
+            ) : milestone ? (
+              <>
+                <Progress value={intoMilestone} max={milestone} />
+                <p style={hint}>{formatScores(intoMilestone)} / {formatScores(milestone)}</p>
+                <p style={{ ...hint, color: 'rgba(255,255,255,0.75)' }}>{formatScores(milestone - intoMilestone)} more to go</p>
+              </>
+            ) : (
+              <>
+                <Progress value={streak} max={7} />
+                <p style={hint}>Day {streak} of 7</p>
+                <p style={{ ...hint, color: 'rgba(255,255,255,0.75)' }}>{cards.tasks[0] ?? 'A seven-day streak earns a card'}</p>
+              </>
+            )}
+          </Tile>
+        ) : (
+          <Tile href="/marketplace" icon="🛍️">
+            <p style={{ ...label, margin: '12px 0 10px' }}>Rewards</p>
+            <p style={{ ...big, fontSize: '23px', color: '#EFC84A', margin: '0 0 6px' }}>Spend Scores</p>
+            <p style={hint}>See what you can get</p>
+          </Tile>
+        )}
 
-      {/* ── Main grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: '16px', alignItems: 'start' }}>
-
-        {/* Left column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
-
-          {/* AI earning nudges */}
-          <EarningNudges />
-
-          {/* Tier 1 AI coaching insights */}
-          <CoachingInsightsCard playerId={user.id} initialInsights={insights.data ?? []} />
-
-          {/* Recent activity */}
-          <RecentActivity items={activity} />
-
-          {/* Quick nav to features */}
-          <div style={{
-            background: 'var(--surface-1)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '16px',
-            padding: '20px',
-          }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', margin: '0 0 14px' }}>
-              Explore
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {[
-                { href: '/coaching-history', icon: '📈', label: 'Progress', sub: 'Track AI metrics' },
-                { href: '/companion',        icon: '🧠', label: 'Companion', sub: 'Cricket assistant' },
-                { href: '/club-alumni',      icon: '🏆', label: 'Alumni', sub: 'Club legends' },
-                { href: '/leaderboards',     icon: '📊', label: 'Leaderboard', sub: 'Scores rankings' },
-                { href: '/gut-feeling',      icon: '🔮', label: 'Predictions', sub: 'Earn on match calls' },
-                { href: '/finance',          icon: '💷', label: 'Finance', sub: 'Club accounts' },
-              ].map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.05)',
-                    textDecoration: 'none',
-                    transition: 'background 0.12s',
-                  }}
-                >
-                  <span style={{ fontSize: '16px', lineHeight: 1 }}>{item.icon}</span>
-                  <div>
-                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#fff' }}>{item.label}</p>
-                    <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>{item.sub}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right column — wallet + streak */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-
-          {/* Scores wallet */}
-          <div style={{
-            background: 'var(--surface-1)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '16px',
-            padding: '20px',
-          }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', margin: '0 0 12px' }}>
-              My Scores
-            </p>
-            <p style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 800,
-              fontSize: '40px',
-              color: 'var(--brand-gold)',
-              margin: '0 0 2px',
-              lineHeight: 1,
-              letterSpacing: '-0.02em',
-            }}>
-              {balance.toLocaleString()}
-            </p>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: '0 0 16px' }}>
-              ≈ £{(balance / 50).toFixed(2)} value
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '14px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '10px 12px' }}>
-                <p style={{ margin: 0, fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Flexi</p>
-                <p style={{ margin: '3px 0 0', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>{flexi.toLocaleString()}</p>
-              </div>
-              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '10px 12px' }}>
-                <p style={{ margin: 0, fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Reward</p>
-                <p style={{ margin: '3px 0 0', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>{reward.toLocaleString()}</p>
-              </div>
-            </div>
-            <Link
-              href="/marketplace"
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                padding: '10px',
-                background: 'rgba(239,200,74,0.12)',
-                border: '1px solid rgba(239,200,74,0.25)',
-                borderRadius: '10px',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: 'var(--brand-gold)',
-                textDecoration: 'none',
-              }}
-            >
-              Redeem Scores →
-            </Link>
-          </div>
-
-          {/* How to earn */}
-          <div style={{
-            background: 'var(--surface-1)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '16px',
-            padding: '18px 20px',
-          }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', margin: '0 0 12px' }}>
-              How to earn
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {[
-                { pts: '+5',   label: 'Mark available' },
-                { pts: '+25',  label: 'AI coaching session' },
-                { pts: '+50',  label: 'Play in a match' },
-                { pts: '+100', label: 'Refer a friend' },
-              ].map(e => (
-                <div key={e.pts} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>{e.label}</span>
-                  <span style={{
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    color: 'var(--brand-gold)',
-                    background: 'rgba(239,200,74,0.10)',
-                    border: '1px solid rgba(239,200,74,0.2)',
-                    borderRadius: '6px',
-                    padding: '2px 8px',
-                    whiteSpace: 'nowrap',
-                  }}>{e.pts}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Admin shortcut */}
-          {roles.includes('admin') && (
-            <Link
-              href="/admin/club"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '14px 16px',
-                background: 'rgba(37,99,235,0.10)',
-                border: '1px solid rgba(37,99,235,0.25)',
-                borderRadius: '14px',
-                textDecoration: 'none',
-              }}
-            >
-              <span style={{ fontSize: '18px' }}>🛡️</span>
-              <div>
-                <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#fff' }}>Club admin</p>
-                <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>Manage Slough CC</p>
-              </div>
-            </Link>
+        <Tile href="/analyse" icon="🎯">
+          <p style={{ ...label, margin: '12px 0 10px' }}>AI Coach</p>
+          {(insights.data ?? []).length > 0 ? (
+            (insights.data ?? []).map((i, n) => (
+              <p key={i.id} style={{ fontSize: '14px', fontWeight: 600, margin: '0 0 6px', color: n === 0 ? '#22C55E' : '#F97316', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                {i.finding}
+              </p>
+            ))
+          ) : (
+            <>
+              <p style={{ ...big, fontSize: '23px', color: '#fff', margin: '0 0 6px' }}>Film a clip</p>
+              <p style={hint}>Get a score and what to work on</p>
+            </>
           )}
-        </div>
+        </Tile>
+
+        <Tile href="/games" icon="🎮">
+          <p style={{ ...label, margin: '12px 0 10px' }}>Today&apos;s games</p>
+          <p style={{ ...big, fontSize: '23px', color: '#fff', margin: '0 0 6px' }}>
+            {gameList.length === 0 ? 'Not on yet' : toPlay > 0 ? `${toPlay} to play` : 'All played'}
+          </p>
+          <p style={hint}>
+            {gameList.length === 0 ? 'Your club has not switched games on'
+              : earnedToday > 0 ? `+${formatScores(earnedToday)} Scores earned today`
+              : toPlay > 0 ? 'Play to earn Scores' : 'Back tomorrow'}
+          </p>
+        </Tile>
       </div>
+
+      <section aria-label="Recent" style={{ marginTop: '6px' }}>
+        <h2 style={{ fontFamily: SYNE, fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 6px' }}>Recent</h2>
+        {recent.length === 0 ? (
+          <p style={hint}>Nothing yet. Check in, play a game or mark your availability to start earning.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {recent.map((r) => (
+              <li key={r.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</span>
+                <span style={{ flexShrink: 0, fontSize: '14px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: r.amount >= 0 ? '#22C55E' : '#F87171' }}>
+                  {r.amount >= 0 ? '+' : '−'}{formatScores(Math.abs(r.amount))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Progress({ value, max }: { value: number; max: number }) {
+  const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
+  return (
+    <div role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden', margin: '0 0 10px' }}>
+      <div style={{ width: `${pct}%`, height: '100%', background: '#EFC84A', borderRadius: '3px' }} />
     </div>
   );
 }

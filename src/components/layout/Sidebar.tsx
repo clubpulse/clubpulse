@@ -10,36 +10,52 @@ export const NAV_LINKS: NavLink[] = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
   { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-  { href: '/companion',   label: 'Companion',   icon: '🧠' },
+  { href: '/companion',   label: 'Coach AI',    icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
 
-// Everything else, in groups that open and close. Desktop sidebar only: the mobile bottom nav
-// stays NAV_LINKS. A group marked adminOnly is shown to club admins and no one else.
-type NavGroup = { key: string; label: string; adminOnly?: boolean; links: NavLink[] };
+// Everything except Home sits in a handful of groups, one open at a time. Desktop sidebar only:
+// the mobile bottom nav stays NAV_LINKS. A group marked adminOnly is shown to club admins only.
+type NavGroup = { key: string; label: string; icon: string; adminOnly?: boolean; links: NavLink[] };
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    key: 'scores',
-    label: 'Scores and rewards',
+    key: 'match',
+    label: 'Match day',
+    icon: '🏏',
     links: [
-      { href: '/play', label: 'Earn Scores', icon: '💰' },
-      { href: '/games', label: 'Games', icon: '🎮' },
+      { href: '/availability', label: 'Availability', icon: '📅' },
+      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
+      { href: '/scorecard', label: 'Scorecard', icon: '📝' },
+      { href: '/match-mood', label: 'Match Mood', icon: '😤' },
+      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
+      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️' },
+      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆' },
+    ],
+  },
+  {
+    key: 'play',
+    label: 'Play',
+    icon: '🎮',
+    links: [
+      { href: '/games', label: 'Games', icon: '🎲' },
       { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️' },
-      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
-      { href: '/kit-discounts', label: 'Kit Discounts', icon: '🏏' },
-      { href: '/fee-offset', label: 'Fee Offset', icon: '🏷️' },
-      { href: '/travel', label: 'Travel', icon: '🗺️' },
-      { href: '/raffle', label: 'Raffle', icon: '🎫' },
       { href: '/auction', label: 'The Auction', icon: '🔨' },
+      { href: '/raffle', label: 'Raffle', icon: '🎫' },
+      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
+      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
+      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦' },
     ],
   },
   {
     key: 'game',
     label: 'My game',
+    icon: '🎯',
     links: [
-      { href: '/development', label: 'Development', icon: '📈' },
+      { href: '/analyse', label: 'Analyse', icon: '🎥' },
+      { href: '/companion', label: 'Coach AI', icon: '🧠' },
       { href: '/highlights', label: 'Highlights', icon: '🎬' },
+      { href: '/development', label: 'Development', icon: '📈' },
       { href: '/player-report', label: 'Player Report', icon: '📊' },
       { href: '/log-performance', label: 'Log Game', icon: '📋' },
       { href: '/coaching', label: 'Coaching', icon: '🎓' },
@@ -48,25 +64,28 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄' },
       { href: '/pulse-score', label: 'Pulse Score', icon: '💓' },
       { href: '/wellbeing', label: 'Wellbeing', icon: '🧡' },
+      { href: '/injury-intel', label: 'Injury Intel', icon: '🩹' },
     ],
   },
   {
-    key: 'match',
-    label: 'Match day',
+    key: 'scores',
+    label: 'Scores',
+    icon: '⭐',
     links: [
-      { href: '/availability', label: 'Availability', icon: '📅' },
-      { href: '/match-day', label: 'Match Day', icon: '🏏' },
-      { href: '/scorecard', label: 'Scorecard', icon: '📝' },
-      { href: '/match-mood', label: 'Match Mood', icon: '😤' },
-      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
-      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️' },
-      { href: '/injury-intel', label: 'Injury Intel', icon: '🩹' },
-      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆' },
+      { href: '/play', label: 'Earn Scores', icon: '💰' },
+      { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
+      { href: '/kit-discounts', label: 'Kit Discounts', icon: '🧢' },
+      { href: '/fee-offset', label: 'Fee Offset', icon: '🏷️' },
+      { href: '/travel', label: 'Travel', icon: '🗺️' },
+      { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝' },
+      { href: '/community-pot', label: 'Community Pot', icon: '🪙' },
+      { href: '/charity', label: 'Charity', icon: '🤲' },
     ],
   },
   {
     key: 'club',
     label: 'My club',
+    icon: '🛡️',
     links: [
       { href: '/noticeboard', label: 'Noticeboard', icon: '📌' },
       { href: '/dressing-room', label: 'Dressing Room', icon: '👕' },
@@ -75,22 +94,12 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/finance', label: 'Finance', icon: '💷' },
       { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
       { href: '/club-alumni', label: 'Alumni', icon: '🎓' },
-      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦' },
-      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
-    ],
-  },
-  {
-    key: 'giving',
-    label: 'Giving back',
-    links: [
-      { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝' },
-      { href: '/community-pot', label: 'Community Pot', icon: '🪙' },
-      { href: '/charity', label: 'Charity', icon: '🤲' },
     ],
   },
   {
     key: 'tools',
     label: 'Admin tools',
+    icon: '🧰',
     adminOnly: true,
     links: [
       { href: '/admin-query', label: 'Club Intelligence', icon: '🤖' },
@@ -104,46 +113,53 @@ export const NAV_GROUPS: NavGroup[] = [
 /** Every grouped link in one list, for anything that needs them flat. */
 export const CLUB_LINKS: NavLink[] = NAV_GROUPS.flatMap((g) => g.links);
 
-const OPEN_KEY = 'clubpulse.sidebar.open';
-const DEFAULT_OPEN = ['scores'];
+// What the sidebar remembers in this browser: which group is open, and whether it is folded
+// down to icons. A tiny store over localStorage so it re-renders when either changes.
+// `open` only counts on the page it was chosen on (`at`): move to another page and the menu goes
+// back to showing just the group that page lives in.
+type SidebarState = { open: string | null; at: string | null; folded: boolean };
+const STATE_KEY = 'clubpulse.sidebar';
+const DEFAULT_STATE: SidebarState = { open: null, at: null, folded: false };
+const listeners = new Set<() => void>();
+let lastState: string | null = null;
 
-// A tiny store over localStorage so the sidebar re-renders when a group is opened or closed
-const openListeners = new Set<() => void>();
-let lastOpen: string | null = null;
-
-function subscribeOpen(fn: () => void) {
-  openListeners.add(fn);
-  return () => { openListeners.delete(fn); };
+function subscribe(fn: () => void) {
+  listeners.add(fn);
+  return () => { listeners.delete(fn); };
 }
 
-function readOpen(): string {
-  if (lastOpen === null) {
+function readState(): string {
+  if (lastState === null) {
     try {
-      lastOpen = window.localStorage.getItem(OPEN_KEY) ?? '';
+      lastState = window.localStorage.getItem(STATE_KEY) ?? '';
     } catch {
-      lastOpen = '';
+      lastState = '';
     }
   }
-  return lastOpen;
+  return lastState;
 }
 
-function saveOpen(next: string[]) {
-  lastOpen = JSON.stringify(next);
+function saveState(next: SidebarState) {
+  lastState = JSON.stringify(next);
   try {
-    window.localStorage.setItem(OPEN_KEY, lastOpen);
+    window.localStorage.setItem(STATE_KEY, lastState);
   } catch {
     // Private browsing or storage switched off: kept for this visit only
   }
-  openListeners.forEach((fn) => fn());
+  listeners.forEach((fn) => fn());
 }
 
-function parseOpen(raw: string): string[] {
-  if (!raw) return DEFAULT_OPEN;
+function parseState(raw: string): SidebarState {
+  if (!raw) return DEFAULT_STATE;
   try {
-    const saved: unknown = JSON.parse(raw);
-    return Array.isArray(saved) ? saved.filter((k): k is string => typeof k === 'string') : DEFAULT_OPEN;
+    const saved = JSON.parse(raw) as Partial<SidebarState> | null;
+    return {
+      open: typeof saved?.open === 'string' ? saved.open : null,
+      at: typeof saved?.at === 'string' ? saved.at : null,
+      folded: saved?.folded === true,
+    };
   } catch {
-    return DEFAULT_OPEN;
+    return DEFAULT_STATE;
   }
 }
 
@@ -156,89 +172,135 @@ export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showA
   ];
 }
 
-function NavItem({ link, pathname }: { link: NavLink; pathname: string }) {
+const HOME: NavLink = { href: '/dashboard', label: 'Home', icon: '🏠' };
+
+const isActive = (link: NavLink, pathname: string) => pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+const rowStyle = (active: boolean, folded: boolean): React.CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: folded ? 'center' : 'flex-start',
+  gap: '12px',
+  width: '100%',
+  padding: folded ? '10px 0' : '10px 14px',
+  borderRadius: '12px',
+  border: 'none',
+  borderLeft: active ? '2px solid #60A5FA' : '2px solid transparent',
+  background: active ? 'rgba(37,99,235,0.18)' : 'transparent',
+  color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+  fontFamily: "'Inter', sans-serif",
+  fontSize: '14px',
+  fontWeight: 500,
+  textDecoration: 'none',
+  textAlign: 'left',
+  cursor: 'pointer',
+  transition: 'background 0.15s, color 0.15s',
+});
+
+function NavItem({ link, pathname, folded = false, small = false }: { link: NavLink; pathname: string; folded?: boolean; small?: boolean }) {
   const active = isActive(link, pathname);
   return (
     <li>
       <Link
         href={link.href}
         aria-current={active ? 'page' : undefined}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '8px 12px',
-          borderRadius: '10px',
-          fontSize: '14px',
-          fontWeight: 500,
-          textDecoration: 'none',
-          transition: 'background 0.15s, color 0.15s',
-          background: active ? 'rgba(37,99,235,0.18)' : 'transparent',
-          color: active ? '#fff' : 'rgba(255,255,255,0.5)',
-          borderLeft: active ? '2px solid #60A5FA' : '2px solid transparent',
-          fontFamily: "'Inter', sans-serif",
-        }}
+        aria-label={folded ? link.label : undefined}
+        title={folded ? link.label : undefined}
+        className="cp-nav-row"
+        style={{ ...rowStyle(active, folded), ...(small ? { fontSize: '13px', padding: '7px 12px', gap: '10px' } : {}) }}
       >
-        <span aria-hidden>{link.icon}</span>
-        {link.label}
+        <span aria-hidden style={{ fontSize: small ? '14px' : '17px', lineHeight: 1 }}>{link.icon}</span>
+        {!folded && link.label}
       </Link>
     </li>
   );
 }
 
-const isActive = (link: NavLink, pathname: string) => pathname === link.href || pathname.startsWith(`${link.href}/`);
-
 // showSchool: the club has an active school_programs row (looked up in DashboardShell)
 export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { showAdmin: boolean; isPlatformAdmin: boolean; showSchool?: boolean }) {
   const pathname = usePathname();
-  const links = navLinks({ showAdmin, isPlatformAdmin });
+  const state = parseState(useSyncExternalStore(subscribe, readState, () => ''));
+  const folded = state.folded;
+
   const groups = NAV_GROUPS
     .filter((g) => !g.adminOnly || showAdmin)
     .map((g) => (g.key === 'club' && showSchool ? { ...g, links: [...g.links, { href: '/school', label: 'School', icon: '🏫' }] } : g));
+  const bottom: NavLink[] = [
+    { href: '/profile', label: 'Profile', icon: '👤' },
+    ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
+    ...(isPlatformAdmin ? [{ href: '/admin', label: 'Admin', icon: '⚙️' }] : []),
+  ];
 
-  // Which groups are open, remembered in this browser. The server and the first paint use the
-  // default; the group holding the current page is always open.
-  const open = parseOpen(useSyncExternalStore(subscribeOpen, readOpen, () => ''));
-
-  const toggle = (key: string) => saveOpen(open.includes(key) ? open.filter((k) => k !== key) : [...open, key]);
+  // The group holding the current page is open, unless the person has opened or closed one
+  // since arriving on this page
+  const current = groups.find((g) => g.links.some((l) => isActive(l, pathname)))?.key ?? null;
+  const openKey = state.at === pathname ? state.open : current;
 
   return (
-    <nav className="hidden w-56 shrink-0 md:block" aria-label="Main">
-      <div className="sticky top-20 max-h-[calc(100vh-6rem)] space-y-4 overflow-y-auto pb-4">
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="space-y-1">
-          {links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} />)}
-        </ul>
+    <nav
+      className="hidden shrink-0 md:block"
+      aria-label="Main"
+      style={{ width: folded ? '68px' : '232px', borderRight: '1px solid rgba(255,255,255,0.08)', transition: 'width 0.15s' }}
+    >
+      <style>{`.cp-nav-row:hover{background:rgba(255,255,255,0.04)!important;color:rgba(255,255,255,0.85)!important}`}</style>
+      <div className="sticky top-[52px] flex h-[calc(100vh-52px)] flex-col overflow-y-auto px-2.5 py-3">
+        <div style={{ display: 'flex', justifyContent: folded ? 'center' : 'flex-end', marginBottom: '8px' }}>
+          <button
+            type="button"
+            onClick={() => saveState({ ...state, folded: !folded })}
+            aria-label={folded ? 'Open the menu' : 'Fold the menu away'}
+            title={folded ? 'Open the menu' : 'Fold the menu away'}
+            style={{
+              width: '30px', height: '30px', borderRadius: '9px', border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '14px', lineHeight: 1,
+            }}
+          >
+            {folded ? '›' : '‹'}
+          </button>
+        </div>
 
-        <div className="space-y-1">
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="space-y-1">
+          <NavItem link={HOME} pathname={pathname} folded={folded} />
           {groups.map((group) => {
-            const holdsPage = group.links.some((l) => isActive(l, pathname));
-            const isOpen = holdsPage || open.includes(group.key);
+            const holdsPage = group.key === current;
+            const isOpen = !folded && openKey === group.key;
             return (
-              <div key={group.key}>
+              <li key={group.key}>
                 <button
                   type="button"
-                  onClick={() => toggle(group.key)}
+                  className="cp-nav-row"
+                  onClick={() => saveState({ folded: false, at: pathname, open: isOpen ? null : group.key })}
                   aria-expanded={isOpen}
                   aria-controls={`nav-group-${group.key}`}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-                    padding: '8px 12px', borderRadius: '10px', border: 'none', background: 'transparent', cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em',
-                    textTransform: 'uppercase', color: holdsPage ? '#60A5FA' : 'rgba(255,255,255,0.45)',
-                  }}
+                  aria-label={folded ? group.label : undefined}
+                  title={folded ? group.label : undefined}
+                  style={rowStyle(holdsPage && !isOpen, folded)}
                 >
-                  {group.label}
-                  <span aria-hidden style={{ fontSize: '10px', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>▶</span>
+                  <span aria-hidden style={{ fontSize: '17px', lineHeight: 1 }}>{group.icon}</span>
+                  {!folded && (
+                    <>
+                      <span style={{ flex: 1 }}>{group.label}</span>
+                      <span aria-hidden style={{ fontSize: '11px', opacity: 0.6, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>❯</span>
+                    </>
+                  )}
                 </button>
                 {isOpen && (
-                  <ul id={`nav-group-${group.key}`} style={{ listStyle: 'none', padding: 0, margin: '2px 0 6px' }} className="space-y-1">
-                    {group.links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} />)}
+                  <ul
+                    id={`nav-group-${group.key}`}
+                    style={{ listStyle: 'none', padding: '0 0 0 14px', margin: '2px 0 6px 20px', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
+                    className="space-y-0.5"
+                  >
+                    {group.links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} small />)}
                   </ul>
                 )}
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
+
+        <ul style={{ listStyle: 'none', padding: '10px 0 0', margin: 'auto 0 0', borderTop: '1px solid rgba(255,255,255,0.08)' }} className="space-y-1">
+          {bottom.map((link) => <NavItem key={link.href} link={link} pathname={pathname} folded={folded} />)}
+        </ul>
       </div>
     </nav>
   );
