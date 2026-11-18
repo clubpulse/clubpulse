@@ -50,7 +50,7 @@ const BOWLING: Reference = {
   },
   checkpoints: [
     'Front leg firm at release. A straight, braced front leg is the coaching model; many good bowlers flex a little on landing and then straighten.',
-    'Bowling arm straight from shoulder height to release. The law allows up to 15° of straightening at the elbow.',
+    'Bowling arm straight from shoulder height to release. The law allows up to 15° of straightening at the elbow; the reference check below the scores gives a reading against that.',
     'Arm high at release, close to vertical, brushing past the ear.',
     'Head upright and eyes level, with only a moderate lean of the trunk away from the bowling arm. A big sideways bend is linked with lower back injury.',
     'Hips and shoulders lined up through the delivery stride. Twisting the shoulders back against the hips by more than about 30° (a mixed action) is linked with lower back injury. This cannot be measured from a side-on video.',

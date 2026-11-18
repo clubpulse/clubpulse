@@ -328,7 +328,9 @@ function sides(hand: Hand) {
  * Finds the release (bowling hand at its highest, above the head) and measures the action there.
  * Returns null when no bowling action can be seen, e.g. someone standing or walking.
  */
-export function bowlingAnalysis(frames: Landmark[][], hand: Hand, w: number, h: number): { metrics: MetricResult[]; keyFrame: number } | null {
+export function bowlingAnalysis(
+  frames: Landmark[][], hand: Hand, w: number, h: number,
+): { metrics: MetricResult[]; keyFrame: number; elbow: ElbowCheck } | null {
   const side = sides(hand);
   const p = (lm: Landmark[], i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
   const torso = (lm: Landmark[]) => Math.max(1, dist(mid(p(lm, L.lShoulder), p(lm, L.rShoulder)), mid(p(lm, L.lHip), p(lm, L.rHip))));
@@ -391,7 +393,47 @@ export function bowlingAnalysis(frames: Landmark[][], hand: Hand, w: number, h: 
   const metrics = METRICS.bowling
     .filter((def) => values[def.key] !== null && values[def.key] !== undefined)
     .map((def) => ({ ...def, value: values[def.key] as number, score: scoreFor(values[def.key] as number, def.ideal, def.tolerance) }));
-  return metrics.length >= 2 ? { metrics, keyFrame: release } : null;
+  return metrics.length >= 2 ? { metrics, keyFrame: release, elbow: elbowCheck(frames, release, side, p) } : null;
+}
+
+/* ── Bowling arm reference check ───────────────────────────────────────────── */
+
+/** The law's limit on straightening of the elbow, from the arm reaching horizontal to release */
+export const ELBOW_EXTENSION_LIMIT = 15;
+
+export type ElbowCheck = {
+  /** Degrees the elbow straightened between the arm reaching horizontal and release; null if it could not be seen */
+  extension: number | null;
+  /** How many frames of that part of the action were seen. Two or three is typical at normal speed. */
+  frames: number;
+  /** Elbow angle at its most bent in that part of the action, and at release */
+  mostBent: number | null;
+  atRelease: number | null;
+};
+
+/**
+ * A reference reading for the bowling arm, to decide whether a closer look is worth it.
+ * It is not a test of whether an action is legal: that needs several cameras in a laboratory.
+ * From one camera the elbow angle also appears to change as the arm turns, so this can read high
+ * or low. It is kept out of the technique score.
+ */
+function elbowCheck(
+  frames: Landmark[][], release: number,
+  side: { shoulder: number; elbow: number; wrist: number },
+  p: (lm: Landmark[], i: number) => Point,
+): ElbowCheck {
+  const angles: number[] = [];
+  // Walk back from release while the upper arm is still above horizontal
+  for (let i = release; i >= 0 && release - i <= 8; i--) {
+    const lm = frames[i];
+    if (!visible(lm, side.shoulder, side.elbow, side.wrist)) break;
+    if (p(lm, side.elbow).y > p(lm, side.shoulder).y) break;
+    angles.unshift(angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)));
+  }
+  if (angles.length < 2) return { extension: null, frames: angles.length, mostBent: null, atRelease: null };
+  const atRelease = angles[angles.length - 1];
+  const mostBent = Math.min(...angles);
+  return { extension: Math.max(0, atRelease - mostBent), frames: angles.length, mostBent, atRelease };
 }
 
 /* ── Full result for the screen ────────────────────────────────────────────── */
@@ -405,6 +447,8 @@ export type Analysis = {
   framesSeen: number;
   /** Height of the player as a share of the picture at the key frame (1 = fills it) */
   playerSize: number;
+  /** Bowling only: the bowling arm reference check */
+  elbow?: ElbowCheck;
 };
 
 export type AnalysisProblem = 'no-body' | 'no-action';

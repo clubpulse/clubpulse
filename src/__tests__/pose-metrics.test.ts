@@ -1,4 +1,4 @@
-import { L, analyseDetailed, bowlingAnalysis, metricJoints, playerSize, segmentScore, type Landmark } from '@/lib/analysis/pose-metrics';
+import { ELBOW_EXTENSION_LIMIT, L, analyseDetailed, bowlingAnalysis, metricJoints, playerSize, segmentScore, type Landmark } from '@/lib/analysis/pose-metrics';
 
 const W = 1080;
 const H = 1920;
@@ -85,6 +85,38 @@ describe('bowlingAnalysis', () => {
     expect(result).not.toBeNull();
     expect(result!.metrics.some((m) => m.key === 'frontKnee')).toBe(false);
     expect(result!.metrics.some((m) => m.key === 'armStraightness')).toBe(true);
+  });
+});
+
+describe('bowling arm reference check', () => {
+  it('reads close to zero for a straight arm', () => {
+    const { elbow } = bowlingAnalysis(delivery(), 'right', W, H)!;
+    expect(elbow.frames).toBe(3);
+    expect(elbow.extension).not.toBeNull();
+    expect(elbow.extension!).toBeLessThan(ELBOW_EXTENSION_LIMIT);
+  });
+
+  it('reads high when the arm comes over bent and straightens into release', () => {
+    const frames = delivery();
+    // Bent at the elbow as the arm passes horizontal and on the way up; straight at release
+    frames[14] = pose({ ...RELEASE, rElbow: [660, 690], rWrist: [640, 560] });
+    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [560, 480] });
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(elbow.mostBent!).toBeLessThan(140);
+    expect(elbow.atRelease!).toBeGreaterThan(170);
+    expect(elbow.extension!).toBeGreaterThan(ELBOW_EXTENSION_LIMIT);
+  });
+
+  it('gives no reading when that part of the action was not seen', () => {
+    const frames = delivery();
+    for (const i of [14, 15]) frames[i] = frames[i].map((point, j) => (j === L.rElbow ? { ...point, visibility: 0.1 } : point));
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(elbow.extension).toBeNull();
+    expect(elbow.frames).toBe(1);
+  });
+
+  it('is not part of the technique score', () => {
+    expect(bowlingAnalysis(delivery(), 'right', W, H)!.metrics.some((m) => /elbow/i.test(m.key))).toBe(false);
   });
 });
 
