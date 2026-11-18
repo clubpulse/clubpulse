@@ -25,8 +25,14 @@ function colourFor(score: number) {
  * with the measured joint angles marked and coloured by how they scored. It is cropped to the
  * player, so it stays readable even when they are small in the video.
  */
-export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored }: {
+export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored, labels = 'measured', bat, size = SIZE, label }: {
   pose: Landmark[]; width: number; height: number; metrics: MetricResult[]; mode: Mode; hand: Hand; mirrored?: boolean;
+  /** 'measured' writes the angle in this position; 'target' writes the range to aim for (for the textbook figure) */
+  labels?: 'measured' | 'target';
+  /** Bat to draw, from the hands to the toe, in the same 0 to 1 units as the pose */
+  bat?: [number, number, number, number] | null;
+  size?: number;
+  label?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -35,10 +41,10 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored 
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     const ratio = Math.min(3, window.devicePixelRatio || 1);
-    canvas.width = SIZE * ratio;
-    canvas.height = SIZE * ratio;
+    canvas.width = size * ratio;
+    canvas.height = size * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    ctx.clearRect(0, 0, SIZE, SIZE);
+    ctx.clearRect(0, 0, size, size);
 
     const seen = (i: number) => (pose[i]?.visibility ?? 0) >= MIN_VISIBILITY;
     // Work in video pixels so angles are true, then fit the player's bounding box to the canvas
@@ -47,12 +53,17 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored 
     if (body.length < 4) return;
     const xs = body.map((i) => raw(i).x);
     const ys = body.map((i) => raw(i).y);
+    // Keep the whole bat in the picture too
+    if (bat) {
+      xs.push((mirrored ? 1 - bat[0] : bat[0]) * width, (mirrored ? 1 - bat[2] : bat[2]) * width);
+      ys.push(bat[1] * height, bat[3] * height);
+    }
     const boxW = Math.max(1, Math.max(...xs) - Math.min(...xs));
     const boxH = Math.max(1, Math.max(...ys) - Math.min(...ys));
-    const pad = 46;
-    const scale = Math.min((SIZE - pad * 2) / boxW, (SIZE - pad * 2) / boxH);
-    const offsetX = (SIZE - boxW * scale) / 2 - Math.min(...xs) * scale;
-    const offsetY = (SIZE - boxH * scale) / 2 - Math.min(...ys) * scale;
+    const pad = size * 0.14;
+    const scale = Math.min((size - pad * 2) / boxW, (size - pad * 2) / boxH);
+    const offsetX = (size - boxW * scale) / 2 - Math.min(...xs) * scale;
+    const offsetY = (size - boxH * scale) / 2 - Math.min(...ys) * scale;
     const at = (i: number) => ({ x: raw(i).x * scale + offsetX, y: raw(i).y * scale + offsetY });
 
     // Ground line under the lower foot
@@ -61,8 +72,20 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored 
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(16, ground);
-    ctx.lineTo(SIZE - 16, ground);
+    ctx.lineTo(size - 16, ground);
     ctx.stroke();
+
+    // Bat, behind the body
+    if (bat) {
+      const flip = (x: number) => (mirrored ? 1 - x : x) * width;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#C8A46B';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(flip(bat[0]) * scale + offsetX, bat[1] * height * scale + offsetY);
+      ctx.lineTo(flip(bat[2]) * scale + offsetX, bat[3] * height * scale + offsetY);
+      ctx.stroke();
+    }
 
     // Skeleton
     ctx.lineCap = 'round';
@@ -96,10 +119,12 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored 
 
     // Measured angles: the two limbs picked out in colour, an arc at the joint and the angle beside it
     ctx.font = '600 13px Inter, system-ui, sans-serif';
+    // Where labels have gone so far, so a new one can be moved clear of them
+    const placed: { x: number; y: number; w: number }[] = [];
     for (const metric of metrics) {
       for (const [a, joint, c] of metricJoints(metric.key, mode, hand)) {
         if (!seen(a) || !seen(joint) || !seen(c)) continue;
-        const colour = colourFor(metric.score);
+        const colour = labels === 'target' ? GOLD : colourFor(metric.score);
         const pa = at(a);
         const pj = at(joint);
         const pc = at(c);
@@ -123,20 +148,25 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored 
 
         // Label on the outside of the bend, kept inside the canvas
         const middle = start + sweep / 2;
-        const text = `${Math.round(angleAt(raw(a), raw(joint), raw(c)))}°`;
+        const text = labels === 'target'
+          ? `${metric.ideal[0]}–${metric.ideal[1]}°`
+          : `${Math.round(angleAt(raw(a), raw(joint), raw(c)))}°`;
         const textWidth = ctx.measureText(text).width;
-        const lx = Math.min(SIZE - textWidth - 8, Math.max(8, pj.x - Math.cos(middle) * 30 - textWidth / 2));
-        const ly = Math.min(SIZE - 10, Math.max(16, pj.y - Math.sin(middle) * 30 + 5));
+        const lx = Math.min(size - textWidth - 8, Math.max(8, pj.x - Math.cos(middle) * 30 - textWidth / 2));
+        let ly = Math.min(size - 10, Math.max(16, pj.y - Math.sin(middle) * 30 + 5));
+        const clashes = () => placed.some((other) => Math.abs(other.y - ly) < 19 && lx < other.x + other.w + 8 && other.x < lx + textWidth + 8);
+        for (let tries = 0; tries < 6 && clashes(); tries++) ly = Math.min(size - 10, ly + 20);
+        placed.push({ x: lx, y: ly, w: textWidth });
         ctx.fillStyle = 'rgba(11,11,11,0.85)';
         ctx.fillRect(lx - 4, ly - 13, textWidth + 8, 18);
         ctx.fillStyle = colour;
         ctx.fillText(text, lx, ly);
       }
     }
-  }, [pose, width, height, metrics, mode, hand, mirrored]);
+  }, [pose, width, height, metrics, mode, hand, mirrored, labels, bat, size]);
 
   return (
-    <canvas ref={ref} role="img" aria-label="Diagram of your body position with the measured joint angles marked"
-      className="mx-auto block rounded-xl" style={{ width: SIZE, maxWidth: '100%', aspectRatio: '1', background: '#0B0B0B' }} />
+    <canvas ref={ref} role="img" aria-label={label ?? 'Diagram of your body position with the measured joint angles marked'}
+      className="mx-auto block rounded-xl" style={{ width: size, maxWidth: '100%', aspectRatio: '1', background: '#0B0B0B' }} />
   );
 }

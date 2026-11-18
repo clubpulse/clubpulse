@@ -111,7 +111,7 @@ describe('analyseDetailed', () => {
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
     expect(outcome.analysis.keyFrame).toBe(7);
-    expect(outcome.analysis.metrics).toHaveLength(10);
+    expect(outcome.analysis.metrics).toHaveLength(8);
   });
 });
 

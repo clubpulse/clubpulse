@@ -39,6 +39,7 @@ export type MetricResult = MetricDef & { value: number; score: number };
 // Keys match the metric keys in METRICS.batting.
 const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, number]>>>> = {
   pull: {
+    batSwingPlane:  [50, 90],    // a cross-bat shot: the bat is meant to be near level
     // Pull/hook: weight on back foot, front arm higher, big hip rotation, shoulder dips
     frontElbow:     [100, 145],
     kneeFlex:       [130, 155],  // more loaded back leg
@@ -47,12 +48,14 @@ const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, n
     weightTransfer: [0.3, 0.6],  // weight stays back or only slightly transfers
   },
   cut: {
+    batSwingPlane:  [50, 90],    // a cross-bat shot: the bat is meant to be near level
     frontElbow:     [80, 120],
     shoulderLevel:  [0, 15],
     hipRotation:    [15, 40],
     weightTransfer: [0.3, 0.65],
   },
   sweep: {
+    batSwingPlane:  [50, 90],    // a cross-bat shot: the bat is meant to be near level
     // Sweep: deep knee bend, front knee to the pitch, shoulder rotates hard
     kneeFlex:       [110, 145],
     frontElbow:     [70, 115],
@@ -83,7 +86,21 @@ const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, n
   },
 };
 
-export const METRICS: Record<Mode, MetricDef[]> = {
+export // Worked out but not scored: from one side-on camera these two cannot be told apart from noise.
+// Hip rotation happens around the spine, towards and away from the camera, and wrist cock needs
+// the bat, which the body tracker cannot see. A textbook position scored near zero on both.
+const NOT_SCORED = ['hipRotation', 'wristCock'];
+
+// Measures that say nothing about a shot are left out of its score
+const SHOT_SKIPS: Partial<Record<ShotType, string[]>> = {
+  // Back foot shots: the head is not meant to be over the front knee
+  pull: ['headOverKnee'],
+  cut: ['headOverKnee'],
+  // No shot is played, so there is nothing to measure in the arms or bat
+  leave: ['frontElbow', 'backElbow', 'wristCock', 'batSwingPlane'],
+};
+
+const METRICS: Record<Mode, MetricDef[]> = {
   // Bowling is measured at the moment of release, not averaged over the run-up (see bowlingAnalysis)
   bowling: [
     { key: 'frontKnee', label: 'Front knee brace', unit: '°', ideal: [165, 180], tolerance: 30,
@@ -114,8 +131,8 @@ export const METRICS: Record<Mode, MetricDef[]> = {
       tip: 'The hips drive power — rotate them through the ball before your arms extend.' },
     { key: 'weightTransfer', label: 'Weight transfer', unit: '', ideal: [0.55, 0.85], tolerance: 0.35,
       tip: 'Shift weight from back to front foot as you play — it converts momentum into shot power.' },
-    { key: 'batSwingPlane', label: 'Bat swing plane', unit: '°', ideal: [70, 110], tolerance: 30,
-      tip: 'A straight bat plane (near vertical) gives more margin for error than a cross-bat swing.' },
+    { key: 'batSwingPlane', label: 'Bat angle from vertical', unit: '°', ideal: [0, 30], tolerance: 35,
+      tip: 'Play straight-bat shots with the bat close to vertical. It gives more margin for error than swinging across the line.' },
     { key: 'backElbow', label: 'Back elbow position', unit: '°', ideal: [60, 100], tolerance: 35,
       tip: 'A raised back elbow at the top of the backswing powers the downswing — don\'t let it collapse.' },
     { key: 'wristCock', label: 'Wrist cock', unit: '°', ideal: [100, 145], tolerance: 35,
@@ -189,21 +206,21 @@ export function frameMetrics(lm: Landmark[], mode: Mode, hand: Hand, w: number, 
   // Hip rotation: angle of hip line relative to shoulder line (larger = more rotation through the shot)
   const shoulderAngle = Math.atan2(p(L.rShoulder).y - p(L.lShoulder).y, p(L.rShoulder).x - p(L.lShoulder).x);
   const hipAngle = Math.atan2(p(L.rHip).y - p(L.lHip).y, p(L.rHip).x - p(L.lHip).x);
-  const hipRotation = Math.abs(((shoulderAngle - hipAngle) * 180) / Math.PI);
+  // Compared as lines, not directions: a line at 5° and one at 185° are the same line
+  const lineGap = Math.abs(((shoulderAngle - hipAngle) * 180) / Math.PI) % 180;
+  const hipRotation = Math.min(lineGap, 180 - lineGap);
 
   // Weight transfer: horizontal position of centre of mass (hipMid) relative to foot positions
   // 0 = fully back foot, 1 = fully front foot
   const frontAnkle = p(front.ankle);
-  const backAnkle = p(back.hip === L.rHip
-    ? (hand === 'right' ? L.rAnkle : L.lAnkle)
-    : (hand === 'right' ? L.lAnkle : L.rAnkle));
+  const backAnkle = p(hand === 'right' ? L.rAnkle : L.lAnkle);
   const footSpan = Math.abs(frontAnkle.x - backAnkle.x);
   const weightTransfer = footSpan > 10
     ? Math.min(1, Math.max(0, Math.abs(hipMid.x - backAnkle.x) / footSpan))
     : 0.5;
 
-  // Bat swing plane: angle of the line from back wrist to front wrist relative to vertical
-  // Near 90° = vertical bat, deviating = cross-bat
+  // Bat angle: the hands sit one above the other on the handle, so the line between the wrists
+  // follows the bat. 0° = bat straight up and down, 90° = bat level (a cross-bat shot).
   const wristLine = Math.abs(
     (Math.atan2(p(back.wrist).x - p(front.wrist).x, p(back.wrist).y - p(front.wrist).y) * 180) / Math.PI
   );
@@ -253,7 +270,9 @@ export function analyse(frames: Landmark[][], mode: Mode, hand: Hand, w: number,
 
   const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
 
-  return METRICS[mode].map((def) => {
+  const skipped = shotType ? (SHOT_SKIPS[shotType] ?? []) : [];
+
+  return METRICS[mode].filter((def) => !skipped.includes(def.key) && !NOT_SCORED.includes(def.key)).map((def) => {
     let value: number;
     if (def.key === 'headStability') {
       value = headSpread;
