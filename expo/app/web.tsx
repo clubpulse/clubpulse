@@ -8,18 +8,25 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, PermissionsAndroid, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
 import { supabase } from '../lib/supabase';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
 
+// Website pages this screen may show. Keep in step with APP_PATHS in src/lib/auth/app-view.ts.
+const IN_APP_PATHS = [
+  '/auth', '/analyse', '/highlights', '/coaching-history', '/development', '/player-report', '/log-performance',
+  '/coaching', '/qualifications', '/privacy', '/terms', '/api',
+];
+
 type Source = { uri: string; method: 'POST'; body: string; headers: Record<string, string> };
 
 export default function WebScreen() {
   const { path, title, camera } = useLocalSearchParams<{ path: string; title?: string; camera?: string }>();
   const navigation = useNavigation();
+  const router = useRouter();
   const web = useRef<WebView>(null);
   const [source, setSource] = useState<Source | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,12 +72,21 @@ export default function WebScreen() {
     }
   }, [navigation]);
 
-  // Stay on ClubPulse inside the app; anything else opens in the phone's browser
+  // Only the coaching and video pages are shown inside the app. The rest of the website (which
+  // has its own menus, and pages the app already has natively) stays out of this screen.
+  // Other sites open in the phone's browser.
   const allow = useCallback((request: WebViewNavigation) => {
-    if (!BASE_URL || request.url.startsWith(BASE_URL) || request.url.startsWith('about:') || request.url.startsWith('blob:')) return true;
-    Linking.openURL(request.url).catch(() => null);
+    if (!BASE_URL || request.url.startsWith('about:') || request.url.startsWith('blob:')) return true;
+    if (!request.url.startsWith(BASE_URL)) {
+      Linking.openURL(request.url).catch(() => null);
+      return false;
+    }
+    const pagePath = request.url.slice(BASE_URL.length).split(/[?#]/)[0] || '/';
+    if (IN_APP_PATHS.some((allowed) => pagePath === allowed || pagePath.startsWith(`${allowed}/`))) return true;
+    // Coach AI has its own screen in the app
+    if (pagePath === '/companion') router.replace('/(tabs)/companion');
     return false;
-  }, []);
+  }, [router]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>

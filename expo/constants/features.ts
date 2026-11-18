@@ -10,7 +10,8 @@ export const DEALS_ENABLED = process.env.EXPO_PUBLIC_DEALS_ENABLED === 'true';
 export const STORE_ENABLED = process.env.EXPO_PUBLIC_STORE_ENABLED === 'true';
 
 // Legal pages, opened in the in-app browser. Apple and Google both require the privacy policy
-// to be reachable from inside the app. The links are hidden until these are set, so the app
-// never shows a link to a page that doesn't exist yet.
-export const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL || null;
-export const TERMS_URL = process.env.EXPO_PUBLIC_TERMS_URL || null;
+// to be reachable from inside the app. They live on the website at /privacy and /terms; the
+// two variables are only for pointing somewhere else.
+const SITE = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') || 'https://clubpulse.co';
+export const PRIVACY_URL: string | null = process.env.EXPO_PUBLIC_PRIVACY_URL || `${SITE}/privacy`;
+export const TERMS_URL: string | null = process.env.EXPO_PUBLIC_TERMS_URL || `${SITE}/terms`;

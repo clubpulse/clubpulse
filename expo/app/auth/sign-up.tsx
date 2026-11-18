@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import { PRIVACY_URL, TERMS_URL } from '../../constants/features';
 import { useAuth } from '../../hooks/useAuth';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
@@ -50,6 +52,14 @@ export default function SignUpScreen() {
           <Pressable onPress={submit} disabled={loading} style={({ pressed }) => [styles.button, pressed && { opacity: 0.8 }]}>
             {loading ? <ActivityIndicator color={colors.navy} /> : <Text style={styles.buttonText}>Create account</Text>}
           </Pressable>
+
+          {PRIVACY_URL && TERMS_URL && (
+            <Text style={[fonts.small, { textAlign: 'center', marginTop: 12 }]}>
+              By creating an account you agree to our{' '}
+              <Text style={{ color: colors.gold }} onPress={() => WebBrowser.openBrowserAsync(TERMS_URL!)}>terms of use</Text> and{' '}
+              <Text style={{ color: colors.gold }} onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL!)}>privacy policy</Text>.
+            </Text>
+          )}
 
           <View style={styles.footer}>
             <Text style={fonts.small}>Already have an account? </Text>

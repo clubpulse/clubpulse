@@ -11,6 +11,7 @@ const APP_PATHS = [
   '/coaching-history',
   '/development',
   '/player-report',
+  '/log-performance',
   '/coaching',
   '/qualifications',
 ];
