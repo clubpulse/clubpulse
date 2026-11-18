@@ -14,7 +14,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
-import { trackBallInVideo, type BallPosition as TrackedBall, type TrackResult } from '@/lib/analysis/ball-track';
+import { BALL_COLOURS, trackBallInVideo, type BallColour, type BallPosition as TrackedBall, type TrackResult } from '@/lib/analysis/ball-track';
 
 // PitchMap uses canvas — load client-side only
 const PitchMap = dynamic(() => import('@/components/analysis/PitchMap'), { ssr: false });
@@ -29,7 +29,6 @@ const MAX_MB    = 300;
 const ACCEPTED  = 'video/mp4,video/quicktime,video/x-msvideo,video/webm';
 
 const GOLD    = '#EFC84A';
-const CRIMSON = '#1D4ED8';
 
 // Trail length: how many past positions to draw fading behind the ball
 const TRAIL_FRAMES = 10;
@@ -140,87 +139,73 @@ function VideoOverlay({ videoSrc, ballPositions, fps, bounceFrame }: VideoOverla
     if (!video || !canvas) return;
 
     const draw = () => {
+      rafRef.current = requestAnimationFrame(draw);
       const ctx = canvas.getContext('2d');
-      if (!ctx || video.paused || video.ended) { rafRef.current = requestAnimationFrame(draw); return; }
-
-      // Match canvas size to rendered video size
       const { videoWidth: vw, videoHeight: vh } = video;
-      if (!vw || !vh) { rafRef.current = requestAnimationFrame(draw); return; }
+      if (!ctx || !vw || !vh) return;
 
-      canvas.width  = vw;
-      canvas.height = vh;
-
+      if (canvas.width !== vw) canvas.width = vw;
+      if (canvas.height !== vh) canvas.height = vh;
       ctx.clearRect(0, 0, vw, vh);
 
-      // Current frame index
-      const currentFrame = Math.round(video.currentTime * fps);
+      // Canvas pixels per screen pixel: a phone video is shown much smaller than it was filmed,
+      // so lines and text are scaled up to stay readable
+      const k = canvas.clientWidth && canvas.clientHeight ? Math.max(1, vw / canvas.clientWidth, vh / canvas.clientHeight) : 1;
 
-      // Draw fading trail (past TRAIL_FRAMES positions)
-      for (let i = TRAIL_FRAMES; i >= 1; i--) {
-        const pos = frameMap.current.get(currentFrame - i);
-        if (!pos) continue;
-        const alpha = (TRAIL_FRAMES - i + 1) / (TRAIL_FRAMES + 1);
+      // Before the clip is played, show the whole tracked path so the result is visible straight away
+      const notStarted = video.paused && video.currentTime === 0;
+      const currentFrame = notStarted ? Number.MAX_SAFE_INTEGER : Math.round(video.currentTime * fps);
+      const positions = [...frameMap.current.values()].filter((p) => p.frame <= currentFrame);
+
+      // Path so far
+      if (positions.length > 1) {
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, pos.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(239,200,74,${alpha * 0.6})`;
-        ctx.lineWidth   = 2;
+        positions.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+        ctx.strokeStyle = 'rgba(239,200,74,0.85)';
+        ctx.lineWidth = 2.5 * k;
+        ctx.lineJoin = 'round';
         ctx.stroke();
-        // Small filled dot
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(239,200,74,${alpha * 0.5})`;
-        ctx.fill();
       }
+      // Recent sightings as fading dots
+      positions.slice(notStarted ? 0 : -TRAIL_FRAMES).forEach((p, i, list) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3 * k, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(239,200,74,${notStarted ? 0.7 : (i + 1) / list.length})`;
+        ctx.fill();
+      });
 
-      // Current frame detection
-      const cur = frameMap.current.get(currentFrame);
+      // The ball in this frame
+      const cur = notStarted ? undefined : frameMap.current.get(currentFrame);
       if (cur) {
-        // Outer ring
         ctx.beginPath();
-        ctx.arc(cur.x, cur.y, cur.radius + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(239,200,74,0.9)';
-        ctx.lineWidth   = 2.5;
+        ctx.arc(cur.x, cur.y, cur.radius + 5 * k, 0, Math.PI * 2);
+        ctx.strokeStyle = '#EFC84A';
+        ctx.lineWidth = 3 * k;
         ctx.stroke();
-
-        // Inner fill (semi-transparent)
-        ctx.beginPath();
-        ctx.arc(cur.x, cur.y, cur.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(239,200,74,0.15)';
-        ctx.fill();
-
-        // Confidence label
-        const pct = Math.round(cur.confidence * 100);
-        ctx.font      = `bold ${Math.max(11, cur.radius)}px Inter,sans-serif`;
-        ctx.fillStyle = 'rgba(239,200,74,0.9)';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${pct}%`, cur.x, cur.y - cur.radius - 6);
       }
 
-      // Bounce frame indicator
-      if (bounceFrame !== null && currentFrame === bounceFrame) {
-        const pos = frameMap.current.get(bounceFrame);
+      // Bounce, once the ball has got there
+      if (bounceFrame !== null && currentFrame >= bounceFrame) {
+        const pos = frameMap.current.get(bounceFrame)
+          ?? [...frameMap.current.values()].reduce<BallPosition | null>((best, p) =>
+            !best || Math.abs(p.frame - bounceFrame) < Math.abs(best.frame - bounceFrame) ? p : best, null);
         if (pos) {
-          // Red ring pulse on bounce frame
           ctx.beginPath();
-          ctx.arc(pos.x, pos.y, pos.radius + 12, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(239,68,68,0.9)';
-          ctx.lineWidth   = 3;
+          ctx.arc(pos.x, pos.y, pos.radius + 10 * k, 0, Math.PI * 2);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3 * k;
           ctx.stroke();
 
-          ctx.font      = 'bold 14px Inter,sans-serif';
-          ctx.fillStyle = '#ef4444';
+          ctx.font = `bold ${13 * k}px Inter,sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText('BOUNCE', pos.x, pos.y + pos.radius + 22);
+          const labelY = pos.y + pos.radius + 26 * k;
+          const labelWidth = ctx.measureText('BOUNCE').width;
+          ctx.fillStyle = 'rgba(0,0,0,0.65)';
+          ctx.fillRect(pos.x - labelWidth / 2 - 5 * k, labelY - 13 * k, labelWidth + 10 * k, 18 * k);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillText('BOUNCE', pos.x, labelY);
         }
       }
-
-      // Frame counter HUD
-      ctx.font      = '12px DM Mono,monospace';
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.textAlign = 'left';
-      ctx.fillText(`frame ${currentFrame}`, 12, 20);
-
-      rafRef.current = requestAnimationFrame(draw);
     };
 
     rafRef.current = requestAnimationFrame(draw);
@@ -234,7 +219,7 @@ function VideoOverlay({ videoSrc, ballPositions, fps, bounceFrame }: VideoOverla
         src={videoSrc}
         controls
         playsInline
-        style={{ display: 'block', width: '100%', maxHeight: '480px' }}
+        style={{ display: 'block', width: '100%', maxHeight: '70vh', background: '#000' }}
       />
       {/* Canvas sits exactly over the video */}
       <canvas
@@ -245,6 +230,7 @@ function VideoOverlay({ videoSrc, ballPositions, fps, bounceFrame }: VideoOverla
           left:          0,
           width:         '100%',
           height:        '100%',
+          objectFit:     'contain', // sits over the picture itself, including for upright phone videos
           pointerEvents: 'none',   // clicks pass through to video controls
         }}
         aria-hidden
@@ -406,7 +392,7 @@ export function BallTrackClient() {
   const [progress,   setProgress]   = useState('');
   const [result,     setResult]     = useState<TrackResult | null>(null);
   const [errMsg,     setErrMsg]     = useState<string | null>(null);
-  const [whiteBall,  setWhiteBall]  = useState(false);
+  const [ball,       setBall]       = useState<BallColour>('red');
   const [resultTab,  setResultTab]  = useState<ResultTab>('video');
   const [coaching,   setCoaching]   = useState<string | null>(null);
   const [coachLoad,  setCoachLoad]  = useState(false);
@@ -425,7 +411,7 @@ export function BallTrackClient() {
     try {
       // Runs on this device; the video is not uploaded
       const data = await trackBallInVideo(f, {
-        whiteBall,
+        ball,
         onProgress: (done) => setProgress(`Finding the ball… ${Math.round(done * 100)}%`),
       });
 
@@ -446,7 +432,8 @@ export function BallTrackClient() {
           bounce_frame: data.bounce_frame,
           detections:   data.ball_positions.length,
           frames:       data.frames_processed,
-          white_ball:   whiteBall,
+          white_ball:   ball === 'white',
+          ball_colour:  ball,
         }),
       }).catch(() => null);
 
@@ -472,12 +459,12 @@ export function BallTrackClient() {
     } catch (err) {
       const message = err instanceof Error ? err.message : '';
       setErrMsg(message.startsWith('No ball detected')
-        ? `We couldn't find a moving ${whiteBall ? 'white' : 'red'} ball in that video. Film from side-on in good light, keep the phone still, and check the ball colour above.`
+        ? `We couldn't find a moving ${ball} ball in that video. Film from side-on in good light, keep the phone still, and check the ball colour above.`
         : message || 'Analysis failed. Try again.');
       setStatus('error');
       setCoachLoad(false);
     }
-  }, [whiteBall]);
+  }, [ball]);
 
   const reset = () => {
     if (videoSrc) URL.revokeObjectURL(videoSrc);
@@ -513,31 +500,37 @@ export function BallTrackClient() {
       </div>
 
       {/* Ball colour toggle */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '13px', color: 'rgba(240,236,228,0.55)' }}>Ball colour</span>
         <div
           role="radiogroup"
           aria-label="Ball colour"
-          style={{ display: 'inline-flex', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', padding: '3px', gap: '2px' }}
+          style={{ display: 'inline-flex', flexWrap: 'wrap', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', padding: '3px', gap: '2px' }}
         >
-          {([['Red', false], ['White', true]] as [string, boolean][]).map(([label, val]) => (
+          {BALL_COLOURS.map(({ value, label, swatch }) => (
             <button
-              key={label}
+              key={value}
               type="button"
-              onClick={() => setWhiteBall(val)}
+              role="radio"
+              aria-checked={ball === value}
+              onClick={() => setBall(value)}
               disabled={uploading}
               style={{
-                padding:      '6px 16px',
+                display:      'inline-flex',
+                alignItems:   'center',
+                gap:          '6px',
+                padding:      '6px 12px',
                 borderRadius: '8px',
                 border:       'none',
                 fontSize:     '13px',
                 fontWeight:   600,
                 cursor:       uploading ? 'not-allowed' : 'pointer',
-                background:   whiteBall === val ? (val ? '#f0ece4' : CRIMSON) : 'transparent',
-                color:        whiteBall === val ? (val ? '#04091A' : '#fff') : 'rgba(240,236,228,0.5)',
+                background:   ball === value ? 'rgba(255,255,255,0.14)' : 'transparent',
+                color:        ball === value ? '#fff' : 'rgba(240,236,228,0.5)',
                 transition:   'all 0.15s',
               }}
             >
+              <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: swatch, display: 'inline-block' }} />
               {label}
             </button>
           ))}

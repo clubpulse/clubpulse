@@ -49,22 +49,38 @@ const MIN_FILL = 0.35;
 
 /* ── Detection ─────────────────────────────────────────────────────────────── */
 
-/** Is this pixel ball-coloured? Uses the same HSV ranges as the Python version. */
-export function isBallColour(r: number, g: number, b: number, whiteBall: boolean): boolean {
+export type BallColour = 'red' | 'white' | 'pink' | 'yellow';
+
+export const BALL_COLOURS: { value: BallColour; label: string; swatch: string }[] = [
+  { value: 'red', label: 'Red', swatch: '#B91C1C' },
+  { value: 'white', label: 'White', swatch: '#F0ECE4' },
+  { value: 'pink', label: 'Pink', swatch: '#EC4899' },
+  { value: 'yellow', label: 'Yellow', swatch: '#D9E021' },
+];
+
+/**
+ * Is this pixel ball-coloured? Red and white use the same ranges as the Python version.
+ * Pink covers the pink match ball; yellow covers tennis and wind balls.
+ */
+export function isBallColour(r: number, g: number, b: number, ball: BallColour): boolean {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const value = max;
   const saturation = max === 0 ? 0 : ((max - min) / max) * 255;
-  if (whiteBall) return saturation <= 30 && value >= 200;
-  if (saturation < 100 || value < 80) return false;
-  // Hue in degrees; red sits at both ends of the circle
+  if (ball === 'white') return saturation <= 30 && value >= 200;
   const delta = max - min;
+  if (delta === 0) return false;
+  // Hue in degrees round the colour wheel
   let hue: number;
   if (max === r) hue = 60 * (((g - b) / delta) % 6);
   else if (max === g) hue = 60 * ((b - r) / delta + 2);
   else hue = 60 * ((r - g) / delta + 4);
   if (hue < 0) hue += 360;
-  return hue <= 20 || hue >= 320;
+  // Pink is lighter and more magenta than a red ball, and well away from skin tones (about 20 to 30)
+  if (ball === 'pink') return saturation >= 55 && value >= 140 && hue >= 290 && hue <= 355;
+  if (ball === 'yellow') return saturation >= 90 && value >= 140 && hue >= 40 && hue <= 85;
+  // Red sits at both ends of the wheel
+  return saturation >= 100 && value >= 80 && (hue <= 20 || hue >= 320);
 }
 
 export type Candidate = { x: number; y: number; radius: number; confidence: number };
@@ -83,13 +99,13 @@ export function findCandidates(
   height: number,
   previous: Uint8Array | null,
   colour: Uint8Array,
-  options: { whiteBall: boolean; minRadius: number; maxRadius: number },
+  options: { ball: BallColour; minRadius: number; maxRadius: number },
 ): Candidate[] {
   const total = width * height;
   // 0 = not ball colour, 1 = ball colour and still, 2 = ball colour and moving, 3 = visited
   const mask = new Uint8Array(total);
   for (let i = 0, p = 0; i < total; i++, p += 4) {
-    if (isBallColour(rgba[p], rgba[p + 1], rgba[p + 2], options.whiteBall)) {
+    if (isBallColour(rgba[p], rgba[p + 1], rgba[p + 2], options.ball)) {
       colour[i] = 1;
       mask[i] = previous && previous[i] === 0 ? 2 : 1;
     } else {
@@ -259,7 +275,7 @@ export type TrackerOptions = {
   /** Size of the original video */
   videoWidth: number;
   videoHeight: number;
-  whiteBall: boolean;
+  ball: BallColour;
   fps?: number;
   pitchLengthM?: number;
 };
@@ -283,7 +299,7 @@ export function createTracker(options: TrackerOptions) {
       const scale = width / options.videoWidth;
       const colour = new Uint8Array(width * height);
       const candidates = findCandidates(rgba, width, height, previous, colour, {
-        whiteBall: options.whiteBall,
+        ball: options.ball,
         minRadius: Math.max(1.5, RADIUS_MIN * scale),
         maxRadius: RADIUS_MAX * scale,
       });
@@ -385,7 +401,7 @@ function once(target: EventTarget, event: string, failEvent = 'error'): Promise<
  */
 export async function trackBallInVideo(
   file: Blob,
-  options: { whiteBall: boolean; onProgress?: (done: number) => void },
+  options: { ball: BallColour; onProgress?: (done: number) => void },
 ): Promise<TrackResult> {
   const url = URL.createObjectURL(file);
   const video = document.createElement('video');
@@ -414,7 +430,7 @@ export async function trackBallInVideo(
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) throw new Error('This browser cannot read video frames.');
 
-    const tracker = createTracker({ videoWidth, videoHeight, whiteBall: options.whiteBall });
+    const tracker = createTracker({ videoWidth, videoHeight, ball: options.ball });
     for (let i = 0; i < frames; i++) {
       // The middle of each frame's time slot, so rounding never lands on a neighbour
       const time = Math.min(Math.max(0, duration - 0.001), (i + 0.5) / SAMPLE_FPS);

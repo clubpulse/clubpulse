@@ -10,6 +10,11 @@ import { createClient } from '@/lib/supabase/client';
 import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
 import { seedDemoHighlights } from '@/app/analyse/actions';
 import { BallTrackClient } from '@/components/analyse/BallTrackClient';
+import { PoseFigure } from '@/components/analyse/PoseFigure';
+import {
+  MIN_VISIBILITY, SHOT_TYPE_LABELS, analyseDetailed, mean, segmentScore,
+  type Analysis, type Hand, type MetricResult, type Mode, type ShotType,
+} from '@/lib/analysis/pose-metrics';
 
 type AnalyseTab = 'pose' | 'ball';
 
@@ -25,278 +30,10 @@ const RECORD_MS = 5000;
 // An uploaded clip is analysed from the start up to this length
 const MAX_UPLOAD_MS = 20000;
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
-const MIN_FRAMES = 10;
 // Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
 const MIN_CLIP_SECONDS = 2;
-const MIN_VISIBILITY = 0.5;
 
-// MediaPipe Pose landmark indices ("left" is the player's own left)
-const L = { nose: 0, lShoulder: 11, rShoulder: 12, lElbow: 13, rElbow: 14, lWrist: 15, rWrist: 16,
-  lHip: 23, rHip: 24, lKnee: 25, rKnee: 26, lAnkle: 27, rAnkle: 28 };
-
-type Mode = 'bowling' | 'batting';
-type Hand = 'right' | 'left';
 type Phase = 'idle' | 'loading' | 'ready' | 'recording' | 'done';
-type Point = { x: number; y: number };
-
-// Shot types — each has different biomechanical targets
-type ShotType = 'drive' | 'pull' | 'cut' | 'sweep' | 'defence' | 'leave';
-
-const SHOT_TYPE_LABELS: Record<ShotType, string> = {
-  drive:   '🏏 Drive',
-  pull:    '💪 Pull / Hook',
-  cut:     '✂️ Cut',
-  sweep:   '🧹 Sweep',
-  defence: '🛡️ Defence',
-  leave:   '🚶 Leave',
-};
-
-type MetricDef = { key: string; label: string; unit: string; ideal: [number, number]; tolerance: number; tip: string };
-type MetricResult = MetricDef & { value: number; score: number };
-
-// Shot-type-aware ideal ranges for batting metrics.
-// Each entry overrides the default ideal for that shot.
-// Keys match the metric keys in METRICS.batting.
-const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, number]>>>> = {
-  pull: {
-    // Pull/hook: weight on back foot, front arm higher, big hip rotation, shoulder dips
-    frontElbow:     [100, 145],
-    kneeFlex:       [130, 155],  // more loaded back leg
-    shoulderLevel:  [5, 20],     // natural tilt playing a short ball
-    hipRotation:    [30, 60],    // powerful rotation through the ball
-    weightTransfer: [0.3, 0.6],  // weight stays back or only slightly transfers
-  },
-  cut: {
-    frontElbow:     [80, 120],
-    shoulderLevel:  [0, 15],
-    hipRotation:    [15, 40],
-    weightTransfer: [0.3, 0.65],
-  },
-  sweep: {
-    // Sweep: deep knee bend, front knee to the pitch, shoulder rotates hard
-    kneeFlex:       [110, 145],
-    frontElbow:     [70, 115],
-    hipRotation:    [25, 55],
-    weightTransfer: [0.55, 0.85],
-  },
-  defence: {
-    // Dead bat defence: minimal hip rotation, head right over the ball, high elbow
-    frontElbow:     [95, 130],
-    kneeFlex:       [145, 170],
-    hipRotation:    [5, 20],
-    weightTransfer: [0.6, 0.85],
-    headOverKnee:   [0, 0.15],  // tighter — head must be right over it
-  },
-  drive: {
-    // Classic straight/cover drive: full extension, weight fully transferred
-    frontElbow:     [90, 125],
-    kneeFlex:       [150, 170],
-    hipRotation:    [25, 50],
-    weightTransfer: [0.65, 0.9],
-  },
-  leave: {
-    // Leave: balanced, minimal movement, head still, weight centred
-    kneeFlex:       [150, 170],
-    hipRotation:    [0, 10],
-    weightTransfer: [0.4, 0.6],
-    headStability:  [0, 0.08],  // extra still on a leave
-  },
-};
-
-const METRICS: Record<Mode, MetricDef[]> = {
-  bowling: [
-    { key: 'frontKnee', label: 'Front knee brace', unit: '°', ideal: [165, 180], tolerance: 30,
-      tip: 'Land on a firm, straight front leg to transfer momentum into the ball.' },
-    { key: 'armStraightness', label: 'Bowling arm', unit: '°', ideal: [165, 180], tolerance: 25,
-      tip: 'Keep the bowling arm as straight as possible through the action.' },
-    { key: 'trunkTilt', label: 'Trunk tilt', unit: '°', ideal: [5, 25], tolerance: 20,
-      tip: 'A moderate lean toward the off side helps; too much strains the lower back.' },
-    { key: 'headStability', label: 'Head stability', unit: '', ideal: [0, 0.15], tolerance: 0.35,
-      tip: 'Keep your eyes level and head still to stay accurate.' },
-  ],
-  batting: [
-    // ── Existing metrics (now shot-type aware) ────────────────────────────
-    { key: 'frontElbow', label: 'Front elbow height', unit: '°', ideal: [90, 130], tolerance: 40,
-      tip: 'Lead with a high front elbow — it keeps the bat face straight and the shot controlled.' },
-    { key: 'kneeFlex', label: 'Knee flex', unit: '°', ideal: [140, 165], tolerance: 30,
-      tip: 'Maintain a slight bend at the knees so you can move powerfully in either direction.' },
-    { key: 'headOverKnee', label: 'Head position', unit: '', ideal: [0, 0.3], tolerance: 0.6,
-      tip: 'Get your head over the front knee to stay balanced and keep the ball down.' },
-    { key: 'shoulderLevel', label: 'Shoulder alignment', unit: '°', ideal: [0, 10], tolerance: 20,
-      tip: 'Level shoulders at the point of contact give you the most control over shot direction.' },
-    { key: 'headStability', label: 'Head stability', unit: '', ideal: [0, 0.15], tolerance: 0.35,
-      tip: 'A still head is the single biggest predictor of clean contact — keep your eyes locked on the ball.' },
-    // ── New metrics ────────────────────────────────────────────────────────
-    { key: 'hipRotation', label: 'Hip rotation', unit: '°', ideal: [20, 50], tolerance: 25,
-      tip: 'The hips drive power — rotate them through the ball before your arms extend.' },
-    { key: 'weightTransfer', label: 'Weight transfer', unit: '', ideal: [0.55, 0.85], tolerance: 0.35,
-      tip: 'Shift weight from back to front foot as you play — it converts momentum into shot power.' },
-    { key: 'batSwingPlane', label: 'Bat swing plane', unit: '°', ideal: [70, 110], tolerance: 30,
-      tip: 'A straight bat plane (near vertical) gives more margin for error than a cross-bat swing.' },
-    { key: 'backElbow', label: 'Back elbow position', unit: '°', ideal: [60, 100], tolerance: 35,
-      tip: 'A raised back elbow at the top of the backswing powers the downswing — don\'t let it collapse.' },
-    { key: 'wristCock', label: 'Wrist cock', unit: '°', ideal: [100, 145], tolerance: 35,
-      tip: 'Cocked wrists at the top of backswing store energy — release them through impact for timing.' },
-  ],
-};
-
-function angleAt(a: Point, b: Point, c: Point) {
-  const ab = Math.atan2(a.y - b.y, a.x - b.x);
-  const cb = Math.atan2(c.y - b.y, c.x - b.x);
-  const deg = Math.abs(((ab - cb) * 180) / Math.PI);
-  return deg > 180 ? 360 - deg : deg;
-}
-
-function mid(a: Point, b: Point): Point {
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-}
-
-function dist(a: Point, b: Point) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
-}
-
-function scoreFor(value: number, [lo, hi]: [number, number], tolerance: number) {
-  const off = value < lo ? lo - value : value > hi ? value - hi : 0;
-  return Math.round(Math.max(0, 100 - (100 * off) / tolerance));
-}
-
-function mean(values: number[]) {
-  return values.reduce((sum, v) => sum + v, 0) / values.length;
-}
-
-// Per-frame metrics in pixel space (normalised coords would skew angles on non-square video).
-// Returns null when the joints we need aren't confidently visible.
-function frameMetrics(lm: NormalizedLandmark[], mode: Mode, hand: Hand, w: number, h: number) {
-  const needed = [L.nose, L.lShoulder, L.rShoulder, L.lElbow, L.rElbow, L.lWrist, L.rWrist,
-    L.lHip, L.rHip, L.lKnee, L.rKnee, L.lAnkle, L.rAnkle];
-  if (needed.some((i) => (lm[i]?.visibility ?? 0) < MIN_VISIBILITY)) return null;
-
-  const p = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
-  // A right-hander bowls/bats with the right arm and leads with the left side; mirror for left-handers.
-  const front = hand === 'right'
-    ? { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist, hip: L.lHip, knee: L.lKnee, ankle: L.lAnkle }
-    : { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist, hip: L.rHip, knee: L.rKnee, ankle: L.rAnkle };
-  const back = hand === 'right'
-    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist, hip: L.rHip }
-    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist, hip: L.lHip };
-
-  const shoulderMid = mid(p(L.lShoulder), p(L.rShoulder));
-  const hipMid = mid(p(L.lHip), p(L.rHip));
-  const shoulderWidth = Math.max(dist(p(L.lShoulder), p(L.rShoulder)), 1);
-  const noseX = p(L.nose).x / shoulderWidth;
-
-  if (mode === 'bowling') {
-    const trunk = Math.abs((Math.atan2(shoulderMid.x - hipMid.x, hipMid.y - shoulderMid.y) * 180) / Math.PI);
-    return {
-      noseX,
-      wristY: null,
-      values: {
-        frontKnee: angleAt(p(front.hip), p(front.knee), p(front.ankle)),
-        armStraightness: angleAt(p(back.shoulder), p(back.elbow), p(back.wrist)),
-        trunkTilt: trunk,
-      } as Record<string, number>,
-    };
-  }
-
-  // ── Batting metrics ────────────────────────────────────────────────────────
-  const shoulderSlope = Math.abs(
-    (Math.atan2(p(L.rShoulder).y - p(L.lShoulder).y, p(L.rShoulder).x - p(L.lShoulder).x) * 180) / Math.PI
-  );
-
-  // Hip rotation: angle of hip line relative to shoulder line (larger = more rotation through the shot)
-  const shoulderAngle = Math.atan2(p(L.rShoulder).y - p(L.lShoulder).y, p(L.rShoulder).x - p(L.lShoulder).x);
-  const hipAngle = Math.atan2(p(L.rHip).y - p(L.lHip).y, p(L.rHip).x - p(L.lHip).x);
-  const hipRotation = Math.abs(((shoulderAngle - hipAngle) * 180) / Math.PI);
-
-  // Weight transfer: horizontal position of centre of mass (hipMid) relative to foot positions
-  // 0 = fully back foot, 1 = fully front foot
-  const frontAnkle = p(front.ankle);
-  const backAnkle = p(back.hip === L.rHip
-    ? (hand === 'right' ? L.rAnkle : L.lAnkle)
-    : (hand === 'right' ? L.lAnkle : L.rAnkle));
-  const footSpan = Math.abs(frontAnkle.x - backAnkle.x);
-  const weightTransfer = footSpan > 10
-    ? Math.min(1, Math.max(0, Math.abs(hipMid.x - backAnkle.x) / footSpan))
-    : 0.5;
-
-  // Bat swing plane: angle of the line from back wrist to front wrist relative to vertical
-  // Near 90° = vertical bat, deviating = cross-bat
-  const wristLine = Math.abs(
-    (Math.atan2(p(back.wrist).x - p(front.wrist).x, p(back.wrist).y - p(front.wrist).y) * 180) / Math.PI
-  );
-  const batSwingPlane = Math.min(wristLine, 180 - wristLine);
-
-  // Back elbow: angle at back elbow joint — raised = good, collapsed = tip to improve
-  const backElbow = angleAt(p(back.shoulder), p(back.elbow), p(back.wrist));
-
-  // Wrist cock: angle between back forearm and the line of the bat (approximated by wrist-to-wrist)
-  const wristCock = angleAt(p(back.elbow), p(back.wrist), p(front.wrist));
-
-  return {
-    noseX,
-    wristY: p(back.wrist).y / h,  // normalised — used for phase detection
-    values: {
-      frontElbow:    angleAt(p(front.shoulder), p(front.elbow), p(front.wrist)),
-      kneeFlex:      mean([
-        angleAt(p(L.lHip), p(L.lKnee), p(L.lAnkle)),
-        angleAt(p(L.rHip), p(L.rKnee), p(L.rAnkle)),
-      ]),
-      headOverKnee:  Math.abs(p(L.nose).x - p(front.knee).x) / shoulderWidth,
-      shoulderLevel: Math.min(shoulderSlope, 180 - shoulderSlope),
-      hipRotation:   Math.min(hipRotation, 90),
-      weightTransfer,
-      batSwingPlane,
-      backElbow,
-      wristCock,
-    } as Record<string, number>,
-  };
-}
-
-// Averages each metric across all usable frames; head stability is the spread of head position over the clip.
-// For batting, shotType-aware ideal ranges override the defaults via SHOT_OVERRIDES.
-function analyse(frames: NormalizedLandmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType): MetricResult[] | null {
-  const usable = frames.map((lm) => frameMetrics(lm, mode, hand, w, h)).filter((f) => f !== null);
-  if (usable.length < MIN_FRAMES) return null;
-
-  const noseMean = mean(usable.map((f) => f.noseX));
-  const headSpread = Math.sqrt(mean(usable.map((f) => (f.noseX - noseMean) ** 2)));
-
-  // Phase detection from wrist vertical velocity: high wrist = backswing, low wrist = contact/follow-through
-  // We score contact-phase frames more heavily for batting metrics
-  const wristYValues = usable.map((f) => f.wristY).filter((y): y is number => y !== null);
-  const wristPeak = wristYValues.length > 0 ? Math.min(...wristYValues) : null; // smallest y = highest point (screen coords)
-
-  const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
-
-  return METRICS[mode].map((def) => {
-    let value: number;
-    if (def.key === 'headStability') {
-      value = headSpread;
-    } else if (mode === 'batting' && def.key === 'batSwingPlane' && wristPeak !== null) {
-      // For swing plane, weight the contact phase (wrist descending) more than the backswing
-      const contactFrames = usable.filter((f) => f.wristY !== null && f.wristY > wristPeak + 0.05);
-      const pool = contactFrames.length >= MIN_FRAMES / 2 ? contactFrames : usable;
-      value = mean(pool.map((f) => f.values[def.key]).filter((v) => !isNaN(v)));
-    } else {
-      const raw = usable.map((f) => f.values[def.key]).filter((v) => v !== undefined && !isNaN(v));
-      value = raw.length > 0 ? mean(raw) : 0;
-    }
-
-    // Apply shot-type override if present
-    const ideal: [number, number] = overrides[def.key] ?? def.ideal;
-    return { ...def, ideal, value, score: scoreFor(value, ideal, def.tolerance) };
-  });
-}
-
-// Highlight score for one segment: technique score scaled by the share of frames with a clearly visible pose,
-// so a strong but mostly occluded clip ranks below a clean, fully visible one.
-function segmentScore(frames: NormalizedLandmark[][], totalFrames: number, mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType) {
-  if (totalFrames === 0) return 0;
-  const metrics = analyse(frames, mode, hand, w, h, shotType);
-  if (!metrics) return 0;
-  const usable = frames.filter((lm) => frameMetrics(lm, mode, hand, w, h) !== null).length;
-  return Math.round(mean(metrics.map((m) => m.score)) * Math.min(1, usable / totalFrames));
-}
 
 // Highlight recording: the camera stream is recorded in back-to-back 5-second segments, each its own playable
 // file. Each finished segment is scored from the landmarks seen while it recorded; only the top clips stay in memory.
@@ -353,12 +90,21 @@ function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Han
   }));
 }
 
+// How many canvas pixels make one pixel on screen. A 1080-wide phone video shown 300 wide needs
+// lines 3.6 times thicker, or the skeleton is too thin to see.
+function screenScale(canvas: HTMLCanvasElement) {
+  if (!canvas.clientWidth || !canvas.clientHeight) return 1;
+  return Math.max(1, canvas.width / canvas.clientWidth, canvas.height / canvas.clientHeight);
+}
+
 function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], connections: { start: number; end: number }[]) {
   const { width: w, height: h } = ctx.canvas;
+  const k = screenScale(ctx.canvas);
   // Skip the face mesh points (1–10); the nose alone marks the head
   const isBody = (i: number) => i === 0 || i >= 11;
 
-  ctx.lineWidth = Math.max(2, w / 220);
+  ctx.lineWidth = 3 * k;
+  ctx.lineCap = 'round';
   ctx.strokeStyle = GOLD;
   for (const { start, end } of connections) {
     if (!isBody(start) || !isBody(end)) continue;
@@ -371,7 +117,7 @@ function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], conne
     ctx.stroke();
   }
 
-  const radius = Math.max(3, w / 160);
+  const radius = 4.5 * k;
   lm.forEach((point, i) => {
     if (!isBody(i) || point.visibility < MIN_VISIBILITY) return;
     ctx.beginPath();
@@ -379,7 +125,7 @@ function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], conne
     ctx.fillStyle = CRIMSON;
     ctx.fill();
     ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.5 * k;
     ctx.stroke();
   });
 }
@@ -388,6 +134,12 @@ function scoreColour(score: number) {
   if (score >= 80) return GOLD;
   if (score >= 50) return '#d97706';
   return '#ef4444';
+}
+
+function formatRange(m: MetricResult) {
+  const [lo, hi] = m.ideal;
+  if (m.unit === '°') return `${lo}° to ${hi}°`;
+  return lo === 0 ? `under ${hi}` : `${lo} to ${hi}`;
 }
 
 function formatValue(m: MetricResult) {
@@ -429,7 +181,9 @@ export function AnalyseClient() {
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
-  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][] } | null>(null);
+  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][]; times: number[] } | null>(null);
+  // The last analysed clip's poses and when each was seen, for replaying an uploaded video with the skeleton
+  const replayRef = useRef<{ frames: NormalizedLandmark[][]; times: number[] } | null>(null);
   const sessionRef = useRef<Session | null>(null);
 
   const [mode, setMode] = useState<Mode>('bowling');
@@ -448,6 +202,12 @@ export function AnalyseClient() {
   const [facing, setFacing] = useState<'user' | 'environment'>('user');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
+  // The position shown in the figure under the video
+  const [detail, setDetail] = useState<(Analysis & { pose: NormalizedLandmark[]; width: number; height: number }) | null>(null);
+  const [coaching, setCoaching] = useState<{ state: 'idle' | 'loading' | 'ready'; text?: string }>({ state: 'idle' });
+  // Shape of the picture, so an upright phone video gets an upright box
+  const [aspect, setAspect] = useState<number>(16 / 9);
+  const [replaying, setReplaying] = useState(false);
 
   // Mode/hand/shotType are read when a recording finishes, from inside the rAF loop
   const settingsRef = useRef({ mode, hand, shotType });
@@ -465,6 +225,8 @@ export function AnalyseClient() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     recordingRef.current = null;
+    replayRef.current = null;
+    setReplaying(false);
     const video = videoRef.current;
     if (video) {
       video.pause();
@@ -499,23 +261,48 @@ export function AnalyseClient() {
     }
 
     const { mode: m, hand: hd, shotType: st } = settingsRef.current;
-    const metrics = analyse(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined);
-    setFrameCount(recording.frames.length);
-    if (!metrics) {
-      setError(fromFile
-        ? "We couldn't see a whole body clearly enough in that video. Use a clip filmed side-on with head to ankles in frame, in good light."
-        : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
+    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined);
+    if (!outcome.ok) {
+      setError(outcome.problem === 'no-action'
+        ? `We could see a player but not a bowling action. The ${hd === 'right' ? 'right' : 'left'} arm never came over above the head. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed are the right settings, and that the clip includes the delivery.`
+        : fromFile
+          ? "We couldn't see a player clearly enough in that video. Use a clip filmed side-on with head to ankles in the picture, in good light, with the player filling at least a third of the height."
+          : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
+      if (fromFile) {
+        // Take the clip off screen so the starting message is not drawn over it
+        stopCamera();
+        canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
       setPhase(fromFile ? 'idle' : 'ready');
       return;
     }
+    const { analysis } = outcome;
+    const metrics = analysis.metrics;
+    setFrameCount(analysis.framesSeen);
     setResults(metrics);
+    setDetail({ ...analysis, pose: recording.frames[analysis.keyFrame], width: video.videoWidth, height: video.videoHeight });
+    replayRef.current = fromFile ? { frames: recording.frames, times: recording.times } : null;
     setPhase('done');
+
+    if (fromFile) {
+      // Leave the clip paused on the key position with the skeleton drawn over it
+      const canvas = canvasRef.current;
+      const show = () => {
+        const ctx = canvas?.getContext('2d');
+        if (!canvas || !ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPose(ctx, recording.frames[analysis.keyFrame], connectionsRef.current);
+      };
+      video.addEventListener('seeked', show, { once: true });
+      video.currentTime = recording.times[analysis.keyFrame];
+    }
 
     // Save pose results to history (best-effort)
     const overall = Math.round(metrics.reduce((sum, mk) => sum + mk.score, 0) / metrics.length);
     const resultJson = { mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall, metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score })) };
 
     // Generate a coaching paragraph server-side, then save both
+    setCoaching({ state: 'loading' });
     fetch('/api/analysis/coaching-read', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -523,6 +310,7 @@ export function AnalyseClient() {
     })
       .then((r) => r.ok ? r.json() : null)
       .then((coachData: { paragraph?: string } | null) => {
+        setCoaching(coachData?.paragraph ? { state: 'ready', text: coachData.paragraph } : { state: 'idle' });
         fetch('/api/analysis/save-result', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -533,8 +321,8 @@ export function AnalyseClient() {
           }),
         }).catch(() => {/* silent */});
       })
-      .catch(() => {/* silent */});
-  }, [mode, hand]);
+      .catch(() => setCoaching({ state: 'idle' }));
+  }, [stopCamera]);
 
   const startLoop = useCallback(() => {
     const tick = () => {
@@ -558,7 +346,10 @@ export function AnalyseClient() {
 
         const recording = recordingRef.current;
         if (recording) {
-          if (pose) recording.frames.push(pose);
+          if (pose) {
+            recording.frames.push(pose);
+            recording.times.push(video.currentTime);
+          }
           setSecondsLeft(Math.max(0, Math.ceil((recording.until - now) / 1000)));
           if (now >= recording.until) finishRecording();
         }
@@ -648,6 +439,9 @@ export function AnalyseClient() {
   async function analyseFile(file: File) {
     setError(null);
     setResults(null);
+    setDetail(null);
+    setCoaching({ state: 'idle' });
+    replayRef.current = null;
     if (!file.type.startsWith('video/')) {
       setError('Choose a video file.');
       return;
@@ -672,7 +466,7 @@ export function AnalyseClient() {
       video.onended = () => finishRecording();
       await video.play();
       lastVideoTimeRef.current = -1;
-      recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [] };
+      recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
       setPhase('recording');
       startLoop();
     } catch (err) {
@@ -682,11 +476,48 @@ export function AnalyseClient() {
     }
   }
 
+  // Plays an analysed clip again with the skeleton drawn over it, from the poses already found
+  function replay(rate: number) {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const data = replayRef.current;
+    if (!video || !canvas || !data) return;
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    let cursor = 0;
+    const tick = () => {
+      const ctx = canvas.getContext('2d');
+      const time = video.currentTime;
+      while (cursor < data.times.length - 1 && data.times[cursor + 1] <= time) cursor++;
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Only draw a pose that belongs to this moment of the clip
+        if (Math.abs(data.times[cursor] - time) < 0.12) drawPose(ctx, data.frames[cursor], connectionsRef.current);
+      }
+      const lastTime = data.times[data.times.length - 1];
+      if (video.ended || video.paused || time > lastTime + 0.1) {
+        video.pause();
+        rafRef.current = null;
+        setReplaying(false);
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    video.onended = null;
+    video.playbackRate = rate;
+    video.currentTime = 0;
+    setReplaying(true);
+    video.play().then(() => {
+      rafRef.current = requestAnimationFrame(tick);
+    }).catch(() => setReplaying(false));
+  }
+
   function startRecording() {
     setError(null);
     setResults(null);
     setSecondsLeft(RECORD_MS / 1000);
-    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [] };
+    setDetail(null);
+    setCoaching({ state: 'idle' });
+    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [] };
     setPhase('recording');
   }
 
@@ -847,9 +678,14 @@ export function AnalyseClient() {
       )}
 
       <Card>
-        <div className="relative overflow-hidden rounded-xl bg-black" style={{ aspectRatio: '16 / 9' }}>
+        <div className="relative mx-auto overflow-hidden rounded-xl bg-black"
+          style={{ aspectRatio: String(aspect), maxHeight: '70vh', maxWidth: `calc(70vh * ${aspect})` }}>
           {/* Mirrored so it behaves like a mirror; landmarks are computed on the unmirrored frame */}
           <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-contain"
+            onLoadedMetadata={(event) => {
+              const { videoWidth, videoHeight } = event.currentTarget;
+              if (videoWidth && videoHeight) setAspect(videoWidth / videoHeight);
+            }}
             style={{ transform: mirrored ? 'scaleX(-1)' : undefined }} />
           <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full object-contain"
             style={{ transform: mirrored ? 'scaleX(-1)' : undefined }} />
@@ -882,6 +718,12 @@ export function AnalyseClient() {
                 disabled={phase === 'loading' || phase === 'recording'}>
                 {fileShown && phase === 'done' ? 'Upload another video' : 'Upload a video'}
               </Button>
+              {fileShown && phase === 'done' && (
+                <>
+                  <Button variant="secondary" onClick={() => replay(1)} disabled={replaying}>Replay with skeleton</Button>
+                  <Button variant="secondary" onClick={() => replay(0.25)} disabled={replaying}>Slow motion</Button>
+                </>
+              )}
               <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
@@ -913,7 +755,9 @@ export function AnalyseClient() {
       {results && overall !== null && (
         <Card
           title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
-          description={`Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}`}
+          description={mode === 'bowling'
+            ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
+            : `Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
           action={
             <div className="text-right">
               <div className="text-3xl font-bold" style={{ color: scoreColour(overall) }}>{overall}</div>
@@ -921,22 +765,52 @@ export function AnalyseClient() {
             </div>
           }
         >
-          <ul className="space-y-4">
+          {detail && detail.playerSize < 0.3 && (
+            <p className="mb-4 rounded-lg border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-200">
+              The player is small in this video (about {Math.round(detail.playerSize * 100)}% of the picture height), so these
+              numbers are less reliable. Film closer, with the player filling at least a third of the height.
+            </p>
+          )}
+
+          {detail && (
+            <div className="mb-5">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">Body position · {detail.keyLabel}</p>
+              <PoseFigure pose={detail.pose} width={detail.width} height={detail.height} metrics={results} mode={mode} hand={hand}
+                mirrored={mirrored} />
+              <p className="mt-2 text-center text-xs text-neutral-500">
+                Coloured limbs are the angles measured here. Gold is on target, amber is close, red needs work.
+              </p>
+            </div>
+          )}
+
+          <ul className="space-y-5">
             {results.map((m) => (
               <li key={m.key}>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
                   <span className="font-medium text-white">{m.label}</span>
-                  <span className="text-neutral-400">
-                    {formatValue(m)} · <span style={{ color: scoreColour(m.score) }}>{m.score}</span>
+                  <span className="whitespace-nowrap text-neutral-400">
+                    {formatValue(m)} · <span className="font-semibold" style={{ color: scoreColour(m.score) }}>{m.score}/100</span>
                   </span>
                 </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-800">
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-800">
                   <div className="h-full rounded-full" style={{ width: `${m.score}%`, background: scoreColour(m.score) }} />
                 </div>
-                {m.score < 80 && <p className="mt-1.5 text-xs text-neutral-500">{m.tip}</p>}
+                <p className="mt-1.5 text-xs text-neutral-400">
+                  Target {formatRange(m)}. {m.score >= 80 ? 'On target.' : m.tip}
+                </p>
               </li>
             ))}
           </ul>
+
+          {coaching.state !== 'idle' && (
+            <div className="mt-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
+              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI&apos;s read</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
+                {coaching.state === 'loading' ? 'Writing your feedback…' : coaching.text}
+              </p>
+            </div>
+          )}
+
           <p className="mt-5 text-xs text-neutral-600">
             Scores are estimates from a single camera angle and work best filmed side-on. Use them as a guide, not a verdict.
           </p>
