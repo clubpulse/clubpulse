@@ -1,34 +1,61 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Modal,
   Pressable,
   RefreshControl,
+  Share,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/Card';
 import { useRoles } from '../../hooks/useRoles';
-import { api } from '../../lib/api';
+import { api, ApiError } from '../../lib/api';
 import { ROLE_CONFIG } from '../../lib/roles';
 import type { ApprovalRequest } from '../../lib/roles';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 type Tab = 'overview' | 'approvals' | 'members';
+type Member = { id: string; role: string; is_active: boolean; joined_at: string; full_name: string | null; display_name: string | null };
+type Invite = { clubName: string; code: string };
+type JoinState = { state: 'none' } | { state: 'pending' | 'member'; clubName: string };
 
 export default function ClubScreen() {
   const { club, isAdmin, approvalQueue, loading, refresh } = useRoles();
   const [tab, setTab] = useState<Tab>('overview');
   const [refreshing, setRefreshing] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const router = useRouter();
+  const [members, setMembers] = useState<Member[] | null>(null);
+  const [membersError, setMembersError] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const clubId = club?.id;
+
+  const loadMembers = useCallback(async () => {
+    if (!clubId || !isAdmin) return;
+    setMembersError(null);
+    try {
+      const data = await api<{ members: Member[] }>(`/api/admin/members?clubId=${encodeURIComponent(clubId)}`);
+      setMembers(data.members);
+    } catch (e) {
+      setMembersError(e instanceof ApiError ? e.message : 'Could not load members.');
+    }
+  }, [clubId, isAdmin]);
+
+  useEffect(() => {
+    if (tab === 'members') loadMembers();
+  }, [tab, loadMembers]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refresh();
+    await Promise.all([refresh(), tab === 'members' ? loadMembers() : Promise.resolve()]);
     setRefreshing(false);
   };
 
@@ -43,12 +70,7 @@ export default function ClubScreen() {
   if (!club) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={[styles.center, { padding: spacing.xl }]}>
-          <Text style={fonts.heading}>No Club Yet</Text>
-          <Text style={[fonts.small, { textAlign: 'center', marginTop: spacing.sm }]}>
-            You're not a member of a club yet. Ask your club admin to invite you, or create a club on clubpulse.co.
-          </Text>
-        </View>
+        <JoinClub onJoined={refresh} />
       </SafeAreaView>
     );
   }
@@ -62,8 +84,9 @@ export default function ClubScreen() {
     try {
       await api(`/api/approvals/${encodeURIComponent(requestId)}`, { method: 'POST', body: { action } });
       await refresh();
-    } catch {
-      Alert.alert('Error', `Could not ${action} this request.`);
+      if (tab === 'members' || members) loadMembers();
+    } catch (e) {
+      Alert.alert('Not done', e instanceof ApiError ? e.message : `Could not ${action} this request.`);
     } finally {
       setBusyId(null);
     }
@@ -118,17 +141,20 @@ export default function ClubScreen() {
               <View style={{ gap: spacing.md }}>
                 <Text style={fonts.title}>Admin Quick Actions</Text>
                 <View style={styles.quickRow}>
-                  <Pressable style={styles.quickCard}>
+                  <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => setInviteOpen(true)}
+                    accessibilityRole="button" accessibilityLabel="Invite members">
                     <Ionicons name="person-add" size={18} color={colors.brandSky} />
                     <Text style={[styles.quickText, { color: colors.brandSky }]}>Invite</Text>
                   </Pressable>
-                  <Pressable style={styles.quickCard}>
-                    <Ionicons name="cash" size={18} color={colors.gold} />
-                    <Text style={[styles.quickText, { color: colors.gold }]}>Buy Scores</Text>
-                  </Pressable>
-                  <Pressable style={styles.quickCard}>
+                  <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => router.push('/post-shift')}
+                    accessibilityRole="button" accessibilityLabel="Post a volunteer shift">
                     <Ionicons name="add-circle" size={18} color={colors.success} />
                     <Text style={[styles.quickText, { color: colors.success }]}>Post Shift</Text>
+                  </Pressable>
+                  <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => setTab('members')}
+                    accessibilityRole="button" accessibilityLabel="See members">
+                    <Ionicons name="people" size={18} color={colors.gold} />
+                    <Text style={[styles.quickText, { color: colors.gold }]}>Members</Text>
                   </Pressable>
                 </View>
 
@@ -148,6 +174,37 @@ export default function ClubScreen() {
               <Text style={fonts.title}>
                 {approvalQueue.length === 0 ? 'No Pending Requests' : 'Pending Requests'}
               </Text>
+            )}
+
+            {tab === 'members' && isAdmin && (
+              <View style={{ gap: spacing.sm }}>
+                <Text style={fonts.title}>Members{members ? ` (${members.filter((m) => m.is_active).length})` : ''}</Text>
+                {!members && !membersError && <ActivityIndicator color={colors.brandSky} style={{ marginTop: spacing.md }} />}
+                {!!membersError && (
+                  <Pressable onPress={loadMembers} style={styles.alertCard}>
+                    <Text style={[fonts.regular, { flex: 1 }]}>{membersError} Tap to try again.</Text>
+                  </Pressable>
+                )}
+                {members?.map((m) => (
+                  <View key={m.id} style={[styles.memberRow, !m.is_active && { opacity: 0.5 }]}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={fonts.regular} numberOfLines={1}>{m.full_name || m.display_name || 'Member'}</Text>
+                      <Text style={[fonts.small, { fontSize: 11 }]}>
+                        Joined {new Date(m.joined_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {m.is_active ? '' : ' · switched off'}
+                      </Text>
+                    </View>
+                    <Text style={[styles.memberRole, { color: roleColor(m.role) }]}>
+                      {ROLE_CONFIG[m.role as keyof typeof ROLE_CONFIG]?.label ?? m.role}
+                    </Text>
+                  </View>
+                ))}
+                {members && (
+                  <Text style={[fonts.small, { fontSize: 11, marginTop: spacing.sm }]}>
+                    To change someone&apos;s role or switch a member off, use the club dashboard on the web.
+                  </Text>
+                )}
+              </View>
             )}
           </View>
         }
@@ -174,6 +231,7 @@ export default function ClubScreen() {
         )}
         ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
       />
+      <InviteSheet open={inviteOpen} onClose={() => setInviteOpen(false)} />
     </SafeAreaView>
   );
 }
@@ -213,8 +271,13 @@ function ApprovalCard({
           </Text>
         </View>
       </View>
-      <Text style={[fonts.small, { fontSize: 11 }]}>To decline, use the club dashboard on the web.</Text>
+      {request.type !== 'join_club' && <Text style={[fonts.small, { fontSize: 11 }]}>To decline, use the club dashboard on the web.</Text>}
       <View style={styles.approvalActions}>
+        {request.type === 'join_club' && (
+          <Pressable style={[styles.actionBtn, styles.rejectBtn]} onPress={onReject} disabled={busy}>
+            <Text style={[styles.actionBtnText, { color: colors.danger }]}>Decline</Text>
+          </Pressable>
+        )}
         <Pressable
           style={[styles.actionBtn, styles.approveBtn]}
           onPress={onApprove}
@@ -225,6 +288,159 @@ function ApprovalCard({
           )}
         </Pressable>
       </View>
+    </View>
+  );
+}
+
+// ── Inviting members ─────────────────────────────────────────────────────────
+
+// Shows the club's join code and shares it. The code is the only way in, and every request
+// still has to be approved, so sharing it widely is safe.
+function InviteSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [invite, setInvite] = useState<Invite | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async (replace = false) => {
+    setError(null);
+    setBusy(true);
+    try {
+      setInvite(await api<Invite>('/api/clubs/invite', replace ? { method: 'POST' } : undefined));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Could not load the join code.');
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (open && !invite) load();
+  }, [open, invite, load]);
+
+  const share = () => {
+    if (!invite) return;
+    Share.share({
+      message: `Join ${invite.clubName} on ClubPulse.\n\n1. Get the ClubPulse app and create an account.\n2. Open the Club tab and enter this code: ${invite.code}\n\nA club admin will then approve you.`,
+    }).catch(() => null);
+  };
+
+  const replace = () =>
+    Alert.alert('Make a new code?', 'The current code will stop working. People who have already asked to join are not affected.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'New code', style: 'destructive', onPress: () => load(true) },
+    ]);
+
+  return (
+    <Modal visible={open} animationType="slide" transparent onRequestClose={onClose}>
+      <Pressable style={styles.sheetBackdrop} onPress={onClose} accessibilityLabel="Close" />
+      <View style={styles.sheet}>
+        <Text style={fonts.heading}>Invite members</Text>
+        <Text style={[fonts.small, { marginTop: spacing.xs }]}>
+          Share this code. New members enter it on their Club tab, and you approve each one under Approvals.
+        </Text>
+        <View style={styles.codeBox}>
+          {invite ? (
+            <Text style={styles.code} selectable accessibilityLabel={`Join code ${invite.code.split('').join(' ')}`}>
+              {invite.code.slice(0, 3)} {invite.code.slice(3)}
+            </Text>
+          ) : error ? (
+            <Text style={[fonts.small, { color: colors.danger, textAlign: 'center' }]}>{error}</Text>
+          ) : (
+            <ActivityIndicator color={colors.brandSky} />
+          )}
+        </View>
+        <Pressable style={[styles.sheetPrimary, (!invite || busy) && { opacity: 0.5 }]} onPress={share} disabled={!invite || busy}>
+          <Ionicons name="share-outline" size={18} color={colors.navy} />
+          <Text style={styles.sheetPrimaryText}>Share invite</Text>
+        </Pressable>
+        <View style={styles.sheetLinks}>
+          {error ? (
+            <Pressable onPress={() => load()}><Text style={styles.sheetLink}>Try again</Text></Pressable>
+          ) : (
+            <Pressable onPress={replace} disabled={!invite || busy}><Text style={styles.sheetLink}>Make a new code</Text></Pressable>
+          )}
+          <Pressable onPress={onClose}><Text style={styles.sheetLink}>Done</Text></Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ── Joining a club ───────────────────────────────────────────────────────────
+
+// Shown to someone who is not in a club yet: enter the code an admin shared, then wait to be approved.
+function JoinClub({ onJoined }: { onJoined: () => Promise<void> | void }) {
+  const [code, setCode] = useState('');
+  const [state, setState] = useState<JoinState | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const check = useCallback(async () => {
+    try {
+      setState(await api<JoinState>('/api/clubs/join'));
+    } catch {
+      setState({ state: 'none' });
+    }
+  }, []);
+
+  useEffect(() => {
+    check();
+  }, [check]);
+
+  const submit = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const result = await api<JoinState>('/api/clubs/join', { method: 'POST', body: { code } });
+      setState(result);
+      if (result.state === 'member') await onJoined();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Could not send your request. Check your connection and try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (state?.state === 'pending') {
+    return (
+      <View style={[styles.center, { padding: spacing.xl, gap: spacing.md }]}>
+        <Text style={{ fontSize: 40 }}>⏳</Text>
+        <Text style={[fonts.heading, { textAlign: 'center' }]}>Request sent</Text>
+        <Text style={[fonts.small, { textAlign: 'center' }]}>
+          You have asked to join {state.clubName}. A club admin needs to approve you. This screen will change once they have.
+        </Text>
+        <Pressable style={styles.sheetPrimary} onPress={async () => { await onJoined(); await check(); }}>
+          <Text style={styles.sheetPrimaryText}>Check again</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.center, { padding: spacing.xl, gap: spacing.md }]}>
+      <Text style={[fonts.heading, { textAlign: 'center' }]}>Join your club</Text>
+      <Text style={[fonts.small, { textAlign: 'center' }]}>
+        Ask your club admin for the club&apos;s 6-character join code and enter it here.
+      </Text>
+      <TextInput
+        style={styles.codeInput}
+        value={code}
+        onChangeText={(text) => setCode(text.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+        placeholder="ABC234"
+        placeholderTextColor={colors.textSubtle}
+        autoCapitalize="characters"
+        autoCorrect={false}
+        spellCheck={false}
+        maxLength={6}
+        returnKeyType="go"
+        onSubmitEditing={() => code.length === 6 && submit()}
+        accessibilityLabel="Club join code"
+      />
+      {!!error && <Text style={[fonts.small, { color: colors.danger, textAlign: 'center' }]}>{error}</Text>}
+      <Pressable style={[styles.sheetPrimary, (code.length !== 6 || busy) && { opacity: 0.5 }]} onPress={submit} disabled={code.length !== 6 || busy}>
+        {busy ? <ActivityIndicator color={colors.navy} /> : <Text style={styles.sheetPrimaryText}>Ask to join</Text>}
+      </Pressable>
+      <Text style={[fonts.small, { textAlign: 'center', fontSize: 11 }]}>Starting a new club? Set it up at clubpulse.co.</Text>
     </View>
   );
 }
@@ -296,5 +512,33 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(248,113,113,0.25)',
   },
   approveBtn: { backgroundColor: colors.success },
+
+  memberRow: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface1,
+    borderRadius: radius.md, borderWidth: 1, borderColor: colors.border as string, padding: spacing.md,
+  },
+  memberRole: { fontSize: 12, fontWeight: '700' },
+
+  sheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+  sheet: {
+    backgroundColor: colors.background, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
+    borderWidth: 1, borderColor: colors.navyBorder, padding: spacing.xl, paddingBottom: spacing.xxl + spacing.lg,
+  },
+  codeBox: {
+    marginTop: spacing.lg, minHeight: 84, alignItems: 'center', justifyContent: 'center', borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.navyBorder, backgroundColor: colors.surface1, padding: spacing.md,
+  },
+  code: { color: colors.gold, fontSize: 38, fontWeight: '800', letterSpacing: 6 },
+  sheetPrimary: {
+    flexDirection: 'row', gap: spacing.sm, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch',
+    backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: 14, marginTop: spacing.lg,
+  },
+  sheetPrimaryText: { color: colors.navy, fontWeight: '800', fontSize: 16 },
+  sheetLinks: { flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.lg },
+  sheetLink: { color: colors.brandSky, fontWeight: '600', fontSize: 14, padding: spacing.xs },
+  codeInput: {
+    alignSelf: 'stretch', textAlign: 'center', backgroundColor: colors.surface1, borderWidth: 1, borderColor: colors.navyBorder,
+    borderRadius: radius.md, paddingVertical: 14, color: colors.white, fontSize: 28, fontWeight: '800', letterSpacing: 8,
+  },
   actionBtnText: { fontWeight: '700', fontSize: 14 },
 });
