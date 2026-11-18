@@ -5,7 +5,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
 import { colors, fonts, radius, spacing } from '../constants/theme';
@@ -56,6 +56,7 @@ export default function ScratchCardsScreen() {
   const [ticked, setTicked] = useState(false);
   const [prize, setPrize] = useState<Prize | null>(null);
   const pop = useRef(new Animated.Value(0)).current;
+  const router = useRouter();
 
   const load = useCallback(async () => {
     try {
@@ -225,6 +226,16 @@ export default function ScratchCardsScreen() {
             ))}
           </View>
         )}
+        {/* Always shown, whatever the state above: Apple requires the rules to be reachable at all times */}
+        <View style={styles.card}>
+          <Text style={fonts.small}>
+            Scratch cards are a free prize draw run by ClubPulse for members aged 18 or over. Apple is not a sponsor and is not
+            involved in any way.
+          </Text>
+          <Pressable onPress={() => router.push('/scratch-rules' as never)} style={styles.outlineBtn} accessibilityRole="link">
+            <Text style={[styles.outlineBtnText, { textAlign: 'center' }]}>Read the official rules</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
