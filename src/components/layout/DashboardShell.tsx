@@ -56,11 +56,13 @@ export async function DashboardShell({ user, children }: { user: User; children:
   const balance = totalBalance(wallet.success ? wallet.data : null);
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white">
+    <div className="min-h-screen text-white" style={{ background: 'var(--background)' }}>
       <Navbar name={name} balance={balance} showAdmin={adminCtx.adminClubIds.length > 0} />
-      <div className="mx-auto flex max-w-6xl gap-8 px-4 py-6 pb-24 md:pb-8">
+      <div className="flex">
         <Sidebar showAdmin={adminCtx.adminClubIds.length > 0} isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1">
+          <div className="mx-auto max-w-5xl px-4 py-6 pb-24 md:px-8 md:pb-10">{children}</div>
+        </main>
       </div>
       <BottomNav isPlatformAdmin={isPlatformAdmin} />
     </div>

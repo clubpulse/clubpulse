@@ -21,8 +21,6 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
       borderBottom: '1px solid rgba(255,255,255,0.08)',
     }}>
       <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
         display: 'flex',
         alignItems: 'center',
         height: '52px',
