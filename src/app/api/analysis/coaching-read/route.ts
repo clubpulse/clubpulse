@@ -20,10 +20,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { getRequestAuth } from '@/lib/supabase/request-auth';
+import { getPaidAccess } from '@/lib/billing/access';
+import { PAID_FEATURE_MESSAGE } from '@/lib/billing/access-logic';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // Signed-in people only: this spends ClubPulse's AI budget, and it used to answer anyone
+  const { user } = await getRequestAuth(req);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!(await getPaidAccess(user.id, user.email)).allowed) return NextResponse.json({ error: PAID_FEATURE_MESSAGE }, { status: 402 });
+
   try {
     const body = await req.json() as Record<string, unknown>;
 
