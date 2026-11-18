@@ -55,7 +55,8 @@ export type LotResult = { winner: number | null; price: number };
 export type RivalStyle = 'stars' | 'value' | 'balanced';
 export type Rival = { name: string; style: RivalStyle };
 export type Standing = { team: number; name: string; score: number; purse: number; place: number };
-export type Objective = { label: string; met: boolean };
+/** A squad target, with how many the squad has so far and how many it needs. */
+export type Objective = { key: 'squad' | Role; label: string; short: string; have: number; need: number; met: boolean };
 /** Where the auction has got to. Round 2 is the accelerated round for players unsold in round 1. */
 export type Auction = { teams: Team[]; round: 1 | 2; queue: number[]; unsold: number[]; done: boolean };
 
@@ -419,13 +420,18 @@ export function advance(pool: readonly Lot[], a: Auction, result: LotResult): Au
 /** The squad objectives and whether this squad meets each one. */
 export function objectives(team: Team): Objective[] {
   const count = (role: Role) => team.squad.filter((p) => p.role === role).length;
+  const of = (key: Role, label: string, short: string): Objective => {
+    const have = count(key);
+    return { key, label, short, have, need: REQUIRED[key], met: have >= REQUIRED[key] };
+  };
+  const signed = team.squad.length;
   return [
-    { label: `Sign all ${SQUAD_SIZE} players`, met: team.squad.length >= SQUAD_SIZE },
-    { label: `${REQUIRED.BAT} or more batters`, met: count('BAT') >= REQUIRED.BAT },
-    { label: `${REQUIRED.WK} or more wicketkeepers`, met: count('WK') >= REQUIRED.WK },
-    { label: `${REQUIRED.AR} or more all-rounders`, met: count('AR') >= REQUIRED.AR },
-    { label: `${REQUIRED.PACE} or more fast bowlers`, met: count('PACE') >= REQUIRED.PACE },
-    { label: `${REQUIRED.SPIN} or more spinners`, met: count('SPIN') >= REQUIRED.SPIN },
+    { key: 'squad', label: `Sign all ${SQUAD_SIZE} players`, short: 'Squad', have: signed, need: SQUAD_SIZE, met: signed >= SQUAD_SIZE },
+    of('BAT', `${REQUIRED.BAT} or more batters`, 'Batters'),
+    of('WK', `${REQUIRED.WK} or more wicketkeepers`, 'Keepers'),
+    of('AR', `${REQUIRED.AR} or more all-rounders`, 'All-rounders'),
+    of('PACE', `${REQUIRED.PACE} or more fast bowlers`, 'Fast bowlers'),
+    of('SPIN', `${REQUIRED.SPIN} or more spinners`, 'Spinners'),
   ];
 }
 
