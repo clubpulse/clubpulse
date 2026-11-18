@@ -7,6 +7,7 @@ import { fetchReward } from '@/lib/marketplace/service';
 import { totalBalance } from '@/lib/types/scores';
 import { formatScores } from '@/lib/utils/format';
 import { RedemptionModal } from '@/components/marketplace/RedemptionModal';
+import { MerchRedeemForm } from '@/components/merch/MerchRedeemForm';
 
 export default async function RewardPage({ params }: { params: Promise<{ rewardId: string }> }) {
   const { rewardId } = await params;
@@ -68,7 +69,7 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
                 {r.stock_count !== null && ` · ${r.stock_count} left`}
               </p>
             </div>
-            <RedemptionModal reward={r} balance={balance} />
+            {r.is_merch ? <MerchRedeemForm reward={r} balance={balance} /> : <RedemptionModal reward={r} balance={balance} />}
           </div>
         </div>
       </div>

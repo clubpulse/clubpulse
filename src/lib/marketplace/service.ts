@@ -51,7 +51,14 @@ export async function redeemRewardForUser(
 ): Promise<ActionResult<RedemptionResult>> {
   if (!isUuid(rewardId)) return { success: false, error: 'Reward not found' };
 
-  const { data, error } = await createAdminClient().rpc('redeem_reward', {
+  const admin = createAdminClient();
+
+  // Merchandise needs a size and a delivery address, so it has its own route (redeem-merch).
+  // If the column is not there yet the lookup fails and the reward is treated as an ordinary one.
+  const { data: kind } = await admin.from('rewards_catalogue').select('is_merch').eq('id', rewardId).maybeSingle();
+  if (kind?.is_merch) return { success: false, error: 'This item needs a size and a delivery address.' };
+
+  const { data, error } = await admin.rpc('redeem_reward', {
     p_user_id:   userId,
     p_reward_id: rewardId,
   });

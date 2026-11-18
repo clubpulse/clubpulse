@@ -14,6 +14,9 @@ export type Reward = {
   // Tango Card gift card fields
   tango_utid:        string | null;
   tango_amount_gbp:  number | null;
+  // Merchandise: a physical item posted to the member. Absent before the merchandise migration.
+  is_merch?:         boolean;
+  merch_sizes?:      string[];
 };
 
 export type RedemptionResult = {
