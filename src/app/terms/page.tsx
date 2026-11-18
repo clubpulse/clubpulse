@@ -24,6 +24,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'Scores and rewards',
     body: (
       <>
+        <p>Clubs can pay for a subscription or a Scores pack on the website. Our <Link href="/refunds">refund policy</Link> covers those payments.</p>
         <p>Scores are earned by taking part: walking, checking in, volunteering, learning, playing the games and other club activity. They are a thank-you for taking part.</p>
         <ul>
           <li>Scores are not money. They have no cash value, cannot be bought, sold or transferred, and cannot be exchanged for cash.</li>
