@@ -12,7 +12,7 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
 import {
-  BUDGET, MAX_OVERSEAS, MIN_BASE, OBJECTIVE_POINTS, ROLE_LABEL, ROLES, SQUAD_SIZE, TEAM_COUNT,
+  BUDGET, ENGINE_VERSION, MAX_OVERSEAS, MIN_BASE, OBJECTIVE_POINTS, UNCAPPED_REQUIRED, ROLE_LABEL, ROLES, SQUAD_SIZE, TEAM_COUNT,
   advance, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRivals,
   newAuction, nextBid, objectives, overseasCount, rivalOrder, shortfall, squadScore, standings, totalShortfall, upcomingLots,
   type Auction, type Lot, type LotResult, type Rival, type Role, type Standing, type Team,
@@ -20,6 +20,8 @@ import {
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 type Status = {
+  /** The server's version of the game. Missing on a server older than the app. */
+  engine?: number;
   unavailable: string | null;
   prizes: number[];
   startsLeft: number;
@@ -208,7 +210,7 @@ export default function AuctionRoomScreen() {
     setStarting(true);
     setStartError(null);
     try {
-      const { seed } = await api<{ seed: number }>('/api/games/auction-room', { method: 'POST' });
+      const { seed } = await api<{ seed: number }>('/api/games/auction-room', { method: 'POST', body: { engine: ENGINE_VERSION } });
       setPayout({ state: 'practice' }); // flips to saving when the game ends
       setGame(newGame('daily', seed));
     } catch (e) {
@@ -300,7 +302,9 @@ function Lobby(props: {
 }) {
   const { status, statusError, starting, startError } = props;
   const loading = !status && !statusError;
-  const canPlayDaily = !!status && !status.unavailable && !status.played && status.startsLeft > 0;
+  // The daily game is checked by the server, so both have to be playing the same version of it
+  const outOfDate = !!status && status.engine !== undefined && status.engine !== ENGINE_VERSION;
+  const canPlayDaily = !!status && !outOfDate && !status.unavailable && !status.played && status.startsLeft > 0;
   const paidPlaces = status ? status.prizes.map((amount, i) => ({ amount, place: i + 1 })).filter((p) => p.amount > 0) : [];
 
   return (
@@ -318,7 +322,7 @@ function Lobby(props: {
         <Rule n="1" text={`You have a ${formatMoney(BUDGET)} purse to sign a squad of ${SQUAD_SIZE}. The purse only exists in this game.`} />
         <Rule n="2" text="Players come up in sets: marquee first, then batters, all-rounders, wicketkeepers, fast bowlers, spinners and value picks. Tap Bid to raise the paddle, or Pass to let the others fight it out." />
         <Rule n="3" text="Every player is worth points. Your team points are your players' points added together." />
-        <Rule n="4" text={`Objectives: sign all ${SQUAD_SIZE}, with at least 4 batters, 2 wicketkeepers, 3 all-rounders, 3 fast bowlers and 2 spinners. Each objective met adds ${OBJECTIVE_POINTS} points.`} />
+        <Rule n="4" text={`Objectives: sign all ${SQUAD_SIZE}, with at least 4 batters, 2 wicketkeepers, 3 all-rounders, 3 fast bowlers, 2 spinners and ${UNCAPPED_REQUIRED} uncapped players. An uncapped player counts for their role too. Each objective met adds ${OBJECTIVE_POINTS} points.`} />
         <Rule n="5" text={`No more than ${MAX_OVERSEAS} overseas players. Unsold players come back once in an accelerated round.`} />
         <Rule n="6" text="The franchise with the most team points wins. The top three earn Scores in the daily game." />
       </View>
@@ -335,6 +339,11 @@ function Lobby(props: {
           </>
         )}
         {status?.unavailable && <Text style={[fonts.small, { marginTop: spacing.sm }]}>{status.unavailable}</Text>}
+        {outOfDate && (
+          <Text style={[fonts.small, { marginTop: spacing.sm, color: colors.orange }]}>
+            The player pool has been updated. Update the ClubPulse app to play today&apos;s auction. Practice still works.
+          </Text>
+        )}
         {status && !status.unavailable && (
           <>
             <View style={styles.prizeRow}>
@@ -463,6 +472,11 @@ function BiddingView(props: {
                 <View style={[styles.rolePill, { backgroundColor: `${ROLE_COLOR[lot.role]}22` }]}>
                   <Text style={[styles.rolePillText, { color: ROLE_COLOR[lot.role] }]}>{ROLE_LABEL[lot.role]}</Text>
                 </View>
+                {lot.uncapped && (
+                  <View style={[styles.rolePill, { backgroundColor: 'rgba(34,197,94,0.14)' }]}>
+                    <Text style={[styles.rolePillText, { color: colors.success }]}>Uncapped</Text>
+                  </View>
+                )}
                 {lot.overseas && (
                   <View style={[styles.rolePill, { backgroundColor: colors.surface2 }]}>
                     <Text style={[styles.rolePillText, { color: colors.text }]}>✈ Overseas</Text>
@@ -512,6 +526,7 @@ function BiddingView(props: {
                       <Text style={[styles.slotRole, { color: ROLE_COLOR[p.role] }]}>
                         {ROLE_SHORT[p.role]}
                         {p.overseas ? ' ✈' : ''}
+                        {p.uncapped ? ' U' : ''}
                       </Text>
                       <View style={styles.slotPlayer}>
                         <PlayerAvatar name={p.name} country={p.country} role={p.role} roleColor={ROLE_COLOR[p.role]} size={22} plain />
@@ -528,7 +543,7 @@ function BiddingView(props: {
           <Text style={[fonts.small, { marginTop: spacing.sm }]}>
             {SQUAD_SIZE - shown.squad.length} place{SQUAD_SIZE - shown.squad.length === 1 ? '' : 's'} to fill · overseas {overseasCount(shown)}/{MAX_OVERSEAS} · {squadScore(shown)} team points
           </Text>
-          <ObjectiveList team={shown} lotRole={slots > 0 && !bid.done ? lot.role : undefined} />
+          <ObjectiveList team={shown} lot={slots > 0 && !bid.done ? lot : undefined} />
         </View>
 
         {/* What is still to come */}
@@ -545,7 +560,7 @@ function BiddingView(props: {
             <Text key={p.id} style={[fonts.small, { marginTop: 4 }]} numberOfLines={1}>
               {i === 0 ? 'Next: ' : ''}
               {p.name}
-              {p.overseas ? ' ✈' : ''} · {ROLE_LABEL[p.role]} · {p.rating} pts
+              {p.overseas ? ' ✈' : ''}{p.uncapped ? ' · uncapped' : ''} · {ROLE_LABEL[p.role]} · {p.rating} pts
             </Text>
           ))}
           {auction.round === 1 && auction.unsold.length > 0 && (
@@ -599,12 +614,12 @@ function BiddingView(props: {
 }
 
 // The squad's targets with live counts. The ones the player on the block would help are picked out.
-function ObjectiveList({ team, lotRole }: { team: Team; lotRole?: Role }) {
+function ObjectiveList({ team, lot }: { team: Team; lot?: Lot }) {
   return (
     <View style={styles.objectiveWrap}>
       {objectives(team).map((o) => (
         <ObjectiveMeter key={o.key} label={o.short} have={o.have} need={o.need} met={o.met}
-          wouldHelp={lotRole !== undefined && (o.key === 'squad' || o.key === lotRole)} />
+          wouldHelp={lot !== undefined && (o.key === 'squad' || o.key === lot.role || (o.key === 'uncapped' && lot.uncapped))} />
       ))}
     </View>
   );

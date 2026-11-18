@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  BUDGET, MARQUEE_COUNT, MAX_OVERSEAS, OBJECTIVE_POINTS, POOL_SIZE, REQUIRED, ROLES, SQUAD_SIZE, TEAM_COUNT,
+  BUDGET, MARQUEE_COUNT, MAX_OVERSEAS, OBJECTIVE_POINTS, POOL_SIZE, REQUIRED, ROLES, SQUAD_SIZE, TEAM_COUNT, UNCAPPED_REQUIRED,
   advance, allPlayers, cannotBuy, currentLimits, currentLot, formatMoney, generatePool, generateRivals,
   isBidLevel, newAuction, nextBid, objectives, overseasCount, replayGame, rivalOrder, squadScore,
   type Auction, type Lot, type LotResult, type Team,
@@ -115,6 +115,33 @@ describe('auction engine', () => {
       });
     }
     expect(full / total).toBeGreaterThan(0.95);
+  });
+
+  it('has uncapped Indian players, and an objective for signing them', () => {
+    const players = allPlayers();
+    const uncapped = players.filter((p) => p.uncapped);
+    // Enough for every franchise to meet the objective several times over
+    expect(uncapped.length).toBeGreaterThanOrEqual(UNCAPPED_REQUIRED * TEAM_COUNT * 2);
+    expect(uncapped.every((p) => !p.overseas && p.country === 'India')).toBe(true);
+    // Stars of the national side are not marked uncapped by mistake
+    for (const name of ['Virat Kohli', 'Jasprit Bumrah', 'Hardik Pandya', 'Tilak Varma']) {
+      expect(players.find((p) => p.name === name)!.uncapped).toBe(false);
+    }
+
+    const pick = (n: number, wanted: boolean) => players.filter((p) => p.uncapped === wanted).slice(0, n).map((p, id) => ({ ...p, id, set: '' }));
+    const goal = (squad: ReturnType<typeof pick>) => objectives({ purse: 0, squad }).find((o) => o.key === 'uncapped')!;
+    expect(goal(pick(5, false))).toMatchObject({ have: 0, need: UNCAPPED_REQUIRED, met: false });
+    expect(goal([...pick(5, false), ...pick(1, true)])).toMatchObject({ have: 1, met: false });
+    expect(goal(pick(UNCAPPED_REQUIRED, true))).toMatchObject({ have: UNCAPPED_REQUIRED, met: true });
+  });
+
+  it('brings the uncapped players up as their own set, straight after the marquee set', () => {
+    const pool = generatePool(77);
+    const sets = pool.map((p) => p.set).filter((set, i, all) => set !== all[i - 1]);
+    expect(sets.slice(0, 2)).toEqual(['Marquee set', 'Uncapped players']);
+    expect(pool.filter((p) => p.set === 'Uncapped players').every((p) => p.uncapped)).toBe(true);
+    // Any uncapped player good enough for the marquee set stays there
+    expect(pool.filter((p) => p.uncapped && p.set !== 'Uncapped players').every((p) => p.set === 'Marquee set')).toBe(true);
   });
 
   it('rejects games that could not have happened', () => {
