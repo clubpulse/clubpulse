@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { L, MIN_VISIBILITY, angleAt, metricJoints, type Hand, type Landmark, type MetricResult, type Mode } from '@/lib/analysis/pose-metrics';
+import {
+  L, MIN_VISIBILITY, ON_TARGET, angleAt, formatRange, formatValue, metricGuides, metricJoints,
+  type Hand, type Landmark, type MetricResult, type Mode,
+} from '@/lib/analysis/pose-metrics';
 
 const GOLD = '#EFC84A';
 const SIZE = 340;
@@ -15,8 +18,8 @@ const BONES: [number, number][] = [
 ];
 
 function colourFor(score: number) {
-  if (score >= 80) return GOLD;
-  if (score >= 50) return '#f59e0b';
+  if (score >= ON_TARGET) return GOLD;
+  if (score >= 60) return '#f59e0b';
   return '#ef4444';
 }
 
@@ -117,10 +120,48 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored,
       ctx.fill();
     }
 
-    // Measured angles: the two limbs picked out in colour, an arc at the joint and the angle beside it
     ctx.font = '600 13px Inter, system-ui, sans-serif';
     // Where labels have gone so far, so a new one can be moved clear of them
     const placed: { x: number; y: number; w: number }[] = [];
+    const writeLabel = (text: string, x: number, y: number, colour: string) => {
+      const textWidth = ctx.measureText(text).width;
+      const lx = Math.min(size - textWidth - 8, Math.max(8, x - textWidth / 2));
+      let ly = Math.min(size - 10, Math.max(16, y));
+      const clashes = () => placed.some((other) => Math.abs(other.y - ly) < 19 && lx < other.x + other.w + 8 && other.x < lx + textWidth + 8);
+      for (let tries = 0; tries < 6 && clashes(); tries++) ly = Math.min(size - 10, ly + 20);
+      placed.push({ x: lx, y: ly, w: textWidth });
+      ctx.fillStyle = 'rgba(11,11,11,0.85)';
+      ctx.fillRect(lx - 4, ly - 13, textWidth + 8, 18);
+      ctx.fillStyle = colour;
+      ctx.fillText(text, lx, ly);
+    };
+
+    // Measures that are a line or an alignment, not a joint angle: eye line, arm, trunk, plumb lines
+    for (const metric of metrics) {
+      const colour = labels === 'target' ? GOLD : colourFor(metric.score);
+      for (const guide of metricGuides(metric.key, pose, mode, hand)) {
+        const place = (point: { x: number; y: number }) => ({
+          x: (mirrored ? 1 - point.x : point.x) * width * scale + offsetX,
+          y: point.y * height * scale + offsetY,
+        });
+        const from = place(guide.from);
+        const to = place(guide.to);
+        ctx.save();
+        ctx.strokeStyle = colour;
+        ctx.lineWidth = guide.plumb ? 2 : 4;
+        if (guide.plumb) ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+        ctx.restore();
+        const text = labels === 'target' ? formatRange(metric).replace(/° to /, '–') : formatValue(metric);
+        // Beside the line, to the right of its middle
+        writeLabel(text, (from.x + to.x) / 2 + 34, (from.y + to.y) / 2 + 5, colour);
+      }
+    }
+
+    // Measured angles: the two limbs picked out in colour, an arc at the joint and the angle beside it
     for (const metric of metrics) {
       for (const [a, joint, c] of metricJoints(metric.key, mode, hand)) {
         if (!seen(a) || !seen(joint) || !seen(c)) continue;
@@ -151,16 +192,7 @@ export function PoseFigure({ pose, width, height, metrics, mode, hand, mirrored,
         const text = labels === 'target'
           ? `${metric.ideal[0]}–${metric.ideal[1]}°`
           : `${Math.round(angleAt(raw(a), raw(joint), raw(c)))}°`;
-        const textWidth = ctx.measureText(text).width;
-        const lx = Math.min(size - textWidth - 8, Math.max(8, pj.x - Math.cos(middle) * 30 - textWidth / 2));
-        let ly = Math.min(size - 10, Math.max(16, pj.y - Math.sin(middle) * 30 + 5));
-        const clashes = () => placed.some((other) => Math.abs(other.y - ly) < 19 && lx < other.x + other.w + 8 && other.x < lx + textWidth + 8);
-        for (let tries = 0; tries < 6 && clashes(); tries++) ly = Math.min(size - 10, ly + 20);
-        placed.push({ x: lx, y: ly, w: textWidth });
-        ctx.fillStyle = 'rgba(11,11,11,0.85)';
-        ctx.fillRect(lx - 4, ly - 13, textWidth + 8, 18);
-        ctx.fillStyle = colour;
-        ctx.fillText(text, lx, ly);
+        writeLabel(text, pj.x - Math.cos(middle) * 30, pj.y - Math.sin(middle) * 30 + 5, colour);
       }
     }
   }, [pose, width, height, metrics, mode, hand, mirrored, labels, bat, size]);

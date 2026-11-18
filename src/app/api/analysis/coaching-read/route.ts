@@ -39,6 +39,19 @@ export async function POST(req: NextRequest) {
         overall:   number;
       };
       const discipline = mode === 'bowling' ? 'bowling' : 'batting';
+      // Only known values reach the prompt
+      const cameraView = (body as { view?: unknown }).view === 'front' ? 'front-on (looking down the pitch)' : 'side-on';
+      const UNIQUE_NOTES: Record<string, string> = {
+        'round-arm': 'a round-arm, slinging action',
+        'bent-front-knee': 'bowling on a bent front knee',
+        'wrong-footed': 'bowling off the wrong foot',
+        'big-side-bend': 'a very large side bend at release, which is linked with lower back injury',
+      };
+      const uniqueRaw = (body as { unique?: unknown }).unique;
+      const uniqueNotes = (Array.isArray(uniqueRaw) ? uniqueRaw : []).map((key) => UNIQUE_NOTES[String(key)]).filter(Boolean);
+      const uniqueLine = uniqueNotes.length > 0
+        ? `\nThis player has a unique action: ${uniqueNotes.join('; ')}. Treat it as their natural style. Do not tell them to change it or coach it out; say that a coach should look at it as its own action. If it carries an injury risk, say so plainly.\n`
+        : '';
       const handedness = hand === 'left' ? 'left-handed' : 'right-handed';
 
       // Sort: worst first so the AI reasons about the most urgent issues
@@ -71,7 +84,7 @@ export async function POST(req: NextRequest) {
         if (high('frontElbow') && low('hipRotation'))
           combos.push('the front elbow is high but the hips are not following through — arm strength is doing the work instead of body rotation');
 
-        prompt = `You are an elite cricket batting coach. A ${handedness} batter just recorded a ${shotLabel} in pose analysis.
+        prompt = `You are an elite cricket batting coach. A ${handedness} batter just recorded a ${shotLabel} in pose analysis, filmed ${cameraView}.
 
 Overall technique score: ${overall}/100
 
@@ -93,8 +106,8 @@ No bullet points, no headings, no markdown. Speak directly to the player as "you
 
       } else {
         // Bowling prompt — improved but still concise
-        prompt = `You are a professional cricket coaching assistant. A ${handedness} bowler just recorded a pose-analysis session.
-
+        prompt = `You are a professional cricket coaching assistant. A ${handedness} bowler just recorded a pose-analysis session, filmed ${cameraView}.
+${uniqueLine}
 Overall score: ${overall}/100
 
 Metric breakdown:
