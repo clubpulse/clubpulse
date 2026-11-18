@@ -120,6 +120,7 @@ Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to th
         detections,
         frames,
         white_ball,
+        ball_colour,
       } = body as {
         speed_kph:    number | null;
         swing_px:     number;
@@ -127,6 +128,7 @@ Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to th
         detections:   number;
         frames:       number;
         white_ball:   boolean;
+        ball_colour?: unknown;
       };
 
       const speedStr    = speed_kph != null ? `${speed_kph} kph` : 'unknown (video angle may need adjustment)';
@@ -134,7 +136,8 @@ Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to th
       const swingDir    = swingAbs < 5 ? 'straight (no measurable swing)' : swing_px > 0 ? `${swingAbs.toFixed(0)} px of away swing` : `${swingAbs.toFixed(0)} px of in-swing`;
       const bounceStr   = bounce_frame != null ? `at frame ${bounce_frame}` : 'not detected';
       const coveragePct = frames > 0 ? Math.round((detections / frames) * 100) : 0;
-      const ballType    = white_ball ? 'white' : 'red';
+      // Only known colours reach the prompt
+      const ballType    = ['red', 'white', 'pink', 'yellow'].includes(ball_colour as string) ? (ball_colour as string) : white_ball ? 'white' : 'red';
 
       prompt = `You are a professional cricket coaching assistant. Based on the following ball-tracking data from a bowling delivery, write ONE concise coaching paragraph (3–5 sentences) that:
 - States what this delivery shows about the bowler's current form

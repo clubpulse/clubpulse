@@ -1,4 +1,4 @@
-import { createKalman, createTracker, detectBounce, estimateSpeed, findCandidates, isBallColour, measureSwing } from '@/lib/analysis/ball-track';
+import { type BallColour, createKalman, createTracker, detectBounce, estimateSpeed, findCandidates, isBallColour, measureSwing } from '@/lib/analysis/ball-track';
 
 const W = 480;
 const H = 270;
@@ -29,17 +29,30 @@ function ballAt(i: number) {
 
 describe('isBallColour', () => {
   it('knows red from grass, skin and white', () => {
-    expect(isBallColour(200, 20, 30, false)).toBe(true);
-    expect(isBallColour(40, 120, 50, false)).toBe(false);
-    expect(isBallColour(250, 250, 250, false)).toBe(false);
-    expect(isBallColour(224, 172, 140, false)).toBe(false);
-    expect(isBallColour(250, 250, 250, true)).toBe(true);
-    expect(isBallColour(200, 20, 30, true)).toBe(false);
+    const grass: [number, number, number] = [40, 120, 50];
+    const astro: [number, number, number] = [70, 140, 70];
+    const skin: [number, number, number] = [224, 172, 140];
+    expect(isBallColour(200, 20, 30, 'red')).toBe(true);
+    expect(isBallColour(250, 250, 250, 'red')).toBe(false);
+    expect(isBallColour(250, 250, 250, 'white')).toBe(true);
+    expect(isBallColour(200, 20, 30, 'white')).toBe(false);
+    // The pink match ball, and a paler one in bright sun
+    expect(isBallColour(233, 70, 120, 'pink')).toBe(true);
+    expect(isBallColour(245, 130, 180, 'pink')).toBe(true);
+    expect(isBallColour(250, 250, 250, 'pink')).toBe(false);
+    // Tennis and wind balls
+    expect(isBallColour(205, 225, 50, 'yellow')).toBe(true);
+    expect(isBallColour(250, 250, 250, 'yellow')).toBe(false);
+    for (const ball of ['red', 'white', 'pink', 'yellow'] as const) {
+      expect(isBallColour(...grass, ball)).toBe(false);
+      expect(isBallColour(...astro, ball)).toBe(false);
+      expect(isBallColour(...skin, ball)).toBe(false);
+    }
   });
 });
 
 describe('findCandidates', () => {
-  const options = { whiteBall: false, minRadius: 2, maxRadius: 20 };
+  const options = { ball: 'red' as const, minRadius: 2, maxRadius: 20 };
 
   it('finds a moving ball and ignores a still one', () => {
     const still = { x: 400, y: 40, r: 6, colour: RED };
@@ -102,9 +115,9 @@ describe('measurements', () => {
 });
 
 describe('createTracker', () => {
-  function run(colour: [number, number, number], whiteBall: boolean, hideFrames: number[] = []) {
+  function run(colour: [number, number, number], ball: BallColour, hideFrames: number[] = []) {
     // Frames are half the size of the "video", to check positions are scaled back up
-    const tracker = createTracker({ videoWidth: W * 2, videoHeight: H * 2, whiteBall });
+    const tracker = createTracker({ videoWidth: W * 2, videoHeight: H * 2, ball });
     const distraction = { x: 440, y: 30, r: 7, colour };
     for (let i = 0; i < 36; i++) {
       const ball = ballAt(i);
@@ -114,7 +127,7 @@ describe('createTracker', () => {
   }
 
   it('follows a red ball, finds the bounce and reports full-size positions', () => {
-    const result = run(RED, false);
+    const result = run(RED, 'red');
     expect(result.frames_processed).toBe(36);
     expect(result.resolution).toEqual({ w: W * 2, h: H * 2 });
     expect(result.ball_positions.length).toBeGreaterThanOrEqual(33);
@@ -133,19 +146,25 @@ describe('createTracker', () => {
     expect(result.speed_kph).toBeGreaterThan(0);
   });
 
-  it('follows a white ball when told to', () => {
-    expect(run(WHITE, true).ball_positions.length).toBeGreaterThanOrEqual(33);
+  it('follows white, pink and yellow balls when told to', () => {
+    expect(run(WHITE, 'white').ball_positions.length).toBeGreaterThanOrEqual(33);
+    expect(run([233, 70, 120], 'pink').ball_positions.length).toBeGreaterThanOrEqual(33);
+    expect(run([205, 225, 50], 'yellow').ball_positions.length).toBeGreaterThanOrEqual(33);
+  });
+
+  it('does not mistake a white ball for a pink one', () => {
+    expect(() => run(WHITE, 'pink')).toThrow('No ball detected');
   });
 
   it('keeps the path going while the ball is hidden', () => {
-    const result = run(RED, false, [8, 9, 10]);
+    const result = run(RED, 'red', [8, 9, 10]);
     expect(result.ball_positions.some((p) => [8, 9, 10].includes(p.frame))).toBe(false);
     expect(result.ball_positions.some((p) => p.frame === 12)).toBe(true);
     expect(result.trajectory.length).toBe(35);
   });
 
   it('says so when there is no ball', () => {
-    const tracker = createTracker({ videoWidth: W, videoHeight: H, whiteBall: false });
+    const tracker = createTracker({ videoWidth: W, videoHeight: H, ball: 'red' });
     for (let i = 0; i < 5; i++) tracker.push(frame([{ x: 100, y: 100, r: 6, colour: RED }]), W, H);
     expect(() => tracker.finish()).toThrow('No ball detected');
   });

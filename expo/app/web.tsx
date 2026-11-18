@@ -56,6 +56,15 @@ export default function WebScreen() {
     start();
   }, [start]);
 
+  // Links inside a page can lead to another page (Development tracking to Analyse, say), so the
+  // header follows whatever page is showing. Web titles look like "Analyse | ClubPulse".
+  const followTitle = useCallback((state: WebViewNavigation) => {
+    const pageTitle = state.title?.split('|')[0].trim();
+    if (pageTitle && !state.loading && !/^https?:|^about:/.test(pageTitle) && pageTitle !== 'ClubPulse') {
+      navigation.setOptions({ title: pageTitle });
+    }
+  }, [navigation]);
+
   // Stay on ClubPulse inside the app; anything else opens in the phone's browser
   const allow = useCallback((request: WebViewNavigation) => {
     if (!BASE_URL || request.url.startsWith(BASE_URL) || request.url.startsWith('about:') || request.url.startsWith('blob:')) return true;
@@ -77,6 +86,7 @@ export default function WebScreen() {
             if (event.nativeEvent.statusCode >= 500) setError('ClubPulse is having trouble. Please try again in a moment.');
           }}
           onShouldStartLoadWithRequest={allow}
+          onNavigationStateChange={followTitle}
           // The camera preview has to play inside the page, without a tap and not full screen
           allowsInlineMediaPlayback
           mediaPlaybackRequiresUserAction={false}
