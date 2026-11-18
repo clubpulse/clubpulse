@@ -13,7 +13,7 @@ import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
-  MIN_VISIBILITY, SHOT_TYPE_LABELS, analyseDetailed, mean, segmentScore,
+  ELBOW_EXTENSION_LIMIT, MIN_VISIBILITY, SHOT_TYPE_LABELS, analyseDetailed, mean, segmentScore,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType,
 } from '@/lib/analysis/pose-metrics';
 
@@ -300,7 +300,7 @@ export function AnalyseClient() {
 
     // Save pose results to history (best-effort)
     const overall = Math.round(metrics.reduce((sum, mk) => sum + mk.score, 0) / metrics.length);
-    const resultJson = { mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall, metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score })) };
+    const resultJson = { mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall, elbowCheck: analysis.elbow ?? null, metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score })) };
 
     // Generate a coaching paragraph server-side, then save both
     setCoaching({ state: 'loading' });
@@ -841,6 +841,40 @@ export function AnalyseClient() {
               </li>
             ))}
           </ul>
+
+          {mode === 'bowling' && detail?.elbow && (() => {
+            const { extension, frames: seen, mostBent, atRelease } = detail.elbow;
+            const over = extension !== null && extension > ELBOW_EXTENSION_LIMIT;
+            return (
+              <div className="mt-6 rounded-lg border px-4 py-3"
+                style={{ borderColor: over ? 'rgba(245,158,11,0.45)' : 'rgba(255,255,255,0.1)', background: over ? 'rgba(245,158,11,0.07)' : 'rgba(255,255,255,0.02)' }}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm font-medium text-white">Bowling arm reference check</p>
+                  <p className="whitespace-nowrap text-sm font-semibold" style={{ color: extension === null ? 'rgba(255,255,255,0.5)' : over ? '#f59e0b' : GOLD }}>
+                    {extension === null ? 'No reading' : `${Math.round(extension)}° of ${ELBOW_EXTENSION_LIMIT}°`}
+                  </p>
+                </div>
+                {extension !== null && (
+                  <div className="relative mt-2 h-2 rounded-full bg-neutral-800">
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, (extension / 30) * 100)}%`, background: over ? '#f59e0b' : GOLD }} />
+                    {/* The 15 degree reference line */}
+                    <div className="absolute -top-1 h-4 w-0.5 bg-white/70" style={{ left: '50%' }} aria-hidden />
+                  </div>
+                )}
+                <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+                  {extension === null
+                    ? 'The arm could not be followed from horizontal to release in this clip. Film side-on in slow motion (120 or 240 frames a second) so that part of the action covers more frames.'
+                    : over
+                      ? `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release (from ${Math.round(mostBent ?? 0)}° to ${Math.round(atRelease ?? 0)}°). That is above the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws, so further testing is recommended: film it again side-on and from behind in slow motion, and have a qualified coach look at it.`
+                      : `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release, inside the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws.`}
+                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
+                  Reference only, from {seen} frame{seen === 1 ? '' : 's'} of one camera. It is not a ruling on whether an action is legal
+                  and it does not count towards the score. Only a multi-camera laboratory assessment can decide that.
+                </p>
+              </div>
+            );
+          })()}
 
           {coaching.state !== 'idle' && (
             <div className="mt-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
