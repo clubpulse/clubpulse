@@ -1387,7 +1387,7 @@ function PricingSection() {
 
           <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
             <div className="cp-price-card">
-              <p className="cp-price-plan">Starter</p>
+              <p className="cp-price-plan">Pro</p>
               <div className="cp-price-n"><span>£</span>29.99</div>
               <p className="cp-price-period">per month · whole club, up to 75 members</p>
               <p className="cp-price-desc">The essentials for a smaller club, across all its teams.</p>
@@ -1400,46 +1400,49 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club noticeboard</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Coaching marketplace</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Finance tracker</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£2.99 a month</strong> each</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Starter →</Link>
+              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Pro →</Link>
             </div>
             <div className="cp-price-card featured">
               <span className="cp-price-featured-chip">Most popular</span>
-              <p className="cp-price-plan">Pro</p>
+              <p className="cp-price-plan">Elite</p>
               <div className="cp-price-n"><span>£</span>59.99</div>
               <p className="cp-price-period">per month · whole club, up to 200 members</p>
               <p className="cp-price-desc">For a club with several sides and a junior section.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Starter</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Up to 200 members</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>75,000 Scores a month to give out</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI Coach video analysis</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club Bible and documents</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player form guide and Scout Mode</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Community pot and Sponsor a Kid</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£4.99 a month</strong> each</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta primary">Talk to us about Pro →</Link>
+              <Link href="/contact" className="cp-price-cta primary">Talk to us about Elite →</Link>
             </div>
             <div className="cp-price-card">
-              <p className="cp-price-plan">Elite</p>
+              <p className="cp-price-plan">Legend</p>
               <div className="cp-price-n"><span>£</span>99.99</div>
               <p className="cp-price-period">per month · whole club, unlimited members</p>
               <p className="cp-price-desc">For the largest clubs, and clubs that want their own branding.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Elite</strong></span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited members</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>250,000 Scores a month to give out</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Your club&apos;s own branding</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club federation</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player auction and transfer window</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members can add full analysis for <strong>£6.99 a month</strong> each</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Elite →</Link>
+              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Legend →</Link>
             </div>
           </div>
-          <p className="cp-price-note">Prices are per month under a fixed-term club agreement, with annual terms at ten months&apos; price. Players can also subscribe individually. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
+          <p className="cp-price-note">Prices are per month under a fixed-term club agreement, with annual terms at ten months&apos; price. A member who wants the full analysis adds it for £2.99, £4.99 or £6.99 a month, depending on the club&apos;s plan. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
         </>
       )}
     </>
