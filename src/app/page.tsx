@@ -1158,6 +1158,7 @@ export default function HomePage() {
               <Link href="/contact">Contact</Link>
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
+              <Link href="/refunds">Refunds</Link>
               <Link href="/auth/sign-in">Sign in</Link>
             </div>
             <p className="cp-footer-copy">© 2026 ClubPulse. Built at Slough CC.</p>

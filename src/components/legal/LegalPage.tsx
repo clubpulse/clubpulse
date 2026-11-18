@@ -15,6 +15,7 @@ export function LegalPage({ title, updated, intro, sections }: { title: string; 
         <nav className="flex gap-5 text-sm text-neutral-400">
           <Link href="/privacy" className="hover:text-white">Privacy</Link>
           <Link href="/terms" className="hover:text-white">Terms</Link>
+          <Link href="/refunds" className="hover:text-white">Refunds</Link>
         </nav>
       </header>
       <main className="mx-auto max-w-3xl px-5 pb-20">
