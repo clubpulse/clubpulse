@@ -1,4 +1,4 @@
-import { ELBOW_EXTENSION_LIMIT, L, analyseDetailed, bowlingAnalysis, metricJoints, playerSize, segmentScore, type Landmark } from '@/lib/analysis/pose-metrics';
+import { ELBOW_EXTENSION_LIMIT, L, ON_TARGET, UNIQUE_ACTIONS, analyseDetailed, overallScore, scoreFor, bowlingAnalysis, metricJoints, playerSize, segmentScore, type Landmark } from '@/lib/analysis/pose-metrics';
 
 const W = 1080;
 const H = 1920;
@@ -50,11 +50,13 @@ describe('bowlingAnalysis', () => {
     expect(result!.keyFrame).toBe(16);
     const byKey = Object.fromEntries(result!.metrics.map((m) => [m.key, m]));
     expect(byKey.frontKnee.value).toBeGreaterThan(165);
-    expect(byKey.frontKnee.score).toBe(100);
     expect(byKey.armStraightness.value).toBeGreaterThan(165);
     expect(byKey.armUpright.value).toBeLessThan(5);
-    expect(byKey.armUpright.score).toBe(100);
-    expect(byKey.headStability.score).toBe(100);
+    // Inside every range, so on target, but not every one is the textbook value
+    for (const key of ['frontKnee', 'armStraightness', 'armUpright']) expect(byKey[key].score).toBeGreaterThanOrEqual(ON_TARGET);
+    // Standing bolt upright is outside the forward lean range, and no longer scores full marks
+    expect(byKey.trunkTilt.score).toBeLessThan(ON_TARGET);
+    expect(result!.unique).toEqual([]);
   });
 
   it('marks down a bent front knee and a bent arm', () => {
@@ -162,5 +164,92 @@ describe('helpers', () => {
     expect(metricJoints('frontKnee', 'bowling', 'right')).toEqual([[L.lHip, L.lKnee, L.lAnkle]]);
     expect(metricJoints('armStraightness', 'bowling', 'left')).toEqual([[L.lShoulder, L.lElbow, L.lWrist]]);
     expect(metricJoints('headStability', 'bowling', 'right')).toEqual([]);
+  });
+});
+
+describe('strict scoring', () => {
+  it('gives 100 only for the best value', () => {
+    expect(scoreFor(176, [165, 180], 30, 176)).toBe(100);
+    expect(scoreFor(175, [165, 180], 30, 176)).toBeLessThan(100);
+    expect(scoreFor(180, [165, 180], 30, 176)).toBe(85);
+    expect(scoreFor(165, [165, 180], 30, 176)).toBe(85);
+  });
+
+  it('falls from 100 to 85 across the range, then to 0 across the tolerance', () => {
+    const scores = [176, 172, 168, 165, 160, 150, 135, 120].map((value) => scoreFor(value, [165, 180], 30, 176));
+    for (let i = 1; i < scores.length; i++) expect(scores[i]).toBeLessThan(scores[i - 1] + (scores[i - 1] === 0 ? 1 : 0));
+    expect(scores[scores.length - 2]).toBe(0);
+    expect(scoreFor(150, [165, 180], 30, 176)).toBe(43);
+  });
+
+  it('takes 0 as best for a range that starts at 0, and the middle otherwise', () => {
+    expect(scoreFor(0, [0, 10], 20)).toBe(100);
+    expect(scoreFor(5, [0, 10], 20)).toBe(93);
+    expect(scoreFor(15, [5, 25], 20)).toBe(100);
+    // A best value outside an overridden range is ignored
+    expect(scoreFor(15, [5, 25], 20, 90)).toBe(100);
+  });
+});
+
+describe('unique actions', () => {
+  it('names a bent front knee, shows it and leaves it out of the overall score', () => {
+    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [690, 1260], lAnkle: [640, 1545] });
+    const result = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(result.unique).toEqual(['bent-front-knee']);
+    const knee = result.metrics.find((m) => m.key === 'frontKnee')!;
+    expect(knee.value).toBeLessThan(145);
+    expect(knee.excused).toBe(true);
+    const counted = result.metrics.filter((m) => !m.excused);
+    expect(overallScore(result.metrics)).toBe(Math.round(counted.reduce((sum, m) => sum + m.score, 0) / counted.length));
+    expect(overallScore(result.metrics)).toBeGreaterThan(knee.score);
+  });
+
+  it('notices bowling off the wrong foot and measures the leg that lands', () => {
+    // The bowling-side (right) foot is down and straight; the left leg is lifted
+    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], rKnee: [600, 1300], rAnkle: [680, 1545], lKnee: [480, 1250], lAnkle: [420, 1380] });
+    const result = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(result.unique).toContain('wrong-footed');
+    expect(result.metrics.find((m) => m.key === 'frontKnee')!.value).toBeGreaterThan(165);
+  });
+
+  it('names a round-arm action from front-on, and does not excuse a big side bend', () => {
+    const roundArm = (extra: Joints = {}) => Array.from({ length: 14 }, () => pose({ rElbow: [667, 602], rWrist: [775, 505], lKnee: [522, 1300], ...extra }));
+    const slinger = bowlingAnalysis(roundArm(), 'right', W, H, 'front')!;
+    expect(slinger.unique).toEqual(['round-arm']);
+    expect(slinger.metrics.find((m) => m.key === 'armHeight')!.excused).toBe(true);
+    expect(UNIQUE_ACTIONS['round-arm'].excused).toBe(true);
+
+    // Shoulders carried far to one side of the hips
+    const bent = bowlingAnalysis(roundArm({ lShoulder: [820, 780], rShoulder: [860, 780], nose: [900, 700], rElbow: [900, 660], rWrist: [930, 540] }), 'right', W, H, 'front')!;
+    expect(bent.unique).toContain('big-side-bend');
+    expect(bent.metrics.find((m) => m.key === 'sideBend')!.excused).toBeUndefined();
+    expect(UNIQUE_ACTIONS['big-side-bend'].excused).toBe(false);
+  });
+
+  it('finds nothing unique in an orthodox action', () => {
+    expect(bowlingAnalysis(delivery(), 'right', W, H)!.unique).toEqual([]);
+    const outcome = analyseDetailed(delivery(), 'bowling', 'right', W, H);
+    expect(outcome.ok && outcome.analysis.unique).toEqual([]);
+  });
+});
+
+describe('front-on view', () => {
+  it('uses its own measures for bowling', () => {
+    const outcome = analyseDetailed(delivery(), 'bowling', 'right', W, H, undefined, 'front');
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    const keys = outcome.analysis.metrics.map((m) => m.key);
+    expect(keys).toEqual(expect.arrayContaining(['armHeight', 'sideBend', 'frontFootLine', 'frontArm']));
+    expect(keys).not.toContain('frontKnee');
+  });
+
+  it('uses its own measures for batting, and skips the bat for a leave', () => {
+    const frames = Array.from({ length: 20 }, () => pose());
+    const drive = analyseDetailed(frames, 'batting', 'right', W, H, 'drive', 'front');
+    expect(drive.ok).toBe(true);
+    if (!drive.ok) return;
+    expect(drive.analysis.metrics.map((m) => m.key)).toEqual(expect.arrayContaining(['headOverFront', 'batSwingPlane', 'shoulderLevel', 'balance', 'headStability']));
+    const leave = analyseDetailed(frames, 'batting', 'right', W, H, 'leave', 'front');
+    expect(leave.ok && leave.analysis.metrics.some((m) => m.key === 'batSwingPlane')).toBe(false);
   });
 });

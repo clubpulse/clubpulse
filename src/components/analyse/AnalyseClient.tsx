@@ -13,8 +13,9 @@ import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
-  ELBOW_EXTENSION_LIMIT, MIN_VISIBILITY, SHOT_TYPE_LABELS, analyseDetailed, mean, segmentScore,
-  type Analysis, type Hand, type MetricResult, type Mode, type ShotType,
+  ELBOW_EXTENSION_LIMIT, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, formatRange, formatValue,
+  overallScore, segmentScore,
+  type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 
 type AnalyseTab = 'pose' | 'ball';
@@ -62,10 +63,10 @@ function startSegment(session: Session, now: number): Segment {
   return segment;
 }
 
-function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), shotType?: ShotType) {
+function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), shotType?: ShotType, view: View = 'side') {
   const seconds = (now - segment.startedAt) / 1000;
   const long = seconds >= MIN_CLIP_SECONDS;
-  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined) : 0;
+  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined, view) : 0;
   if (long) session.segments += 1;
   segment.frames = [];
 
@@ -132,19 +133,9 @@ function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], conne
 }
 
 function scoreColour(score: number) {
-  if (score >= 80) return GOLD;
-  if (score >= 50) return '#d97706';
+  if (score >= ON_TARGET) return GOLD;
+  if (score >= 60) return '#d97706';
   return '#ef4444';
-}
-
-function formatRange(m: MetricResult) {
-  const [lo, hi] = m.ideal;
-  if (m.unit === '°') return `${lo}° to ${hi}°`;
-  return lo === 0 ? `under ${hi}` : `${lo} to ${hi}`;
-}
-
-function formatValue(m: MetricResult) {
-  return m.unit === '°' ? `${Math.round(m.value)}°` : m.value.toFixed(2);
 }
 
 function Toggle<T extends string>({ value, options, onChange, disabled, label }: {
@@ -211,10 +202,12 @@ export function AnalyseClient() {
   const [replaying, setReplaying] = useState(false);
 
   // Mode/hand/shotType are read when a recording finishes, from inside the rAF loop
-  const settingsRef = useRef({ mode, hand, shotType });
+  // Where the camera is standing: square of the wicket, or looking straight down the pitch
+  const [view, setView] = useState<View>('side');
+  const settingsRef = useRef({ mode, hand, shotType, view });
   useEffect(() => {
-    settingsRef.current = { mode, hand, shotType };
-  }, [mode, hand, shotType]);
+    settingsRef.current = { mode, hand, shotType, view };
+  }, [mode, hand, shotType, view]);
 
   // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
@@ -261,13 +254,13 @@ export function AnalyseClient() {
       rafRef.current = null;
     }
 
-    const { mode: m, hand: hd, shotType: st } = settingsRef.current;
-    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined);
+    const { mode: m, hand: hd, shotType: st, view: vw } = settingsRef.current;
+    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw);
     if (!outcome.ok) {
       setError(outcome.problem === 'no-action'
-        ? `We could see a player but not a bowling action. The ${hd === 'right' ? 'right' : 'left'} arm never came over above the head. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed are the right settings, and that the clip includes the delivery.`
+        ? `We could see a player but not a bowling action. The ${hd === 'right' ? 'right' : 'left'} arm never came up above the shoulder. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed are the right settings, and that the clip includes the delivery.`
         : fromFile
-          ? "We couldn't see a player clearly enough in that video. Use a clip filmed side-on with head to ankles in the picture, in good light, with the player filling at least a third of the height."
+          ? "We couldn't see a player clearly enough in that video. Use a clip with head to ankles in the picture, in good light, with the player filling at least a third of the height."
           : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
       if (fromFile) {
         // Take the clip off screen so the starting message is not drawn over it
@@ -299,15 +292,19 @@ export function AnalyseClient() {
     }
 
     // Save pose results to history (best-effort)
-    const overall = Math.round(metrics.reduce((sum, mk) => sum + mk.score, 0) / metrics.length);
-    const resultJson = { mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall, elbowCheck: analysis.elbow ?? null, metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score })) };
+    const overall = overallScore(metrics);
+    const resultJson = {
+      mode: m, hand: hd, view: vw, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall,
+      elbowCheck: analysis.elbow ?? null, unique: analysis.unique,
+      metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score, excused: mk.excused ?? false })),
+    };
 
     // Generate a coaching paragraph server-side, then save both
     setCoaching({ state: 'loading' });
     fetch('/api/analysis/coaching-read', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ pose: true, mode: m, hand: hd, shotType: m === 'batting' ? st : undefined, metrics: resultJson.metrics, overall }),
+      body:    JSON.stringify({ pose: true, mode: m, hand: hd, view: vw, unique: analysis.unique, shotType: m === 'batting' ? st : undefined, metrics: resultJson.metrics.filter((mk) => !mk.excused), overall }),
     })
       .then((r) => r.ok ? r.json() : null)
       .then((coachData: { paragraph?: string } | null) => {
@@ -360,8 +357,8 @@ export function AnalyseClient() {
           session.current.totalFrames += 1;
           if (pose) session.current.frames.push(pose);
           if (now - session.current.startedAt >= SEGMENT_SECONDS * 1000) {
-            const { mode: m, hand: hd, shotType: st } = settingsRef.current;
-            finishSegment(session, session.current, m, hd, now, st);
+            const { mode: m, hand: hd, shotType: st, view: vw } = settingsRef.current;
+            finishSegment(session, session.current, m, hd, now, st, vw);
             session.current = startSegment(session, now);
           }
         }
@@ -526,7 +523,7 @@ export function AnalyseClient() {
     const session = sessionRef.current;
     sessionRef.current = null;
     if (session?.current) {
-      finishSegment(session, session.current, mode, hand, undefined, mode === 'batting' ? shotType : undefined);
+      finishSegment(session, session.current, mode, hand, undefined, mode === 'batting' ? shotType : undefined, view);
       session.current = null;
     }
     stopCamera();
@@ -579,7 +576,7 @@ export function AnalyseClient() {
   const fileShown = source === 'file' && (phase === 'recording' || phase === 'done');
   // The selfie camera is shown as a mirror; the back camera and uploaded clips are shown as filmed
   const mirrored = source === 'camera' && facing === 'user';
-  const overall = results ? Math.round(mean(results.map((r) => r.score))) : null;
+  const overall = results ? overallScore(results) : null;
 
   return (
     <div className="space-y-6">
@@ -645,7 +642,18 @@ export function AnalyseClient() {
         <Toggle label="Handedness" value={hand} onChange={(v) => { setHand(v); setResults(null); }}
           disabled={phase === 'recording'}
           options={[{ value: 'right', label: 'Right-handed' }, { value: 'left', label: 'Left-handed' }]} />
+        <Toggle label="Camera view" value={view} onChange={(v) => { setView(v); setResults(null); }}
+          disabled={phase === 'recording'}
+          options={[{ value: 'side', label: 'Side-on view' }, { value: 'front', label: 'Front-on view' }]} />
       </div>
+      <p className="-mt-3 text-xs text-neutral-500">
+        {view === 'side'
+          ? 'Side-on: camera square of the wicket, level with the crease. Shows the knee, the arm coming over and the lean.'
+          : mode === 'bowling'
+            ? 'Front-on: camera looking straight down the pitch from the batter\'s end, with the bowler coming towards it. Shows arm height, side bend, head and alignment.'
+            : 'Front-on: camera looking straight down the pitch from the bowler\'s end, facing the batter. Shows the head, the line of the bat and balance.'}
+        {' '}Film both views for the full picture.
+      </p>
 
       {/* Shot type selector — batting only */}
       {mode === 'batting' && (
@@ -695,7 +703,7 @@ export function AnalyseClient() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               <span className="text-4xl" aria-hidden>🎯</span>
               <p className="max-w-sm text-sm text-neutral-400">
-                Set your phone or laptop side-on, step back so your whole body is in frame, then start the camera.
+                Set your phone or laptop {view === 'side' ? 'side-on' : 'front-on, looking straight down the pitch'}, step back so your whole body is in frame, then start the camera.
                 Or upload a clip you have already filmed.
               </p>
             </div>
@@ -773,8 +781,26 @@ export function AnalyseClient() {
             </p>
           )}
 
+          {detail && detail.unique.length > 0 && (
+            <div className="mb-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(96,165,250,0.45)', background: 'rgba(96,165,250,0.08)' }}>
+              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: '#93C5FD' }}>Unique action noticed</p>
+              {detail.unique.map((key) => (
+                <div key={key} className="mt-2">
+                  <p className="text-sm font-medium text-white">{UNIQUE_ACTIONS[key].title}</p>
+                  <p className="mt-0.5 text-sm leading-relaxed text-neutral-300">{UNIQUE_ACTIONS[key].detail}</p>
+                </div>
+              ))}
+              <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+                The rest of the scores still compare against the textbook. A unique action should be judged on what it produces,
+                so have a coach look at it as its own action before changing anything.
+              </p>
+            </div>
+          )}
+
           {detail && (() => {
-            const reference = getReference(mode, mode === 'batting' ? shotType : undefined);
+            const reference = getReference(mode, mode === 'batting' ? shotType : undefined, view);
+            const otherView: View = view === 'side' ? 'front' : 'side';
+            const other = getReference(mode, mode === 'batting' ? shotType : undefined, otherView);
             return (
               <div className="mb-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -794,9 +820,21 @@ export function AnalyseClient() {
                 </div>
                 <p className="mt-2 text-xs text-neutral-500">
                   On your figure, gold is on target, amber is close, red needs work. The textbook figure shows the range to aim for at
-                  the same joints. It is drawn {hand === 'right' ? 'right' : 'left'}-handed from side-on, so it may face the other way
-                  from your video.
+                  the same places. It is drawn {hand === 'right' ? 'right' : 'left'}-handed from {view === 'side' ? 'side-on' : 'front-on'}, so
+                  it may face the other way from your video.
                 </p>
+
+                <div className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3">
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+                    The same position from {otherView === 'side' ? 'side-on' : 'front-on'}
+                  </p>
+                  <PoseFigure pose={referencePose(other, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={[]}
+                    mode={mode} hand={hand} labels="target" bat={referenceBat(other, hand)} size={240}
+                    label={`Diagram of the ${other.title.toLowerCase()}`} />
+                  <p className="mt-2 text-xs text-neutral-500">
+                    Film a {otherView === 'side' ? 'side-on' : 'front-on'} clip and switch Camera view to have this side of your technique measured too.
+                  </p>
+                </div>
 
                 <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3" open>
                   <summary className="cursor-pointer text-sm font-medium text-white">What the textbook says</summary>
@@ -827,16 +865,25 @@ export function AnalyseClient() {
             {results.map((m) => (
               <li key={m.key}>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <span className="font-medium text-white">{m.label}</span>
+                  <span className="font-medium text-white">
+                    {m.label}
+                    {m.excused && (
+                      <span className="ml-2 rounded-full px-2 py-0.5 text-[11px] font-medium" style={{ background: 'rgba(96,165,250,0.15)', color: '#93C5FD' }}>
+                        unique action · not counted
+                      </span>
+                    )}
+                  </span>
                   <span className="whitespace-nowrap text-neutral-400">
-                    {formatValue(m)} · <span className="font-semibold" style={{ color: scoreColour(m.score) }}>{m.score}/100</span>
+                    {formatValue(m)} · <span className="font-semibold" style={{ color: m.excused ? '#93C5FD' : scoreColour(m.score) }}>{m.score}/100</span>
                   </span>
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-800">
-                  <div className="h-full rounded-full" style={{ width: `${m.score}%`, background: scoreColour(m.score) }} />
+                  <div className="h-full rounded-full" style={{ width: `${m.score}%`, background: m.excused ? '#60A5FA' : scoreColour(m.score) }} />
                 </div>
                 <p className="mt-1.5 text-xs text-neutral-400">
-                  Target {formatRange(m)}. {m.score >= 80 ? 'On target.' : m.tip}
+                  Target {formatRange(m)}
+                  {m.best !== undefined && m.best >= m.ideal[0] && m.best <= m.ideal[1] ? `, best at ${m.best}${m.unit}` : ''}.{' '}
+                  {m.score >= 97 ? 'Textbook.' : m.score >= ON_TARGET ? `Inside the range. ${m.tip}` : m.tip}
                 </p>
               </li>
             ))}
@@ -886,7 +933,8 @@ export function AnalyseClient() {
           )}
 
           <p className="mt-5 text-xs text-neutral-600">
-            Scores are estimates from a single camera angle and work best filmed side-on. Use them as a guide, not a verdict.
+            Scores are estimates from a single camera angle. 100 is only given for the textbook position itself; anything inside the
+            target range scores 85 or more. Use them as a guide, not a verdict.
           </p>
         </Card>
       )}
