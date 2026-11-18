@@ -639,8 +639,9 @@ export default function PricingPage() {
             <h3>Club plans from £29.99 a month</h3>
             <p>
               Three plans, each covering your whole club: Pro at £29.99 a month for up to 75 members, Elite at
-              £59.99 for up to 200, and Legend at £99.99 with unlimited members. A member who wants the full
-              analysis for themselves adds it for £2.99, £4.99 or £6.99 a month, depending on the club&apos;s plan.
+              £59.99 for up to 200, and Legend at £99.99 with unlimited members. A member who wants analysis on their own
+              phone, with coaching and AI analysis sessions, adds it for £2.99, £4.99 or £6.99 a month, depending on
+              the club&apos;s plan.
               Club plans are not bought online.
               Tell us what your club needs, we confirm it with you, and we sign an agreement for a set period at
               these prices. We can also shape the platform around how your club works.
