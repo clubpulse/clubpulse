@@ -1326,7 +1326,7 @@ function PricingSection() {
             {/* Elite */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Elite</p>
-              <div className="cp-price-n"><span>£</span>22.99</div>
+              <div className="cp-price-n"><span>£</span>14.99</div>
               <p className="cp-price-period">per month · cancel anytime</p>
               <p className="cp-price-desc">Deep analysis — venue breakdowns, matchup records, detailed video reports and Gold Scores.</p>
               <div className="cp-price-divider" />
@@ -1346,7 +1346,7 @@ function PricingSection() {
             {/* Legend */}
             <div className="cp-price-card">
               <p className="cp-price-plan">Legend</p>
-              <div className="cp-price-n"><span>£</span>34.99</div>
+              <div className="cp-price-n"><span>£</span>19.99</div>
               <p className="cp-price-period">per month · cancel anytime</p>
               <p className="cp-price-desc">The complete picture. Unlimited everything, full video analysis and Platinum Scores.</p>
               <div className="cp-price-divider" />

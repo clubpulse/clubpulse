@@ -92,8 +92,8 @@ const PLAYER_SECTIONS: Section[] = [
 const PLAYER_TIERS = [
   { key: 'free',   label: 'Free',   price: '£0',     period: 'Always free',         desc: 'Get started — stats, scorecard and Bronze Scores.',              featured: false, cta: 'Join free →',    href: '/auth/sign-up' },
   { key: 'pro',    label: 'Pro',    price: '£9.99',  period: 'per month',           desc: 'AI coaching, drills and Silver Scores rewards.',                 featured: true,  cta: 'Get Pro →',      href: '/contact' },
-  { key: 'elite',  label: 'Elite',  price: '£22.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: '/contact' },
-  { key: 'legend', label: 'Legend', price: '£34.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: '/contact' },
+  { key: 'elite',  label: 'Elite',  price: '£14.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: '/contact' },
+  { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: '/contact' },
 ] as const;
 
 type TierKey = 'free' | 'pro' | 'elite' | 'legend';
@@ -600,8 +600,8 @@ export default function PricingPage() {
                           <th style={{ textAlign: 'left' }}>Feature</th>
                           <th>Free</th>
                           <th className="featured-col">Pro £9.99</th>
-                          <th>Elite £22.99</th>
-                          <th>Legend £34.99</th>
+                          <th>Elite £14.99</th>
+                          <th>Legend £19.99</th>
                         </tr>
                       </thead>
                     )}
