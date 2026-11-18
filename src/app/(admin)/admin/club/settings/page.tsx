@@ -1,6 +1,6 @@
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getClubSettings, getOnboardingChecklist } from '@/lib/admin/club-service';
-import { SubscriptionCard } from '@/components/club/SubscriptionCard';
+import { ClubPlanCard } from '@/components/club/ClubPlanCard';
 import { StripeConnectCard } from '@/components/club/StripeConnectCard';
 import { OnboardingChecklist } from '@/components/club/OnboardingChecklist';
 import { ClubProfileForm } from '@/components/club/ClubProfileForm';
@@ -102,7 +102,17 @@ export default async function ClubSettingsPage() {
 
       {/* Two-column: subscription + Stripe */}
       <div style={twoCol}>
-        <SubscriptionCard clubId={clubId} subscription={subscription} />
+        <ClubPlanCard
+          title="Your plan"
+          current={subscription && subscription.tier !== 'free' && subscription.status === 'active'
+            ? `${subscription.tier.charAt(0).toUpperCase()}${subscription.tier.slice(1)} plan${subscription.current_period_end
+              ? `, to ${new Date(subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`
+              : ''}`
+            : null}
+        >
+          Plans are agreed with each club, for a fixed period, and set up around what the club needs. To set up your plan, change
+          it or ask for something built for your club, tell us what you need and we will be in touch within 2 working days.
+        </ClubPlanCard>
         <StripeConnectCard clubId={clubId} stripeAccount={stripeAccount} />
       </div>
 

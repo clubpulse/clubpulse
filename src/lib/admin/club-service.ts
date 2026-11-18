@@ -161,14 +161,14 @@ export async function getOnboardingChecklist(
     {
       key: 'stripe',
       label: 'Connect Stripe',
-      description: 'Enable payments and Scores purchasing',
+      description: 'Lets your club take payments from members',
       complete: stripe.data?.onboarding_complete ?? false,
       href: '/admin/club/settings',
     },
     {
       key: 'subscription',
-      label: 'Choose your plan',
-      description: 'Upgrade from Free to unlock more features',
+      label: 'Agree your plan with us',
+      description: 'Tell us what your club needs and we will set it up',
       complete: sub.data?.tier !== 'free' && sub.data?.status === 'active',
       href: '/admin/club/settings',
     },

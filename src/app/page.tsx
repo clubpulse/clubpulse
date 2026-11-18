@@ -1190,7 +1190,7 @@ function ComparisonSection() {
     { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse Scores: earn, redeem, retain players' },
     { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
     { label: 'Free for players',                 cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
-    { label: 'Club plan from £9.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
+    { label: 'Club plan agreed around your needs',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
     { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
   ];
 
@@ -1369,85 +1369,28 @@ function PricingSection() {
 
       {/* ── CLUB PRICING ── */}
       {audience === 'club' && (
-        <>
-          {/* How it works blurb */}
-          <div style={{
-            background:'rgba(37,99,235,0.07)',border:'1px solid rgba(37,99,235,0.2)',
-            borderRadius:'12px',padding:'20px 24px',marginBottom:'32px',
-            display:'flex',gap:'14px',alignItems:'flex-start',
-          }}>
-            <span style={{fontSize:'20px',flexShrink:0}}>💡</span>
-            <div>
-              <p style={{fontWeight:700,color:'var(--sky)',fontSize:'14px',marginBottom:'4px'}}>How club pricing works</p>
-              <p style={{fontSize:'13px',color:'var(--fg2)',lineHeight:1.7}}>
-                Your club subscribes to a base plan, then chooses how many <strong style={{color:'var(--fg)'}}>sponsored player seats</strong> to include. Players you sponsor get a full paid tier (Pro, Elite or Legend) covered by the club — they just log in and play. Players can also subscribe individually at any time.
-              </p>
-            </div>
+        <div style={{
+          background:'rgba(37,99,235,0.07)',border:'1px solid rgba(37,99,235,0.2)',
+          borderRadius:'20px',padding:'40px 32px',maxWidth:'760px',
+        }}>
+          <p style={{fontWeight:700,color:'var(--sky)',fontSize:'13px',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'12px'}}>Built around your club</p>
+          <h3 style={{fontFamily:"'Syne',sans-serif",fontSize:'26px',fontWeight:800,color:'var(--fg)',marginBottom:'14px',lineHeight:1.2}}>
+            Tell us what you need. We agree a plan with you.
+          </h3>
+          <p style={{fontSize:'15px',color:'var(--fg2)',lineHeight:1.75,marginBottom:'22px'}}>
+            No two clubs run the same way, so there is no price list for clubs and nothing to buy on this site. You tell us your
+            requirements, we confirm them on a call, and we set out what is included, the price and the period in a simple
+            agreement. We can also build the platform around how your club works.
+          </p>
+          <div className="cp-price-features" style={{marginBottom:'26px'}}>
+            <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>A plan sized to your teams, members and juniors</span></div>
+            <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Only the features your club will use</span></div>
+            <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores and rewards for your members, funded as you choose</span></div>
+            <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Custom work for your club where you need it</span></div>
+            <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Set-up and support included</span></div>
           </div>
-
-          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
-            {/* Starter */}
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Starter</p>
-              <div className="cp-price-n"><span>£</span>19.99</div>
-              <p className="cp-price-period">per month · 1 team</p>
-              <p className="cp-price-desc">One team, all the essentials. Includes 10 Pro player seats — sponsor your starting XI.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>1 team · up to 25 players</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>10 sponsored Pro seats</strong> included</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Availability &amp; XI selection</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Basic finance &amp; fee tracking</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores rewards for all players</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Multiple teams</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Full finance dashboard</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta ghost">Get Starter →</Link>
-            </div>
-
-            {/* Club — featured */}
-            <div className="cp-price-card featured">
-              <span className="cp-price-featured-chip">Most popular</span>
-              <p className="cp-price-plan">Club</p>
-              <div className="cp-price-n"><span>£</span>49.99</div>
-              <p className="cp-price-period">per month · unlimited teams</p>
-              <p className="cp-price-desc">Your whole club on one platform. Includes 30 Pro seats — top up with Elite or Legend anytime.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Starter</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited teams &amp; players</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>30 sponsored Pro seats</strong> included</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Top-up Elite or Legend seats from £14.99/seat</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full admin dashboard</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full finance &amp; Wise payouts</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club-wide stats &amp; season reports</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta primary">Get Club →</Link>
-            </div>
-
-            {/* Federation / County */}
-            <div className="cp-price-card" style={{borderColor:'rgba(167,139,250,0.2)',background:'rgba(167,139,250,0.03)'}}>
-              <p className="cp-price-plan" style={{color:'#a78bfa'}}>Federation / County</p>
-              <div className="cp-price-n" style={{fontSize:'clamp(24px,4vw,32px)',paddingTop:'8px'}}>Let&apos;s talk</div>
-              <p className="cp-price-period">custom · annual contract</p>
-              <p className="cp-price-desc">For leagues, federations and county associations overseeing multiple clubs. Tailored to your structure.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Unlimited clubs under your umbrella</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Aggregated league standings &amp; stats</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Cross-club compliance reporting</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Club registration &amp; governance tools</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>ECB-ready data exports</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>Dedicated account manager</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon" style={{color:'#a78bfa'}}>✓</span><span>SSO &amp; custom integrations</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta ghost" style={{borderColor:'rgba(167,139,250,0.3)',color:'#a78bfa'}}>Contact us →</Link>
-            </div>
-          </div>
-          <p className="cp-price-note">Sponsored seats give your players a paid tier — covered by the club. Players can always self-subscribe too. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
-        </>
+          <Link href="/contact" className="cp-price-cta primary" style={{display:'inline-block'}}>Tell us what your club needs →</Link>
+        </div>
       )}
     </>
   );

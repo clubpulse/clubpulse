@@ -636,13 +636,14 @@ export default function PricingPage() {
         <div style={{ padding: '0 24px 80px' }}>
           <div className="cp-coming-soon">
             <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏟️</div>
-            <h3>Club plans coming soon</h3>
+            <h3>Club plans are agreed with each club</h3>
             <p>
-              We&apos;re designing club pricing around how grassroots cricket clubs actually operate —
-              multiple teams, finance tracking, AI tools for captains and admins, and rewards for
-              every player in your squad. No per-seat pricing. No surprises.
+              No two clubs run the same way, so there is no price list for clubs and nothing to buy on this
+              site. Tell us what your club needs, we confirm it on a call, and we set out what is included,
+              the price and the period in a simple agreement. We can also build the platform around how
+              your club works.
             </p>
-            <Link href="/contact">Get notified when club plans launch →</Link>
+            <Link href="/contact">Tell us what your club needs →</Link>
           </div>
         </div>
       )}

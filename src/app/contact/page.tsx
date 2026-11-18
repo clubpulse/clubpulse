@@ -2,15 +2,41 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { CLUB_SIZES, NEEDS } from '@/lib/enquiries/logic';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', club: '', role: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', club: '', role: '', members: '', message: '', website: '' });
+  const [needs, setNeeds] = useState<string[]>([]);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  const toggleNeed = (value: string) => setNeeds((list) => (list.includes(value) ? list.filter((n) => n !== value) : [...list, value]));
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // In production this would POST to an API route or a service like Resend
-    setSubmitted(true);
+    setError(null);
+    if (needs.length === 0 && form.message.trim().length < 10) {
+      setError('Tick what you need, or tell us a little in the message.');
+      return;
+    }
+    setSending(true);
+    try {
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, needs }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error ?? 'Something went wrong.');
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(`${err instanceof Error ? err.message : 'Something went wrong.'} You can also email hello@clubpulse.co.`);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -99,6 +125,11 @@ export default function ContactPage() {
 
         /* Success */
         .success-state { text-align: center; padding: 48px 24px }
+        .needs { border: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+        @media(max-width: 560px) { .needs { grid-template-columns: 1fr } }
+        .needs legend { font-size: 12px; font-weight: 600; color: rgba(240,236,228,0.4); letter-spacing: 0.04em; margin-bottom: 10px; padding: 0 }
+        .need { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); font-size: 13px; color: rgba(240,236,228,0.8); cursor: pointer }
+        .need input { width: 16px; height: 16px; accent-color: #2563EB; flex-shrink: 0 }
         .success-icon { font-size: 48px; margin-bottom: 20px }
         .success-h { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #f0ece4; margin-bottom: 10px }
         .success-p { font-size: 15px; color: rgba(240,236,228,0.4); line-height: 1.65 }
@@ -155,7 +186,7 @@ export default function ContactPage() {
         <div>
           <p className="section-tag">Get in touch</p>
           <h1 className="page-h">Bring ClubPulse<br />to your club</h1>
-          <p className="page-sub">We onboard clubs one at a time to make sure the setup fits your structure. Fill in the form and we&apos;ll be in touch within a couple of days.</p>
+          <p className="page-sub">Every club runs differently, so we do not sell ClubPulse off the shelf. Tell us what your club needs, we agree a plan and a fixed term with you, and we set the platform up to match.</p>
 
           <div className="contact-method">
             <div className="method-icon">✉️</div>
@@ -182,10 +213,10 @@ export default function ContactPage() {
           </p>
           <div className="onboarding-steps">
             {[
-              { n: '1', text: '<strong>You fill in the form</strong> — tell us about your club, your current setup, and what\'s causing the most pain.' },
-              { n: '2', text: '<strong>We have a call</strong> — 20 minutes to walk through ClubPulse and answer your questions.' },
-              { n: '3', text: '<strong>We set up your club</strong> — create your space, import your member list, configure your season.' },
-              { n: '4', text: '<strong>You go live</strong> — we stay on hand for the first few weeks to make sure everything runs smoothly.' },
+              { n: '1', text: '<strong>You tell us what you need.</strong> Your club, its size, and what you want ClubPulse to do.' },
+              { n: '2', text: '<strong>We talk it through.</strong> A short call to confirm your requirements and show you the platform.' },
+              { n: '3', text: '<strong>We agree a plan.</strong> What is included, the price and the period, set out in a simple agreement.' },
+              { n: '4', text: '<strong>We set it up for your club.</strong> Built around what you asked for, with help while you get going.' },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num">{s.n}</span>
@@ -201,12 +232,12 @@ export default function ContactPage() {
             <div className="success-state">
               <div className="success-icon">🎉</div>
               <h2 className="success-h">We&apos;ve got your message</h2>
-              <p className="success-p">Thanks for reaching out. We&apos;ll be in touch within a couple of days to set up a call and walk you through ClubPulse.</p>
+              <p className="success-p">Thanks for getting in touch. We&apos;ll reply within 2 working days to arrange a call and confirm what your club needs.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <h2 className="form-title">Tell us about your club</h2>
-              <p className="form-subtitle">Takes about 2 minutes. No obligation.</p>
+              <h2 className="form-title">Tell us what your club needs</h2>
+              <p className="form-subtitle">Takes about 2 minutes. No obligation, and nothing to pay on this site.</p>
 
               <div className="field-row">
                 <div className="field">
@@ -265,16 +296,42 @@ export default function ContactPage() {
               </div>
 
               <div className="field">
-                <label htmlFor="message">What&apos;s the biggest admin headache right now?</label>
+                <label htmlFor="members">Size of the club</label>
+                <select id="members" value={form.members} onChange={e => setForm(f => ({ ...f, members: e.target.value }))}>
+                  <option value="">Choose…</option>
+                  {CLUB_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
+                </select>
+              </div>
+
+              <fieldset className="needs">
+                <legend>What do you want ClubPulse to do? Tick all that apply.</legend>
+                {NEEDS.map((need) => (
+                  <label key={need.value} className="need">
+                    <input type="checkbox" checked={needs.includes(need.value)} onChange={() => toggleNeed(need.value)} />
+                    <span>{need.label}</span>
+                  </label>
+                ))}
+              </fieldset>
+
+              {/* Left empty by people; scripts fill it in and are ignored */}
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.website}
+                onChange={e => setForm(f => ({ ...f, website: e.target.value }))}
+                style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+
+              <div className="field">
+                <label htmlFor="message">Anything else we should know?</label>
                 <textarea
                   id="message"
-                  placeholder="Chasing availability every week, tracking who's paid subs, no live scorecard…"
+                  placeholder="How you run things today, what takes the most time, anything you would like built for your club…"
                   value={form.message}
                   onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                 />
               </div>
 
-              <button type="submit" className="submit-btn">Send message →</button>
+              {error && <p role="alert" style={{ color: '#f87171', fontSize: 13, marginBottom: 12, lineHeight: 1.5 }}>{error}</p>}
+              <button type="submit" className="submit-btn" disabled={sending} style={sending ? { opacity: 0.6 } : undefined}>
+                {sending ? 'Sending…' : 'Send →'}
+              </button>
             </form>
           )}
         </div>
@@ -288,7 +345,9 @@ export default function ContactPage() {
             <Link href="/">Home</Link>
             <Link href="/about">About</Link>
             <Link href="/contact">Contact</Link>
-            <Link href="/login">Sign in</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+            <Link href="/auth/sign-in">Sign in</Link>
           </div>
         </div>
       </footer>
