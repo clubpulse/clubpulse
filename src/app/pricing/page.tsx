@@ -398,7 +398,7 @@ export default function PricingPage() {
         /* FEATURE TABLE */
         .cp-feature-table-wrap {
           max-width: 1100px;
-          margin: 0 auto 80px;
+          margin: 0 auto 32px;
           padding: 0 24px;
           overflow-x: auto;
         }
@@ -471,7 +471,8 @@ export default function PricingPage() {
           text-align: center;
           font-size: 12px;
           color: var(--cp-muted);
-          margin: -48px auto 72px;
+          /* No negative top margin: it used to pull this line up over the button above when the table was closed */
+          margin: 0 auto 72px;
           max-width: 600px;
           padding: 0 24px;
         }
@@ -543,7 +544,7 @@ export default function PricingPage() {
         <h1 className="cp-pricing-h1">Simple pricing.<br />Serious value.</h1>
         <p className="cp-pricing-sub">
           Free for every player. Paid plans that unlock the full depth of your game.
-          Club plans coming soon — built around how your club actually operates.
+          Club plans from £29.99 a month, set up around how your club actually operates.
         </p>
 
         {/* AUDIENCE TOGGLE */}
