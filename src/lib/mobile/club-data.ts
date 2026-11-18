@@ -8,6 +8,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ActionResult } from '@/lib/types/action';
+import { decideJoinRequest, listJoinRequests } from './club-admin';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_RE.test(value);
@@ -364,9 +365,9 @@ export async function listDbsForUser(userId: string): Promise<MobileDbsRecord[]>
 /* ── Admin approvals ───────────────────────────────────────────────────────── */
 
 export type MobileApproval = {
-  /** 'link:<parent_child_links.id>' or 'coach:<coach_profiles.id>' */
+  /** 'link:<parent_child_links.id>', 'coach:<coach_profiles.id>' or 'join:<club_join_requests.id>' */
   id: string;
-  type: 'link_junior' | 'coach_verification';
+  type: 'link_junior' | 'coach_verification' | 'join_club';
   requester_name: string;
   requester_id: string;
   details: string;
@@ -390,9 +391,23 @@ export async function listApprovals(userId: string): Promise<MobileApproval[]> {
     ? await sb.from('parent_child_links').select('id, parent_id, child_id, relationship, created_at').in('child_id', childIds).is('verified_at', null)
     : { data: [] as { id: string; parent_id: string; child_id: string; relationship: string; created_at: string }[] };
 
-  const names = await profileNames([...(links ?? []).map((l) => l.parent_id as string), ...(coaches ?? []).map((c) => c.user_id as string)]);
+  const joins = await listJoinRequests(clubIds);
+  const names = await profileNames([
+    ...(links ?? []).map((l) => l.parent_id as string),
+    ...(coaches ?? []).map((c) => c.user_id as string),
+    ...joins.map((j) => j.user_id),
+  ]);
 
   const items: MobileApproval[] = [
+    ...joins.map((j) => ({
+      id: `join:${j.id}`,
+      type: 'join_club' as const,
+      requester_name: names.get(j.user_id) ?? 'New member',
+      requester_id: j.user_id,
+      details: 'wants to join your club',
+      status: 'pending' as const,
+      created_at: j.created_at,
+    })),
     ...(links ?? []).map((l) => {
       const child = (children ?? []).find((c) => c.id === l.child_id);
       return {
@@ -430,6 +445,8 @@ export async function approveRequest(userId: string, approvalId: string): Promis
   if (clubIds.length === 0) return { success: false, error: 'Only club admins can do this' };
   const sb = createAdminClient();
   const now = new Date().toISOString();
+
+  if (kind === 'join') return decideJoinRequest(userId, id, true);
 
   if (kind === 'coach') {
     const { data, error } = await sb

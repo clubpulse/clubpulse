@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/Card';
 import { useAuth } from '../../hooks/useAuth';
@@ -56,6 +57,9 @@ export default function ShiftsScreen() {
   }, [tab]);
 
   useEffect(() => { setLoading(true); load(); }, [load]);
+  // Coming back from posting a shift, or from another tab, shows the latest list
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+  const router = useRouter();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -101,7 +105,11 @@ export default function ShiftsScreen() {
             <Text style={fonts.heading}>Volunteer Shifts</Text>
 
             {isAdmin && (
-              <Text style={fonts.small}>Create and manage shifts from the club dashboard on the web.</Text>
+              <Pressable onPress={() => router.push('/post-shift')} accessibilityRole="button"
+                style={({ pressed }) => [{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, alignSelf: 'flex-start' }, pressed && { opacity: 0.7 }]}>
+                <Ionicons name="add-circle" size={18} color={colors.success} />
+                <Text style={{ color: colors.success, fontWeight: '700' }}>Post a shift</Text>
+              </Pressable>
             )}
 
             {/* Tab selector */}
