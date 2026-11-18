@@ -2,7 +2,8 @@
 // the server-actions file on purpose: every export there can be called from a browser with any
 // arguments, and these functions take a user id.
 //
-// Cards are earned (Scores milestones, check-in streaks, awards from the club), never bought.
+// Cards are earned (tasks the club chooses, check-in streaks, Scores milestones, awards from the
+// club), never bought.
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isTangoApiConfigured, placeTangoOrder } from '@/lib/tango/client';
@@ -10,6 +11,7 @@ import { AGE_GATE_MESSAGE, getPrimaryClubId, isAdultPlayer } from '@/lib/scores/
 import type { ActionResult } from '@/lib/types/action';
 import type { ScratchPrize } from '@/lib/actions/scratch-cards';
 import { chances, type PoolPrize } from '@/lib/scratch/logic';
+import { CARD_TASKS, taskLine } from '@/lib/scratch/tasks';
 
 // ── Gift card fulfilment ─────────────────────────────────────────────────────
 // Server-side only: the gift card provider keys never reach the browser. A failure here never
@@ -125,17 +127,21 @@ export type MyScratchCards = {
   prizes: Array<{ label: string; chance: number }>;
   /** How cards are earned at this club. */
   milestone: number | null;
+  /** Tasks this club rewards with a card, each as a line ready to show. */
+  tasks: string[];
 };
 
 const SOURCE_LABEL: Record<string, string> = {
   milestone: 'Scores milestone',
+  task: 'Task completed',
+  game: 'Game card',
   bonus: 'Bonus card',
   event: 'Event card',
   purchased: 'Card',
 };
 
 export async function getMyScratchCards(userId: string): Promise<MyScratchCards> {
-  const empty: MyScratchCards = { unavailable: null, gate: null, waiting: [], opened: [], prizes: [], milestone: null };
+  const empty: MyScratchCards = { unavailable: null, gate: null, waiting: [], opened: [], prizes: [], milestone: null, tasks: [] };
   const clubId = await getPrimaryClubId(userId);
   if (!clubId) return { ...empty, unavailable: 'Join a club to earn scratch cards.' };
 
@@ -169,7 +175,21 @@ export async function getMyScratchCards(userId: string): Promise<MyScratchCards>
     }),
     prizes: chances((pool ?? []) as PoolPrize[]),
     milestone: (config.milestone_scores as number | null) ?? null,
+    tasks: await getTaskLines(userId, clubId),
   };
+}
+
+/** How this member earns cards from tasks at their club. Empty if the club rewards none, or on any error. */
+export async function getTaskLines(userId: string, clubId: string): Promise<string[]> {
+  const admin = createAdminClient();
+  const [{ data: tasks }, { data: progress }] = await Promise.all([
+    admin.from('scratch_card_tasks').select('task, every_n').eq('club_id', clubId).eq('is_active', true),
+    admin.from('scratch_card_task_progress').select('task').eq('user_id', userId).eq('club_id', clubId).limit(5000),
+  ]);
+  const done = new Map<string, number>();
+  for (const p of progress ?? []) done.set(p.task as string, (done.get(p.task as string) ?? 0) + 1);
+  const on = new Map((tasks ?? []).map((t) => [t.task as string, t.every_n as number]));
+  return CARD_TASKS.filter((t) => on.has(t.key)).map((t) => taskLine(t.key, on.get(t.key)!, done.get(t.key) ?? 0));
 }
 
 /** Records that the member says they are 18 or over. Juniors cannot switch the gate off this way. */

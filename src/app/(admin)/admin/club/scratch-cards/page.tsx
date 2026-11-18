@@ -1,16 +1,17 @@
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
-import { getScratchCardConfig, getScratchCardPrizes, getClubScratchCards, getPendingScratchPrizes } from '@/lib/actions/scratch-cards';
+import { getScratchCardConfig, getScratchCardPrizes, getClubScratchCards, getPendingScratchPrizes, getScratchCardTasks } from '@/lib/actions/scratch-cards';
 import { PendingPrizes } from '@/components/scratch-cards/PendingPrizes';
 import { AdminScratchCardsPanel } from '@/components/scratch-cards/AdminScratchCardsPanel';
 
 export default async function AdminScratchCardsPage() {
   const { clubId } = await requireClubAdminPage();
 
-  const [configResult, prizesResult, cardsResult, pendingResult] = await Promise.all([
+  const [configResult, prizesResult, cardsResult, pendingResult, tasksResult] = await Promise.all([
     getScratchCardConfig(clubId),
     getScratchCardPrizes(clubId),
     getClubScratchCards(clubId),
     getPendingScratchPrizes(clubId),
+    getScratchCardTasks(clubId),
   ]);
 
   return (
@@ -23,7 +24,7 @@ export default async function AdminScratchCardsPage() {
           🎰 Scratch Cards
         </h1>
         <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
-          Configure prize pools, weights and weekly caps · players spend Scores to scratch and reveal
+          Choose what earns a card, and set the prizes and their chances. Cards are earned, never bought.
         </p>
       </div>
       <PendingPrizes clubId={clubId} cards={pendingResult.success ? pendingResult.data : []} />
@@ -32,6 +33,7 @@ export default async function AdminScratchCardsPage() {
         config={configResult.success ? configResult.data : null}
         prizes={prizesResult.success ? prizesResult.data : []}
         recentCards={cardsResult.success ? cardsResult.data : []}
+        taskSettings={tasksResult.success ? tasksResult.data : null}
       />
     </div>
   );

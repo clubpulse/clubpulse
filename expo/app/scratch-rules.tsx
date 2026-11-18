@@ -31,6 +31,8 @@ const RULES: { heading: string; lines: string[] }[] = [
     heading: 'How you get a card',
     lines: [
       'Check in on seven days in a row: the seventh day gives you a card.',
+      'Complete tasks your club has chosen to reward, such as volunteer shifts, Academy lessons or video analysis. Your club sets how many it takes, and there is a weekly limit.',
+      'Take part in a game that awards a card, where one is running.',
       'Reach a Scores milestone, where your club has set one.',
       'Your club awards you a card.',
     ],

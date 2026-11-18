@@ -8,6 +8,7 @@ import { fulfilGiftCardPrize, revealCardForUser } from '@/lib/scratch/service';
 import { requireUser } from '@/lib/auth/server';
 import { getAdminContext } from '@/lib/auth/admin';
 import type { ActionResult } from '@/lib/types/action';
+import { CARD_TASKS, DEFAULT_EVERY, DEFAULT_WEEKLY_CAP, parseTaskSettings, type CardTaskSetting } from '@/lib/scratch/tasks';
 
 export type ScratchCardPrize = {
   id: string;
@@ -88,6 +89,60 @@ export async function upsertScratchCardConfig(
     .single();
   if (error) return { success: false, error: error.message };
   return { success: true, data: data as ScratchCardConfig };
+}
+
+export type ScratchCardTaskSettings = { tasks: CardTaskSetting[]; weeklyCap: number };
+
+/** Which tasks give this club's members a scratch card. Every task is listed, on or off. */
+export async function getScratchCardTasks(clubId: string): Promise<ActionResult<ScratchCardTaskSettings>> {
+  const user = await requireUser();
+  const ctx = await getAdminContext(user.id);
+  if (!ctx.adminClubIds.includes(clubId)) return { success: false, error: 'Not authorised' };
+
+  const admin = createAdminClient();
+  const [{ data: rows }, { data: config }] = await Promise.all([
+    admin.from('scratch_card_tasks').select('task, every_n, is_active').eq('club_id', clubId),
+    admin.from('scratch_card_config').select('task_weekly_cap').eq('club_id', clubId).maybeSingle(),
+  ]);
+  const saved = new Map((rows ?? []).map((r) => [r.task as string, r]));
+  return {
+    success: true,
+    data: {
+      tasks: CARD_TASKS.map((t) => ({
+        task: t.key,
+        every_n: (saved.get(t.key)?.every_n as number | undefined) ?? DEFAULT_EVERY[t.key],
+        is_active: !!saved.get(t.key)?.is_active,
+      })),
+      weeklyCap: (config?.task_weekly_cap as number | undefined) ?? DEFAULT_WEEKLY_CAP,
+    },
+  };
+}
+
+export async function saveScratchCardTasks(clubId: string, tasks: unknown, weeklyCap: unknown): Promise<ActionResult<void>> {
+  const user = await requireUser();
+  const ctx = await getAdminContext(user.id);
+  if (!ctx.adminClubIds.includes(clubId)) return { success: false, error: 'Not authorised' };
+
+  const parsed = parseTaskSettings(tasks, weeklyCap);
+  if ('error' in parsed) return { success: false, error: parsed.error };
+
+  const admin = createAdminClient();
+  const now = new Date().toISOString();
+  const { data: config } = await admin.from('scratch_card_config').select('id').eq('club_id', clubId).maybeSingle();
+  if (!config) return { success: false, error: 'Save the scratch card settings above first.' };
+
+  const { error: capError } = await admin.from('scratch_card_config').update({ task_weekly_cap: parsed.weeklyCap, updated_at: now }).eq('club_id', clubId);
+  if (capError) return { success: false, error: 'Could not save. Has the latest database update been run?' };
+
+  if (parsed.tasks.length > 0) {
+    const { error } = await admin
+      .from('scratch_card_tasks')
+      .upsert(parsed.tasks.map((t) => ({ club_id: clubId, ...t, updated_at: now })), { onConflict: 'club_id,task' });
+    if (error) return { success: false, error: 'Could not save. Has the latest database update been run?' };
+  }
+  revalidatePath('/admin/club/scratch-cards');
+  revalidatePath('/scratch-cards');
+  return { success: true, data: undefined };
 }
 
 export async function getScratchCardPrizes(clubId: string): Promise<ActionResult<ScratchCardPrize[]>> {

@@ -47,6 +47,8 @@ const SECTIONS: LegalSection[] = [
     body: (
       <ul>
         <li>Check in on seven days in a row: the seventh day gives you a card.</li>
+        <li>Complete tasks your club has chosen to reward, such as volunteer shifts, Academy lessons or video analysis. Your club sets how many it takes, and there is a weekly limit.</li>
+        <li>Take part in a game that awards a card, where one is running.</li>
         <li>Reach a Scores milestone, where your club has set one.</li>
         <li>Your club awards you a card.</li>
       </ul>
