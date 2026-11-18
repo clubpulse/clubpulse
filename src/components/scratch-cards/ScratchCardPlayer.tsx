@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useTransition } from 'react';
-import { buyAndRevealScratchCard, revealExistingCard } from '@/lib/actions/scratch-cards';
+import { revealExistingCard } from '@/lib/actions/scratch-cards';
 import type { ScratchCardConfig, ScratchCard, ScratchPrize } from '@/lib/actions/scratch-cards';
 
 type Prize = ScratchPrize;
@@ -105,26 +105,18 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
     revealedRef.current = false;
     setScratchProgress(0);
 
-    // If there's a free unscratched card, use it; otherwise buy + reveal
-    if (freeQueue.current.length > 0) {
-      const cardId = freeQueue.current[0];
-      startTransition(async () => {
-        const res = await revealExistingCard(cardId);
-        if (!res.success) { setError(res.error ?? 'Something went wrong'); setPhase('idle'); return; }
-        // Wait for scratch animation
-        await new Promise(r => setTimeout(r, 400));
-        setPrize(res.data.prize);
-        freeQueue.current = freeQueue.current.slice(1);
-        setFreeLeft(freeQueue.current.length);
-      });
-    } else {
-      startTransition(async () => {
-        const res = await buyAndRevealScratchCard(clubId);
-        if (!res.success) { setError(res.error ?? 'Something went wrong'); setPhase('idle'); return; }
-        await new Promise(r => setTimeout(r, 400));
-        setPrize(res.data.prize);
-      });
-    }
+    // Cards are earned, never bought: there is only ever an earned card to open
+    if (freeQueue.current.length === 0) { setPhase('idle'); return; }
+    const cardId = freeQueue.current[0];
+    startTransition(async () => {
+      const res = await revealExistingCard(cardId);
+      if (!res.success) { setError(res.error ?? 'Something went wrong'); setPhase('idle'); return; }
+      // Wait for scratch animation
+      await new Promise(r => setTimeout(r, 400));
+      setPrize(res.data.prize);
+      freeQueue.current = freeQueue.current.slice(1);
+      setFreeLeft(freeQueue.current.length);
+    });
   }
 
   function reset() {
@@ -136,7 +128,6 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
   }
 
   const hasFreeCard = freeLeft > 0;
-  const canAfford = walletBalance >= config.cost_scores;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', padding: '8px 0' }}>
@@ -211,7 +202,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             <div style={{ textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '32px' }}>🎰</p>
               <p style={{ margin: '8px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-                {hasFreeCard ? 'You have a free scratch card!' : `${config.cost_scores.toLocaleString()} Scores`}
+                {hasFreeCard ? 'You have a card to open!' : 'No cards to open yet'}
               </p>
             </div>
           ) : (
@@ -257,21 +248,17 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
       {phase === 'idle' && (
         <button
           onClick={startScratch}
-          disabled={isPending || (!hasFreeCard && !canAfford)}
+          disabled={isPending || !hasFreeCard}
           style={{
-            background: hasFreeCard ? '#16a34a' : canAfford ? '#2563EB' : 'rgba(255,255,255,0.1)',
+            background: hasFreeCard ? '#16a34a' : 'rgba(255,255,255,0.1)',
             border: 'none', borderRadius: '12px',
             padding: '14px 32px',
             fontSize: '14px', fontWeight: 700, color: '#fff',
-            cursor: hasFreeCard || canAfford ? 'pointer' : 'not-allowed',
+            cursor: hasFreeCard ? 'pointer' : 'not-allowed',
             fontFamily: "'Syne', sans-serif",
           }}
         >
-          {hasFreeCard
-            ? '🎉 Scratch your free card!'
-            : canAfford
-              ? `Scratch for ${config.cost_scores.toLocaleString()} Scores`
-              : `Need ${config.cost_scores.toLocaleString()} Scores`}
+          {hasFreeCard ? '🎉 Scratch your card' : 'Earn a card to scratch'}
         </button>
       )}
 
@@ -305,7 +292,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             fontSize: '13px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
           }}
         >
-          Scratch another
+          {hasFreeCard ? 'Scratch another' : 'Done'}
         </button>
       )}
 
@@ -313,7 +300,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
       <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)', margin: 0 }}>
         Your balance: {walletBalance.toLocaleString()} Scores
         {config.milestone_scores && (
-          <> · Free card every {config.milestone_scores.toLocaleString()} Scores earned</>
+          <> · A card for every {config.milestone_scores.toLocaleString()} Scores earned</>
         )}
       </p>
     </div>

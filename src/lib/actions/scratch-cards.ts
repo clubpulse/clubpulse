@@ -3,8 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { isTangoApiConfigured, placeTangoOrder } from '@/lib/tango/client';
-import { AGE_GATE_MESSAGE, isActiveMember, isAdultPlayer } from '@/lib/scores/context';
+import { isActiveMember } from '@/lib/scores/context';
+import { fulfilGiftCardPrize, revealCardForUser } from '@/lib/scratch/service';
 import { requireUser } from '@/lib/auth/server';
 import { getAdminContext } from '@/lib/auth/admin';
 import type { ActionResult } from '@/lib/types/action';
@@ -239,75 +239,6 @@ export async function retryScratchGiftCard(clubId: string, cardId: string): Prom
   return voucher ? { success: true, data: undefined } : { success: false, error: 'The gift card could not be issued. Check the note on the card.' };
 }
 
-// ── Gift card fulfilment ─────────────────────────────────────────────────────
-// Server-side only: the gift card provider keys never reach the browser. A failure here never
-// fails the reveal. The card is left as 'failed' with a note so an admin can retry it.
-
-async function fulfilGiftCardPrize(
-  userId: string,
-  cardId: string,
-  rewardId: string,
-): Promise<{ token: string | null; instructions: string | null; expiry: string | null } | null> {
-  const admin = createAdminClient();
-  const fail = async (note: string) => {
-    await admin.from('scratch_cards').update({ fulfilment_status: 'failed', fulfilment_notes: note.slice(0, 500) }).eq('id', cardId);
-    return null;
-  };
-
-  // No API access yet: leave the card pending for a manual order (see /admin/gift-cards)
-  if (!isTangoApiConfigured()) {
-    await admin.from('scratch_cards').update({ fulfilment_notes: 'Waiting for manual order' })
-      .eq('id', cardId).eq('user_id', userId).eq('fulfilment_status', 'pending');
-    return null;
-  }
-
-  // Only cards that belong to this player and are still waiting can be issued. A repeat request
-  // for the same card is safe: the card id is the provider's external reference (see below).
-  const { data: claimed } = await admin
-    .from('scratch_cards')
-    .update({ fulfilment_notes: 'Issuing gift card' })
-    .eq('id', cardId)
-    .eq('user_id', userId)
-    .in('fulfilment_status', ['pending', 'failed'])
-    .is('provider_reference', null)
-    .select('id');
-  if (!claimed || claimed.length === 0) return null;
-
-  const { data: reward } = await admin
-    .from('rewards_catalogue')
-    .select('tango_utid, tango_amount_gbp')
-    .eq('id', rewardId)
-    .maybeSingle();
-  if (!reward?.tango_utid || !reward.tango_amount_gbp) return fail('Prize is not linked to a gift card in the rewards catalogue');
-
-  const { data: userData } = await admin.auth.admin.getUserById(userId);
-  const email = userData?.user?.email;
-  if (!email) return fail('Player has no email address on file');
-
-  try {
-    // cardId is the external reference, so the provider treats a repeat as the same order
-    const order = await placeTangoOrder(reward.tango_utid as string, Number(reward.tango_amount_gbp), email, cardId);
-    if (!order.ok) return fail(order.error ?? 'Gift card provider declined the order');
-
-    const voucher = {
-      token: order.reward?.token ?? null,
-      instructions: order.reward?.redemptionInstructions ?? null,
-      expiry: order.reward?.expirationDate ?? null,
-    };
-    await admin.from('scratch_cards').update({
-      fulfilment_status: 'fulfilled',
-      provider_reference: order.referenceOrderID ?? null,
-      voucher_token: voucher.token,
-      voucher_instructions: voucher.instructions,
-      voucher_expiry: voucher.expiry,
-      fulfilment_notes: null,
-    }).eq('id', cardId);
-    return voucher;
-  } catch (err) {
-    return fail(`Gift card provider error: ${String(err)}`);
-  }
-}
-
 // ── Player ───────────────────────────────────────────────────────────────────
 
 export async function getMyUnscratched(clubId: string): Promise<ActionResult<ScratchCard[]>> {
@@ -339,61 +270,16 @@ export async function getMyScratchedCards(clubId: string): Promise<ActionResult<
   return { success: true, data: (data ?? []) as ScratchCard[] };
 }
 
-// The scratch card SQL functions are executable by the service role only, so they are called
-// with the admin client and the user id that requireUser() has just verified.
-async function reveal(userId: string, cardId: string): Promise<ActionResult<{ prize: ScratchPrize }>> {
-  const { data, error } = await createAdminClient().rpc('reveal_scratch_card', { p_user_id: userId, p_card_id: cardId });
-  if (error) return { success: false, error: 'Could not reveal this card. Please try again.' };
-  const result = data as { ok: boolean; error?: string; prize?: ScratchPrize };
-  if (!result.ok || !result.prize) {
-    const msgs: Record<string, string> = {
-      not_found: 'That card could not be found.',
-      already_scratched: 'That card has already been scratched.',
-    };
-    return { success: false, error: msgs[result.error ?? ''] ?? 'Could not reveal this card.' };
-  }
-
-  const prize: ScratchPrize = { ...result.prize };
-  if (prize.type === 'gift_card' && prize.reward_id) {
-    prize.voucher = await fulfilGiftCardPrize(userId, cardId, prize.reward_id);
-    prize.pending = !prize.voucher;
-  } else if (prize.type === 'club_reward' || prize.type === 'gift_card') {
-    prize.pending = true;
-  }
-  revalidatePath('/scratch-cards');
-  return { success: true, data: { prize } };
-}
-
-export async function buyAndRevealScratchCard(clubId: string): Promise<ActionResult<{ card_id: string; prize: ScratchPrize }>> {
-  const user = await requireUser();
-  if (!(await isAdultPlayer(user.id, clubId))) return { success: false, error: AGE_GATE_MESSAGE };
-
-  const { data: buyData, error: buyError } = await createAdminClient().rpc('buy_scratch_card', {
-    p_user_id: user.id,
-    p_club_id: clubId,
-  });
-  if (buyError) return { success: false, error: 'Could not buy a card. Please try again.' };
-  const buy = buyData as { ok: boolean; error?: string; card_id?: string };
-  if (!buy.ok || !buy.card_id) {
-    const msgs: Record<string, string> = {
-      scratch_cards_not_enabled: 'Scratch cards are not enabled for this club.',
-      insufficient_scores: 'Not enough Scores.',
-    };
-    return { success: false, error: msgs[buy.error ?? ''] ?? 'Could not buy a card.' };
-  }
-
-  const res = await reveal(user.id, buy.card_id);
-  if (!res.success) return res;
-  return { success: true, data: { card_id: buy.card_id, prize: res.data.prize } };
+// Scratch cards are earned, never bought. A card used to be bought with Scores, which meant staking
+// something of value on a chance. Cards now come only from milestones, check-in streaks and awards.
+export async function buyAndRevealScratchCard(_clubId: string): Promise<ActionResult<{ card_id: string; prize: ScratchPrize }>> {
+  await requireUser();
+  return { success: false, error: 'Scratch cards are earned, not bought. Keep a check-in streak or reach a Scores milestone to get one.' };
 }
 
 export async function revealExistingCard(cardId: string): Promise<ActionResult<{ prize: ScratchPrize }>> {
   const user = await requireUser();
-
-  // The card's own club decides the age gate; reveal() checks the card belongs to this player
-  const { data: card } = await createAdminClient().from('scratch_cards').select('club_id').eq('id', cardId).eq('user_id', user.id).maybeSingle();
-  if (!card) return { success: false, error: 'That card could not be found.' };
-  if (!(await isAdultPlayer(user.id, card.club_id as string))) return { success: false, error: AGE_GATE_MESSAGE };
-
-  return reveal(user.id, cardId);
+  const res = await revealCardForUser(user.id, cardId);
+  if (res.success) revalidatePath('/scratch-cards');
+  return res;
 }

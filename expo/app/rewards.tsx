@@ -43,6 +43,8 @@ export default function RewardsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ text: string; good: boolean } | null>(null);
+  // Earned scratch cards waiting to be opened; null when cards are not on offer to this player
+  const [cards, setCards] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -50,6 +52,12 @@ export default function RewardsScreen() {
       setError(null);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Could not load your rewards.');
+    }
+    try {
+      const sc = await api<{ unavailable: string | null; gate: string | null; waiting: unknown[] }>('/api/scratch-cards');
+      setCards(sc.unavailable || sc.gate === 'junior' ? null : sc.waiting.length);
+    } catch {
+      setCards(null); // an older server, or offline: the rewards themselves still show
     }
   }, []);
 
@@ -90,7 +98,7 @@ export default function RewardsScreen() {
       setNotice({
         good: true,
         text: res.gotCard
-          ? `Checked in: day ${res.day}. You earned a free scratch card.`
+          ? `Checked in: day ${res.day}. You earned a scratch card. Open it from Scratch cards above.`
           : res.amount > 0
             ? `Checked in: day ${res.day}. ⭐ ${res.amount} Scores added.`
             : `Checked in: day ${res.day}.`,
@@ -218,6 +226,19 @@ export default function RewardsScreen() {
           <View style={[styles.notice, { borderColor: notice.good ? colors.goldBorder : colors.danger }]}>
             <Text style={[fonts.regular, !notice.good && { color: colors.danger }]}>{notice.text}</Text>
           </View>
+        )}
+
+        {cards !== null && (
+          <Pressable onPress={() => router.push('/scratch-cards' as never)} style={[styles.card, styles.headRow, cards > 0 && { borderColor: colors.gold }]}>
+            <Text style={styles.goalIcon}>🎟️</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.goalTitle, { color: colors.white }]}>Scratch cards</Text>
+              <Text style={[fonts.small, { marginTop: 2 }]}>
+                {cards > 0 ? `${cards} to open` : 'Earned from streaks and milestones, never bought'}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={cards > 0 ? colors.gold : colors.textSubtle} />
+          </Pressable>
         )}
 
         {data?.rewards &&

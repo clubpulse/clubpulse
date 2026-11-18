@@ -123,18 +123,14 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
           <div>
-            <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: '6px' }}>
-              Cost per scratch card (Scores)
-            </label>
-            <input
-              type="number" value={costScores} min={100} step={100}
-              onChange={e => setCostScores(Number(e.target.value))}
-              style={inputStyle}
-            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>How members get cards</p>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.5 }}>
+              Cards are earned, never bought: a seven-day check-in streak, a Scores milestone, or a card you award below.
+            </p>
           </div>
           <div>
             <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: '6px' }}>
-              Free card every N Scores earned (optional)
+              A card every N Scores earned (optional)
             </label>
             <input
               type="number" value={milestone} placeholder="e.g. 1000"
