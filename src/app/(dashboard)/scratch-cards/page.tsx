@@ -71,6 +71,7 @@ export default async function ScratchCardsPage() {
               <p style={cardTitle}>Your cards</p>
               <div style={{ ...row, borderBottom: 'none' }}><span style={{ flex: 1, fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Cards ready to open</span><strong style={{ color: '#EFC84A' }}>{unscratched.length}</strong></div>
               <p style={{ ...muted, marginTop: '8px' }}>Scratch cards are earned, never bought. Keep a seven-day check-in streak, or be awarded one by your club.</p>
+              <p style={{ ...muted, marginTop: '8px' }}><a href="/scratch-card-rules" style={{ color: '#60A5FA' }}>Read the official rules</a></p>
               {config.milestone_scores ? (
                 <p style={{ ...muted, marginTop: '8px' }}>You also get a card every {formatScores(config.milestone_scores)} Scores you earn.</p>
               ) : null}

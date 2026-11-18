@@ -64,6 +64,7 @@ function AuthGate() {
       <Stack.Screen name="odds" options={{ headerShown: true, title: 'Prize odds', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="deals"options={{ headerShown: true, title: 'Deals & Discounts', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="scratch-cards" options={{ headerShown: true, title: 'Scratch cards', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="scratch-rules" options={{ headerShown: true, title: 'Scratch card rules', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="scratch-card/[type]" options={{ headerShown: true, title: 'Scratch Card', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
     </Stack>
   );
