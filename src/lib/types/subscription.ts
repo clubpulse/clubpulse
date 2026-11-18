@@ -86,11 +86,17 @@ export const TIER_CONFIG: Record<
     annualPence: number;        // 0 = free
     maxMembers: number;
     maxScoresPerMonth: number;
+    /**
+     * What a member of a club on this plan pays each month to unlock the full analysis for
+     * themselves, in pence. 0 where the plan has no such add-on.
+     */
+    memberAnalysisAddOnPence: number;
     features: string[];
   }
 > = {
   free: {
     label: 'Free',
+    memberAnalysisAddOnPence: 0,
     monthlyPence: 0,
     annualPence: 0,
     maxMembers: 25,
@@ -104,7 +110,9 @@ export const TIER_CONFIG: Record<
     ],
   },
   starter: {
-    label: 'Starter',
+    // Stored as 'starter'; shown as Pro. The keys are database values and have not moved.
+    label: 'Pro',
+    memberAnalysisAddOnPence: 299,
     monthlyPence: 2999,         // £29.99/mo
     annualPence: 29990,         // £299.90/yr (save 2 months)
     maxMembers: 75,
@@ -120,7 +128,9 @@ export const TIER_CONFIG: Record<
     ],
   },
   pro: {
-    label: 'Pro',
+    // Stored as 'pro'; shown as Elite.
+    label: 'Elite',
+    memberAnalysisAddOnPence: 499,
     monthlyPence: 5999,         // £59.99/mo
     annualPence: 59990,         // £599.90/yr
     maxMembers: 200,
@@ -128,7 +138,7 @@ export const TIER_CONFIG: Record<
     features: [
       'Up to 200 members',
       '75,000 Scores/month',
-      'Everything in Starter',
+      'Everything in Pro',
       'AI Coach (MediaPipe analysis)',
       'Scratch cards + raffle',
       'Community pot + Sponsor a Kid',
@@ -137,7 +147,9 @@ export const TIER_CONFIG: Record<
     ],
   },
   elite: {
-    label: 'Elite',
+    // Stored as 'elite'; shown as Legend.
+    label: 'Legend',
+    memberAnalysisAddOnPence: 699,
     monthlyPence: 9999,         // £99.99/mo
     annualPence: 99990,         // £999.90/yr
     maxMembers: 999,
@@ -145,7 +157,7 @@ export const TIER_CONFIG: Record<
     features: [
       'Unlimited members',
       '250,000 Scores/month',
-      'Everything in Pro',
+      'Everything in Elite',
       'Player auction + transfer window',
       'Multi-club federation',
       'White-label branding',
