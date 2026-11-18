@@ -4,62 +4,68 @@ import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/
 
 export const metadata: Metadata = {
   title: 'Refund policy | ClubPulse',
-  description: 'When ClubPulse refunds a club subscription or a Scores pack, and how to ask.',
+  description: 'Refunds for individual players, how clubs are covered by their agreement, and how to ask.',
 };
 
 const mail = <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>;
 
 const SECTIONS: LegalSection[] = [
   {
-    heading: 'What can be paid for',
+    heading: 'Who this policy is for',
     body: (
       <>
-        <p>Only clubs pay ClubPulse, and only on the website. There are two things a club can buy:</p>
-        <ul>
-          <li><strong>A club subscription</strong>, billed monthly or yearly.</li>
-          <li><strong>A Scores pack</strong>, a one-off purchase of Scores for the club to give to its members.</li>
-        </ul>
         <p>
-          Members never pay ClubPulse. Nothing is sold in the app, and Scores cannot be bought by members. Payments are taken by
-          Stripe; we never see or store card numbers.
+          Refunds under this policy are for <strong>individual players and members</strong> who pay ClubPulse directly for something
+          for themselves.
         </p>
+        <p>
+          <strong>Clubs are different.</strong> A club uses ClubPulse under a signed agreement for a fixed period. What the club pays,
+          for how long, and what happens if it wants to leave early are set out in that agreement, not here. See section 4.
+        </p>
+        <p>Payments are taken by Stripe. We never see or store card numbers.</p>
       </>
     ),
   },
   {
-    heading: 'Club subscriptions',
+    heading: 'Refunds for individual players',
     body: (
       <ul>
-        <li><strong>Cancel at any time</strong> from Club settings on the website. Your plan runs to the end of the period you have paid for and does not renew.</li>
-        <li><strong>First 14 days.</strong> If you cancel within 14 days of first paying for a plan, we will refund that payment in full.</li>
-        <li><strong>After 14 days</strong> we do not refund part of a month or year that has already started.</li>
-        <li><strong>Renewals.</strong> If a yearly plan renews and you did not mean it to, tell us within 14 days of the renewal and we will refund it and end the plan.</li>
+        <li><strong>First 14 days.</strong> If you change your mind within 14 days of paying, tell us and we will refund the payment in full.</li>
+        <li><strong>After 14 days</strong> we do not refund a period that has already started. If what you bought renews, you can cancel at any time and it will not renew again.</li>
+        <li><strong>Renewals.</strong> If something renewed and you did not mean it to, tell us within 14 days of the renewal and we will refund it and stop it renewing.</li>
       </ul>
     ),
   },
   {
-    heading: 'Scores packs',
-    body: (
-      <ul>
-        <li>A pack can be refunded in full within 14 days of purchase, as long as none of the Scores from that pack have been given to members.</li>
-        <li>Once Scores from a pack have started to be given out, the pack cannot be refunded, in whole or in part.</li>
-        <li>Scores in a club&apos;s balance are not money and cannot be exchanged for cash, including if the club stops using ClubPulse.</li>
-      </ul>
-    ),
-  },
-  {
-    heading: 'When we always refund',
+    heading: 'When we always refund an individual',
     body: (
       <ul>
         <li>You were charged twice for the same thing.</li>
         <li>You were charged the wrong amount.</li>
-        <li>You paid for a Scores pack and the Scores did not arrive, and we cannot put that right.</li>
-        <li>The service you paid for was unavailable for a long period because of a fault on our side. In that case we refund the share of your plan that you could not use.</li>
+        <li>You paid and did not receive what you paid for, and we cannot put that right.</li>
+        <li>What you paid for was unavailable for a long period because of a fault on our side. In that case we refund the share you could not use.</li>
       </ul>
     ),
   },
   {
-    heading: 'Members, Scores and rewards',
+    heading: 'Clubs',
+    body: (
+      <>
+        <p>
+          A club joins ClubPulse by signing an agreement for a fixed period. The fees for that period are due as the agreement says.
+        </p>
+        <ul>
+          <li>Fees paid by a club are not refunded under this policy, including if the club stops using ClubPulse before the agreed period ends.</li>
+          <li>Scores bought by a club to give to its members are not refundable and cannot be exchanged for cash.</li>
+          <li>If a club is charged twice or charged the wrong amount, we will correct it.</li>
+          <li>Anything else about ending early, renewing or changing what a club pays is dealt with in the club&apos;s agreement.</li>
+        </ul>
+        <p>Clubs with a question about their agreement can email {mail}.</p>
+      </>
+    ),
+  },
+  {
+    heading: 'Scores and rewards',
     body: (
       <>
         <p>
@@ -79,8 +85,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          Email {mail} from the address on your ClubPulse account. Tell us your club&apos;s name, what you paid for, the date and the
-          amount. A club admin needs to make the request.
+          Email {mail} from the address on your ClubPulse account. Tell us what you paid for, the date and the amount.
         </p>
         <p>
           We reply within 5 working days. Approved refunds go back to the card or account that paid, and usually arrive within 5 to
@@ -93,8 +98,8 @@ const SECTIONS: LegalSection[] = [
     heading: 'Your legal rights',
     body: (
       <p>
-        Nothing in this policy takes away rights the law gives you. This policy sits alongside our <Link href="/terms">terms of use</Link> and{' '}
-        <Link href="/privacy">privacy policy</Link>.
+        Nothing in this policy takes away rights the law gives you as a consumer. This policy sits alongside our{' '}
+        <Link href="/terms">terms of use</Link> and <Link href="/privacy">privacy policy</Link>.
       </p>
     ),
   },
@@ -105,7 +110,7 @@ export default function RefundsPage() {
     <LegalPage
       title="Refund policy"
       updated="18 November 2026"
-      intro={<p>This policy explains when ClubPulse gives a refund and how to ask for one. It covers payments made to ClubPulse on the website at clubpulse.co.</p>}
+      intro={<p>This policy explains when ClubPulse gives a refund and how to ask for one.</p>}
       sections={SECTIONS}
     />
   );
