@@ -1,5 +1,5 @@
 // Scratch cards the player has earned. Cards are never bought: they come from a seven-day check-in
-// streak, a Scores milestone, or an award from the club. The draw is made on the server when a
+// streak, tasks the club chooses to reward, a Scores milestone, or an award from the club. The draw is made on the server when a
 // card is opened; this screen only shows the result. Over-18s only, and never for junior accounts.
 
 import { useCallback, useRef, useState } from 'react';
@@ -19,6 +19,7 @@ type Cards = {
   opened: Opened[];
   prizes: Array<{ label: string; chance: number }>;
   milestone: number | null;
+  tasks?: string[];
 };
 type Prize = {
   type: string;
@@ -192,6 +193,9 @@ export default function ScratchCardsScreen() {
             {data.milestone ? (
               <Text style={[fonts.regular, { marginTop: 4 }]}>• Every {data.milestone.toLocaleString('en-GB')} Scores you earn brings another card.</Text>
             ) : null}
+            {(data.tasks ?? []).map((line) => (
+              <Text key={line} style={[fonts.regular, { marginTop: 4 }]}>• {line}</Text>
+            ))}
             <Text style={[fonts.regular, { marginTop: 4 }]}>• Your club can award one for something done well.</Text>
             <Text style={[fonts.small, { marginTop: spacing.sm }]}>Cards are earned, never bought. They cost no Scores and no money.</Text>
           </View>

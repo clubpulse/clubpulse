@@ -5,8 +5,10 @@ import {
   upsertScratchCardConfig,
   upsertScratchCardPrize,
   deleteScratchCardPrize,
+  saveScratchCardTasks,
 } from '@/lib/actions/scratch-cards';
-import type { ScratchCardConfig, ScratchCardPrize, ScratchCard } from '@/lib/actions/scratch-cards';
+import type { ScratchCardConfig, ScratchCardPrize, ScratchCard, ScratchCardTaskSettings } from '@/lib/actions/scratch-cards';
+import { CARD_TASKS, DEFAULT_EVERY, DEFAULT_WEEKLY_CAP, MAX_EVERY, MAX_WEEKLY_CAP, type CardTaskSetting } from '@/lib/scratch/tasks';
 
 const PRIZE_TYPE_LABELS: Record<string, string> = {
   scores:      '🏅 Scores',
@@ -27,9 +29,10 @@ type Props = {
   config: ScratchCardConfig | null;
   prizes: ScratchCardPrize[];
   recentCards: ScratchCard[];
+  taskSettings: ScratchCardTaskSettings | null;
 };
 
-export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, recentCards }: Props) {
+export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, recentCards, taskSettings }: Props) {
   const [prizes, setPrizes] = useState(initialPrizes);
   const [costScores, setCostScores] = useState(config?.cost_scores ?? 500);
   const [milestone, setMilestone] = useState(config?.milestone_scores?.toString() ?? '');
@@ -37,6 +40,24 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
   const [configSaved, setConfigSaved] = useState(false);
   const [configError, setConfigError] = useState('');
   const [isPending, startTransition] = useTransition();
+  const [tasks, setTasks] = useState<CardTaskSetting[]>(
+    taskSettings?.tasks ?? CARD_TASKS.map((t) => ({ task: t.key, every_n: DEFAULT_EVERY[t.key], is_active: false })),
+  );
+  const [weeklyCap, setWeeklyCap] = useState(taskSettings?.weeklyCap ?? DEFAULT_WEEKLY_CAP);
+  const [tasksNote, setTasksNote] = useState<{ ok: boolean; text: string } | null>(null);
+
+  function setTask(key: string, change: Partial<CardTaskSetting>) {
+    setTasksNote(null);
+    setTasks((all) => all.map((t) => (t.task === key ? { ...t, ...change } : t)));
+  }
+
+  function saveTasks() {
+    setTasksNote(null);
+    startTransition(async () => {
+      const res = await saveScratchCardTasks(clubId, tasks, weeklyCap);
+      setTasksNote(res.success ? { ok: true, text: 'Saved ✓' } : { ok: false, text: res.error ?? 'Failed to save' });
+    });
+  }
 
   // New prize form state
   const [newPrize, setNewPrize] = useState<Partial<ScratchCardPrize>>({
@@ -125,7 +146,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
           <div>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>How members get cards</p>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.5 }}>
-              Cards are earned, never bought: a seven-day check-in streak, a Scores milestone, or a card you award below.
+              Cards are earned, never bought: the tasks you choose below, a seven-day check-in streak, a Scores milestone, or a card you award.
             </p>
           </div>
           <div>
@@ -153,6 +174,56 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
         {configSaved && <p style={{ fontSize: '12px', color: '#4ade80', margin: '0 0 12px' }}>Saved ✓</p>}
         <button onClick={saveConfig} disabled={isPending} style={btnStyle('#2563EB')}>
           {isPending ? 'Saving…' : 'Save settings'}
+        </button>
+      </div>
+
+      {/* Tasks that earn a card */}
+      <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '20px' }}>
+        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 4px' }}>
+          Tasks that earn a card
+        </h2>
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: '0 0 16px', lineHeight: 1.5 }}>
+          Tick the tasks you want to reward and say how many it takes. Members still earn their Scores for these as usual: the card is extra.
+          Adults only.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+          {CARD_TASKS.map((def) => {
+            const t = tasks.find((x) => x.task === def.key) ?? { task: def.key, every_n: DEFAULT_EVERY[def.key], is_active: false };
+            return (
+              <div key={def.key} style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#fff', minWidth: '170px' }}>
+                  <input
+                    type="checkbox" checked={t.is_active}
+                    onChange={(e) => setTask(def.key, { is_active: e.target.checked })}
+                    style={{ width: '16px', height: '16px', accentColor: '#2563EB' }}
+                  />
+                  {def.label}
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                  A card every
+                  <input
+                    type="number" min={1} max={MAX_EVERY} value={t.every_n}
+                    onChange={(e) => setTask(def.key, { every_n: Math.max(1, Math.min(MAX_EVERY, Math.round(Number(e.target.value) || 1))) })}
+                    style={{ ...inputStyle, width: '70px' }}
+                    aria-label={`${def.label}: completions per card`}
+                  />
+                </label>
+                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', flex: 1, minWidth: '180px' }}>{def.help}</span>
+              </div>
+            );
+          })}
+        </div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginBottom: '16px', flexWrap: 'wrap' }}>
+          Most cards one member can earn from tasks in a week
+          <input
+            type="number" min={0} max={MAX_WEEKLY_CAP} value={weeklyCap}
+            onChange={(e) => { setTasksNote(null); setWeeklyCap(Math.max(0, Math.min(MAX_WEEKLY_CAP, Math.round(Number(e.target.value) || 0)))); }}
+            style={{ ...inputStyle, width: '70px' }}
+          />
+        </label>
+        {tasksNote && <p style={{ fontSize: '12px', color: tasksNote.ok ? '#4ade80' : '#f87171', margin: '0 0 12px' }}>{tasksNote.text}</p>}
+        <button onClick={saveTasks} disabled={isPending} style={btnStyle('#2563EB')}>
+          {isPending ? 'Saving…' : 'Save tasks'}
         </button>
       </div>
 

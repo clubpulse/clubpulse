@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchWallet } from '@/lib/profile/service';
 import { getScratchCardConfig, getMyUnscratched, getMyScratchedCards } from '@/lib/actions/scratch-cards';
 import { getPrimaryClubId, isAdultPlayer } from '@/lib/scores/context';
+import { getTaskLines } from '@/lib/scratch/service';
 import { totalBalance } from '@/lib/types/scores';
 import { formatScores, formatDate } from '@/lib/utils/format';
 import { ScratchCardPlayer } from '@/components/scratch-cards/ScratchCardPlayer';
@@ -21,7 +22,7 @@ export default async function ScratchCardsPage() {
   }
 
   const supabase = await createClient();
-  const [configRes, wallet, unscratchedRes, scratchedRes, adult, member, prizes] = await Promise.all([
+  const [configRes, wallet, unscratchedRes, scratchedRes, adult, member, prizes, taskLines] = await Promise.all([
     getScratchCardConfig(clubId),
     fetchWallet(supabase, user.id),
     getMyUnscratched(clubId),
@@ -29,6 +30,7 @@ export default async function ScratchCardsPage() {
     isAdultPlayer(user.id, clubId),
     createAdminClient().from('club_members').select('is_junior').eq('user_id', user.id).eq('club_id', clubId).maybeSingle(),
     supabase.from('scratch_card_prizes').select('label, prize_type').eq('club_id', clubId).eq('is_active', true).order('weight', { ascending: false }),
+    getTaskLines(user.id, clubId),
   ]);
 
   const config = configRes.success ? configRes.data : null;
@@ -70,11 +72,14 @@ export default async function ScratchCardsPage() {
             <div style={card}>
               <p style={cardTitle}>Your cards</p>
               <div style={{ ...row, borderBottom: 'none' }}><span style={{ flex: 1, fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Cards ready to open</span><strong style={{ color: '#EFC84A' }}>{unscratched.length}</strong></div>
-              <p style={{ ...muted, marginTop: '8px' }}>Scratch cards are earned, never bought. Keep a seven-day check-in streak, or be awarded one by your club.</p>
+              <p style={{ ...muted, marginTop: '8px' }}>Scratch cards are earned, never bought. Keep a seven-day check-in streak, complete the tasks your club rewards, or be awarded one by your club.</p>
               <p style={{ ...muted, marginTop: '8px' }}><a href="/scratch-card-rules" style={{ color: '#60A5FA' }}>Read the official rules</a></p>
               {config.milestone_scores ? (
                 <p style={{ ...muted, marginTop: '8px' }}>You also get a card every {formatScores(config.milestone_scores)} Scores you earn.</p>
               ) : null}
+              {taskLines.map((line) => (
+                <p key={line} style={{ ...muted, marginTop: '8px' }}>{line}</p>
+              ))}
             </div>
 
             {pool.length > 0 && (
