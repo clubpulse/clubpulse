@@ -22,6 +22,10 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
     return handleScoresPackPurchase(session);
   }
 
+  if (meta.type === 'player_subscription') {
+    return handlePlayerCheckout(session);
+  }
+
   // Subscription checkout — handled by subscription events
   if (session.mode === 'subscription' && meta.club_id) {
     return handleSubscriptionCheckout(session);
@@ -87,6 +91,7 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
 // ── Subscription lifecycle ──────────────────────────────────────────────────
 
 export async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+  if (subscription.metadata?.type === 'player_subscription') return syncPlayerSubscription(subscription);
   const clubId = subscription.metadata?.club_id;
   if (!clubId) return;
 
@@ -117,6 +122,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
 }
 
 export async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  if (subscription.metadata?.type === 'player_subscription') return syncPlayerSubscription(subscription, 'canceled');
   const clubId = subscription.metadata?.club_id;
   if (!clubId) return;
 
@@ -134,6 +140,46 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
       max_scores_per_month: freeConfig.maxScoresPerMonth,
     })
     .eq('club_id', clubId);
+}
+
+// ── A player's own plan ─────────────────────────────────────────────────────
+
+const PLAYER_PLANS = ['pro', 'elite', 'legend'];
+const PLAYER_KINDS = ['individual', 'club_addon'];
+
+async function handlePlayerCheckout(session: Stripe.Checkout.Session) {
+  const meta = session.metadata ?? {};
+  if (!meta.user_id || !PLAYER_PLANS.includes(meta.plan ?? '') || !PLAYER_KINDS.includes(meta.kind ?? '')) return;
+
+  await admin().from('player_subscriptions').upsert({
+    user_id: meta.user_id,
+    plan: meta.plan,
+    kind: meta.kind,
+    status: 'active',
+    price_pence: Number(meta.price_pence) || null,
+    stripe_customer_id: typeof session.customer === 'string' ? session.customer : session.customer?.id ?? null,
+    stripe_subscription_id: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id ?? null,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+}
+
+/** Keeps the player's row in step with Stripe: renewals, failed cards, cancellations. */
+async function syncPlayerSubscription(subscription: Stripe.Subscription, forceStatus?: string) {
+  const meta = subscription.metadata ?? {};
+  if (!meta.user_id) return;
+
+  // Newer Stripe versions carry the period end on the item, older ones on the subscription
+  const raw = subscription as unknown as { current_period_end?: number };
+  const item = subscription.items?.data?.[0] as unknown as { current_period_end?: number } | undefined;
+  const periodEnd = raw.current_period_end ?? item?.current_period_end ?? null;
+
+  await admin().from('player_subscriptions').update({
+    status: forceStatus ?? (subscription.status as string),
+    stripe_subscription_id: subscription.id,
+    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    cancel_at_period_end: forceStatus ? false : subscription.cancel_at_period_end,
+    updated_at: new Date().toISOString(),
+  }).eq('user_id', meta.user_id);
 }
 
 // ── Connect account updates ─────────────────────────────────────────────────

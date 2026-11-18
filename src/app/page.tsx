@@ -3,6 +3,10 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 
+// Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
+const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
+
+
 type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
 type NavOpen = boolean;
 
@@ -1320,7 +1324,7 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Form index — last 5</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Silver tier</strong> — 2× Scores</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta primary">Get Pro →</Link>
+              <Link href={PLAYER_CTA} className="cp-price-cta primary">Get Pro →</Link>
             </div>
 
             {/* Elite */}
@@ -1340,7 +1344,7 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Season report &amp; stat exports</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Gold tier</strong> — 3× Scores</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta ghost">Get Elite →</Link>
+              <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Elite →</Link>
             </div>
 
             {/* Legend */}
@@ -1360,7 +1364,7 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Legend badge &amp; early access</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Platinum tier</strong> — 4× Scores</span></div>
               </div>
-              <Link href="/contact" className="cp-price-cta ghost">Get Legend →</Link>
+              <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Legend →</Link>
             </div>
           </div>
           <p className="cp-price-note">500 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)</p>

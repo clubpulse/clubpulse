@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
+// Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
+const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
+
+
 type Audience = 'player' | 'club';
 
 /* ── TYPES ── */
@@ -91,9 +95,9 @@ const PLAYER_SECTIONS: Section[] = [
 
 const PLAYER_TIERS = [
   { key: 'free',   label: 'Free',   price: '£0',     period: 'Always free',         desc: 'Get started — stats, scorecard and Bronze Scores.',              featured: false, cta: 'Join free →',    href: '/auth/sign-up' },
-  { key: 'pro',    label: 'Pro',    price: '£9.99',  period: 'per month',           desc: 'AI coaching, drills and Silver Scores rewards.',                 featured: true,  cta: 'Get Pro →',      href: '/contact' },
-  { key: 'elite',  label: 'Elite',  price: '£14.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: '/contact' },
-  { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: '/contact' },
+  { key: 'pro',    label: 'Pro',    price: '£9.99',  period: 'per month',           desc: 'AI coaching, drills and Silver Scores rewards.',                 featured: true,  cta: 'Get Pro →',      href: PLAYER_CTA },
+  { key: 'elite',  label: 'Elite',  price: '£14.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: PLAYER_CTA },
+  { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: PLAYER_CTA },
 ] as const;
 
 type TierKey = 'free' | 'pro' | 'elite' | 'legend';
