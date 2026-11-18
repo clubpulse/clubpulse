@@ -636,12 +636,12 @@ export default function PricingPage() {
         <div style={{ padding: '0 24px 80px' }}>
           <div className="cp-coming-soon">
             <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏟️</div>
-            <h3>Club plans are agreed with each club</h3>
+            <h3>Club plans from £19.99 a month</h3>
             <p>
-              No two clubs run the same way, so there is no price list for clubs and nothing to buy on this
-              site. Tell us what your club needs, we confirm it on a call, and we set out what is included,
-              the price and the period in a simple agreement. We can also build the platform around how
-              your club works.
+              Starter is £19.99 a month for one team and Club is £49.99 a month for unlimited teams; leagues and
+              county bodies are priced on request. Club plans are not bought online. Tell us what your club needs,
+              we confirm it with you, and we sign an agreement for a set period at these prices. We can also shape
+              the platform around how your club works.
             </p>
             <Link href="/contact">Tell us what your club needs →</Link>
           </div>
