@@ -119,6 +119,11 @@ export function SignUpForm() {
           Create account
         </Button>
       </div>
+      <p className="text-center text-xs text-neutral-500">
+        By creating an account you agree to our{' '}
+        <a href="/terms" target="_blank" rel="noreferrer" className="underline hover:text-neutral-300">terms of use</a> and{' '}
+        <a href="/privacy" target="_blank" rel="noreferrer" className="underline hover:text-neutral-300">privacy policy</a>.
+      </p>
     </div>
   );
 }
