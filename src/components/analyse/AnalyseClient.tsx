@@ -1363,10 +1363,14 @@ export function AnalyseClient() {
                 )}
                 <p className="mt-2 text-xs leading-relaxed text-neutral-400">
                   {extension === null
-                    ? 'The arm could not be followed from horizontal to release in this clip. Film side-on in slow motion (120 or 240 frames a second) so that part of the action covers more frames.'
+                    ? 'The arm could not be read reliably from horizontal to release in this clip, so no figure is given. Film side-on in slow motion (120 or 240 frames a second) so that part of the action covers more frames.'
                     : over
                       ? `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release (from ${Math.round(mostBent ?? 0)}° to ${Math.round(atRelease ?? 0)}°). That is above the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws, so further testing is recommended: film it again side-on and from behind in slow motion, and have a qualified coach look at it.`
                       : `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release, inside the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws.`}
+                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-400">
+                  Extension is counted only when the elbow bends after the arm passes horizontal and then straightens before release.
+                  An arm that stays straight all the way up reads zero.
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
                   Reference only, from {seen} frame{seen === 1 ? '' : 's'} of one camera. It is not a ruling on whether an action is legal

@@ -100,11 +100,10 @@ describe('bowling arm reference check', () => {
 
   it('reads high when the arm comes over bent and straightens into release', () => {
     const frames = delivery();
-    // Bent at the elbow as the arm passes horizontal and on the way up; straight at release
-    frames[14] = pose({ ...RELEASE, rElbow: [660, 690], rWrist: [640, 560] });
-    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [560, 480] });
+    // Bent about 30 degrees at the elbow on the way up from horizontal; straight at release
+    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [660, 470] });
     const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
-    expect(elbow.mostBent!).toBeLessThan(140);
+    expect(elbow.mostBent!).toBeLessThan(160);
     expect(elbow.atRelease!).toBeGreaterThan(170);
     expect(elbow.extension!).toBeGreaterThan(ELBOW_EXTENSION_LIMIT);
     expect(['extension', 'both']).toContain(elbow.kind);
@@ -113,7 +112,7 @@ describe('bowling arm reference check', () => {
   it('does not count an elbow that goes past straight as straightening', () => {
     const frames = delivery();
     // Slightly bent one way on the way up, then bent the other way (hyperextended) at release
-    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [575, 470] });
+    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [650, 468] });
     const release = frames[16].map((point) => ({ ...point }));
     const s = release[L.rShoulder], e = release[L.rElbow];
     // Put the wrist 12 degrees off the line of the upper arm, on the opposite side to frame 15
@@ -129,6 +128,33 @@ describe('bowling arm reference check', () => {
     expect(elbow.atRelease!).toBe(180);
     // Only the movement from bent to straight is counted, not the part past straight
     expect(elbow.extension!).toBeCloseTo(180 - elbow.mostBent!, 5);
+  });
+
+  it('reads zero for an arm that is straight all the way up from horizontal', () => {
+    const frames = delivery();
+    frames[14] = pose({ ...RELEASE, rElbow: [640, 640], rWrist: [720, 580] });
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(elbow.extension!).toBeLessThan(3);
+    expect(elbow.kind).toBe('none');
+  });
+
+  it('gives no figure when the reading is more than any real arm could do', () => {
+    const frames = delivery();
+    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [560, 480] });
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(elbow.extension).toBeNull();
+    expect(elbow.kind).toBeNull();
+  });
+
+  it('ignores a frame where the pose model lost the arm', () => {
+    const frames = delivery();
+    // The wrist jumps back next to the shoulder for one frame: the arm looks folded in half
+    const glitch = frames[15].map((point) => ({ ...point }));
+    glitch[L.rWrist] = { ...glitch[L.rWrist], x: glitch[L.rShoulder].x + 0.01, y: glitch[L.rShoulder].y - 0.01 };
+    frames[15] = glitch;
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    // Either no reading or a small one, never a three-figure "extension"
+    expect(elbow.extension ?? 0).toBeLessThan(ELBOW_EXTENSION_LIMIT);
   });
 
   it('gives no reading when that part of the action was not seen', () => {
