@@ -38,7 +38,7 @@ const SECTIONS: LegalSection[] = [
         <p><strong>Games and learning.</strong> Your results in the games, the Academy lessons you complete, and the practice plans made for you.</p>
         <p><strong>Coach AI.</strong> The questions you type to Coach AI and the answers it gives.</p>
         <p><strong>Video analysis.</strong> When you analyse your technique or track a ball, the video is processed on your own device and is not uploaded. We store the results: your scores, measurements and written feedback. If you use the live camera, the three best short clips from the session are uploaded so you can watch them back as highlights.</p>
-        <p><strong>Volunteering.</strong> The shifts you sign up for. If you check in at the ground, the app uses your location at that moment to confirm you are there. It does not track your location at other times.</p>
+        <p><strong>Volunteering.</strong> The shifts you sign up for and whether you were checked in. We do not collect your location.</p>
         <p><strong>Coaching.</strong> Sessions you book or offer, and qualifications you record.</p>
         <p><strong>Notifications.</strong> If you allow notifications, an identifier for your phone so we can send them.</p>
         <p><strong>Payments.</strong> If you pay for something on the website, the payment is handled by Stripe. We receive confirmation and the amount. We never see or store your card number.</p>
@@ -68,7 +68,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <ul>
         <li><strong>To provide the service you signed up for</strong> (contract): your account, club features, Scores, games, lessons, bookings and video analysis.</li>
-        <li><strong>With your consent</strong>: reading your step count, your location when you check in, notifications, and a child&apos;s medical notes and consents. You can withdraw consent at any time in your phone&apos;s settings or in the app.</li>
+        <li><strong>With your consent</strong>: reading your step count, notifications, and a child&apos;s medical notes and consents. You can withdraw consent at any time in your phone&apos;s settings or in the app.</li>
         <li><strong>To keep children safe and meet legal duties</strong> (legal obligation and the club&apos;s safeguarding responsibilities): safeguarding records and consent records.</li>
         <li><strong>To run and improve ClubPulse</strong> (legitimate interests): keeping the service secure, fixing faults, preventing misuse of rewards, and understanding which features are used.</li>
       </ul>
@@ -143,7 +143,6 @@ const SECTIONS: LegalSection[] = [
         <li><strong>Motion and fitness:</strong> to count steps from the phone itself when Health is not available.</li>
         <li><strong>Camera:</strong> to film your batting or bowling for analysis.</li>
         <li><strong>Microphone:</strong> only if you record a new video with sound to analyse.</li>
-        <li><strong>Location:</strong> only at the moment you check in to a volunteer shift.</li>
         <li><strong>Notifications:</strong> to tell you about fixtures, shifts and rewards.</li>
       </ul>
     ),
@@ -173,7 +172,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="18 November 2026"
+      updated="19 November 2026"
       intro={<p>This policy explains what ClubPulse collects about you, why, who we share it with, and the rights you have. It covers the ClubPulse app and the website at clubpulse.co.</p>}
       sections={SECTIONS}
     />
