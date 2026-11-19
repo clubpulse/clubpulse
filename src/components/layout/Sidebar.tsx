@@ -3,9 +3,9 @@
 import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { audienceLabel, menuFor, type Audience, type NavLink } from '@/lib/nav/menu';
 
-type NavLink = { href: string; label: string; icon: string };
-
+// Top-level links, also used for the short list on phones
 export const NAV_LINKS: NavLink[] = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',     icon: '🎯' },
@@ -13,105 +13,6 @@ export const NAV_LINKS: NavLink[] = [
   { href: '/companion',   label: 'Coach AI',    icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },
 ];
-
-// Everything except Home sits in a handful of groups, one open at a time. Desktop sidebar only:
-// the mobile bottom nav stays NAV_LINKS. A group marked adminOnly is shown to club admins only.
-type NavGroup = { key: string; label: string; icon: string; adminOnly?: boolean; links: NavLink[] };
-
-export const NAV_GROUPS: NavGroup[] = [
-  {
-    key: 'match',
-    label: 'Match day',
-    icon: '🏏',
-    links: [
-      { href: '/availability', label: 'Availability', icon: '📅' },
-      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
-      { href: '/scorecard', label: 'Scorecard', icon: '📝' },
-      { href: '/match-mood', label: 'Match Mood', icon: '😤' },
-      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
-      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️' },
-      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆' },
-    ],
-  },
-  {
-    key: 'play',
-    label: 'Play',
-    icon: '🎮',
-    links: [
-      { href: '/games', label: 'Games', icon: '🎲' },
-      { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️' },
-      { href: '/auction', label: 'The Auction', icon: '🔨' },
-      { href: '/raffle', label: 'Raffle', icon: '🎫' },
-      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
-      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
-      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦' },
-    ],
-  },
-  {
-    key: 'game',
-    label: 'My game',
-    icon: '🎯',
-    links: [
-      { href: '/analyse', label: 'Analyse', icon: '🎥' },
-      { href: '/companion', label: 'Coach AI', icon: '🧠' },
-      { href: '/highlights', label: 'Highlights', icon: '🎬' },
-      { href: '/development', label: 'Development', icon: '📈' },
-      { href: '/player-report', label: 'Player Report', icon: '📊' },
-      { href: '/log-performance', label: 'Log Game', icon: '📋' },
-      { href: '/coaching', label: 'Coaching', icon: '🎓' },
-      { href: '/mentor-match', label: 'Mentor Match', icon: '🤝' },
-      { href: '/qualifications', label: 'Qualifications', icon: '🎖️' },
-      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄' },
-      { href: '/pulse-score', label: 'Pulse Score', icon: '💓' },
-      { href: '/wellbeing', label: 'Wellbeing', icon: '🧡' },
-      { href: '/injury-intel', label: 'Injury Intel', icon: '🩹' },
-    ],
-  },
-  {
-    key: 'scores',
-    label: 'Scores',
-    icon: '⭐',
-    links: [
-      { href: '/play', label: 'Earn Scores', icon: '💰' },
-      { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
-      { href: '/kit-discounts', label: 'Kit Discounts', icon: '🧢' },
-      { href: '/fee-offset', label: 'Fee Offset', icon: '🏷️' },
-      { href: '/travel', label: 'Travel', icon: '🗺️' },
-      { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝' },
-      { href: '/community-pot', label: 'Community Pot', icon: '🪙' },
-      { href: '/charity', label: 'Charity', icon: '🤲' },
-    ],
-  },
-  {
-    key: 'club',
-    label: 'My club',
-    icon: '🛡️',
-    links: [
-      { href: '/noticeboard', label: 'Noticeboard', icon: '📌' },
-      { href: '/dressing-room', label: 'Dressing Room', icon: '👕' },
-      { href: '/club-bible', label: 'Club Bible', icon: '📖' },
-      { href: '/documents', label: 'Documents', icon: '🗂️' },
-      { href: '/finance', label: 'Finance', icon: '💷' },
-      { href: '/transfer-window', label: 'Transfer Window', icon: '🔄' },
-      { href: '/club-alumni', label: 'Alumni', icon: '🎓' },
-    ],
-  },
-  {
-    key: 'tools',
-    label: 'Admin tools',
-    icon: '🧰',
-    adminOnly: true,
-    links: [
-      { href: '/admin-query', label: 'Club Intelligence', icon: '🤖' },
-      { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
-      { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉' },
-      { href: '/admin/club/gut-feeling', label: 'Gut Feeling results', icon: '🗳️' },
-    ],
-  },
-];
-
-/** Every grouped link in one list, for anything that needs them flat. */
-export const CLUB_LINKS: NavLink[] = NAV_GROUPS.flatMap((g) => g.links);
 
 // What the sidebar remembers in this browser: which group is open, and whether it is folded
 // down to icons. A tiny store over localStorage so it re-renders when either changes.
@@ -182,7 +83,7 @@ const rowStyle = (active: boolean, folded: boolean): React.CSSProperties => ({
   justifyContent: folded ? 'center' : 'flex-start',
   gap: '12px',
   width: '100%',
-  padding: folded ? '10px 0' : '10px 14px',
+  padding: folded ? '8px 0' : '8px 12px',
   borderRadius: '12px',
   border: 'none',
   borderLeft: active ? '2px solid #60A5FA' : '2px solid transparent',
@@ -216,15 +117,15 @@ function NavItem({ link, pathname, folded = false, small = false }: { link: NavL
   );
 }
 
+// audience: who is signed in, which decides the links they see (lib/nav/menu).
 // showSchool: the club has an active school_programs row (looked up in DashboardShell)
-export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { showAdmin: boolean; isPlatformAdmin: boolean; showSchool?: boolean }) {
+export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { audience: Audience; isPlatformAdmin: boolean; showSchool?: boolean }) {
   const pathname = usePathname();
   const state = parseState(useSyncExternalStore(subscribe, readState, () => ''));
   const folded = state.folded;
+  const showAdmin = audience.admin;
 
-  const groups = NAV_GROUPS
-    .filter((g) => !g.adminOnly || showAdmin)
-    .map((g) => (g.key === 'club' && showSchool ? { ...g, links: [...g.links, { href: '/school', label: 'School', icon: '🏫' }] } : g));
+  const groups = menuFor(audience, { showSchool });
   const bottom: NavLink[] = [
     { href: '/profile', label: 'Profile', icon: '👤' },
     ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
@@ -244,7 +145,18 @@ export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { sh
     >
       <style>{`.cp-nav-row:hover{background:rgba(255,255,255,0.04)!important;color:rgba(255,255,255,0.85)!important}`}</style>
       <div className="sticky top-[52px] flex h-[calc(100vh-52px)] flex-col overflow-y-auto px-2.5 py-3">
-        <div style={{ display: 'flex', justifyContent: folded ? 'center' : 'flex-end', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: folded ? 'center' : 'space-between', gap: '8px', marginBottom: '10px', paddingLeft: folded ? 0 : '6px' }}>
+          {!folded && (
+            <span
+              title="The menu shows what is useful for your role"
+              style={{
+                fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', color: '#93C5FD', background: 'rgba(37,99,235,0.16)',
+                border: '1px solid rgba(96,165,250,0.3)', borderRadius: '999px', padding: '4px 10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}
+            >
+              {audienceLabel(audience)}
+            </span>
+          )}
           <button
             type="button"
             onClick={() => saveState({ ...state, folded: !folded })}
@@ -276,10 +188,19 @@ export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { sh
                   title={folded ? group.label : undefined}
                   style={rowStyle(holdsPage && !isOpen, folded)}
                 >
-                  <span aria-hidden style={{ fontSize: '17px', lineHeight: 1 }}>{group.icon}</span>
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'grid', placeItems: 'center', width: '30px', height: '30px', borderRadius: '9px', fontSize: '15px', lineHeight: 1, flexShrink: 0,
+                      background: `${group.tint}${isOpen || holdsPage ? '33' : '1F'}`, border: `1px solid ${group.tint}${isOpen || holdsPage ? '80' : '40'}`,
+                    }}
+                  >
+                    {group.icon}
+                  </span>
                   {!folded && (
                     <>
-                      <span style={{ flex: 1 }}>{group.label}</span>
+                      <span style={{ flex: 1, color: isOpen || holdsPage ? '#fff' : undefined, fontWeight: isOpen || holdsPage ? 600 : 500 }}>{group.label}</span>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: group.tint, opacity: 0.9 }}>{group.links.length}</span>
                       <span aria-hidden style={{ fontSize: '11px', opacity: 0.6, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>❯</span>
                     </>
                   )}
@@ -287,7 +208,7 @@ export function Sidebar({ showAdmin, isPlatformAdmin, showSchool = false }: { sh
                 {isOpen && (
                   <ul
                     id={`nav-group-${group.key}`}
-                    style={{ listStyle: 'none', padding: '0 0 0 14px', margin: '2px 0 6px 20px', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
+                    style={{ listStyle: 'none', padding: '0 0 0 12px', margin: '4px 0 8px 28px', borderLeft: `2px solid ${group.tint}55` }}
                     className="space-y-0.5"
                   >
                     {group.links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} small />)}
