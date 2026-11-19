@@ -20,10 +20,6 @@ const screen = (title: string) => ({
   header: (props: React.ComponentProps<typeof AppHeader>) => <AppHeader {...props} />,
 });
 
-// Screens that use the whole width of an iPad: the tabs (they centre their own pages, so the
-// tab bar can run edge to edge) and website pages, which lay themselves out.
-const FULL_WIDTH = new Set(['(tabs)', 'web']);
-
 // Sends signed-out users to sign-in and signed-in users away from the auth screens
 function AuthGate() {
   const { session, loading } = useAuth();
@@ -59,8 +55,11 @@ function AuthGate() {
   return (
     <Stack
       screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
-      // On an iPad each page sits in a centred column; the top bar stays full width
-      screenLayout={({ children, route }) => (FULL_WIDTH.has(route.name) ? <>{children}</> : <Wide>{children}</Wide>)}
+      // On a wide screen (an iPad, or a phone on its side) each page sits in a centred column and
+      // the top bar stays full width. The tabs centre their own pages so the tab bar can run
+      // edge to edge, and website pages keep the whole width because they lay themselves out.
+      screenLayout={({ children, route }) =>
+        route.name === '(tabs)' ? <>{children}</> : <Wide full={route.name === 'web'}>{children}</Wide>}
     >
       <Stack.Screen name="(tabs)" options={{ title: 'Home' }} />
       <Stack.Screen name="auth" />

@@ -1,18 +1,28 @@
-// Keeps a page readable on an iPad. On a phone it does nothing. On a wide screen the page sits in
+// Keeps a page readable on an iPad or a phone turned on its side. On an upright phone it does
+// nothing. On a wide screen the page sits in
 // a centred column so that lines of text and cards do not stretch across the whole display, while
 // the top bar and the tab bar still run edge to edge.
 
 import { useMemo } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 /** The widest a page gets. An iPad in portrait is 768 to 1032 points across. */
 export const PAGE_WIDTH = 760;
 
-export function Wide({ children }: { children: React.ReactNode }) {
+/** Space to leave at the sides so nothing sits under the camera cut-out when the phone is on its side. */
+function useSides() {
+  const insets = useSafeAreaInsets();
+  return { paddingLeft: insets.left, paddingRight: insets.right };
+}
+
+/** `full` keeps the whole width (for website pages) and only steps in from the camera cut-out. */
+export function Wide({ children, full = false }: { children: React.ReactNode; full?: boolean }) {
+  const sides = useSides();
   return (
-    <View style={styles.outer}>
-      <View style={styles.column}>{children}</View>
+    <View style={[styles.outer, sides]}>
+      <View style={[styles.column, full && styles.full]}>{children}</View>
     </View>
   );
 }
@@ -23,6 +33,7 @@ export function Wide({ children }: { children: React.ReactNode }) {
  */
 export function WideWithSwipeBack({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const sides = useSides();
   const swipe = useMemo(
     () => PanResponder.create({
       onStartShouldSetPanResponder: () => false,
@@ -39,7 +50,7 @@ export function WideWithSwipeBack({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <View style={styles.outer}>
+    <View style={[styles.outer, sides]}>
       <View style={styles.column}>{children}</View>
       <View style={styles.edge} {...swipe.panHandlers} accessible={false} importantForAccessibility="no" />
     </View>
@@ -49,5 +60,6 @@ export function WideWithSwipeBack({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
   outer: { flex: 1, alignItems: 'center' },
   column: { flex: 1, width: '100%', maxWidth: PAGE_WIDTH },
+  full: { maxWidth: undefined },
   edge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 24 },
 });

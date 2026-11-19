@@ -21,7 +21,7 @@ export function AppHeader({ navigation, options }: Props) {
   const goBack = () => (navigation.canGoBack() ? navigation.goBack() : router.replace('/'));
 
   return (
-    <View style={[styles.bar, { paddingTop: insets.top + 6 }]}>
+    <View style={[styles.bar, { paddingTop: insets.top + 6, paddingLeft: 12 + insets.left, paddingRight: 12 + insets.right }]}>
       <Pressable
         onPress={goBack}
         hitSlop={12}
