@@ -107,6 +107,7 @@ describe('bowling arm reference check', () => {
     expect(elbow.mostBent!).toBeLessThan(140);
     expect(elbow.atRelease!).toBeGreaterThan(170);
     expect(elbow.extension!).toBeGreaterThan(ELBOW_EXTENSION_LIMIT);
+    expect(['extension', 'both']).toContain(elbow.kind);
   });
 
   it('does not count an elbow that goes past straight as straightening', () => {
@@ -124,6 +125,7 @@ describe('bowling arm reference check', () => {
     frames[16] = release;
     const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
     expect(elbow.hyperextension!).toBeGreaterThan(8);
+    expect(['hyperextension', 'both']).toContain(elbow.kind);
     expect(elbow.atRelease!).toBe(180);
     // Only the movement from bent to straight is counted, not the part past straight
     expect(elbow.extension!).toBeCloseTo(180 - elbow.mostBent!, 5);
@@ -134,6 +136,7 @@ describe('bowling arm reference check', () => {
     for (const i of [14, 15]) frames[i] = frames[i].map((point, j) => (j === L.rElbow ? { ...point, visibility: 0.1 } : point));
     const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
     expect(elbow.extension).toBeNull();
+    expect(elbow.kind).toBeNull();
     expect(elbow.frames).toBe(1);
   });
 
