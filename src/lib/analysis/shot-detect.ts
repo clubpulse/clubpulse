@@ -16,10 +16,10 @@ const mid = (a: P, b: P): P => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
 const dist = (a: P, b: P) => Math.hypot(a.x - b.x, a.y - b.y);
 const seen = (lm: Landmark[], ...ids: number[]) => ids.every((i) => lm[i] && (lm[i].visibility ?? 1) >= MIN_VISIBILITY);
 
-type Sample = { hands: P; hipY: number; knee: number };
+export type Sample = { hands: P; hipY: number; knee: number };
 
 /** One frame as hand position in torso lengths from the hips (y up is negative), or null if unclear. */
-function sample(lm: Landmark[], w: number, h: number): Sample | null {
+export function sample(lm: Landmark[], w: number, h: number): Sample | null {
   if (!seen(lm, L.lShoulder, L.rShoulder, L.lHip, L.rHip)) return null;
   const px = (i: number): P => ({ x: lm[i].x * w, y: lm[i].y * h });
   const hips = mid(px(L.lHip), px(L.rHip));
@@ -65,8 +65,11 @@ export function detectShot(frames: Landmark[][], w: number, h: number): ShotRead
   const across = Math.abs(b.x - a.x) > Math.abs(b.y - a.y) * 1.2;
   const heightAtPeak = samples[peak].hands.y;            // about -1 is shoulder height, 0 is hip height
   const finish = Math.min(...ys.slice(peak));            // the highest the hands get after the swing
-  const hipDrop = Math.max(...samples.map((s) => s.hipY)) - samples[0].hipY;
-  const lowestKnee = Math.min(...samples.map((s) => s.knee));
+  // A sweep is a deep knee bend during the swing itself. Looking only around the swing stops
+  // walking in, crouching in the stance or picking up a ball from being read as one.
+  const around = samples.slice(Math.max(0, peak - 8), peak + 9);
+  const hipDrop = Math.max(...around.map((s) => s.hipY)) - samples[0].hipY;
+  const lowestKnee = Math.min(...around.map((s) => s.knee));
 
   if (span < 0.3) return { shot: 'leave', confident: span < 0.22 };
   if (lowestKnee < 105 && hipDrop > 0.22) return { shot: 'sweep', confident: lowestKnee < 95 };
