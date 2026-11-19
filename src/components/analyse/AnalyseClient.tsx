@@ -18,6 +18,7 @@ import {
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { detectShot, type ShotReading } from '@/lib/analysis/shot-detect';
+import { bestAndWorst, clipTime, splitShots } from '@/lib/analysis/shot-split';
 
 type AnalyseTab = 'pose' | 'ball';
 
@@ -31,10 +32,24 @@ const MODEL_URL =
 
 const RECORD_MS = 5000;
 // An uploaded clip is analysed from the start up to this length
-const MAX_UPLOAD_MS = 20000;
-const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
+// An uploaded clip can be a stretch of a net session with several shots in it
+const MAX_UPLOAD_MS = 180000;
+const MAX_UPLOAD_BYTES = 500 * 1024 * 1024;
+/** The most frames read from one clip; a longer clip is read at wider steps to stay inside it */
+const MAX_SEEK_FRAMES = 2400;
 // Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
 const MIN_CLIP_SECONDS = 2;
+
+/** One shot found in an uploaded batting clip, already marked */
+type ShotEntry = {
+  /** Frame of the whole clip to show for this shot, and when in the clip the swing was */
+  key: number;
+  time: number;
+  shot: ShotType;
+  read: ShotReading | null;
+  analysis: Analysis;
+  overall: number;
+};
 
 type Phase = 'idle' | 'loading' | 'ready' | 'recording' | 'done';
 
@@ -255,6 +270,11 @@ export function AnalyseClient() {
   // Shape of the picture, so an upright phone video gets an upright box
   const [aspect, setAspect] = useState<number>(16 / 9);
   const [replaying, setReplaying] = useState(false);
+  // The separate shots found in an uploaded batting clip (two or more), and the one on screen
+  const [shots, setShots] = useState<ShotEntry[] | null>(null);
+  const [shotPick, setShotPick] = useState(0);
+  // Written feedback already fetched for a shot, so going back to it does not ask again
+  const coachCache = useRef(new Map<number, string>());
   // Which analysed frame of an uploaded clip is on screen, and how many there are, for stepping through
   const [frameAt, setFrameAt] = useState<{ index: number | null; total: number; key: number } | null>(null);
 
@@ -297,6 +317,72 @@ export function AnalyseClient() {
     };
   }, [stopCamera]);
 
+  // Asks for the written feedback on one analysis. `save` also stores the result in history.
+  const requestCoaching = useCallback((
+    analysis: Analysis, shot: ShotType | undefined, frames: number, cacheKey: number | null, save: boolean, extra: Record<string, unknown> = {},
+  ) => {
+    const { mode: m, hand: hd, view: vw } = settingsRef.current;
+    const cached = cacheKey !== null ? coachCache.current.get(cacheKey) : undefined;
+    if (cached) {
+      setCoaching({ state: 'ready', text: cached });
+      return;
+    }
+    const overall = overallScore(analysis.metrics);
+    const resultJson = {
+      mode: m, hand: hd, view: vw, shotType: shot, frameCount: frames, overall,
+      elbowCheck: analysis.elbow ?? null, unique: analysis.unique,
+      metrics: analysis.metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score, excused: mk.excused ?? false })),
+      ...extra,
+    };
+    setCoaching({ state: 'loading' });
+    fetch('/api/analysis/coaching-read', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ pose: true, mode: m, hand: hd, view: vw, unique: analysis.unique, shotType: shot, metrics: resultJson.metrics.filter((mk) => !mk.excused), overall }),
+    })
+      .then((r) => r.ok ? r.json() : null)
+      .then((coachData: { paragraph?: string } | null) => {
+        if (coachData?.paragraph && cacheKey !== null) coachCache.current.set(cacheKey, coachData.paragraph);
+        setCoaching(coachData?.paragraph ? { state: 'ready', text: coachData.paragraph } : { state: 'idle' });
+        if (!save) return;
+        fetch('/api/analysis/save-result', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ analysis_type: 'pose', result_json: resultJson, coaching_paragraph: coachData?.paragraph ?? null }),
+        }).catch(() => {/* silent */});
+      })
+      .catch(() => setCoaching({ state: 'idle' }));
+  }, []);
+
+  // Puts one shot of a session on screen: its marks, its figure, and the clip held on its key position
+  const presentShot = useCallback((entry: ShotEntry, index: number) => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const data = replayRef.current;
+    if (!video || !data) return;
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    video.pause();
+    setReplaying(false);
+    setShotPick(index);
+    setReading(entry.read);
+    setFrameCount(entry.analysis.framesSeen);
+    setResults(entry.analysis.metrics);
+    setDetail({ ...entry.analysis, pose: data.frames[entry.key], width: video.videoWidth, height: video.videoHeight });
+    setFrameAt({ index: entry.key, total: data.frames.length, key: entry.key });
+    const draw = () => {
+      const ctx = canvas?.getContext('2d');
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPose(ctx, data.frames[entry.key], connectionsRef.current);
+    };
+    if (Math.abs(video.currentTime - data.times[entry.key]) < 0.001) draw();
+    else {
+      video.addEventListener('seeked', draw, { once: true });
+      video.currentTime = data.times[entry.key];
+    }
+  }, []);
+
   const finishRecording = useCallback(() => {
     const recording = recordingRef.current;
     const video = videoRef.current;
@@ -312,6 +398,36 @@ export function AnalyseClient() {
     }
 
     const { mode: m, hand: hd, shotType: choice, view: vw } = settingsRef.current;
+
+    // A batting clip with several shots in it is marked one shot at a time
+    if (fromFile && m === 'batting') {
+      const entries = splitShots(recording.frames, recording.times, video.videoWidth, video.videoHeight).flatMap((win): ShotEntry[] => {
+        const part = recording.frames.slice(win.start, win.end + 1);
+        const partRead = choice === 'auto' ? detectShot(part, video.videoWidth, video.videoHeight) : null;
+        const shot: ShotType = choice === 'auto' ? (partRead?.shot ?? 'drive') : choice;
+        const marked = analyseDetailed(part, m, hd, video.videoWidth, video.videoHeight, shot, vw);
+        if (!marked.ok) return [];
+        return [{
+          key: win.start + marked.analysis.keyFrame, time: recording.times[win.peak], shot, read: partRead,
+          analysis: marked.analysis, overall: overallScore(marked.analysis.metrics),
+        }];
+      });
+      if (entries.length >= 2) {
+        const first = bestAndWorst(entries.map((e) => e.overall))?.best ?? 0;
+        coachCache.current.clear();
+        replayRef.current = { frames: recording.frames, times: recording.times };
+        setShots(entries);
+        setPhase('done');
+        presentShot(entries[first], first);
+        // History keeps the best shot in full and a line for each of the others
+        requestCoaching(entries[first].analysis, entries[first].shot, recording.frames.length, first, true, {
+          shots: entries.map((e, i) => ({ number: i + 1, at: Math.round(e.time * 10) / 10, shotType: e.shot, overall: e.overall })),
+        });
+        return;
+      }
+    }
+    setShots(null);
+
     const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight) : null;
     const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
     setReading(read);
@@ -352,36 +468,9 @@ export function AnalyseClient() {
       video.currentTime = recording.times[analysis.keyFrame];
     }
 
-    // Save pose results to history (best-effort)
-    const overall = overallScore(metrics);
-    const resultJson = {
-      mode: m, hand: hd, view: vw, shotType: m === 'batting' ? st : undefined, frameCount: recording.frames.length, overall,
-      elbowCheck: analysis.elbow ?? null, unique: analysis.unique,
-      metrics: metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score, excused: mk.excused ?? false })),
-    };
-
-    // Generate a coaching paragraph server-side, then save both
-    setCoaching({ state: 'loading' });
-    fetch('/api/analysis/coaching-read', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ pose: true, mode: m, hand: hd, view: vw, unique: analysis.unique, shotType: m === 'batting' ? st : undefined, metrics: resultJson.metrics.filter((mk) => !mk.excused), overall }),
-    })
-      .then((r) => r.ok ? r.json() : null)
-      .then((coachData: { paragraph?: string } | null) => {
-        setCoaching(coachData?.paragraph ? { state: 'ready', text: coachData.paragraph } : { state: 'idle' });
-        fetch('/api/analysis/save-result', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            analysis_type:      'pose',
-            result_json:        resultJson,
-            coaching_paragraph: coachData?.paragraph ?? null,
-          }),
-        }).catch(() => {/* silent */});
-      })
-      .catch(() => setCoaching({ state: 'idle' }));
-  }, [stopCamera]);
+    // Written feedback, saved to history with the result
+    requestCoaching(analysis, m === 'batting' ? st : undefined, recording.frames.length, null, true);
+  }, [stopCamera, presentShot, requestCoaching]);
 
   const startLoop = useCallback(() => {
     const tick = () => {
@@ -499,6 +588,7 @@ export function AnalyseClient() {
     setError(null);
     setResults(null);
     setDetail(null);
+    setShots(null);
     setCoaching({ state: 'idle' });
     replayRef.current = null;
     // Some phones hand over a clip with no type at all, so the file name is checked too
@@ -508,7 +598,7 @@ export function AnalyseClient() {
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES) {
-      setError('That video is too large. Trim it to the delivery or shot you want checked (under 200 MB).');
+      setError('That video is too large. Trim it to the part of the session you want checked (under 500 MB).');
       return;
     }
     setProgress(null);
@@ -578,7 +668,8 @@ export function AnalyseClient() {
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
     const end = Math.min(video.duration, MAX_UPLOAD_MS / 1000);
-    for (let time = 0; time < end; time += SEEK_STEP) {
+    const step = Math.max(SEEK_STEP, end / MAX_SEEK_FRAMES);
+    for (let time = 0; time < end; time += step) {
       await seekTo(video, time);
       // Someone started the camera or chose another clip while this one was being read
       if (recordingRef.current !== recording) return;
@@ -595,6 +686,12 @@ export function AnalyseClient() {
     }
     setProgress(null);
     finishRecording();
+  }
+
+  // A shot in the list was tapped: show it and fetch its written feedback
+  function pickShot(entry: ShotEntry, index: number) {
+    presentShot(entry, index);
+    requestCoaching(entry.analysis, entry.shot, entry.analysis.framesSeen, index, false);
   }
 
   // Holds the clip on one analysed frame with its skeleton, for going through an action a frame at a time
@@ -663,6 +760,7 @@ export function AnalyseClient() {
     setResults(null);
     setSecondsLeft(RECORD_MS / 1000);
     setDetail(null);
+    setShots(null);
     setCoaching({ state: 'idle' });
     recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [] };
     setPhase('recording');
@@ -726,6 +824,9 @@ export function AnalyseClient() {
   // The selfie camera is shown as a mirror; the back camera and uploaded clips are shown as filmed
   const mirrored = source === 'camera' && facing === 'user';
   const overall = results ? overallScore(results) : null;
+  // Which of a session's shots to point out, and a plain name for a shot ("pull / hook")
+  const pick = shots ? bestAndWorst(shots.map((e) => e.overall)) : null;
+  const name = (e: ShotEntry) => SHOT_TYPE_LABELS[e.shot].replace(/^\S+\s/, '').toLowerCase();
 
   return (
     <div className="space-y-6">
@@ -932,9 +1033,43 @@ export function AnalyseClient() {
         )}
       </Card>
 
+      {shots && phase === 'done' && (
+          <Card title="Shots in this clip" description={`We found ${shots.length} shots and marked each one. Tap a shot to see it in full.`}>
+            {pick && (
+              <p className="mb-4 text-sm leading-relaxed text-neutral-300">
+                Your best was shot {pick.best + 1}, a {name(shots[pick.best])}, at {shots[pick.best].overall}. Shot {pick.toWorkOn + 1}, a {name(shots[pick.toWorkOn])},
+                has the most room to grow, so it is a good one to look at next.
+              </p>
+            )}
+            <ul className="space-y-2">
+              {shots.map((entry, i) => {
+                const on = i === shotPick;
+                return (
+                  <li key={i}>
+                    <button type="button" aria-pressed={on}
+                      onClick={() => pickShot(entry, i)}
+                      className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${on ? 'border-sky-400/60 bg-sky-400/10' : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
+                      <span className="w-14 shrink-0 text-xs text-neutral-500">{clipTime(entry.time)}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-medium text-white">Shot {i + 1} · {SHOT_TYPE_LABELS[entry.shot].replace(/^\S+\s/, '')}</span>
+                        {pick && i === pick.best && <span className="text-xs font-medium" style={{ color: GOLD }}>Best of the session</span>}
+                        {pick && i === pick.toWorkOn && <span className="text-xs font-medium text-amber-400">One to work on</span>}
+                      </span>
+                      <span className="text-xl font-bold" style={{ color: scoreColour(entry.overall) }}>{entry.overall}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+              Shots are found from the swing of the bat, so a leave or a very soft block may be missed. If a shot is named wrongly, pick the right one above and analyse the clip again.
+            </p>
+          </Card>
+      )}
+
       {results && overall !== null && (
         <Card
-          title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
+          title={shots ? `Shot ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
           description={mode === 'bowling'
             ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
             : `Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
