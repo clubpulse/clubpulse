@@ -68,6 +68,24 @@ function clipReady(video: HTMLVideoElement): Promise<void> {
   });
 }
 
+/** Time between the frames read when a clip is stepped through, in seconds (20 a second). */
+const SEEK_STEP = 0.05;
+
+/** Moves a paused clip to a moment and waits until that picture is on screen. */
+function seekTo(video: HTMLVideoElement, time: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => { video.removeEventListener('seeked', done); reject(new Error('unreadable')); }, 8000);
+    const done = () => {
+      window.clearTimeout(timer);
+      // One more frame so the new picture has been drawn before it is read
+      requestAnimationFrame(() => resolve());
+    };
+    video.addEventListener('seeked', done, { once: true });
+    // Asking for the moment it is already on would never report back
+    video.currentTime = Math.abs(video.currentTime - time) < 0.001 ? time + 0.001 : time;
+  });
+}
+
 /** What to tell the player when an uploaded clip cannot be read. */
 function clipError(err: unknown): string {
   const unsupported = typeof MediaError !== 'undefined' && err instanceof MediaError
@@ -218,8 +236,8 @@ export function AnalyseClient() {
   const [reading, setReading] = useState<ShotReading | null>(null);
   const [phase, setPhase] = useState<Phase>('idle');
   const [error, setError] = useState<string | null>(null);
-  // An uploaded clip is loaded but the phone will not play it until the player taps
-  const [needsTap, setNeedsTap] = useState(false);
+  // How far through an uploaded clip the frame-by-frame read is, as a percentage
+  const [progress, setProgress] = useState<number | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [results, setResults] = useState<MetricResult[] | null>(null);
   const [frameCount, setFrameCount] = useState(0);
@@ -490,7 +508,7 @@ export function AnalyseClient() {
       setError('That video is too large. Trim it to the delivery or shot you want checked (under 200 MB).');
       return;
     }
-    setNeedsTap(false);
+    setProgress(null);
     stopCamera();
     canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     sourceRef.current = 'file';
@@ -516,41 +534,63 @@ export function AnalyseClient() {
       try {
         await video.play();
       } catch (err) {
-        // The phone wants a tap before it will play anything: show a button and start from there
+        // Some phones refuse to start a clip by themselves (always in Low Power Mode, and often
+        // straight after the photo picker closes). The clip does not need to play to be read:
+        // step through it frame by frame instead.
         if (err instanceof DOMException && err.name === 'NotAllowedError') {
-          setNeedsTap(true);
-          setPhase('idle');
+          await readBySeeking(video);
           return;
         }
         throw err;
       }
-      beginReadingClip();
+      readWhilePlaying();
     } catch (err) {
       stopCamera();
+      setProgress(null);
       setError(clipError(err));
       setPhase('idle');
     }
   }
 
-  // The clip is playing: start collecting poses from it
-  function beginReadingClip() {
-    setNeedsTap(false);
+  // The clip is playing: collect poses from it as it goes
+  function readWhilePlaying() {
     lastVideoTimeRef.current = -1;
     recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
     setPhase('recording');
     startLoop();
   }
 
-  // Runs from a tap, which is what a phone needs before it will play a clip
-  function startAfterTap() {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().then(beginReadingClip).catch((err) => {
-      setNeedsTap(false);
-      stopCamera();
-      setError(clipError(err));
-      setPhase('idle');
-    });
+  // Reads a clip without playing it: moves through it a frame at a time and reads the pose at
+  // each stop. Slower than playing, but it needs no permission from the phone and misses nothing.
+  async function readBySeeking(video: HTMLVideoElement) {
+    const landmarker = landmarkerRef.current;
+    const canvas = canvasRef.current;
+    if (!landmarker || !canvas || !Number.isFinite(video.duration) || video.duration <= 0) throw new Error('unreadable');
+    const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[] };
+    recordingRef.current = recording;
+    setProgress(0);
+    setPhase('recording');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    const end = Math.min(video.duration, MAX_UPLOAD_MS / 1000);
+    for (let time = 0; time < end; time += SEEK_STEP) {
+      await seekTo(video, time);
+      // Someone started the camera or chose another clip while this one was being read
+      if (recordingRef.current !== recording) return;
+      const pose = landmarker.detectForVideo(video, performance.now()).landmarks[0];
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (pose) drawPose(ctx, pose, connectionsRef.current);
+      }
+      if (pose) {
+        recording.frames.push(pose);
+        recording.times.push(time);
+      }
+      setProgress(Math.round((time / end) * 100));
+    }
+    setProgress(null);
+    finishRecording();
   }
 
   // Plays an analysed clip again with the skeleton drawn over it, from the poses already found
@@ -780,7 +820,7 @@ export function AnalyseClient() {
           <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full object-contain"
             style={{ transform: mirrored ? 'scaleX(-1)' : undefined }} />
 
-          {!cameraOn && !fileShown && (
+          {!cameraOn && !fileShown && !(source === 'file' && phase === 'loading') && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               <span className="text-4xl" aria-hidden>🎯</span>
               <p className="max-w-sm text-sm text-neutral-400">
@@ -793,7 +833,7 @@ export function AnalyseClient() {
           {phase === 'recording' && (
             <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-sm font-medium">
               <span className="h-2.5 w-2.5 animate-pulse rounded-full" style={{ background: CRIMSON }} aria-hidden />
-              {source === 'file' ? 'Analysing your video…' : `Recording · ${secondsLeft}s`}
+              {source === 'file' ? `Analysing your video…${progress !== null ? ` ${progress}%` : ''}` : `Recording · ${secondsLeft}s`}
             </div>
           )}
         </div>
@@ -814,7 +854,6 @@ export function AnalyseClient() {
                   <Button variant="secondary" onClick={() => replay(0.25)} disabled={replaying}>Slow motion</Button>
                 </>
               )}
-              {needsTap && <Button onClick={startAfterTap}>Tap to analyse this clip</Button>}
               <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
