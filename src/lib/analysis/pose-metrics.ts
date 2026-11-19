@@ -569,6 +569,13 @@ export function bowlingAnalysis(
 /** The law's limit on straightening of the elbow, from the arm reaching horizontal to release */
 export const ELBOW_EXTENSION_LIMIT = 15;
 
+/** How many frames before release to look for the arm passing horizontal (enough for slow motion) */
+const ELBOW_LOOK_BACK = 60;
+/** An elbow angle below this on a bowling arm above the shoulder is a misread pose, not a bend */
+const ELBOW_MIN_ANGLE = 90;
+/** The most straightening that is taken as a real reading, in degrees */
+const ELBOW_MAX_BELIEVABLE = 60;
+
 export type ElbowCheck = {
   /** Degrees the elbow straightened between the arm reaching horizontal and release; null if it could not be seen */
   extension: number | null;
@@ -606,6 +613,11 @@ export function elbowKind(extension: number, hyperextension: number): ElbowKind 
 
 /**
  * A reference reading for the bowling arm, to decide whether a closer look is worth it.
+ *
+ * What counts as extension: after the arm passes horizontal on the way up, the elbow bends, and
+ * then straightens again before release. The figure is how far it straightened from its most bent
+ * point in that stretch. An arm that stays straight all the way from horizontal reads zero.
+ *
  * It is not a test of whether an action is legal: that needs several cameras in a laboratory.
  * From one camera the elbow angle also appears to change as the arm turns, so this can read high
  * or low. It is kept out of the technique score.
@@ -620,16 +632,40 @@ function elbowCheck(
   side: { shoulder: number; elbow: number; wrist: number },
   p: (lm: Landmark[], i: number) => Point,
 ): ElbowCheck {
+  // The arm's true proportions, as the longest each part is ever seen in the clip (in torso
+  // lengths). A part that looks much shorter in a frame is pointing at the camera or has been
+  // lost by the pose model, and an elbow angle read from it means nothing.
+  const torso = (lm: Landmark[]) => Math.max(1, dist(mid(p(lm, L.lShoulder), p(lm, L.rShoulder)), mid(p(lm, L.lHip), p(lm, L.rHip))));
+  const parts = (lm: Landmark[]) => ({
+    upper: dist(p(lm, side.shoulder), p(lm, side.elbow)) / torso(lm),
+    fore: dist(p(lm, side.elbow), p(lm, side.wrist)) / torso(lm),
+  });
+  const seen = frames.filter((lm) => visible(lm, L.lShoulder, L.rShoulder, L.lHip, L.rHip, side.shoulder, side.elbow, side.wrist)).map(parts);
+  const longest = (values: number[]) => [...values].sort((x, y) => x - y)[Math.floor(values.length * 0.9)] ?? 0;
+  const fullUpper = longest(seen.map((s) => s.upper)), fullFore = longest(seen.map((s) => s.fore));
+
   // For each frame: how far the elbow is from straight, signed by the side the forearm is on
   const bends: number[] = [];
   // Walk back from release while the upper arm is still above horizontal
-  for (let i = release; i >= 0 && release - i <= 8; i--) {
+  for (let i = release; i >= 0 && release - i <= ELBOW_LOOK_BACK; i--) {
     const lm = frames[i];
-    if (!visible(lm, side.shoulder, side.elbow, side.wrist)) break;
+    if (!visible(lm, side.shoulder, side.elbow, side.wrist)) {
+      // Losing the arm at release itself leaves nothing to measure from; earlier, skip the frame
+      if (i === release) break;
+      continue;
+    }
     const shoulder = p(lm, side.shoulder), elbow = p(lm, side.elbow), wrist = p(lm, side.wrist);
     if (elbow.y > shoulder.y) break;
+    const angle = angleAt(shoulder, elbow, wrist);
+    const size = visible(lm, L.lShoulder, L.rShoulder, L.lHip, L.rHip) ? parts(lm) : null;
+    // Not a believable bowling arm in this frame: folded past a right angle, or foreshortened
+    const unreliable = angle < ELBOW_MIN_ANGLE || (size !== null && (size.upper < fullUpper * 0.6 || size.fore < fullFore * 0.6));
+    if (unreliable) {
+      if (i === release) break;
+      continue;
+    }
     const cross = (elbow.x - shoulder.x) * (wrist.y - elbow.y) - (elbow.y - shoulder.y) * (wrist.x - elbow.x);
-    bends.unshift((180 - angleAt(shoulder, elbow, wrist)) * (cross < 0 ? -1 : 1));
+    bends.unshift((180 - angle) * (cross < 0 ? -1 : 1));
   }
   if (bends.length < 2) return { extension: null, frames: bends.length, mostBent: null, atRelease: null, hyperextension: null, kind: null };
   // The side of the biggest bend is the normal one; anything on the other side is past straight
@@ -640,6 +676,8 @@ function elbowCheck(
   const mostBent = Math.min(...angles);
   const extension = Math.max(0, atRelease - mostBent);
   const hyperextension = Math.max(0, -Math.min(...flexion));
+  // More straightening than any real action shows means the pose was misread, not that the arm did it
+  if (extension > ELBOW_MAX_BELIEVABLE) return { extension: null, frames: bends.length, mostBent: null, atRelease: null, hyperextension: null, kind: null };
   return { extension, frames: bends.length, mostBent, atRelease, hyperextension, kind: elbowKind(extension, hyperextension) };
 }
 
