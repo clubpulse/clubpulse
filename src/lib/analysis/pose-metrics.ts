@@ -577,6 +577,11 @@ export type ElbowCheck = {
   /** Elbow angle at its most bent in that part of the action, and at release */
   mostBent: number | null;
   atRelease: number | null;
+  /**
+   * Degrees the elbow went past straight (hyperextension) in that part of the action; 0 if it did
+   * not. Movement past straight is not straightening of a bent arm, so it is left out of `extension`.
+   */
+  hyperextension: number | null;
 };
 
 /**
@@ -584,24 +589,39 @@ export type ElbowCheck = {
  * It is not a test of whether an action is legal: that needs several cameras in a laboratory.
  * From one camera the elbow angle also appears to change as the arm turns, so this can read high
  * or low. It is kept out of the technique score.
+ *
+ * Hyperextension is not counted. An elbow that bends backwards past straight looks, as a plain
+ * angle, the same as one bent forwards by the same amount, so the side the forearm sits on is
+ * tracked too. The side it is on when the arm is most bent is taken as the normal bend; a forearm
+ * on the other side has gone past straight, and that frame is treated as a straight arm.
  */
 function elbowCheck(
   frames: Landmark[][], release: number,
   side: { shoulder: number; elbow: number; wrist: number },
   p: (lm: Landmark[], i: number) => Point,
 ): ElbowCheck {
-  const angles: number[] = [];
+  // For each frame: how far the elbow is from straight, signed by the side the forearm is on
+  const bends: number[] = [];
   // Walk back from release while the upper arm is still above horizontal
   for (let i = release; i >= 0 && release - i <= 8; i--) {
     const lm = frames[i];
     if (!visible(lm, side.shoulder, side.elbow, side.wrist)) break;
-    if (p(lm, side.elbow).y > p(lm, side.shoulder).y) break;
-    angles.unshift(angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)));
+    const shoulder = p(lm, side.shoulder), elbow = p(lm, side.elbow), wrist = p(lm, side.wrist);
+    if (elbow.y > shoulder.y) break;
+    const cross = (elbow.x - shoulder.x) * (wrist.y - elbow.y) - (elbow.y - shoulder.y) * (wrist.x - elbow.x);
+    bends.unshift((180 - angleAt(shoulder, elbow, wrist)) * (cross < 0 ? -1 : 1));
   }
-  if (angles.length < 2) return { extension: null, frames: angles.length, mostBent: null, atRelease: null };
+  if (bends.length < 2) return { extension: null, frames: bends.length, mostBent: null, atRelease: null, hyperextension: null };
+  // The side of the biggest bend is the normal one; anything on the other side is past straight
+  const normal = Math.sign(bends.reduce((a, b) => (Math.abs(b) > Math.abs(a) ? b : a))) || 1;
+  const flexion = bends.map((b) => b * normal);
+  const angles = flexion.map((f) => 180 - Math.max(0, f));
   const atRelease = angles[angles.length - 1];
   const mostBent = Math.min(...angles);
-  return { extension: Math.max(0, atRelease - mostBent), frames: angles.length, mostBent, atRelease };
+  return {
+    extension: Math.max(0, atRelease - mostBent), frames: bends.length, mostBent, atRelease,
+    hyperextension: Math.max(0, -Math.min(...flexion)),
+  };
 }
 
 /* ── Batting from front-on ─────────────────────────────────────────────────── */

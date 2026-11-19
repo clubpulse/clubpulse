@@ -68,8 +68,8 @@ function clipReady(video: HTMLVideoElement): Promise<void> {
   });
 }
 
-/** Time between the frames read when a clip is stepped through, in seconds (20 a second). */
-const SEEK_STEP = 0.05;
+/** Time between the frames read when a clip is stepped through, in seconds (30 a second). */
+const SEEK_STEP = 1 / 30;
 
 /** Moves a paused clip to a moment and waits until that picture is on screen. */
 function seekTo(video: HTMLVideoElement, time: number): Promise<void> {
@@ -255,6 +255,8 @@ export function AnalyseClient() {
   // Shape of the picture, so an upright phone video gets an upright box
   const [aspect, setAspect] = useState<number>(16 / 9);
   const [replaying, setReplaying] = useState(false);
+  // Which analysed frame of an uploaded clip is on screen, and how many there are, for stepping through
+  const [frameAt, setFrameAt] = useState<{ index: number | null; total: number; key: number } | null>(null);
 
   // Mode/hand/shotType are read when a recording finishes, from inside the rAF loop
   // Where the camera is standing: square of the wicket, or looking straight down the pitch
@@ -334,6 +336,7 @@ export function AnalyseClient() {
     setResults(metrics);
     setDetail({ ...analysis, pose: recording.frames[analysis.keyFrame], width: video.videoWidth, height: video.videoHeight });
     replayRef.current = fromFile ? { frames: recording.frames, times: recording.times } : null;
+    setFrameAt(fromFile ? { index: analysis.keyFrame, total: recording.frames.length, key: analysis.keyFrame } : null);
     setPhase('done');
 
     if (fromFile) {
@@ -509,6 +512,7 @@ export function AnalyseClient() {
       return;
     }
     setProgress(null);
+    setFrameAt(null);
     stopCamera();
     canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     sourceRef.current = 'file';
@@ -593,6 +597,31 @@ export function AnalyseClient() {
     finishRecording();
   }
 
+  // Holds the clip on one analysed frame with its skeleton, for going through an action a frame at a time
+  function showFrame(index: number) {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const data = replayRef.current;
+    if (!video || !canvas || !data || data.frames.length === 0) return;
+    const at = Math.max(0, Math.min(data.frames.length - 1, index));
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    video.pause();
+    setReplaying(false);
+    setFrameAt((current) => (current ? { ...current, index: at } : current));
+    const draw = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPose(ctx, data.frames[at], connectionsRef.current);
+    };
+    if (Math.abs(video.currentTime - data.times[at]) < 0.001) draw();
+    else {
+      video.addEventListener('seeked', draw, { once: true });
+      video.currentTime = data.times[at];
+    }
+  }
+
   // Plays an analysed clip again with the skeleton drawn over it, from the poses already found
   function replay(rate: number) {
     const video = videoRef.current;
@@ -623,6 +652,7 @@ export function AnalyseClient() {
     video.playbackRate = rate;
     video.currentTime = 0;
     setReplaying(true);
+    setFrameAt((current) => (current ? { ...current, index: null } : current));
     video.play().then(() => {
       rafRef.current = requestAnimationFrame(tick);
     }).catch(() => setReplaying(false));
@@ -838,6 +868,26 @@ export function AnalyseClient() {
           )}
         </div>
 
+        {fileShown && phase === 'done' && frameAt && frameAt.total > 1 && (
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" onClick={() => showFrame((frameAt.index ?? frameAt.key) - 1)}
+                disabled={frameAt.index === 0} aria-label="Previous frame">◀ Frame</Button>
+              <input type="range" min={0} max={frameAt.total - 1} step={1} value={frameAt.index ?? frameAt.key}
+                onChange={(event) => showFrame(Number(event.target.value))}
+                className="h-2 min-w-0 flex-1 accent-sky-400" aria-label="Move through the clip frame by frame" />
+              <Button variant="secondary" onClick={() => showFrame((frameAt.index ?? frameAt.key) + 1)}
+                disabled={frameAt.index === frameAt.total - 1} aria-label="Next frame">Frame ▶</Button>
+            </div>
+            <div className="mt-2 flex items-center justify-between gap-3 text-xs text-neutral-400">
+              <span>{frameAt.index === null ? 'Playing' : `Frame ${frameAt.index + 1} of ${frameAt.total}${frameAt.index === frameAt.key ? ' · key position' : ''}`}</span>
+              <button type="button" onClick={() => showFrame(frameAt.key)} className="font-medium text-sky-400 underline-offset-2 hover:underline">
+                Go to key position
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mt-4 flex flex-wrap gap-3">
           {!cameraOn && (
             <>
@@ -1018,7 +1068,7 @@ export function AnalyseClient() {
           </ul>
 
           {mode === 'bowling' && detail?.elbow && (() => {
-            const { extension, frames: seen, mostBent, atRelease } = detail.elbow;
+            const { extension, frames: seen, mostBent, atRelease, hyperextension } = detail.elbow;
             const over = extension !== null && extension > ELBOW_EXTENSION_LIMIT;
             return (
               <div className="mt-6 rounded-lg border px-4 py-3"
@@ -1043,6 +1093,11 @@ export function AnalyseClient() {
                       ? `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release (from ${Math.round(mostBent ?? 0)}° to ${Math.round(atRelease ?? 0)}°). That is above the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws, so further testing is recommended: film it again side-on and from behind in slow motion, and have a qualified coach look at it.`
                       : `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release, inside the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws.`}
                 </p>
+                {extension !== null && (hyperextension ?? 0) >= 3 && (
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-400">
+                    The elbow also went about {Math.round(hyperextension ?? 0)}° past straight (hyperextension). That is not straightening of a bent arm, so it is not counted in the figure above.
+                  </p>
+                )}
                 <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
                   Reference only, from {seen} frame{seen === 1 ? '' : 's'} of one camera. It is not a ruling on whether an action is legal
                   and it does not count towards the score. Only a multi-camera laboratory assessment can decide that.

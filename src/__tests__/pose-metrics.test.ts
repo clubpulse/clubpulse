@@ -109,6 +109,26 @@ describe('bowling arm reference check', () => {
     expect(elbow.extension!).toBeGreaterThan(ELBOW_EXTENSION_LIMIT);
   });
 
+  it('does not count an elbow that goes past straight as straightening', () => {
+    const frames = delivery();
+    // Slightly bent one way on the way up, then bent the other way (hyperextended) at release
+    frames[15] = pose({ ...RELEASE, rElbow: [640, 600], rWrist: [575, 470] });
+    const release = frames[16].map((point) => ({ ...point }));
+    const s = release[L.rShoulder], e = release[L.rElbow];
+    // Put the wrist 12 degrees off the line of the upper arm, on the opposite side to frame 15
+    const along = Math.atan2((e.y - s.y) * H, (e.x - s.x) * W);
+    const side15 = Math.sign((frames[15][L.rElbow].x - frames[15][L.rShoulder].x) * W * (frames[15][L.rWrist].y - frames[15][L.rElbow].y) * H
+      - (frames[15][L.rElbow].y - frames[15][L.rShoulder].y) * H * (frames[15][L.rWrist].x - frames[15][L.rElbow].x) * W);
+    const turn = along - side15 * (12 * Math.PI) / 180;
+    release[L.rWrist] = { ...release[L.rWrist], x: e.x + (130 * Math.cos(turn)) / W, y: e.y + (130 * Math.sin(turn)) / H };
+    frames[16] = release;
+    const { elbow } = bowlingAnalysis(frames, 'right', W, H)!;
+    expect(elbow.hyperextension!).toBeGreaterThan(8);
+    expect(elbow.atRelease!).toBe(180);
+    // Only the movement from bent to straight is counted, not the part past straight
+    expect(elbow.extension!).toBeCloseTo(180 - elbow.mostBent!, 5);
+  });
+
   it('gives no reading when that part of the action was not seen', () => {
     const frames = delivery();
     for (const i of [14, 15]) frames[i] = frames[i].map((point, j) => (j === L.rElbow ? { ...point, visibility: 0.1 } : point));
