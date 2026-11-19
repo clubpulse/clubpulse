@@ -64,6 +64,9 @@ function AuthGate() {
       <Stack.Screen name="odds" options={{ headerShown: true, title: 'Prize odds', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="deals"options={{ headerShown: true, title: 'Deals & Discounts', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="scratch-cards" options={{ headerShown: true, title: 'Scratch cards', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="games" options={{ headerShown: true, title: 'Games', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="knowledge/[game]" options={{ headerShown: true, title: 'Game', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="season-manager" options={{ headerShown: true, title: 'Season Manager', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="scratch-rules" options={{ headerShown: true, title: 'Scratch card rules', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
       <Stack.Screen name="scratch-card/[type]" options={{ headerShown: true, title: 'Scratch Card', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
     </Stack>

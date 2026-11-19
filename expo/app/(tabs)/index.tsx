@@ -267,10 +267,10 @@ export default function HomeScreen() {
               <Text style={styles.tileHint}>See where the club needs a hand</Text>
             </Tile>
           )}
-          <Tile icon="🎮" onPress={() => router.push('/auction-room')}>
-            <Text style={[styles.tileLabel, { marginTop: spacing.sm }]}>Today&apos;s game</Text>
-            <Text style={styles.tilePhrase}>Auction Room</Text>
-            <Text style={styles.tileHint}>Build a squad, climb the table</Text>
+          <Tile icon="🎮" onPress={() => router.push('/games' as never)}>
+            <Text style={[styles.tileLabel, { marginTop: spacing.sm }]}>Today&apos;s games</Text>
+            <Text style={styles.tilePhrase}>5 games</Text>
+            <Text style={styles.tileHint}>Quizzes, Season Manager, Auction Room</Text>
           </Tile>
         </View>
 

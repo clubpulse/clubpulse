@@ -33,7 +33,7 @@ export const MENU: MenuGroup[] = [
     tint: '#A78BFA',
     links: [
       { key: 'rewards', label: 'Rewards', detail: 'Daily, weekly and monthly goals', icon: '🎁', route: '/rewards' },
-      { key: 'auction', label: 'Auction Room', detail: 'Build a squad of 15 at a T20 auction', icon: '🔨', route: '/auction-room' },
+      { key: 'games', label: 'Games', detail: "Umpire's Call, Who Am I?, Season Manager and more", icon: '🕹️', route: '/games' },
       { key: 'cards', label: 'Scratch cards', detail: 'Free cards you have earned', icon: '🎟️', route: '/scratch-cards', adult: true, needs: 'cards' },
     ],
   },
