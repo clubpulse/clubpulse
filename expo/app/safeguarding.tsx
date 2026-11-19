@@ -94,27 +94,27 @@ export default function SafeguardingScreen() {
             case 'age-gating':
               return (
                 <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
-                  <Text style={fonts.title}>Age-Gated Parent Linking</Text>
+                  <Text style={fonts.title}>Linking a parent, by age</Text>
                   <Card>
                     <View style={{ gap: spacing.md }}>
                       <AgeRule
                         emoji="🔴"
-                        label="Under 16 — Mandatory"
-                        description="Cannot participate without an approved linked parent. Account locked until parent is linked and admin-approved."
+                        label="Under 16: required"
+                        description="A parent or guardian must be linked and approved by the club before the child can take part."
                         color={colors.danger}
                       />
                       <View style={styles.divider} />
                       <AgeRule
                         emoji="🟡"
-                        label="16–17 — Optional"
-                        description="Can join independently but a parent may request to link. Admin approves each link."
+                        label="16 to 17: optional"
+                        description="They can join on their own. A parent may ask to be linked, and the club approves each link."
                         color={colors.orange}
                       />
                       <View style={styles.divider} />
                       <AgeRule
                         emoji="🟢"
-                        label="18+ — Not Applicable"
-                        description="Full adult member. No parent linking available."
+                        label="18 and over: not needed"
+                        description="A full adult member. No parent link applies."
                         color={colors.success}
                       />
                     </View>
@@ -126,7 +126,7 @@ export default function SafeguardingScreen() {
               return (
                 <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
                   <View style={styles.row}>
-                    <Text style={[fonts.title, { flex: 1 }]}>Linked Juniors</Text>
+                    <Text style={[fonts.title, { flex: 1 }]}>Linked juniors</Text>
                     <Pressable
                       onPress={() => router.push('/register-child')}
                       style={({ pressed }) => [styles.addChildBtn, pressed && { opacity: 0.7 }]}
@@ -138,7 +138,7 @@ export default function SafeguardingScreen() {
                     <Card>
                       <View style={{ alignItems: 'center', gap: spacing.sm, padding: spacing.md }}>
                         <Text style={{ fontSize: 32 }}>👨‍👧</Text>
-                        <Text style={fonts.regular}>No Linked Juniors</Text>
+                        <Text style={fonts.regular}>No linked juniors</Text>
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
                           {isParent
                             ? 'Children you register with your club will appear here.'
@@ -189,10 +189,10 @@ export default function SafeguardingScreen() {
                               <Text style={{ fontSize: 12 }}>{ageCategoryEmoji(ageCategory)}</Text>
                               <Text style={[styles.ageCategoryText, { color: ageCategoryColor(ageCategory) }]}>
                                 {ageCategory === 'under_16'
-                                  ? 'Under 16 — Parent link mandatory'
+                                  ? 'Under 16: a parent link is required'
                                   : ageCategory === '16_to_17'
-                                  ? '16–17 — Parent link optional'
-                                  : '18+ — No parent link needed'}
+                                  ? '16 to 17: a parent link is optional'
+                                  : '18 and over: no parent link needed'}
                               </Text>
                             </View>
                           )}
@@ -216,12 +216,12 @@ export default function SafeguardingScreen() {
             case 'dbs':
               return (
                 <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
-                  <Text style={fonts.title}>DBS Verification</Text>
+                  <Text style={fonts.title}>DBS checks</Text>
                   {dbsRecords.length === 0 ? (
                     <Card>
                       <View style={{ alignItems: 'center', gap: spacing.sm, padding: spacing.md }}>
                         <Text style={{ fontSize: 32 }}>🛡️</Text>
-                        <Text style={fonts.regular}>No DBS Records</Text>
+                        <Text style={fonts.regular}>No DBS records</Text>
                         <Text style={[fonts.small, { textAlign: 'center' }]}>
                           {isAdmin ? 'DBS checks for your coaches and volunteers will appear here.' : 'Your own DBS check will appear here once your club records it.'}
                         </Text>
@@ -255,13 +255,13 @@ export default function SafeguardingScreen() {
             case 'policies':
               return (
                 <View style={{ gap: spacing.md }}>
-                  <Text style={fonts.title}>Club Policies</Text>
+                  <Text style={fonts.title}>Club policies</Text>
                   <Card>
                     <View style={{ gap: spacing.md }}>
-                      <PolicyRow label="Safeguarding Policy" icon="📄" />
-                      <PolicyRow label="Code of Conduct" icon="📋" />
-                      <PolicyRow label="Photography Consent" icon="📸" />
-                      <PolicyRow label="Anti-Bullying Policy" icon="🤝" />
+                      <PolicyRow label="Safeguarding policy" icon="📄" />
+                      <PolicyRow label="Code of conduct" icon="📋" />
+                      <PolicyRow label="Photography consent" icon="📸" />
+                      <PolicyRow label="Anti-bullying policy" icon="🤝" />
                     </View>
                   </Card>
                 </View>

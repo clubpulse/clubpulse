@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 type Row = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -106,8 +106,12 @@ export default function CoachingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={{ marginBottom: spacing.md }}>
+          <Text style={fonts.heading}>Coaching</Text>
+          <Text style={[fonts.small, { marginTop: 2 }]}>Film your technique, follow your progress and find a coach.</Text>
+        </View>
         {SECTIONS.map((section) => (
           <View key={section.heading} style={styles.section}>
             <Text style={styles.heading}>{section.heading}</Text>

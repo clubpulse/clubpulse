@@ -43,7 +43,7 @@ export const MENU: MenuGroup[] = [
     icon: '🎯',
     tint: '#F97316',
     links: [
-      { key: 'coaching', label: 'Coaching and video', detail: 'Film your technique, track progress, book a coach', icon: '🎥', route: '/coaching', for: ['player', 'coach', 'parent'] },
+      { key: 'coaching', label: 'Coaching', detail: 'Film your technique, track progress, book a coach', icon: '🎥', route: '/coaching', for: ['player', 'coach', 'parent'] },
       { key: 'academy', label: 'Academy', detail: 'Two-minute lessons and a practice plan', icon: '🎓', route: '/academy', for: PLAYING },
       { key: 'coach-ai', label: 'Coach AI', detail: 'Ask anything about your game', icon: '🧠', route: '/companion' },
       { key: 'soul', label: 'My Sporting Soul', detail: 'What kind of cricketer are you?', icon: '✨', route: '/sporting-soul', for: PLAYING },

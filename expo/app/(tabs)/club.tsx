@@ -139,7 +139,7 @@ export default function ClubScreen() {
             {/* Overview tab content */}
             {tab === 'overview' && isAdmin && (
               <View style={{ gap: spacing.md }}>
-                <Text style={fonts.title}>Admin Quick Actions</Text>
+                <Text style={fonts.title}>Admin quick actions</Text>
                 <View style={styles.quickRow}>
                   <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => setInviteOpen(true)}
                     accessibilityRole="button" accessibilityLabel="Invite members">
@@ -149,7 +149,7 @@ export default function ClubScreen() {
                   <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => router.push('/post-shift')}
                     accessibilityRole="button" accessibilityLabel="Post a volunteer shift">
                     <Ionicons name="add-circle" size={18} color={colors.success} />
-                    <Text style={[styles.quickText, { color: colors.success }]}>Post Shift</Text>
+                    <Text style={[styles.quickText, { color: colors.success }]}>Post a shift</Text>
                   </Pressable>
                   <Pressable style={({ pressed }) => [styles.quickCard, pressed && { opacity: 0.7 }]} onPress={() => setTab('members')}
                     accessibilityRole="button" accessibilityLabel="See members">
@@ -172,7 +172,7 @@ export default function ClubScreen() {
 
             {tab === 'approvals' && (
               <Text style={fonts.title}>
-                {approvalQueue.length === 0 ? 'No Pending Requests' : 'Pending Requests'}
+                {approvalQueue.length === 0 ? 'No pending requests' : 'Pending requests'}
               </Text>
             )}
 
@@ -213,7 +213,7 @@ export default function ClubScreen() {
             <Card>
               <View style={{ alignItems: 'center', padding: spacing.md, gap: spacing.sm }}>
                 <Text style={{ fontSize: 32 }}>✅</Text>
-                <Text style={fonts.regular}>All caught up!</Text>
+                <Text style={fonts.regular}>All caught up</Text>
                 <Text style={[fonts.small, { textAlign: 'center' }]}>
                   No pending approval requests right now.
                 </Text>

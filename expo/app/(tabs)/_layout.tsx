@@ -1,22 +1,33 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRoles } from '../../hooks/useRoles';
 import { colors } from '../../constants/theme';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
+// Every tab screen. Only five are shown in the bar at a time; the rest stay in the navigator so
+// they can be opened from Home and the menu.
 const TABS: { name: string; title: string; icon: IconName }[] = [
   { name: 'index',       title: 'Home',     icon: 'home' },
-  { name: 'club',        title: 'Club',     icon: 'shield' },
-  { name: 'coaches',     title: 'Coaches',  icon: 'people' },
+  { name: 'coaching',    title: 'Coaching', icon: 'videocam' },
   { name: 'shifts',      title: 'Shifts',   icon: 'calendar' },
+  { name: 'games',       title: 'Games',    icon: 'game-controller' },
+  { name: 'club',        title: 'Club',     icon: 'shield' },
   { name: 'profile',     title: 'Profile',  icon: 'person' },
-  // Keep these as hidden tab screens so they stay in the tab navigator stack
+  { name: 'coaches',     title: 'Coaches',  icon: 'people' },
   { name: 'wallet',      title: 'Wallet',   icon: 'wallet' },
   { name: 'marketplace', title: 'Market',   icon: 'storefront' },
   { name: 'companion',   title: 'Coach AI', icon: 'chatbubbles' },
 ];
 
 export default function TabsLayout() {
+  const { active, isAdmin, isCoach, isPlayer } = useRoles();
+  // Players, coaches and admins get Coaching in the bar. Someone who is only a parent or a
+  // volunteer gets Shifts there, which is what they come for. Anyone with no role yet is
+  // treated as a player.
+  const plays = isPlayer || isCoach || isAdmin || active.length === 0;
+  const shown = new Set(['index', plays ? 'coaching' : 'shifts', 'games', 'club', 'profile']);
+
   return (
     <Tabs
       screenOptions={{
@@ -34,10 +45,7 @@ export default function TabsLayout() {
           options={{
             title: tab.title,
             tabBarIcon: ({ color, size }) => <Ionicons name={tab.icon} color={color} size={size} />,
-            // Hide wallet, marketplace and companion from the bottom tab bar
-            ...((['wallet', 'marketplace', 'companion'] as string[]).includes(tab.name)
-              ? { href: null }
-              : {}),
+            ...(shown.has(tab.name) ? {} : { href: null }),
           }}
         />
       ))}
