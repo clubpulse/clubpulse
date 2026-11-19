@@ -8,6 +8,7 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 // as the JS loads because the OS can start the app headless just to run it.
 import { registerStepsBackgroundSync } from '../lib/backgroundSync';
 import { AppHeader } from '../components/AppHeader';
+import { Wide } from '../components/Wide';
 import { colors } from '../constants/theme';
 
 // Every screen opened from a tab gets the app's own top bar with a back button (AppHeader)
@@ -18,6 +19,10 @@ const screen = (title: string) => ({
   gestureEnabled: true,
   header: (props: React.ComponentProps<typeof AppHeader>) => <AppHeader {...props} />,
 });
+
+// Screens that use the whole width of an iPad: the tabs (they centre their own pages, so the
+// tab bar can run edge to edge) and website pages, which lay themselves out.
+const FULL_WIDTH = new Set(['(tabs)', 'web']);
 
 // Sends signed-out users to sign-in and signed-in users away from the auth screens
 function AuthGate() {
@@ -52,7 +57,11 @@ function AuthGate() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+    <Stack
+      screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
+      // On an iPad each page sits in a centred column; the top bar stays full width
+      screenLayout={({ children, route }) => (FULL_WIDTH.has(route.name) ? <>{children}</> : <Wide>{children}</Wide>)}
+    >
       <Stack.Screen name="(tabs)" options={{ title: 'Home' }} />
       <Stack.Screen name="auth" />
       <Stack.Screen name="reset-password" />
