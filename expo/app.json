@@ -15,7 +15,7 @@
       "backgroundColor": "#04091A"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.clubpulse.app",
       "buildNumber": "1",
       "infoPlist": {
@@ -23,7 +23,13 @@
         "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer.",
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "ClubPulse uses the camera to film your batting or bowling so it can score your technique.",
-        "NSMicrophoneUsageDescription": "ClubPulse uses the microphone only if you record a new video with sound to analyse."
+        "NSMicrophoneUsageDescription": "ClubPulse uses the microphone only if you record a new video with sound to analyse.",
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationPortraitUpsideDown",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
       },
       "config": {
         "usesNonExemptEncryption": false

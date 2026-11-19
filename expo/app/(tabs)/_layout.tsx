@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoles } from '../../hooks/useRoles';
+import { Wide, WideWithSwipeBack } from '../../components/Wide';
 import { colors } from '../../constants/theme';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -32,6 +33,10 @@ export default function TabsLayout() {
     <Tabs
       // Back returns to the tab you were on before, not always to Home
       backBehavior="history"
+      // On an iPad each page sits in a centred column. Every page but Home also goes back on a
+      // swipe in from the left edge.
+      screenLayout={({ children, route }) =>
+        route.name === 'index' ? <Wide>{children}</Wide> : <WideWithSwipeBack>{children}</WideWithSwipeBack>}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.brandSky,
