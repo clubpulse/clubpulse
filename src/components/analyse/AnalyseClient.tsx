@@ -18,7 +18,7 @@ import {
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { detectShot, type ShotReading } from '@/lib/analysis/shot-detect';
-import { bestAndWorst, clipTime, splitShots } from '@/lib/analysis/shot-split';
+import { bestAndWorst, clipTime, splitDeliveries, splitShots, windowAround, type ShotWindow } from '@/lib/analysis/shot-split';
 
 type AnalyseTab = 'pose' | 'ball';
 
@@ -40,16 +40,36 @@ const MAX_SEEK_FRAMES = 2400;
 // Segments shorter than this (e.g. the tail when the camera stops) aren't worth keeping as clips
 const MIN_CLIP_SECONDS = 2;
 
-/** One shot found in an uploaded batting clip, already marked */
+/** One shot or delivery found in an uploaded clip, already marked */
 type ShotEntry = {
-  /** Frame of the whole clip to show for this shot, and when in the clip the swing was */
+  /** The frames of the whole clip that belong to it */
+  win: ShotWindow;
+  /** Frame of the whole clip to show for it, and when in the clip it happened */
   key: number;
   time: number;
-  shot: ShotType;
+  /** Batting only: the shot played */
+  shot?: ShotType;
   read: ShotReading | null;
   analysis: Analysis;
   overall: number;
 };
+
+/** Marks one shot or delivery of a clip by itself. Null when a player cannot be seen well enough in it. */
+function markWindow(
+  data: { frames: NormalizedLandmark[][]; times: number[] }, win: ShotWindow,
+  settings: { mode: Mode; hand: Hand; view: View; shotType: ShotChoice }, w: number, h: number,
+): ShotEntry | null {
+  const part = data.frames.slice(win.start, win.end + 1);
+  const batting = settings.mode === 'batting';
+  const read = batting && settings.shotType === 'auto' ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
+  const shot: ShotType | undefined = !batting ? undefined : settings.shotType === 'auto' ? (read?.shot ?? 'drive') : settings.shotType;
+  const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view);
+  if (!marked.ok) return null;
+  return {
+    win, key: win.start + marked.analysis.keyFrame, time: data.times[win.peak], shot, read,
+    analysis: marked.analysis, overall: overallScore(marked.analysis.metrics),
+  };
+}
 
 type Phase = 'idle' | 'loading' | 'ready' | 'recording' | 'done';
 
@@ -270,7 +290,9 @@ export function AnalyseClient() {
   // Shape of the picture, so an upright phone video gets an upright box
   const [aspect, setAspect] = useState<number>(16 / 9);
   const [replaying, setReplaying] = useState(false);
-  // The separate shots found in an uploaded batting clip (two or more), and the one on screen
+  // Shown in the empty video box when a clip was cleared and a new one is needed
+  const [notice, setNotice] = useState<string | null>(null);
+  // The separate shots or deliveries found in an uploaded clip, and the one on screen
   const [shots, setShots] = useState<ShotEntry[] | null>(null);
   const [shotPick, setShotPick] = useState(0);
   // Written feedback already fetched for a shot, so going back to it does not ask again
@@ -399,27 +421,21 @@ export function AnalyseClient() {
 
     const { mode: m, hand: hd, shotType: choice, view: vw } = settingsRef.current;
 
-    // A batting clip with several shots in it is marked one shot at a time
-    if (fromFile && m === 'batting') {
-      const entries = splitShots(recording.frames, recording.times, video.videoWidth, video.videoHeight).flatMap((win): ShotEntry[] => {
-        const part = recording.frames.slice(win.start, win.end + 1);
-        const partRead = choice === 'auto' ? detectShot(part, video.videoWidth, video.videoHeight) : null;
-        const shot: ShotType = choice === 'auto' ? (partRead?.shot ?? 'drive') : choice;
-        const marked = analyseDetailed(part, m, hd, video.videoWidth, video.videoHeight, shot, vw);
-        if (!marked.ok) return [];
-        return [{
-          key: win.start + marked.analysis.keyFrame, time: recording.times[win.peak], shot, read: partRead,
-          analysis: marked.analysis, overall: overallScore(marked.analysis.metrics),
-        }];
-      });
+    // A clip with several shots or deliveries in it is marked one at a time
+    if (fromFile) {
+      const data = { frames: recording.frames, times: recording.times };
+      const found = m === 'batting'
+        ? splitShots(data.frames, data.times, video.videoWidth, video.videoHeight)
+        : splitDeliveries(data.frames, data.times, hd, video.videoWidth, video.videoHeight);
+      const entries = found.flatMap((win) => markWindow(data, win, settingsRef.current, video.videoWidth, video.videoHeight) ?? []);
       if (entries.length >= 2) {
         const first = bestAndWorst(entries.map((e) => e.overall))?.best ?? 0;
         coachCache.current.clear();
-        replayRef.current = { frames: recording.frames, times: recording.times };
+        replayRef.current = data;
         setShots(entries);
         setPhase('done');
         presentShot(entries[first], first);
-        // History keeps the best shot in full and a line for each of the others
+        // History keeps the best one in full and a line for each of the others
         requestCoaching(entries[first].analysis, entries[first].shot, recording.frames.length, first, true, {
           shots: entries.map((e, i) => ({ number: i + 1, at: Math.round(e.time * 10) / 10, shotType: e.shot, overall: e.overall })),
         });
@@ -428,7 +444,7 @@ export function AnalyseClient() {
     }
     setShots(null);
 
-    const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight) : null;
+    const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
     const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
     setReading(read);
     const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw);
@@ -603,6 +619,7 @@ export function AnalyseClient() {
     }
     setProgress(null);
     setFrameAt(null);
+    setNotice(null);
     stopCamera();
     canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     sourceRef.current = 'file';
@@ -686,6 +703,96 @@ export function AnalyseClient() {
     }
     setProgress(null);
     finishRecording();
+  }
+
+  // A clip is on screen and has been analysed
+  const clipLoaded = () => sourceRef.current === 'file' && replayRef.current !== null && phase === 'done';
+
+  // Marks the clip on screen again with new settings, without uploading it again
+  function reanalyse(settings: { mode: Mode; hand: Hand; view: View; shotType: ShotChoice }) {
+    const data = replayRef.current;
+    if (!data) return;
+    settingsRef.current = settings;
+    recordingRef.current = { until: 0, frames: data.frames, times: data.times };
+    finishRecording();
+  }
+
+  // Bowling and batting need different clips: changing discipline clears the clip and asks for a new one
+  function changeMode(next: Mode) {
+    if (next === mode) return;
+    setMode(next);
+    setResults(null);
+    if (sourceRef.current !== 'file') return;
+    stopCamera();
+    canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    setShots(null);
+    setDetail(null);
+    setReading(null);
+    setFrameAt(null);
+    setCoaching({ state: 'idle' });
+    setPhase('idle');
+    setNotice(`That clip was analysed as ${mode}. Upload a ${next} video to analyse ${next}.`);
+  }
+
+  function changeHand(next: Hand) {
+    setHand(next);
+    if (clipLoaded()) reanalyse({ mode, hand: next, view, shotType });
+    else setResults(null);
+  }
+
+  function changeView(next: View) {
+    setView(next);
+    if (clipLoaded()) reanalyse({ mode, hand, view: next, shotType });
+    else setResults(null);
+  }
+
+  // Picking a shot type. With a session on screen it corrects the shot being looked at; with a
+  // single clip it marks the clip again as that shot.
+  function changeShot(next: ShotChoice) {
+    setShotType(next);
+    const data = replayRef.current;
+    const video = videoRef.current;
+    if (!clipLoaded() || !data || !video) {
+      setReading(null);
+      setResults(null);
+      return;
+    }
+    if (!shots) {
+      reanalyse({ mode, hand, view, shotType: next });
+      return;
+    }
+    const again = markWindow(data, shots[shotPick].win, { mode, hand, view, shotType: next }, video.videoWidth, video.videoHeight);
+    if (!again) return;
+    coachCache.current.delete(shotPick);
+    setShots(shots.map((e, i) => (i === shotPick ? again : e)));
+    pickShot(again, shotPick);
+  }
+
+  // Adds a shot or delivery the software missed, at the frame on screen
+  function markHere() {
+    const data = replayRef.current;
+    const video = videoRef.current;
+    const index = frameAt?.index;
+    if (!data || !video || index === null || index === undefined) return;
+    const entry = markWindow(data, windowAround(data.times, index, mode), { mode, hand, view, shotType }, video.videoWidth, video.videoHeight);
+    if (!entry) {
+      toast('We could not see the player clearly enough around that frame.');
+      return;
+    }
+    const next = [...(shots ?? []), entry].sort((a, b) => a.time - b.time);
+    coachCache.current.clear();
+    setShots(next);
+    pickShot(entry, next.indexOf(entry));
+  }
+
+  // Takes out something that was not really a shot
+  function removeShot(index: number) {
+    if (!shots || shots.length <= 1) return;
+    const next = shots.filter((_, i) => i !== index);
+    coachCache.current.clear();
+    setShots(next);
+    const show = Math.min(index === shotPick ? 0 : shotPick > index ? shotPick - 1 : shotPick, next.length - 1);
+    pickShot(next[show], show);
   }
 
   // A shot in the list was tapped: show it and fetch its written feedback
@@ -826,7 +933,11 @@ export function AnalyseClient() {
   const overall = results ? overallScore(results) : null;
   // Which of a session's shots to point out, and a plain name for a shot ("pull / hook")
   const pick = shots ? bestAndWorst(shots.map((e) => e.overall)) : null;
-  const name = (e: ShotEntry) => SHOT_TYPE_LABELS[e.shot].replace(/^\S+\s/, '').toLowerCase();
+  const name = (i: number) => {
+    const e = shots?.[i];
+    if (!e) return '';
+    return e.shot ? `shot ${i + 1}, a ${SHOT_TYPE_LABELS[e.shot].replace(/^\S+\s/, '').toLowerCase()}` : `ball ${i + 1}`;
+  };
 
   return (
     <div className="space-y-6">
@@ -886,13 +997,13 @@ export function AnalyseClient() {
       )}
 
       <div className="flex flex-wrap items-center gap-3">
-        <Toggle label="Discipline" value={mode} onChange={(v) => { setMode(v); setResults(null); }}
+        <Toggle label="Discipline" value={mode} onChange={changeMode}
           disabled={phase === 'recording'}
           options={[{ value: 'bowling', label: 'Bowling' }, { value: 'batting', label: 'Batting' }]} />
-        <Toggle label="Handedness" value={hand} onChange={(v) => { setHand(v); setResults(null); }}
+        <Toggle label="Handedness" value={hand} onChange={changeHand}
           disabled={phase === 'recording'}
           options={[{ value: 'right', label: 'Right-handed' }, { value: 'left', label: 'Left-handed' }]} />
-        <Toggle label="Camera view" value={view} onChange={(v) => { setView(v); setResults(null); }}
+        <Toggle label="Camera view" value={view} onChange={changeView}
           disabled={phase === 'recording'}
           options={[{ value: 'side', label: 'Side-on view' }, { value: 'front', label: 'Front-on view' }]} />
       </div>
@@ -917,7 +1028,7 @@ export function AnalyseClient() {
                   key={key}
                   type="button"
                   disabled={phase === 'recording'}
-                  onClick={() => { setShotType(key); setReading(null); setResults(null); }}
+                  onClick={() => changeShot(key)}
                   className="rounded-lg border px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
                   style={{
                     borderColor: active ? GOLD : 'rgba(255,255,255,0.12)',
@@ -954,6 +1065,7 @@ export function AnalyseClient() {
           {!cameraOn && !fileShown && !(source === 'file' && phase === 'loading') && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               <span className="text-4xl" aria-hidden>🎯</span>
+              {notice && <p className="max-w-sm text-sm font-medium text-white">{notice}</p>}
               <p className="max-w-sm text-sm text-neutral-400">
                 Set your phone or laptop {view === 'side' ? 'side-on' : 'front-on, looking straight down the pitch'}, step back so your whole body is in frame, then start the camera.
                 Or upload a clip you have already filmed.
@@ -982,9 +1094,16 @@ export function AnalyseClient() {
             </div>
             <div className="mt-2 flex items-center justify-between gap-3 text-xs text-neutral-400">
               <span>{frameAt.index === null ? 'Playing' : `Frame ${frameAt.index + 1} of ${frameAt.total}${frameAt.index === frameAt.key ? ' · key position' : ''}`}</span>
-              <button type="button" onClick={() => showFrame(frameAt.key)} className="font-medium text-sky-400 underline-offset-2 hover:underline">
-                Go to key position
-              </button>
+              <span className="flex gap-4">
+                {frameAt.index !== null && (
+                  <button type="button" onClick={markHere} className="font-medium text-sky-400 underline-offset-2 hover:underline">
+                    {mode === 'bowling' ? 'Mark a ball here' : 'Mark a shot here'}
+                  </button>
+                )}
+                <button type="button" onClick={() => showFrame(frameAt.key)} className="font-medium text-sky-400 underline-offset-2 hover:underline">
+                  Go to key position
+                </button>
+              </span>
             </div>
           </div>
         )}
@@ -1034,11 +1153,12 @@ export function AnalyseClient() {
       </Card>
 
       {shots && phase === 'done' && (
-          <Card title="Shots in this clip" description={`We found ${shots.length} shots and marked each one. Tap a shot to see it in full.`}>
+          <Card title={mode === 'bowling' ? 'Deliveries in this clip' : 'Shots in this clip'}
+            description={`We found ${shots.length} ${mode === 'bowling' ? (shots.length === 1 ? 'delivery' : 'deliveries') : (shots.length === 1 ? 'shot' : 'shots')} and marked each one. Tap one to see it in full.`}>
             {pick && (
               <p className="mb-4 text-sm leading-relaxed text-neutral-300">
-                Your best was shot {pick.best + 1}, a {name(shots[pick.best])}, at {shots[pick.best].overall}. Shot {pick.toWorkOn + 1}, a {name(shots[pick.toWorkOn])},
-                has the most room to grow, so it is a good one to look at next.
+                Your best was {name(pick.best)}, at {shots[pick.best].overall}. {name(pick.toWorkOn).replace(/^./, (c) => c.toUpperCase())} has
+                the most room to grow, so it is a good one to look at next.
               </p>
             )}
             <ul className="space-y-2">
@@ -1046,30 +1166,40 @@ export function AnalyseClient() {
                 const on = i === shotPick;
                 return (
                   <li key={i}>
+                    <div className="flex items-stretch gap-2">
                     <button type="button" aria-pressed={on}
                       onClick={() => pickShot(entry, i)}
                       className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${on ? 'border-sky-400/60 bg-sky-400/10' : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
                       <span className="w-14 shrink-0 text-xs text-neutral-500">{clipTime(entry.time)}</span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-medium text-white">Shot {i + 1} · {SHOT_TYPE_LABELS[entry.shot].replace(/^\S+\s/, '')}</span>
+                        <span className="block text-sm font-medium text-white">
+                          {mode === 'bowling' ? `Ball ${i + 1}` : `Shot ${i + 1}`}{entry.shot ? ` · ${SHOT_TYPE_LABELS[entry.shot].replace(/^\S+\s/, '')}` : ''}
+                        </span>
                         {pick && i === pick.best && <span className="text-xs font-medium" style={{ color: GOLD }}>Best of the session</span>}
                         {pick && i === pick.toWorkOn && <span className="text-xs font-medium text-amber-400">One to work on</span>}
                       </span>
                       <span className="text-xl font-bold" style={{ color: scoreColour(entry.overall) }}>{entry.overall}</span>
                     </button>
+                    {shots.length > 1 && (
+                      <button type="button" onClick={() => removeShot(i)} aria-label={`Remove ${mode === 'bowling' ? 'ball' : 'shot'} ${i + 1}`}
+                        className="rounded-lg border border-white/10 px-3 text-sm text-neutral-400 hover:bg-white/[0.05] hover:text-white">✕</button>
+                    )}
+                    </div>
                   </li>
                 );
               })}
             </ul>
             <p className="mt-3 text-xs leading-relaxed text-neutral-500">
-              Shots are found from the swing of the bat, so a leave or a very soft block may be missed. If a shot is named wrongly, pick the right one above and analyse the clip again.
+              {mode === 'bowling'
+                ? 'Deliveries are found from the bowling arm coming over. If one is missing, move the clip to its release with the frame buttons and tap "Mark a ball here". Use ✕ to take out anything that was not a delivery.'
+                : 'Shots are found from the movement of the hands, so a leave can be missed. If one is missing, move the clip to it with the frame buttons and tap "Mark a shot here". Use ✕ to take out anything that was not a shot. To correct a shot\'s name, open it and pick the right shot type above.'}
             </p>
           </Card>
       )}
 
       {results && overall !== null && (
         <Card
-          title={shots ? `Shot ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
+          title={shots ? `${mode === 'bowling' ? 'Ball' : 'Shot'} ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
           description={mode === 'bowling'
             ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
             : `Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
@@ -1083,7 +1213,7 @@ export function AnalyseClient() {
           {mode === 'batting' && reading && (
             <p className="mb-4 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-neutral-300">
               We read this as a <strong className="text-white">{SHOT_TYPE_LABELS[reading.shot].replace(/^\S+\s/, '')}</strong>
-              {reading.confident ? '.' : ', though it was a close call.'} If that is not the shot you played, pick it above and analyse the clip again.
+              {reading.confident ? '.' : ', though it was a close call.'} If that is not the shot you played, pick the right one above and it will be marked again.
             </p>
           )}
           {detail && detail.playerSize < 0.3 && (
