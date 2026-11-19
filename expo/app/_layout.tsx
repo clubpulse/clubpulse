@@ -14,6 +14,8 @@ import { colors } from '../constants/theme';
 const screen = (title: string) => ({
   headerShown: true,
   title,
+  // Swiping in from the left edge goes back, as it does everywhere else on an iPhone
+  gestureEnabled: true,
   header: (props: React.ComponentProps<typeof AppHeader>) => <AppHeader {...props} />,
 });
 

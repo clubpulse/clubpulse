@@ -17,6 +17,7 @@ import {
   overallScore, segmentScore,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
+import { detectShot, type ShotReading } from '@/lib/analysis/shot-detect';
 
 type AnalyseTab = 'pose' | 'ball';
 
@@ -40,11 +41,42 @@ type Phase = 'idle' | 'loading' | 'ready' | 'recording' | 'done';
 // Highlight recording: the camera stream is recorded in back-to-back 5-second segments, each its own playable
 // file. Each finished segment is scored from the landmarks seen while it recorded; only the top clips stay in memory.
 type ScoredClip = { blob: Blob; score: number; start_sec: number; end_sec: number };
+/** The shot the player picked, or 'auto' to have it worked out from the clip. */
+type ShotChoice = ShotType | 'auto';
+
 type Segment = { recorder: MediaRecorder; chunks: Blob[]; frames: NormalizedLandmark[][]; totalFrames: number; startedAt: number };
 type Session = {
   stream: MediaStream; mimeType: string; width: number; height: number; startedAt: number;
   current: Segment | null; pending: Promise<void>[]; best: ScoredClip[]; segments: number;
 };
+
+/** Waits until a clip has its first picture, or fails if this device cannot play it. */
+function clipReady(video: HTMLVideoElement): Promise<void> {
+  if (video.readyState >= 2) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const done = () => { cleanup(); resolve(); };
+    const fail = () => { cleanup(); reject(video.error ?? new Error('unreadable')); };
+    const timer = window.setTimeout(fail, 20000);
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      video.removeEventListener('loadeddata', done);
+      video.removeEventListener('error', fail);
+    };
+    video.addEventListener('loadeddata', done);
+    video.addEventListener('error', fail);
+    video.load();
+  });
+}
+
+/** What to tell the player when an uploaded clip cannot be read. */
+function clipError(err: unknown): string {
+  const unsupported = typeof MediaError !== 'undefined' && err instanceof MediaError
+    && (err.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED || err.code === MediaError.MEDIA_ERR_DECODE);
+  if (unsupported || (err instanceof DOMException && err.name === 'NotSupportedError')) {
+    return 'This device cannot play that kind of video. Clips filmed on a phone (MP4 or MOV) always work. For another format, save or export it as MP4 first.';
+  }
+  return 'We could not read that video. Try it again, or use a clip filmed on your phone.';
+}
 
 function pickMimeType() {
   if (typeof MediaRecorder === 'undefined') return null;
@@ -63,7 +95,8 @@ function startSegment(session: Session, now: number): Segment {
   return segment;
 }
 
-function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), shotType?: ShotType, view: View = 'side') {
+function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), choice?: ShotChoice, view: View = 'side') {
+  const shotType = choice === 'auto' ? detectShot(segment.frames, session.width, session.height).shot : choice;
   const seconds = (now - segment.startedAt) / 1000;
   const long = seconds >= MIN_CLIP_SECONDS;
   const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined, view) : 0;
@@ -180,9 +213,13 @@ export function AnalyseClient() {
 
   const [mode, setMode] = useState<Mode>('bowling');
   const [hand, setHand] = useState<Hand>('right');
-  const [shotType, setShotType] = useState<ShotType>('drive');
+  const [shotType, setShotType] = useState<ShotChoice>('auto');
+  // What the clip was read as, when the shot was left on Auto
+  const [reading, setReading] = useState<ShotReading | null>(null);
   const [phase, setPhase] = useState<Phase>('idle');
   const [error, setError] = useState<string | null>(null);
+  // An uploaded clip is loaded but the phone will not play it until the player taps
+  const [needsTap, setNeedsTap] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [results, setResults] = useState<MetricResult[] | null>(null);
   const [frameCount, setFrameCount] = useState(0);
@@ -254,7 +291,10 @@ export function AnalyseClient() {
       rafRef.current = null;
     }
 
-    const { mode: m, hand: hd, shotType: st, view: vw } = settingsRef.current;
+    const { mode: m, hand: hd, shotType: choice, view: vw } = settingsRef.current;
+    const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight) : null;
+    const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
+    setReading(read);
     const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw);
     if (!outcome.ok) {
       setError(outcome.problem === 'no-action'
@@ -440,7 +480,9 @@ export function AnalyseClient() {
     setDetail(null);
     setCoaching({ state: 'idle' });
     replayRef.current = null;
-    if (!file.type.startsWith('video/')) {
+    // Some phones hand over a clip with no type at all, so the file name is checked too
+    const isVideo = file.type.startsWith('video/') || (!file.type && /\.(mp4|mov|m4v|webm|3gp|avi|mkv)$/i.test(file.name));
+    if (!isVideo) {
       setError('Choose a video file.');
       return;
     }
@@ -448,6 +490,7 @@ export function AnalyseClient() {
       setError('That video is too large. Trim it to the delivery or shot you want checked (under 200 MB).');
       return;
     }
+    setNeedsTap(false);
     stopCamera();
     canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     sourceRef.current = 'file';
@@ -460,18 +503,54 @@ export function AnalyseClient() {
       const url = URL.createObjectURL(file);
       fileUrlRef.current = url;
       video.srcObject = null;
+      // Phones only let a clip start by itself when it is silent and plays inside the page.
+      // Set as attributes as well as properties: some browsers only look at one of them.
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
       video.src = url;
       video.onended = () => finishRecording();
-      await video.play();
-      lastVideoTimeRef.current = -1;
-      recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
-      setPhase('recording');
-      startLoop();
+      await clipReady(video);
+      try {
+        await video.play();
+      } catch (err) {
+        // The phone wants a tap before it will play anything: show a button and start from there
+        if (err instanceof DOMException && err.name === 'NotAllowedError') {
+          setNeedsTap(true);
+          setPhase('idle');
+          return;
+        }
+        throw err;
+      }
+      beginReadingClip();
     } catch (err) {
       stopCamera();
-      setError(`Couldn't read that video: ${err instanceof Error ? err.message : 'unknown error'}. MP4 and MOV clips work best.`);
+      setError(clipError(err));
       setPhase('idle');
     }
+  }
+
+  // The clip is playing: start collecting poses from it
+  function beginReadingClip() {
+    setNeedsTap(false);
+    lastVideoTimeRef.current = -1;
+    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
+    setPhase('recording');
+    startLoop();
+  }
+
+  // Runs from a tap, which is what a phone needs before it will play a clip
+  function startAfterTap() {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().then(beginReadingClip).catch((err) => {
+      setNeedsTap(false);
+      stopCamera();
+      setError(clipError(err));
+      setPhase('idle');
+    });
   }
 
   // Plays an analysed clip again with the skeleton drawn over it, from the poses already found
@@ -584,7 +663,7 @@ export function AnalyseClient() {
       <div>
         <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Analyse</h1>
         <p className="mt-1 text-sm text-neutral-400">
-          AI-powered cricket analysis — biomechanics and ball tracking in one place.
+          Technique analysis and ball tracking in one place. Your video stays on your phone.
         </p>
       </div>
 
@@ -660,14 +739,14 @@ export function AnalyseClient() {
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">Shot type</p>
           <div className="flex flex-wrap gap-2">
-            {(Object.entries(SHOT_TYPE_LABELS) as [ShotType, string][]).map(([key, label]) => {
+            {([['auto', '✨ Auto'], ...Object.entries(SHOT_TYPE_LABELS)] as [ShotChoice, string][]).map(([key, label]) => {
               const active = shotType === key;
               return (
                 <button
                   key={key}
                   type="button"
                   disabled={phase === 'recording'}
-                  onClick={() => { setShotType(key); setResults(null); }}
+                  onClick={() => { setShotType(key); setReading(null); setResults(null); }}
                   className="rounded-lg border px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
                   style={{
                     borderColor: active ? GOLD : 'rgba(255,255,255,0.12)',
@@ -681,7 +760,9 @@ export function AnalyseClient() {
             })}
           </div>
           <p className="mt-1.5 text-xs text-neutral-500">
-            Scoring targets adjust automatically for the selected shot — a pull and a drive have different ideal positions.
+            {shotType === 'auto'
+              ? 'On Auto, the shot is worked out from your clip. Each shot is scored against its own ideal positions.'
+              : 'Each shot is scored against its own ideal positions: a pull and a drive are not judged the same way.'}
           </p>
         </div>
       )}
@@ -733,6 +814,7 @@ export function AnalyseClient() {
                   <Button variant="secondary" onClick={() => replay(0.25)} disabled={replaying}>Slow motion</Button>
                 </>
               )}
+              {needsTap && <Button onClick={startAfterTap}>Tap to analyse this clip</Button>}
               <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
@@ -774,6 +856,12 @@ export function AnalyseClient() {
             </div>
           }
         >
+          {mode === 'batting' && reading && (
+            <p className="mb-4 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-neutral-300">
+              We read this as a <strong className="text-white">{SHOT_TYPE_LABELS[reading.shot].replace(/^\S+\s/, '')}</strong>
+              {reading.confident ? '.' : ', though it was a close call.'} If that is not the shot you played, pick it above and analyse the clip again.
+            </p>
+          )}
           {detail && detail.playerSize < 0.3 && (
             <p className="mb-4 rounded-lg border border-amber-900 bg-amber-950/40 px-3 py-2 text-sm text-amber-200">
               The player is small in this video (about {Math.round(detail.playerSize * 100)}% of the picture height), so these
@@ -798,9 +886,10 @@ export function AnalyseClient() {
           )}
 
           {detail && (() => {
-            const reference = getReference(mode, mode === 'batting' ? shotType : undefined, view);
+            const shownShot: ShotType = shotType === 'auto' ? (reading?.shot ?? 'drive') : shotType;
+            const reference = getReference(mode, mode === 'batting' ? shownShot : undefined, view);
             const otherView: View = view === 'side' ? 'front' : 'side';
-            const other = getReference(mode, mode === 'batting' ? shotType : undefined, otherView);
+            const other = getReference(mode, mode === 'batting' ? shownShot : undefined, otherView);
             return (
               <div className="mb-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
