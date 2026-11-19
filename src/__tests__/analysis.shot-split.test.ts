@@ -1,5 +1,5 @@
 import { detectShot } from '@/lib/analysis/shot-detect';
-import { bestAndWorst, clipTime, splitShots } from '@/lib/analysis/shot-split';
+import { bestAndWorst, clipTime, splitDeliveries, splitShots, windowAround } from '@/lib/analysis/shot-split';
 import { L, type Landmark } from '@/lib/analysis/pose-metrics';
 
 // A stick figure 1000 x 1000: shoulders at y 300, hips at y 500 (torso 200), feet at 900.
@@ -74,6 +74,74 @@ describe('splitting a session into shots', () => {
     const frames = [...still(40), ...still(40).map(() => frame([0.9, -1.4]))];
     const t = frames.map((_, i) => (i < 40 ? i / 30 : 10 + i / 30));
     expect(splitShots(frames, t, 1000, 1000)).toEqual([]);
+  });
+});
+
+describe('soft shots and shots marked by hand', () => {
+  const block = () => [...swing([[0.3, -0.9], [0.45, -0.45], [0.5, -0.4]], 8), ...back([0.5, -0.4])];
+
+  it('finds a soft block between two full swings', () => {
+    const frames = [...still(60), ...drive(), ...still(120), ...block(), ...still(120), ...drive(), ...still(30)];
+    const shots = splitShots(frames, times(frames), 1000, 1000);
+    expect(shots).toHaveLength(3);
+    expect(detectShot(frames.slice(shots[1].start, shots[1].end + 1), 1000, 1000).shot).toBe('defence');
+  });
+
+  it('does not call the hands drifting back to the stance a shot', () => {
+    const frames = [...still(60), ...drive(), ...still(200)];
+    expect(splitShots(frames, times(frames), 1000, 1000)).toHaveLength(1);
+  });
+
+  it('builds a window around a frame the player marks', () => {
+    const t = Array.from({ length: 300 }, (_, i) => i / 30);
+    const win = windowAround(t, 150, 'batting');
+    expect(win.peak).toBe(150);
+    // About 1.2 seconds before and 0.8 after
+    expect(150 - win.start).toBeGreaterThanOrEqual(35);
+    expect(150 - win.start).toBeLessThanOrEqual(36);
+    expect(win.end - 150).toBeGreaterThanOrEqual(23);
+    expect(win.end - 150).toBeLessThanOrEqual(24);
+    expect(windowAround(t, 5, 'bowling').start).toBe(0);
+    expect(150 - windowAround(t, 150, 'bowling').start).toBeGreaterThanOrEqual(59);
+  });
+});
+
+describe('telling a pull from a cut from front-on', () => {
+  const toRight = swing([[-0.5, -0.9], [0.6, -0.95], [0.7, -1.0]], 5);
+  const toLeft = swing([[0.5, -0.9], [-0.6, -0.95], [-0.7, -1.0]], 5);
+  const front = (frames: Landmark[][], hand: 'right' | 'left') => detectShot(frames, 1000, 1000, { view: 'front', hand }).shot;
+
+  it('goes by which way the hands cross the picture', () => {
+    expect(front(toRight, 'right')).toBe('pull');
+    expect(front(toLeft, 'right')).toBe('cut');
+    expect(front(toRight, 'left')).toBe('cut');
+    expect(front(toLeft, 'left')).toBe('pull');
+  });
+});
+
+describe('splitting a bowling clip into deliveries', () => {
+  // Bowling hand (right wrist) at `up` torso lengths above the shoulder, on a straight arm
+  const arm = (up: number): Landmark[] => {
+    const lm = frame([0.3, -0.9]);
+    lm[L.rWrist] = { x: 0.52 + 0.05, y: (300 - up * 200) / 1000, visibility: 0.9 };
+    return lm;
+  };
+  const ball = () => [...Array.from({ length: 12 }, (_, i) => arm(-0.5 + i * 0.15)), ...Array.from({ length: 12 }, (_, i) => arm(1.15 - i * 0.15))];
+  const walk = (frames: number) => Array.from({ length: frames }, () => arm(-0.8));
+
+  it('finds each ball', () => {
+    const frames = [...walk(90), ...ball(), ...walk(150), ...ball(), ...walk(150), ...ball(), ...walk(30)];
+    const balls = splitDeliveries(frames, times(frames), 'right', 1000, 1000);
+    expect(balls).toHaveLength(3);
+    expect(balls[0].end).toBeLessThan(balls[1].start);
+  });
+
+  it('finds nothing when the arm never comes over', () => {
+    const frames = walk(200);
+    expect(splitDeliveries(frames, times(frames), 'right', 1000, 1000)).toEqual([]);
+    // The other arm coming over is not this bowler's delivery
+    const other = [...walk(60), ...ball(), ...walk(60)];
+    expect(splitDeliveries(other, times(other), 'left', 1000, 1000)).toEqual([]);
   });
 });
 

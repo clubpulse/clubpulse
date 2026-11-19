@@ -6,6 +6,7 @@
 //   - hands travelling across at chest height or above → a cross-bat shot: pull if they finish
 //     high, cut if they stay level
 //   - otherwise, a full swing through the line → drive
+// From front-on the pull and the cut are told apart by which way the hands go across the picture.
 // It is a best guess from one camera. The player can always pick the shot themselves.
 
 import { L, MIN_VISIBILITY, angleAt, type Landmark, type ShotType } from './pose-metrics';
@@ -44,7 +45,10 @@ export type ShotReading = { shot: ShotType; confident: boolean };
  * The shot played in these frames. `confident` is false when the reading was close to a boundary
  * or there was too little to go on, so the screen can ask the player to check it.
  */
-export function detectShot(frames: Landmark[][], w: number, h: number): ShotReading {
+export function detectShot(
+  frames: Landmark[][], w: number, h: number,
+  camera: { view: 'side' | 'front'; hand: 'right' | 'left' } = { view: 'side', hand: 'right' },
+): ShotReading {
   const samples = frames.map((f) => sample(f, w, h)).filter((s): s is Sample => s !== null);
   if (samples.length < 6) return { shot: 'drive', confident: false };
 
@@ -75,6 +79,13 @@ export function detectShot(frames: Landmark[][], w: number, h: number): ShotRead
   if (lowestKnee < 105 && hipDrop > 0.22) return { shot: 'sweep', confident: lowestKnee < 95 };
   if (span < 0.75 && finish > -0.95) return { shot: 'defence', confident: span < 0.6 };
   if (across && heightAtPeak < -0.4) {
+    if (camera.view === 'front') {
+      // Facing the batter from the bowler's end, the two cross-bat shots go opposite ways across
+      // the picture: a right-hander pulls to the right of it (the leg side) and cuts to the left.
+      const toRight = b.x > a.x;
+      const pull = camera.hand === 'right' ? toRight : !toRight;
+      return { shot: pull ? 'pull' : 'cut', confident: Math.abs(b.x - a.x) > 0.5 };
+    }
     const pull = finish < -1.05;
     return { shot: pull ? 'pull' : 'cut', confident: Math.abs(finish + 1.05) > 0.15 };
   }
