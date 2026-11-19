@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 const GAMES: Array<{ key: string; icon: string; title: string; detail: string; when: string; tint: string; route: string; params?: Record<string, string> }> = [
   { key: 'umpire', icon: '☝️', title: "Umpire's Call", detail: 'Five decisions. What would you give?', when: 'Daily', tint: '#60A5FA', route: '/knowledge/[game]', params: { game: 'umpire' } },
@@ -18,6 +19,7 @@ export default function GamesScreen() {
   const router = useRouter();
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <ScrollView contentContainerStyle={styles.content}>
         <View>
           <Text style={fonts.heading}>Games</Text>

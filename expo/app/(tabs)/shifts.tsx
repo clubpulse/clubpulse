@@ -17,6 +17,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
 import { api, ApiError } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 type Shift = {
   id: string;
@@ -95,6 +96,7 @@ export default function ShiftsScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <FlatList
         data={shifts}
         keyExtractor={(s) => s.id}

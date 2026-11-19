@@ -6,6 +6,7 @@ import { UpsellBanner } from '../../components/UpsellBanner';
 import { useScoresWallet } from '../../hooks/useScoresWallet';
 import { api, ApiError, type Reward } from '../../lib/api';
 import { colors, fonts, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 export default function MarketplaceScreen() {
   const { total, refresh: refreshWallet } = useScoresWallet();
@@ -50,6 +51,7 @@ export default function MarketplaceScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <FlatList
         data={rewards ?? []}
         keyExtractor={(r) => r.id}

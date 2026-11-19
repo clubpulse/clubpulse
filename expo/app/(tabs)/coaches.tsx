@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRoles } from '../../hooks/useRoles';
 import { api } from '../../lib/api';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 type Coach = {
   id: string;
@@ -52,6 +53,7 @@ export default function CoachesScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
+        <BackBar />
         <View style={styles.center}><ActivityIndicator color={colors.brandSky} /></View>
       </SafeAreaView>
     );
@@ -59,6 +61,7 @@ export default function CoachesScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <FlatList
         data={coaches}
         keyExtractor={(c) => c.id}

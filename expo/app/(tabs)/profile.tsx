@@ -10,6 +10,7 @@ import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import { api, ApiError, type Profile, type Wallet } from '../../lib/api';
 import { PRIVACY_URL, TERMS_URL } from '../../constants/features';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 export default function ProfileScreen() {
   const { signOut } = useAuth();
@@ -70,6 +71,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={fonts.heading}>Profile</Text>
 
