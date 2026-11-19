@@ -47,7 +47,7 @@ function DealsList() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Deals & Discounts',
+          title: 'Deals and discounts',
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.white,
         }}

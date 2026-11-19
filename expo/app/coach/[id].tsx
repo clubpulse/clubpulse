@@ -70,7 +70,7 @@ export default function CoachDetailScreen() {
             )}
             {coach.dbs_verified && (
               <View style={[styles.badge, { backgroundColor: colors.successDim }]}>
-                <Text style={[styles.badgeText, { color: colors.success }]}>✓ DBS Verified</Text>
+                <Text style={[styles.badgeText, { color: colors.success }]}>✓ DBS verified</Text>
               </View>
             )}
           </View>

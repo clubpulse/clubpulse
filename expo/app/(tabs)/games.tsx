@@ -1,10 +1,10 @@
-// The games hub: every game in the app in one place.
+// The Games tab: every game in the app in one place.
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, fonts, radius, spacing } from '../../constants/theme';
 
 const GAMES: Array<{ key: string; icon: string; title: string; detail: string; when: string; tint: string; route: string; params?: Record<string, string> }> = [
   { key: 'umpire', icon: '☝️', title: "Umpire's Call", detail: 'Five decisions. What would you give?', when: 'Daily', tint: '#60A5FA', route: '/knowledge/[game]', params: { game: 'umpire' } },
@@ -17,9 +17,12 @@ const GAMES: Array<{ key: string; icon: string; title: string; detail: string; w
 export default function GamesScreen() {
   const router = useRouter();
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={fonts.small}>Free to play. Scores are earned for doing well and nothing is ever staked.</Text>
+        <View>
+          <Text style={fonts.heading}>Games</Text>
+          <Text style={[fonts.small, { marginTop: 2 }]}>Free to play. You earn Scores for doing well, and nothing is ever staked.</Text>
+        </View>
         {GAMES.map((g) => (
           <Pressable
             key={g.key}

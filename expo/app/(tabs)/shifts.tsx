@@ -102,7 +102,7 @@ export default function ShiftsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brandSky} />}
         ListHeaderComponent={
           <View style={{ gap: spacing.md, marginBottom: spacing.lg }}>
-            <Text style={fonts.heading}>Volunteer Shifts</Text>
+            <Text style={fonts.heading}>Volunteer shifts</Text>
 
             {isAdmin && (
               <Pressable onPress={() => router.push('/post-shift')} accessibilityRole="button"
@@ -124,7 +124,7 @@ export default function ShiftsScreen() {
                 style={[styles.tabBtn, tab === 'my' && styles.tabActive]}
                 onPress={() => setTab('my')}
               >
-                <Text style={[styles.tabText, tab === 'my' && styles.tabTextActive]}>My Shifts</Text>
+                <Text style={[styles.tabText, tab === 'my' && styles.tabTextActive]}>My shifts</Text>
               </Pressable>
             </View>
           </View>
@@ -142,7 +142,7 @@ export default function ShiftsScreen() {
                 <Text style={[fonts.small, { textAlign: 'center' }]}>
                   {error ??
                     (tab === 'available'
-                      ? 'Check back later — your club admin will post shifts here.'
+                      ? 'Check back later. Your club admin will post shifts here.'
                       : "You haven't signed up for any shifts yet.")}
                 </Text>
               </View>
@@ -219,7 +219,7 @@ function ShiftCard({
             {busy ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.btnText}>Sign Up</Text>
+              <Text style={styles.btnText}>Sign up</Text>
             )}
           </Pressable>
         )}

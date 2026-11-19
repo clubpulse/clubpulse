@@ -248,7 +248,7 @@ export default function HomeScreen() {
         <View style={styles.tileRow}>
           {plays ? (
             <Tile icon="🎯" onPress={() => router.push('/coaching')}>
-              <Text style={[styles.tileLabel, { marginTop: spacing.sm }]}>AI Coach</Text>
+              <Text style={[styles.tileLabel, { marginTop: spacing.sm }]}>Video coach</Text>
               {(home?.insights ?? []).length > 0 ? (
                 home!.insights.map((line, i) => (
                   <Text key={line} numberOfLines={2} style={[styles.insight, { color: i === 0 ? colors.success : colors.orange }]}>{line}</Text>
@@ -270,7 +270,7 @@ export default function HomeScreen() {
           <Tile icon="🎮" onPress={() => router.push('/games' as never)}>
             <Text style={[styles.tileLabel, { marginTop: spacing.sm }]}>Today&apos;s games</Text>
             <Text style={styles.tilePhrase}>5 games</Text>
-            <Text style={styles.tileHint}>Quizzes, Season Manager, Auction Room</Text>
+            <Text style={styles.tileHint}>Quizzes, Season Manager and the Auction Room</Text>
           </Tile>
         </View>
 

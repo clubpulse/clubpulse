@@ -23,7 +23,7 @@ export default function SignInScreen() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Text style={styles.logo}>ClubPulse</Text>
-        <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Sign in to stack your Scores</Text>
+        <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Sign in to earn Scores</Text>
 
         <TextInput
           value={email} onChangeText={setEmail} placeholder="Email" placeholderTextColor={colors.textMuted}

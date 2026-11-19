@@ -25,10 +25,9 @@ export default function SportingSoulScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Pressable onPress={() => router.back()}><Text style={{ color: colors.gold }}>← Back</Text></Pressable>
-        <Text style={fonts.heading}>Sporting Soul</Text>
+        <Text style={fonts.heading}>My Sporting Soul</Text>
 
         {!soul && (
           <Text style={fonts.small}>

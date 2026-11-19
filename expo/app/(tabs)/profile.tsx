@@ -114,13 +114,13 @@ export default function ProfileScreen() {
 
         {/* Quick links */}
         <View style={{ gap: spacing.sm }}>
-          <ProfileLink label="🛡️  Safeguarding" onPress={() => router.push('/safeguarding')} />
-          <ProfileLink label="💰  Wallet" onPress={() => router.push('/wallet' as any)} />
-          <ProfileLink label="🛒  Marketplace" onPress={() => router.push('/marketplace' as any)} />
-          <ProfileLink label="🤖  AI Coach" onPress={() => router.push('/companion' as any)} />
-          <ProfileLink label="📖  My Sporting Soul" onPress={() => router.push('/sporting-soul')} />
-          {PRIVACY_URL && <ProfileLink label="🔒  Privacy policy" onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL!)} />}
-          {TERMS_URL && <ProfileLink label="📄  Terms of use" onPress={() => WebBrowser.openBrowserAsync(TERMS_URL!)} />}
+          <ProfileLink label="🛡️ Safeguarding" onPress={() => router.push('/safeguarding')} />
+          <ProfileLink label="💰 Wallet" onPress={() => router.push('/wallet' as any)} />
+          <ProfileLink label="🛒 Marketplace" onPress={() => router.push('/marketplace' as any)} />
+          <ProfileLink label="🤖 Coach AI" onPress={() => router.push('/companion' as any)} />
+          <ProfileLink label="📖 My Sporting Soul" onPress={() => router.push('/sporting-soul')} />
+          {PRIVACY_URL && <ProfileLink label="🔒 Privacy policy" onPress={() => WebBrowser.openBrowserAsync(PRIVACY_URL!)} />}
+          {TERMS_URL && <ProfileLink label="📄 Terms of use" onPress={() => WebBrowser.openBrowserAsync(TERMS_URL!)} />}
         </View>
 
         <Pressable onPress={confirmSignOut} style={({ pressed }) => [styles.signOut, pressed && { opacity: 0.7 }]}>

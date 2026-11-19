@@ -35,7 +35,7 @@ export default function CoachesScreen() {
       setCoaches(data ?? []);
       setError(null);
     } catch {
-      setError('Could not load coaches');
+      setError('Could not load coaches. Pull down to try again.');
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export default function CoachesScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brandSky} />}
         ListHeaderComponent={
           <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
-            <Text style={fonts.heading}>Coach Marketplace</Text>
+            <Text style={fonts.heading}>Coaches</Text>
             <Text style={fonts.small}>Coaches approved by your club.</Text>
             {error && <Text style={{ color: colors.danger }}>{error}. Pull down to try again.</Text>}
 
@@ -92,14 +92,14 @@ export default function CoachesScreen() {
             )}
 
             <UpsellBanner trigger="coach_ai_tease" compact />
-            <Text style={[fonts.title, { marginTop: spacing.md }]}>Available Coaches</Text>
+            <Text style={[fonts.title, { marginTop: spacing.md }]}>Available coaches</Text>
           </View>
         }
         ListEmptyComponent={
           <Card>
             <View style={{ alignItems: 'center', gap: spacing.sm, padding: spacing.md }}>
               <Text style={{ fontSize: 36 }}>🏏</Text>
-              <Text style={fonts.title}>No Coaches Available</Text>
+              <Text style={fonts.title}>No coaches yet</Text>
               <Text style={[fonts.small, { textAlign: 'center' }]}>
                 Coaches appear here once your club has approved them.
               </Text>
@@ -148,7 +148,7 @@ function CoachCard({ coach }: { coach: Coach }) {
             <Text style={[fonts.regular, { color: colors.gold, fontWeight: '700' }]}>
               {coach.hourly_rate}
             </Text>
-            <Text style={fonts.small}>Scores/hour</Text>
+            <Text style={fonts.small}>Scores an hour</Text>
           </View>
         )}
       </View>

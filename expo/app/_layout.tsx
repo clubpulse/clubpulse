@@ -7,7 +7,15 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 // Imported for its side effect too: it defines the background task, which must exist as soon
 // as the JS loads because the OS can start the app headless just to run it.
 import { registerStepsBackgroundSync } from '../lib/backgroundSync';
+import { AppHeader } from '../components/AppHeader';
 import { colors } from '../constants/theme';
+
+// Every screen opened from a tab gets the app's own top bar with a back button (AppHeader)
+const screen = (title: string) => ({
+  headerShown: true,
+  title,
+  header: (props: React.ComponentProps<typeof AppHeader>) => <AppHeader {...props} />,
+});
 
 // Sends signed-out users to sign-in and signed-in users away from the auth screens
 function AuthGate() {
@@ -43,32 +51,29 @@ function AuthGate() {
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-      {/* The title is what the back button says on screens opened from the tabs */}
       <Stack.Screen name="(tabs)" options={{ title: 'Home' }} />
       <Stack.Screen name="auth" />
       <Stack.Screen name="reset-password" />
-      <Stack.Screen name="sporting-soul" options={{ headerShown: true, title: 'My Sporting Soul', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="safeguarding" options={{ headerShown: true, title: 'Safeguarding', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="coach/[id]" options={{ headerShown: true, title: 'Coach', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="post-shift" options={{ headerShown: true, title: 'Post a shift', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="register-child" options={{ headerShown: true, title: 'Add a child', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="junior/[id]" options={{ headerShown: true, title: 'Junior', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="academy" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'Academy' }} />
-      <Stack.Screen name="academy-plan" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'My practice plan' }} />
-      <Stack.Screen name="lesson/[id]" options={{ headerShown: true, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white, title: 'Lesson' }} />
-      <Stack.Screen name="coaching" options={{ headerShown: true, title: 'Coaching and video', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="web" options={{ headerShown: true, title: 'ClubPulse', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="rewards" options={{ headerShown: true, title: 'Rewards', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="auction-room" options={{ headerShown: true, title: 'Auction Room', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="store" options={{ headerShown: true, title: 'Store', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="odds" options={{ headerShown: true, title: 'Prize odds', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="deals"options={{ headerShown: true, title: 'Deals & Discounts', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="scratch-cards" options={{ headerShown: true, title: 'Scratch cards', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="games" options={{ headerShown: true, title: 'Games', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="knowledge/[game]" options={{ headerShown: true, title: 'Game', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="season-manager" options={{ headerShown: true, title: 'Season Manager', headerBackTitle: 'Back', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="scratch-rules" options={{ headerShown: true, title: 'Scratch card rules', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
-      <Stack.Screen name="scratch-card/[type]" options={{ headerShown: true, title: 'Scratch Card', headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.white }} />
+      <Stack.Screen name="sporting-soul" options={screen('My Sporting Soul')} />
+      <Stack.Screen name="safeguarding" options={screen('Safeguarding')} />
+      <Stack.Screen name="coach/[id]" options={screen('Coach')} />
+      <Stack.Screen name="post-shift" options={screen('Post a shift')} />
+      <Stack.Screen name="register-child" options={screen('Add a child')} />
+      <Stack.Screen name="junior/[id]" options={screen('Junior')} />
+      <Stack.Screen name="academy" options={screen('Academy')} />
+      <Stack.Screen name="academy-plan" options={screen('My practice plan')} />
+      <Stack.Screen name="lesson/[id]" options={screen('Lesson')} />
+      <Stack.Screen name="web" options={screen('ClubPulse')} />
+      <Stack.Screen name="rewards" options={screen('Rewards')} />
+      <Stack.Screen name="auction-room" options={screen('Auction Room')} />
+      <Stack.Screen name="store" options={screen('Store')} />
+      <Stack.Screen name="odds" options={screen('Prize odds')} />
+      <Stack.Screen name="deals" options={screen('Deals and discounts')} />
+      <Stack.Screen name="scratch-cards" options={screen('Scratch cards')} />
+      <Stack.Screen name="knowledge/[game]" options={screen('Game')} />
+      <Stack.Screen name="season-manager" options={screen('Season Manager')} />
+      <Stack.Screen name="scratch-rules" options={screen('Scratch card rules')} />
+      <Stack.Screen name="scratch-card/[type]" options={screen('Scratch card')} />
     </Stack>
   );
 }

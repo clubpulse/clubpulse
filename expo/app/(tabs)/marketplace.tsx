@@ -30,7 +30,7 @@ export default function MarketplaceScreen() {
   async function redeem(reward: Reward) {
     try {
       await api('/api/marketplace/redeem', { method: 'POST', body: { rewardId: reward.id } });
-      Alert.alert('Redeemed!', `You've redeemed ${reward.title}. We'll be in touch with details.`);
+      Alert.alert('Redeemed', `You've redeemed ${reward.title}. We'll be in touch with details.`);
       await Promise.all([refreshWallet(), load()]);
     } catch (e) {
       Alert.alert('Could not redeem', e instanceof ApiError ? e.message : 'Something went wrong');

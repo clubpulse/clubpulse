@@ -26,7 +26,7 @@ export function CompanionChat({ messages, sending, error, onSend, onReset }: Pro
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
       <View style={styles.header}>
-        <Text style={fonts.heading}>Your Coach</Text>
+        <Text style={fonts.heading}>Coach AI</Text>
         {messages.length > 0 && (
           <Pressable onPress={onReset} disabled={sending}><Text style={{ color: colors.gold }}>New chat</Text></Pressable>
         )}
