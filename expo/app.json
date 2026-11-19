@@ -20,7 +20,6 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
-        "NSLocationWhenInUseUsageDescription": "ClubPulse uses your location to confirm you are at your club ground when you check in to volunteer.",
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "ClubPulse uses the camera to film your batting or bowling so it can score your technique.",
         "NSMicrophoneUsageDescription": "ClubPulse uses the microphone only if you record a new video with sound to analyse.",
@@ -40,7 +39,6 @@
       "versionCode": 1,
       "permissions": [
         "ACTIVITY_RECOGNITION",
-        "ACCESS_FINE_LOCATION",
         "android.permission.health.READ_STEPS",
         "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND",
         "CAMERA"
