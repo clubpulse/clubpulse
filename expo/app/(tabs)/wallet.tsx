@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { UpsellBanner } from '../../components/UpsellBanner';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 type HistoryItem = { id: string; title: string; amount: number; at: string };
 
@@ -53,6 +54,7 @@ export default function WalletScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <FlatList
         data={history}
         keyExtractor={(item) => item.id}

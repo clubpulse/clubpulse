@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 type Row = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -107,6 +108,7 @@ export default function CoachingScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={{ marginBottom: spacing.md }}>
           <Text style={fonts.heading}>Coaching</Text>

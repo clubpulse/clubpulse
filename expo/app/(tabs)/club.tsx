@@ -21,6 +21,7 @@ import { api, ApiError } from '../../lib/api';
 import { ROLE_CONFIG } from '../../lib/roles';
 import type { ApprovalRequest } from '../../lib/roles';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { BackBar } from '../../components/BackBar';
 
 type Tab = 'overview' | 'approvals' | 'members';
 type Member = { id: string; role: string; is_active: boolean; joined_at: string; full_name: string | null; display_name: string | null };
@@ -62,6 +63,7 @@ export default function ClubScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
+        <BackBar />
         <View style={styles.center}><ActivityIndicator color={colors.brandSky} /></View>
       </SafeAreaView>
     );
@@ -70,6 +72,7 @@ export default function ClubScreen() {
   if (!club) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
+        <BackBar />
         <JoinClub onJoined={refresh} />
       </SafeAreaView>
     );
@@ -94,6 +97,7 @@ export default function ClubScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackBar />
       <FlatList
         data={tab === 'approvals' ? approvalQueue : []}
         keyExtractor={(item) => item.id}
