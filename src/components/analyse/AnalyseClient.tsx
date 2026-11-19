@@ -13,7 +13,7 @@ import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
-  ELBOW_EXTENSION_LIMIT, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, formatRange, formatValue,
+  ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, formatRange, formatValue,
   overallScore, segmentScore,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
@@ -1068,7 +1068,7 @@ export function AnalyseClient() {
           </ul>
 
           {mode === 'bowling' && detail?.elbow && (() => {
-            const { extension, frames: seen, mostBent, atRelease, hyperextension } = detail.elbow;
+            const { extension, frames: seen, mostBent, atRelease, hyperextension, kind } = detail.elbow;
             const over = extension !== null && extension > ELBOW_EXTENSION_LIMIT;
             return (
               <div className="mt-6 rounded-lg border px-4 py-3"
@@ -1076,11 +1076,21 @@ export function AnalyseClient() {
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-sm font-medium text-white">Bowling arm reference check</p>
                   <p className="whitespace-nowrap text-sm font-semibold" style={{ color: extension === null ? 'rgba(255,255,255,0.5)' : over ? '#f59e0b' : GOLD }}>
-                    {extension === null ? 'No reading' : `${Math.round(extension)}° of ${ELBOW_EXTENSION_LIMIT}°`}
+                    {extension === null ? 'No reading' : `Extension ${Math.round(extension)}° of ${ELBOW_EXTENSION_LIMIT}°`}
                   </p>
                 </div>
+                {kind && (
+                  <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                    <dt className="text-neutral-400">Movement seen</dt>
+                    <dd className="font-semibold text-white">{ELBOW_KIND_LABELS[kind]}</dd>
+                    <dt className="text-neutral-400">Extension</dt>
+                    <dd className="text-neutral-200">{Math.round(extension ?? 0)}° <span className="text-neutral-500">(counted, reference {ELBOW_EXTENSION_LIMIT}°)</span></dd>
+                    <dt className="text-neutral-400">Hyperextension</dt>
+                    <dd className="text-neutral-200">{Math.round(hyperextension ?? 0)}° <span className="text-neutral-500">(past straight, not counted)</span></dd>
+                  </dl>
+                )}
                 {extension !== null && (
-                  <div className="relative mt-2 h-2 rounded-full bg-neutral-800">
+                  <div className="relative mt-3 h-2 rounded-full bg-neutral-800">
                     <div className="h-full rounded-full" style={{ width: `${Math.min(100, (extension / 30) * 100)}%`, background: over ? '#f59e0b' : GOLD }} />
                     {/* The 15 degree reference line */}
                     <div className="absolute -top-1 h-4 w-0.5 bg-white/70" style={{ left: '50%' }} aria-hidden />
@@ -1093,11 +1103,6 @@ export function AnalyseClient() {
                       ? `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release (from ${Math.round(mostBent ?? 0)}° to ${Math.round(atRelease ?? 0)}°). That is above the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws, so further testing is recommended: film it again side-on and from behind in slow motion, and have a qualified coach look at it.`
                       : `The elbow appeared to straighten by about ${Math.round(extension)}° between the arm reaching horizontal and release, inside the ${ELBOW_EXTENSION_LIMIT}° reference in the Laws.`}
                 </p>
-                {extension !== null && (hyperextension ?? 0) >= 3 && (
-                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-400">
-                    The elbow also went about {Math.round(hyperextension ?? 0)}° past straight (hyperextension). That is not straightening of a bent arm, so it is not counted in the figure above.
-                  </p>
-                )}
                 <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
                   Reference only, from {seen} frame{seen === 1 ? '' : 's'} of one camera. It is not a ruling on whether an action is legal
                   and it does not count towards the score. Only a multi-camera laboratory assessment can decide that.

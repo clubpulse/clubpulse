@@ -582,7 +582,27 @@ export type ElbowCheck = {
    * not. Movement past straight is not straightening of a bent arm, so it is left out of `extension`.
    */
   hyperextension: number | null;
+  /** What the arm did, in one word, for showing and saving with the result; null if there was no reading */
+  kind: ElbowKind | null;
 };
+
+/** Smallest movement, in degrees, that is called extension or hyperextension; below it is camera noise */
+export const ELBOW_NOTICEABLE = 3;
+
+export type ElbowKind = 'extension' | 'hyperextension' | 'both' | 'none';
+
+export const ELBOW_KIND_LABELS: Record<ElbowKind, string> = {
+  extension: 'Extension',
+  hyperextension: 'Hyperextension',
+  both: 'Extension and hyperextension',
+  none: 'Neither: the arm stayed straight',
+};
+
+/** Names what the elbow did from the two measured movements. */
+export function elbowKind(extension: number, hyperextension: number): ElbowKind {
+  const ext = extension >= ELBOW_NOTICEABLE, hyper = hyperextension >= ELBOW_NOTICEABLE;
+  return ext && hyper ? 'both' : ext ? 'extension' : hyper ? 'hyperextension' : 'none';
+}
 
 /**
  * A reference reading for the bowling arm, to decide whether a closer look is worth it.
@@ -611,17 +631,16 @@ function elbowCheck(
     const cross = (elbow.x - shoulder.x) * (wrist.y - elbow.y) - (elbow.y - shoulder.y) * (wrist.x - elbow.x);
     bends.unshift((180 - angleAt(shoulder, elbow, wrist)) * (cross < 0 ? -1 : 1));
   }
-  if (bends.length < 2) return { extension: null, frames: bends.length, mostBent: null, atRelease: null, hyperextension: null };
+  if (bends.length < 2) return { extension: null, frames: bends.length, mostBent: null, atRelease: null, hyperextension: null, kind: null };
   // The side of the biggest bend is the normal one; anything on the other side is past straight
   const normal = Math.sign(bends.reduce((a, b) => (Math.abs(b) > Math.abs(a) ? b : a))) || 1;
   const flexion = bends.map((b) => b * normal);
   const angles = flexion.map((f) => 180 - Math.max(0, f));
   const atRelease = angles[angles.length - 1];
   const mostBent = Math.min(...angles);
-  return {
-    extension: Math.max(0, atRelease - mostBent), frames: bends.length, mostBent, atRelease,
-    hyperextension: Math.max(0, -Math.min(...flexion)),
-  };
+  const extension = Math.max(0, atRelease - mostBent);
+  const hyperextension = Math.max(0, -Math.min(...flexion));
+  return { extension, frames: bends.length, mostBent, atRelease, hyperextension, kind: elbowKind(extension, hyperextension) };
 }
 
 /* ── Batting from front-on ─────────────────────────────────────────────────── */
