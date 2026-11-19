@@ -9,6 +9,7 @@ import { totalBalance } from '@/lib/types/scores';
 import { Navbar } from '@/components/layout/Navbar';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { getAudience } from '@/lib/nav/audience';
 
 // Signed-in app chrome, shared by the (dashboard) layout and public routes that also serve signed-in users.
 export async function DashboardShell({ user, children }: { user: User; children: ReactNode }) {
@@ -24,7 +25,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
 
   const supabase = await createClient();
 
-  const [profile, wallet, adminCtx, platformAdmin, membershipRow] = await Promise.all([
+  const [profile, wallet, adminCtx, platformAdmin, membershipRow, baseAudience] = await Promise.all([
     fetchProfile(supabase, user.id),
     fetchWallet(supabase, user.id),
     getAdminContext(user.id),
@@ -35,6 +36,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
       .eq('user_id', user.id)
       .limit(1)
       .maybeSingle(),
+    getAudience(user.id),
   ]);
   const isPlatformAdmin = platformAdmin?.id === user.id;
 
@@ -54,12 +56,14 @@ export async function DashboardShell({ user, children }: { user: User; children:
     ? profile.data.display_name || profile.data.full_name
     : user.email?.split('@')[0] ?? 'Player';
   const balance = totalBalance(wallet.success ? wallet.data : null);
+  // Club admins and ClubPulse staff see the whole menu
+  const audience = { ...baseAudience, admin: baseAudience.admin || adminCtx.adminClubIds.length > 0 || isPlatformAdmin };
 
   return (
     <div className="min-h-screen text-white" style={{ background: 'var(--background)' }}>
       <Navbar name={name} balance={balance} showAdmin={adminCtx.adminClubIds.length > 0} />
       <div className="flex">
-        <Sidebar showAdmin={adminCtx.adminClubIds.length > 0} isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
+        <Sidebar audience={audience} isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
         <main className="min-w-0 flex-1">
           <div className="mx-auto max-w-5xl px-4 py-6 pb-24 md:px-8 md:pb-10">{children}</div>
         </main>

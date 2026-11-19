@@ -13,6 +13,7 @@ import { getMyScratchCards } from '@/lib/scratch/service';
 import { totalBalance } from '@/lib/types/scores';
 import { formatScores } from '@/lib/utils/format';
 import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
+import { getAudience } from '@/lib/nav/audience';
 import type { CoachingInsight } from '@/lib/types/coaching-insights';
 
 const SYNE = "'Syne', sans-serif";
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const clubId = await getPrimaryClubId(user.id);
 
-  const [profile, wallet, play, games, fixtures, cards, club, insights, activity] = await Promise.all([
+  const [profile, wallet, play, games, fixtures, cards, club, insights, activity, audience] = await Promise.all([
     fetchProfile(supabase, user.id),
     fetchWallet(supabase, user.id),
     getPlaySummary(),
@@ -57,7 +58,11 @@ export default async function DashboardPage() {
       .limit(2)
       .returns<CoachingInsight[]>(),
     getRecentActivity(supabase, user.id, 5),
+    getAudience(user.id),
   ]);
+
+  // Players, coaches and club admins get the playing parts of Home; parents and volunteers get club news
+  const plays = audience.admin || audience.roles.includes('player') || audience.roles.includes('coach');
 
   const walletData = wallet.success ? wallet.data : null;
   const balance = totalBalance(walletData);
@@ -103,7 +108,7 @@ export default async function DashboardPage() {
         {greeting}, {name}
       </h1>
 
-      <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} />
+      <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} canPlay={plays} />
 
       <div style={grid}>
         <Tile href="/play" icon="⭐">
@@ -164,6 +169,7 @@ export default async function DashboardPage() {
           </Tile>
         )}
 
+        {plays ? (
         <Tile href="/analyse" icon="🎯">
           <p style={{ ...label, margin: '12px 0 10px' }}>AI Coach</p>
           {(insights.data ?? []).length > 0 ? (
@@ -179,6 +185,13 @@ export default async function DashboardPage() {
             </>
           )}
         </Tile>
+        ) : (
+          <Tile href="/noticeboard" icon="📌">
+            <p style={{ ...label, margin: '12px 0 10px' }}>Club news</p>
+            <p style={{ ...big, fontSize: '23px', color: '#fff', margin: '0 0 6px' }}>Noticeboard</p>
+            <p style={hint}>Notices and updates from {clubName}</p>
+          </Tile>
+        )}
 
         <Tile href="/games" icon="🎮">
           <p style={{ ...label, margin: '12px 0 10px' }}>Today&apos;s games</p>

@@ -1,0 +1,170 @@
+// Pure. The signed-in menu: every page, the group it sits in, and who it is for.
+// Hiding a link is for tidiness only. Each page still checks for itself who may open it.
+
+export type Role = 'player' | 'coach' | 'parent' | 'volunteer';
+
+/** Who is signed in, as far as the menu cares. */
+export type Audience = {
+  roles: Role[];
+  /** A junior account: nothing that is for adults only. */
+  junior: boolean;
+  /** Runs a club: sees everything, plus the admin tools. */
+  admin: boolean;
+};
+
+export type NavLink = {
+  href: string;
+  label: string;
+  icon: string;
+  /** Shown only to people holding one of these roles. Left out = everyone. */
+  for?: Role[];
+  /** Hidden from junior accounts. */
+  adult?: boolean;
+};
+
+export type NavGroup = { key: string; label: string; icon: string; tint: string; adminOnly?: boolean; links: NavLink[] };
+
+const PLAYING: Role[] = ['player', 'coach'];
+
+export const NAV_GROUPS: NavGroup[] = [
+  {
+    key: 'match',
+    label: 'Match day',
+    icon: '🏏',
+    tint: '#22C55E',
+    links: [
+      { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING },
+      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
+      { href: '/scorecard', label: 'Scorecard', icon: '📝' },
+      { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
+      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
+      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️', for: PLAYING },
+      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING },
+    ],
+  },
+  {
+    key: 'play',
+    label: 'Play',
+    icon: '🎮',
+    tint: '#A78BFA',
+    links: [
+      { href: '/games', label: 'Games', icon: '🎲' },
+      { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️', adult: true },
+      { href: '/auction', label: 'The Auction', icon: '🔨' },
+      { href: '/raffle', label: 'Raffle', icon: '🎫', adult: true },
+      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
+      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
+      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦' },
+    ],
+  },
+  {
+    key: 'game',
+    label: 'My game',
+    icon: '🎯',
+    tint: '#F97316',
+    links: [
+      { href: '/analyse', label: 'Analyse', icon: '🎥', for: PLAYING },
+      { href: '/companion', label: 'Coach AI', icon: '🧠' },
+      { href: '/highlights', label: 'Highlights', icon: '🎬', for: PLAYING },
+      { href: '/development', label: 'Development', icon: '📈', for: ['player'] },
+      { href: '/player-report', label: 'Player Report', icon: '📊', for: PLAYING },
+      { href: '/log-performance', label: 'Log Game', icon: '📋', for: ['player'] },
+      { href: '/coaching', label: 'Coaching', icon: '🎓', for: ['player', 'coach', 'parent'] },
+      { href: '/mentor-match', label: 'Mentor Match', icon: '🤝', for: PLAYING },
+      { href: '/qualifications', label: 'Qualifications', icon: '🎖️', for: ['player', 'coach', 'volunteer'] },
+      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING },
+      { href: '/pulse-score', label: 'Pulse Score', icon: '💓', for: ['player'] },
+      { href: '/wellbeing', label: 'Wellbeing', icon: '🧡', for: ['player'] },
+      { href: '/injury-intel', label: 'Injury Intel', icon: '🩹', for: PLAYING },
+    ],
+  },
+  {
+    key: 'scores',
+    label: 'Scores',
+    icon: '⭐',
+    tint: '#EFC84A',
+    links: [
+      { href: '/play', label: 'Earn Scores', icon: '💰' },
+      { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
+      { href: '/kit-discounts', label: 'Kit Discounts', icon: '🧢' },
+      { href: '/fee-offset', label: 'Fee Offset', icon: '🏷️', for: ['player', 'parent'], adult: true },
+      { href: '/travel', label: 'Travel', icon: '🗺️', adult: true },
+      { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝', adult: true },
+      { href: '/community-pot', label: 'Community Pot', icon: '🪙', adult: true },
+      { href: '/charity', label: 'Charity', icon: '🤲', adult: true },
+    ],
+  },
+  {
+    key: 'club',
+    label: 'My club',
+    icon: '🛡️',
+    tint: '#60A5FA',
+    links: [
+      { href: '/noticeboard', label: 'Noticeboard', icon: '📌' },
+      { href: '/dressing-room', label: 'Dressing Room', icon: '👕', for: PLAYING },
+      { href: '/club-bible', label: 'Club Bible', icon: '📖' },
+      { href: '/documents', label: 'Documents', icon: '🗂️' },
+      { href: '/finance', label: 'Finance', icon: '💷', for: ['player', 'parent'], adult: true },
+      { href: '/transfer-window', label: 'Transfer Window', icon: '🔄', for: PLAYING, adult: true },
+      { href: '/club-alumni', label: 'Alumni', icon: '🎓' },
+    ],
+  },
+  {
+    key: 'tools',
+    label: 'Admin tools',
+    icon: '🧰',
+    tint: '#F87171',
+    adminOnly: true,
+    links: [
+      { href: '/admin-query', label: 'Club Intelligence', icon: '🤖' },
+      { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
+      { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉' },
+      { href: '/admin/club/gut-feeling', label: 'Gut Feeling results', icon: '🗳️' },
+    ],
+  },
+];
+
+export const SCHOOL_LINK: NavLink = { href: '/school', label: 'School', icon: '🏫' };
+
+const ROLES: Role[] = ['player', 'coach', 'parent', 'volunteer'];
+
+/**
+ * Works out the audience from what is stored. Someone with no role on record is treated as a
+ * player, so nobody is left with an empty menu. A club coach or volunteer counts as one even if
+ * they never ticked it at sign-up.
+ */
+export function buildAudience(input: { userRoles: string[]; memberRoles: string[]; junior: boolean; admin: boolean }): Audience {
+  const found = new Set<Role>();
+  for (const r of [...input.userRoles, ...input.memberRoles]) {
+    if ((ROLES as string[]).includes(r)) found.add(r as Role);
+  }
+  if (input.junior) found.add('player');
+  if (found.size === 0) found.add('player');
+  return { roles: ROLES.filter((r) => found.has(r)), junior: input.junior, admin: input.admin };
+}
+
+export function canSee(link: NavLink, audience: Audience): boolean {
+  if (audience.admin) return true;
+  if (link.adult && audience.junior) return false;
+  return !link.for || link.for.some((r) => audience.roles.includes(r));
+}
+
+/** The groups this person sees, each with only their links. Empty groups are dropped. */
+export function menuFor(audience: Audience, options: { showSchool?: boolean } = {}): NavGroup[] {
+  return NAV_GROUPS
+    .filter((g) => !g.adminOnly || audience.admin)
+    .map((g) => {
+      const links = g.key === 'club' && options.showSchool ? [...g.links, SCHOOL_LINK] : g.links;
+      return { ...g, links: links.filter((l) => canSee(l, audience)) };
+    })
+    .filter((g) => g.links.length > 0);
+}
+
+const ROLE_LABEL: Record<Role, string> = { player: 'Player', coach: 'Coach', parent: 'Parent', volunteer: 'Volunteer' };
+
+/** A short line saying who the menu is set up for, e.g. "Player · Coach". */
+export function audienceLabel(audience: Audience): string {
+  if (audience.admin) return 'Club admin';
+  if (audience.junior) return 'Junior player';
+  return audience.roles.map((r) => ROLE_LABEL[r]).join(' · ');
+}

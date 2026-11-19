@@ -17,7 +17,8 @@ function when(date: string, time: string | null): { day: string; time: string | 
 }
 
 // The next fixture, with one tap to say you can play. Shown at the top of Home.
-export function NextMatchCard({ fixture, clubName }: { fixture: FixtureWithMyStatus | null; clubName: string }) {
+// canPlay is false for parents and volunteers, who see the fixture without the availability buttons.
+export function NextMatchCard({ fixture, clubName, canPlay = true }: { fixture: FixtureWithMyStatus | null; clubName: string; canPlay?: boolean }) {
   const [status, setStatus] = useState<AvailabilityStatus>(fixture?.my_status ?? 'unknown');
   const [error, setError] = useState('');
   const [pending, startTransition] = useTransition();
@@ -82,27 +83,31 @@ export function NextMatchCard({ fixture, clubName }: { fixture: FixtureWithMySta
         {error && <p role="alert" style={{ ...sub, color: '#FCA5A5' }}>{error}</p>}
       </div>
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          onClick={() => choose(available ? 'unknown' : 'available')}
-          disabled={pending}
-          aria-pressed={available}
-          style={{
-            ...ghost,
-            background: available ? '#22C55E' : '#fff',
-            color: available ? '#052E16' : '#1E3A8A',
-            border: 'none',
-            opacity: pending ? 0.7 : 1,
-          }}
-        >
-          {available ? '✓ You are available' : "I'm available"}
-        </button>
-        {!available && (
-          <button type="button" onClick={() => choose('unavailable')} disabled={pending} aria-pressed={status === 'unavailable'} style={ghost}>
-            {status === 'unavailable' ? "✗ Can't play" : "Can't play"}
-          </button>
+        {canPlay && (
+          <>
+            <button
+              type="button"
+              onClick={() => choose(available ? 'unknown' : 'available')}
+              disabled={pending}
+              aria-pressed={available}
+              style={{
+                ...ghost,
+                background: available ? '#22C55E' : '#fff',
+                color: available ? '#052E16' : '#1E3A8A',
+                border: 'none',
+                opacity: pending ? 0.7 : 1,
+              }}
+            >
+              {available ? '✓ You are available' : "I'm available"}
+            </button>
+            {!available && (
+              <button type="button" onClick={() => choose('unavailable')} disabled={pending} aria-pressed={status === 'unavailable'} style={ghost}>
+                {status === 'unavailable' ? "✗ Can't play" : "Can't play"}
+              </button>
+            )}
+          </>
         )}
-        <Link href="/availability" style={ghost}>Who&apos;s playing</Link>
+        <Link href={canPlay ? '/availability' : '/match-day'} style={ghost}>{canPlay ? "Who's playing" : 'Match details'}</Link>
       </div>
     </section>
   );
