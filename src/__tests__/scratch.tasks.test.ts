@@ -12,8 +12,7 @@ describe('scratch card tasks', () => {
   it('refuses unknown or repeated tasks', () => {
     expect(parseTaskSettings([{ task: 'buy_card', every_n: 1, is_active: true }], 2)).toHaveProperty('error');
     expect(parseTaskSettings([{ task: 'academy_lesson', every_n: 1, is_active: true }, { task: 'academy_lesson', every_n: 2, is_active: true }], 2)).toHaveProperty('error');
-    // 'game' is issued by games on the server, never switched on from this form
-    expect(parseTaskSettings([{ task: 'game', every_n: 1, is_active: true }], 2)).toHaveProperty('error');
+    expect(parseTaskSettings([{ task: 'game', every_n: 3, is_active: true }], 2)).toEqual({ tasks: [{ task: 'game', every_n: 3, is_active: true }], weeklyCap: 2 });
   });
 
   it('refuses numbers out of range', () => {
@@ -41,5 +40,6 @@ describe('scratch card tasks', () => {
     expect(taskLine('volunteer_shift', 1, 4)).toBe('Every volunteer shift you turn up for is a card.');
     expect(taskLine('academy_lesson', 5, 3)).toBe('Every 5 Academy lessons you pass is a card. 2 to go.');
     expect(taskLine('video_analysis', 5, 0)).toBe('Every 5 days you analyse a video is a card. 5 to go.');
+    expect(taskLine('game', 3, 1)).toBe('Every 3 perfect rounds or league titles in the games is a card. 2 to go.');
   });
 });
