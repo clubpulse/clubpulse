@@ -10,6 +10,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { getAudience } from '@/lib/nav/audience';
+import { rolePagesFor } from '@/lib/nav/role-pages';
 
 // Signed-in app chrome, shared by the (dashboard) layout and public routes that also serve signed-in users.
 export async function DashboardShell({ user, children }: { user: User; children: ReactNode }) {
@@ -61,7 +62,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
 
   return (
     <div className="min-h-screen text-white" style={{ background: 'var(--background)' }}>
-      <Navbar name={name} balance={balance} showAdmin={adminCtx.adminClubIds.length > 0} />
+      <Navbar name={name} balance={balance} showAdmin={adminCtx.adminClubIds.length > 0} pages={rolePagesFor(audience)} />
       <div className="flex">
         <Sidebar audience={audience} isPlatformAdmin={isPlatformAdmin} showSchool={showSchool} />
         <main className="min-w-0 flex-1">
