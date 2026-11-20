@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../constants/theme';
+import { colors, display } from '../constants/theme';
 
 type Props = {
   navigation: { canGoBack: () => boolean; goBack: () => void };
@@ -46,6 +46,6 @@ const styles = StyleSheet.create({
   },
   back: { flexDirection: 'row', alignItems: 'center', gap: 2, width: 84, paddingVertical: 6 },
   backText: { color: colors.white, fontSize: 16, fontWeight: '600' },
-  title: { flex: 1, textAlign: 'center', color: colors.white, fontSize: 17, fontWeight: '700' },
+  title: { flex: 1, textAlign: 'center', color: colors.white, fontFamily: display.bold, fontSize: 16 },
   side: { width: 84 },
 });

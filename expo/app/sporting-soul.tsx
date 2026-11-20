@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Card } from '../components/Card';
 import { api, ApiError, type SportingSoul } from '../lib/api';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 export default function SportingSoulScreen() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function SportingSoulScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.navy },
   content: { padding: spacing.lg, gap: spacing.lg },
-  headline: { color: colors.gold, fontSize: 26, fontWeight: '800' },
+  headline: { color: colors.gold, fontFamily: display.heavy, fontSize: 23 },
   achievement: { ...fonts.regular, marginTop: spacing.sm },
   narrative: { ...fonts.regular, lineHeight: 24 },
   button: { backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: spacing.lg, alignItems: 'center' },

@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 type Waiting = { id: string; source: string; earned_at: string };
 type Opened = { id: string; label: string; type: string; opened_at: string; pending: boolean; code: string | null };
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   cardTitle: { color: colors.white, fontSize: 16, fontWeight: '800', marginBottom: spacing.sm },
   prizeCard: { alignItems: 'center', borderColor: colors.gold },
   prizeIcon: { fontSize: 48 },
-  prizeTitle: { color: colors.gold, fontSize: 22, fontWeight: '800', textAlign: 'center', marginTop: 4 },
+  prizeTitle: { color: colors.gold, fontFamily: display.heavy, fontSize: 20, textAlign: 'center', marginTop: 4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
   rowIcon: { fontSize: 26, width: 32, textAlign: 'center' },
   rowTitle: { color: colors.text, fontSize: 15, fontWeight: '600' },

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Card } from '../../components/Card';
 import { api } from '../../lib/api';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 type CoachDetail = {
   id: string;
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 12, fontWeight: '600', color: colors.brandSky },
   statsRow: { flexDirection: 'row', gap: spacing.md },
   stat: { flex: 1, alignItems: 'center', gap: spacing.xs },
-  statVal: { fontSize: 22, fontWeight: '800' },
+  statVal: { fontFamily: display.heavy, fontSize: 20 },
   bookBtn: {
     backgroundColor: colors.brandPrimary,
     paddingVertical: 16,

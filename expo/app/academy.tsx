@@ -8,7 +8,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
 import type { Academy } from '../lib/academy';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 export default function AcademyScreen() {
   const router = useRouter();
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface1, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.navyBorder, padding: spacing.lg,
   },
   headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
-  level: { color: colors.gold, fontSize: 28, fontWeight: '800', marginTop: 2 },
+  level: { color: colors.gold, fontFamily: display.heavy, fontSize: 24, marginTop: 2 },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.surface2, marginTop: spacing.md, overflow: 'hidden' },
   fill: { height: 8, borderRadius: 4, backgroundColor: colors.gold },
   lessonRow: {

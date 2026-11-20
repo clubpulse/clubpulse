@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api, ApiError } from '../../lib/api';
 import type { AcademyLesson, LessonResult } from '../../lib/academy';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   optionRight: { borderColor: colors.success, backgroundColor: colors.successDim },
   optionWrong: { borderColor: colors.danger },
   optionText: { color: colors.text, fontSize: 14, lineHeight: 20 },
-  resultTitle: { color: colors.white, fontSize: 18, fontWeight: '800' },
+  resultTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 17 },
   primaryBtn: { backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: 13, alignItems: 'center', marginTop: spacing.lg },
   primaryBtnText: { color: colors.background, fontSize: 15, fontWeight: '800' },
   outlineBtn: {
