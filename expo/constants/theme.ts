@@ -49,6 +49,10 @@ export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
 
 export const radius = { sm: 8, md: 12, lg: 16, xl: 20, pill: 999 };
 
+// The website's heading face (Syne), loaded when the app starts (see app/_layout.tsx). Until it
+// has loaded, text set in it shows in the phone's own font.
+export const display = { bold: 'Syne_700Bold', heavy: 'Syne_800ExtraBold' };
+
 export const fonts = {
   regular: { fontSize: 15, color: colors.text },
   small:   { fontSize: 13, color: colors.textMuted as string },
