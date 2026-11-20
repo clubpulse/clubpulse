@@ -1,5 +1,8 @@
 'use client';
+import { useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { RolePage } from '@/lib/nav/role-pages';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatScores } from '@/lib/utils/format';
 
@@ -7,9 +10,64 @@ interface NavbarProps {
   name: string;
   balance: number;
   showAdmin?: boolean;
+  /** The role pages this person has, for the switcher */
+  pages?: RolePage[];
 }
 
-export function Navbar({ name, balance, showAdmin }: NavbarProps) {
+/**
+ * Moves between a person's role pages from anywhere. It shows the role page they are on, or
+ * "My pages" elsewhere, and opens a short list of the roles they hold.
+ */
+function RoleSwitcher({ pages }: { pages: RolePage[] }) {
+  const pathname = usePathname();
+  const menu = useRef<HTMLDetailsElement>(null);
+  const current = pages.find((p) => p.href === pathname) ?? null;
+  if (pages.length === 0) return null;
+
+  return (
+    <details ref={menu} className="cp-roles" style={{ position: 'relative' }}>
+      <summary
+        aria-label="Switch between your role pages"
+        style={{
+          display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 11px', borderRadius: '8px', cursor: 'pointer', listStyle: 'none',
+          fontSize: '13px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap',
+          background: current ? `color-mix(in srgb, ${current.from} 18%, transparent)` : 'rgba(255,255,255,0.06)',
+          border: `1px solid ${current ? `color-mix(in srgb, ${current.from} 45%, transparent)` : 'rgba(255,255,255,0.12)'}`,
+        }}
+      >
+        <span aria-hidden>{current ? current.icon : '🧭'}</span>
+        <span className="cp-roles-label">{current ? current.title : 'My pages'}</span>
+        <span aria-hidden style={{ fontSize: '10px', opacity: 0.6 }}>▾</span>
+      </summary>
+      <ul style={{
+        position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 60, minWidth: '190px', listStyle: 'none', margin: 0, padding: '6px',
+        borderRadius: '14px', background: '#0A1330', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 18px 44px rgba(0,0,0,0.55)',
+      }}>
+        {pages.map((page) => (
+          <li key={page.role}>
+            <Link
+              href={page.href}
+              aria-current={page.href === pathname ? 'page' : undefined}
+              onClick={() => menu.current?.removeAttribute('open')}
+              className="cp-roles-item"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 11px', borderRadius: '10px', textDecoration: 'none',
+                fontSize: '14px', fontWeight: 600, color: page.href === pathname ? '#fff' : 'rgba(255,255,255,0.75)',
+                background: page.href === pathname ? `color-mix(in srgb, ${page.from} 20%, transparent)` : 'transparent',
+              }}
+            >
+              <span aria-hidden style={{ fontSize: '17px' }}>{page.icon}</span>
+              {page.title}
+              {page.href === pathname && <span aria-hidden style={{ marginLeft: 'auto', color: page.from }}>●</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+export function Navbar({ name, balance, showAdmin, pages = [] }: NavbarProps) {
   return (
     <header style={{
       position: 'sticky',
@@ -59,6 +117,9 @@ export function Navbar({ name, balance, showAdmin }: NavbarProps) {
 
         {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+          <style>{`.cp-roles summary::-webkit-details-marker{display:none}.cp-roles-item:hover{background:rgba(255,255,255,0.07)!important;color:#fff!important}@media (max-width:520px){.cp-roles-label{display:none}}`}</style>
+          <RoleSwitcher pages={pages} />
+
           {/* Scores balance */}
           <Link
             href="/marketplace"
