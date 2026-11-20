@@ -1,5 +1,6 @@
 // The app's menu: every screen, the group it sits in, and who it is for. Mirrors the website's
-// menu (src/lib/nav/menu.ts) with the screens the app has. Hiding a row is for tidiness only:
+// menu (src/lib/nav/menu.ts) with the screens the app has. The groups follow the four pillars
+// (Technique, Community, Wellness, Academy), with Rewards alongside. Hiding a row is for tidiness only:
 // each screen and the server still check for themselves what the person may do.
 
 import type { UserRole } from './roles';
@@ -27,52 +28,60 @@ const PLAYING: UserRole[] = ['player', 'coach'];
 
 export const MENU: MenuGroup[] = [
   {
-    key: 'play',
-    label: 'Play',
-    icon: '🎮',
-    tint: '#A78BFA',
-    links: [
-      { key: 'rewards', label: 'Rewards', detail: 'Daily, weekly and monthly goals', icon: '🎁', route: '/rewards' },
-      { key: 'games', label: 'Games', detail: "Umpire's Call, Who Am I?, Season Manager and more", icon: '🕹️', route: '/games' },
-      { key: 'cards', label: 'Scratch cards', detail: 'Free cards you have earned', icon: '🎟️', route: '/scratch-cards', adult: true, needs: 'cards' },
-    ],
-  },
-  {
-    key: 'game',
-    label: 'My game',
+    key: 'technique',
+    label: 'Technique',
     icon: '🎯',
     tint: '#F97316',
     links: [
       { key: 'coaching', label: 'Coaching', detail: 'Film your technique, track progress, book a coach', icon: '🎥', route: '/coaching', for: ['player', 'coach', 'parent'] },
-      { key: 'academy', label: 'Academy', detail: 'Two-minute lessons and a practice plan', icon: '🎓', route: '/academy', for: PLAYING },
       { key: 'coach-ai', label: 'Coach AI', detail: 'Ask anything about your game', icon: '🧠', route: '/companion' },
-      { key: 'soul', label: 'My Sporting Soul', detail: 'What kind of cricketer are you?', icon: '✨', route: '/sporting-soul', for: PLAYING },
     ],
   },
   {
-    key: 'scores',
-    label: 'Scores',
-    icon: '⭐',
-    tint: '#EFC84A',
-    links: [
-      { key: 'wallet', label: 'Wallet', detail: 'Your Scores and what you earned them for', icon: '👛', route: '/wallet' },
-      { key: 'market', label: 'Marketplace', detail: 'Swap Scores for rewards', icon: '🛍️', route: '/marketplace' },
-      { key: 'deals', label: 'Deals and discounts', detail: 'Earn Scores when you shop', icon: '🏷️', route: '/deals', adult: true, needs: 'deals' },
-      { key: 'store', label: 'Store', detail: 'Cards and extras', icon: '🏏', route: '/store', adult: true, needs: 'store' },
-    ],
-  },
-  {
-    key: 'club',
-    label: 'My club',
-    icon: '🛡️',
+    key: 'community',
+    label: 'Community',
+    icon: '🤝',
     tint: '#60A5FA',
     links: [
       { key: 'club', label: 'Club', detail: 'Your club, members and invites', icon: '🏟️', route: '/(tabs)/club' },
-      { key: 'shifts', label: 'Volunteer shifts', detail: 'Sign up to help out', icon: '🤝', route: '/(tabs)/shifts' },
+      { key: 'shifts', label: 'Volunteer shifts', detail: 'Sign up to help out', icon: '🙌', route: '/(tabs)/shifts' },
       { key: 'coaches', label: 'Coaches', detail: 'Coaches approved by your club', icon: '🧑‍🏫', route: '/(tabs)/coaches', for: ['player', 'coach', 'parent', 'club_admin'] },
       { key: 'children', label: 'My children', detail: 'Consents, details and safeguarding', icon: '👪', route: '/safeguarding', for: ['parent'], strict: true },
       { key: 'add-child', label: 'Add a child', detail: 'Link your child to their club', icon: '➕', route: '/register-child', for: ['parent'], strict: true },
       { key: 'post-shift', label: 'Post a shift', detail: 'Ask members for help', icon: '📣', route: '/post-shift', for: ['club_admin'] },
+    ],
+  },
+  {
+    key: 'wellness',
+    label: 'Wellness',
+    icon: '🧡',
+    tint: '#34D399',
+    links: [
+      { key: 'soul', label: 'My Sporting Soul', detail: 'What kind of cricketer are you?', icon: '✨', route: '/sporting-soul', for: PLAYING },
+    ],
+  },
+  {
+    key: 'academy',
+    label: 'Academy',
+    icon: '📚',
+    tint: '#A78BFA',
+    links: [
+      { key: 'academy', label: 'Lessons', detail: 'Two-minute lessons and a practice plan', icon: '🎓', route: '/academy', for: PLAYING },
+      { key: 'games', label: 'Games', detail: "Umpire's Call, Who Am I?, Season Manager and more", icon: '🕹️', route: '/games' },
+    ],
+  },
+  {
+    key: 'scores',
+    label: 'Rewards',
+    icon: '⭐',
+    tint: '#EFC84A',
+    links: [
+      { key: 'rewards', label: 'Earn Scores', detail: 'Daily, weekly and monthly goals', icon: '🎁', route: '/rewards' },
+      { key: 'cards', label: 'Scratch cards', detail: 'Free cards you have earned', icon: '🎟️', route: '/scratch-cards', adult: true, needs: 'cards' },
+      { key: 'wallet', label: 'Wallet', detail: 'Your Scores and what you earned them for', icon: '👛', route: '/wallet' },
+      { key: 'market', label: 'Marketplace', detail: 'Swap Scores for rewards', icon: '🛍️', route: '/marketplace' },
+      { key: 'deals', label: 'Deals and discounts', detail: 'Earn Scores when you shop', icon: '🏷️', route: '/deals', adult: true, needs: 'deals' },
+      { key: 'store', label: 'Store', detail: 'Cards and extras', icon: '🏏', route: '/store', adult: true, needs: 'store' },
     ],
   },
 ];

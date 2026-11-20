@@ -139,11 +139,21 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.roleBadgeRow}>
-          {active.map((role) => (
-            <View key={role} style={[styles.roleBadge, { backgroundColor: ROLE_CONFIG[role].dimColor }]}>
-              <Text style={[styles.roleBadgeText, { color: ROLE_CONFIG[role].color }]}>{ROLE_CONFIG[role].icon} {ROLE_CONFIG[role].label}</Text>
-            </View>
-          ))}
+          {active.map((role) => {
+            // Each role opens its own page. Volunteer has none, so it opens the shifts.
+            const page = role === 'club_admin' ? 'admin' : role === 'volunteer' ? null : role;
+            return (
+              <Pressable
+                key={role}
+                onPress={() => router.push((page ? `/role/${page}` : '/(tabs)/shifts') as never)}
+                accessibilityRole="button"
+                accessibilityLabel={`${ROLE_CONFIG[role].label}. Open ${page ? 'your page' : 'volunteer shifts'}`}
+                style={({ pressed }) => [styles.roleBadge, { backgroundColor: ROLE_CONFIG[role].dimColor, borderWidth: 1, borderColor: `${ROLE_CONFIG[role].color}55` }, pressed && { opacity: 0.7 }]}
+              >
+                <Text style={[styles.roleBadgeText, { color: ROLE_CONFIG[role].color }]}>{ROLE_CONFIG[role].icon} {ROLE_CONFIG[role].label}  ›</Text>
+              </Pressable>
+            );
+          })}
           {pending.map((role) => (
             <View key={`p-${role}`} style={[styles.roleBadge, { backgroundColor: 'rgba(255,255,255,0.04)' }]}>
               <Text style={[styles.roleBadgeText, { color: colors.textMuted as string }]}>⏳ {ROLE_CONFIG[role].label}</Text>

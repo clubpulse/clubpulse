@@ -84,6 +84,7 @@ function AuthGate() {
       <Stack.Screen name="season-manager" options={screen('Season Manager')} />
       <Stack.Screen name="scratch-rules" options={screen('Scratch card rules')} />
       <Stack.Screen name="scratch-card/[type]" options={screen('Scratch card')} />
+      <Stack.Screen name="role/[role]" options={screen('My page')} />
     </Stack>
   );
 }
