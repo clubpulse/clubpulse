@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   scoreline: { color: colors.white, fontSize: 16, fontWeight: '700', marginVertical: 6 },
   hero: { backgroundColor: '#1D4ED8', borderRadius: radius.xl, borderWidth: 1, borderColor: 'rgba(96,165,250,0.45)', padding: spacing.xl },
   heroEyebrow: { color: '#BFDBFE', fontSize: 13, fontWeight: '600' },
-  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 23, letterSpacing: -0.5, marginTop: 4 },
+  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 20, letterSpacing: -0.5, marginTop: 4 },
   heroSub: { color: 'rgba(255,255,255,0.85)', fontSize: 14, marginTop: 4 },
   goldBtn: { backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: 14, alignItems: 'center', marginTop: spacing.md },
   goldBtnText: { color: colors.background, fontSize: 15, fontWeight: '800' },

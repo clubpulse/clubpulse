@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.md },
-  greeting: { fontFamily: display.heavy, fontSize: 22, color: colors.white, letterSpacing: -0.3 },
+  greeting: { fontFamily: display.heavy, fontSize: 18, color: colors.white, letterSpacing: -0.3 },
   scoreBadge: {
     backgroundColor: colors.goldDim as string, borderWidth: 1, borderColor: colors.goldBorder as string,
     borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
 
   hero: { backgroundColor: '#1D4ED8', borderRadius: radius.xl, borderWidth: 1, borderColor: 'rgba(96,165,250,0.45)', padding: spacing.xl },
   heroEyebrow: { color: '#BFDBFE', fontSize: 13, fontWeight: '600' },
-  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 23, letterSpacing: -0.5, marginTop: 4 },
+  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 20, letterSpacing: -0.5, marginTop: 4 },
   heroSub: { color: 'rgba(255,255,255,0.85)', fontSize: 14, marginTop: 6 },
   heroButtons: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.lg },
   heroBtn: { borderRadius: radius.md, paddingVertical: 11, paddingHorizontal: 18 },
