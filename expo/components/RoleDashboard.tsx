@@ -153,11 +153,16 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
 
             <Text style={styles.section} accessibilityRole="header">Your {page.title.toLowerCase()} tools</Text>
             <View style={styles.grid}>
-              {page.tools.map((tool, i) => (
-                <GlowCard key={tool.label} index={7 + i} tint={tool.tint} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool}>
-                  <View style={[styles.toolIcon, { backgroundColor: `${tool.tint}22`, borderColor: `${tool.tint}55` }]}><Text style={{ fontSize: 20 }}>{tool.icon}</Text></View>
+              {page.tools.map((tool, i) => i < 2 ? (
+                <GlowCard key={tool.label} index={7 + i} tint={tool.tint} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={{ backgroundColor: `${tool.tint}1F`, borderColor: `${tool.tint}77` }}>
+                  <View style={[styles.toolIcon, { backgroundColor: tool.tint, borderColor: tool.tint }]}><Text style={{ fontSize: 24 }}>{tool.icon}</Text></View>
                   <Text style={styles.toolLabel}>{tool.label}</Text>
                   <Text style={styles.toolDetail} numberOfLines={2}>{tool.detail}</Text>
+                </GlowCard>
+              ) : (
+                <GlowCard key={tool.label} index={7 + i} tint={tool.tint} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={styles.toolSmall}>
+                  <Text style={{ fontSize: 19 }}>{tool.icon}</Text>
+                  <Text style={styles.toolSmallLabel} numberOfLines={1}>{tool.label}</Text>
                 </GlowCard>
               ))}
             </View>
@@ -196,7 +201,9 @@ const styles = StyleSheet.create({
   badge: { fontSize: 12, fontWeight: '700', borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
   section: { fontFamily: display.heavy, fontSize: 18, color: colors.white, letterSpacing: -0.2, marginTop: spacing.sm },
   tool: { flexBasis: '47%', flexGrow: 1, minWidth: 140 },
-  toolIcon: { width: 42, height: 42, borderRadius: 13, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  toolLabel: { fontSize: 15, fontWeight: '700', color: colors.white, marginTop: 12 },
+  toolSmall: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 },
+  toolSmallLabel: { flex: 1, fontSize: 14, fontWeight: '700', color: colors.white },
+  toolIcon: { width: 50, height: 50, borderRadius: 16, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  toolLabel: { fontFamily: display.heavy, fontSize: 16, color: colors.white, marginTop: 12 },
   toolDetail: { fontSize: 12.5, lineHeight: 17, color: 'rgba(255,255,255,0.5)', marginTop: 3 },
 });

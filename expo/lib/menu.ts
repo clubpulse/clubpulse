@@ -33,7 +33,8 @@ export const MENU: MenuGroup[] = [
     icon: '🎯',
     tint: '#F97316',
     links: [
-      { key: 'coaching', label: 'Coaching', detail: 'Film your technique, track progress, book a coach', icon: '🎥', route: '/coaching', for: ['player', 'coach', 'parent'] },
+      { key: 'analyse', label: 'Analyse', detail: 'Film a shot or a delivery and get a mark', icon: '🎥', route: '/web?path=%2Fanalyse&title=Analyse&camera=1', for: PLAYING },
+      { key: 'coaching', label: 'Coaching', detail: 'Highlights, progress and booking a coach', icon: '📈', route: '/coaching', for: ['player', 'coach', 'parent'] },
       { key: 'coach-ai', label: 'Coach AI', detail: 'Ask anything about your game', icon: '🧠', route: '/companion' },
     ],
   },
