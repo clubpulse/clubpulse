@@ -35,7 +35,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: 'technique',
     label: 'Technique',
     icon: '🎯',
-    tint: '#F97316',
+    tint: '#FBBF24',
     links: [
       { href: '/analyse', label: 'Analyse', icon: '🎥', for: PLAYING },
       { href: '/highlights', label: 'Highlights', icon: '🎬', for: PLAYING },
@@ -78,7 +78,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: 'wellness',
     label: 'Wellness',
     icon: '🧡',
-    tint: '#34D399',
+    tint: '#F472B6',
     links: [
       { href: '/wellbeing', label: 'Wellbeing', icon: '🧡', for: ['player'] },
       { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
@@ -90,7 +90,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: 'academy',
     label: 'Academy',
     icon: '📚',
-    tint: '#A78BFA',
+    tint: '#2DD4BF',
     links: [
       { href: '/games', label: 'Games', icon: '🎲' },
       { href: '/qualifications', label: 'Qualifications', icon: '🎖️', for: ['player', 'coach', 'volunteer'] },

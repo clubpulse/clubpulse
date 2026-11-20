@@ -31,7 +31,7 @@ export const MENU: MenuGroup[] = [
     key: 'technique',
     label: 'Technique',
     icon: '🎯',
-    tint: '#F97316',
+    tint: '#FBBF24',
     links: [
       { key: 'analyse', label: 'Analyse', detail: 'Film a shot or a delivery and get a mark', icon: '🎥', route: '/web?path=%2Fanalyse&title=Analyse&camera=1', for: PLAYING },
       { key: 'coaching', label: 'Coaching', detail: 'Highlights, progress and booking a coach', icon: '📈', route: '/coaching', for: ['player', 'coach', 'parent'] },
@@ -56,7 +56,7 @@ export const MENU: MenuGroup[] = [
     key: 'wellness',
     label: 'Wellness',
     icon: '🧡',
-    tint: '#34D399',
+    tint: '#F472B6',
     links: [
       { key: 'soul', label: 'My Sporting Soul', detail: 'What kind of cricketer are you?', icon: '✨', route: '/sporting-soul', for: PLAYING },
     ],
@@ -65,7 +65,7 @@ export const MENU: MenuGroup[] = [
     key: 'academy',
     label: 'Academy',
     icon: '📚',
-    tint: '#A78BFA',
+    tint: '#2DD4BF',
     links: [
       { key: 'academy', label: 'Lessons', detail: 'Two-minute lessons and a practice plan', icon: '🎓', route: '/academy', for: PLAYING },
       { key: 'games', label: 'Games', detail: "Umpire's Call, Who Am I?, Season Manager and more", icon: '🕹️', route: '/games' },

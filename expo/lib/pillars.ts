@@ -29,27 +29,27 @@ const PLAYING: MenuLink['for'] = ['player', 'coach'];
 
 export const PILLARS: Pillar[] = [
   {
-    key: 'technique', tab: 'technique', title: 'Technique', emoji: '🎯', icon: 'analytics', from: '#F97316', to: '#EFC84A',
+    key: 'technique', tab: 'technique', title: 'Technique', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
     tagline: 'Film your batting or bowling and see exactly what to work on.',
     featured: ['analyse', 'coaching'],
     extra: [],
   },
   {
-    key: 'community', tab: 'community', title: 'Community', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#A78BFA',
+    key: 'community', tab: 'community', title: 'Community', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#93C5FD',
     tagline: 'Your club, your matches and the people you play with.',
     featured: ['club', 'coaches'],
     extra: [],
     soon: 'Cricket people across your region, beyond your own club, are on the way.',
   },
   {
-    key: 'wellness', tab: 'wellness', title: 'Wellness', emoji: '🧡', icon: 'heart', from: '#34D399', to: '#38BDF8',
+    key: 'wellness', tab: 'wellness', title: 'Wellness', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Look after your body and get your head ready to play.',
     featured: ['soul'],
     extra: [],
     soon: 'Match-day routines and mental preparation are on the way.',
   },
   {
-    key: 'academy', tab: 'learn', title: 'Academy', emoji: '📚', icon: 'school', from: '#A78BFA', to: '#F472B6',
+    key: 'academy', tab: 'learn', title: 'Academy', emoji: '📚', icon: 'school', from: '#2DD4BF', to: '#5EEAD4',
     tagline: 'Learn the game: its Laws, its tactics and its skills.',
     featured: ['academy', 'games'],
     extra: [
