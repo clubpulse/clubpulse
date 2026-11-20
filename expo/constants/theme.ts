@@ -56,7 +56,8 @@ export const display = { bold: 'Syne_700Bold', heavy: 'Syne_800ExtraBold' };
 export const fonts = {
   regular: { fontSize: 15, color: colors.text },
   small:   { fontSize: 13, color: colors.textMuted as string },
-  heading: { fontSize: 22, fontWeight: '700' as const, color: colors.white },
+  // Headings are set in Syne. It is a wide face, so they are a little smaller than the body scale suggests.
+  heading: { fontFamily: display.bold, fontSize: 20, color: colors.white },
   title:   { fontSize: 16, fontWeight: '600' as const, color: colors.white },
-  big:     { fontSize: 44, fontWeight: '800' as const, color: colors.white },
+  big:     { fontFamily: display.heavy, fontSize: 38, color: colors.white },
 };

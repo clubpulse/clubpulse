@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, radius, spacing } from '../../constants/theme';
+import { colors, display, radius, spacing } from '../../constants/theme';
 
 type Role = 'BAT' | 'WK' | 'AR' | 'PACE' | 'SPIN';
 
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   paddleHead: { minWidth: 40, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   paddleText: { fontSize: 11, fontWeight: '800', letterSpacing: 0.5 },
   paddleHandle: { width: 4, height: 12, borderBottomLeftRadius: 2, borderBottomRightRadius: 2 },
-  price: { fontSize: 44, fontWeight: '800', color: colors.gold, textAlign: 'center' },
+  price: { fontFamily: display.heavy, fontSize: 38, color: colors.gold, textAlign: 'center' },
   stamp: {
     position: 'absolute', alignSelf: 'center', top: '44%', borderWidth: 4, borderRadius: radius.md,
     paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: 'rgba(4,9,26,0.88)', alignItems: 'center', maxWidth: '88%',

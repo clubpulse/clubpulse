@@ -7,7 +7,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { api, ApiError } from '../../lib/api';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 type Question = { prompt: string; options: string[]; clues?: string[] };
 type Review = Array<{ correct: boolean; answer: string; why: string; points: number }>;
@@ -173,6 +173,6 @@ const styles = StyleSheet.create({
   goldBtnText: { color: colors.background, fontSize: 15, fontWeight: '800' },
   outlineBtn: { borderRadius: radius.md, borderWidth: 1, borderColor: colors.navyBorder, paddingVertical: 11, paddingHorizontal: spacing.lg, alignItems: 'center', marginTop: spacing.md },
   outlineBtnText: { color: colors.text, fontSize: 14, fontWeight: '700' },
-  score: { color: colors.gold, fontSize: 40, fontWeight: '800' },
+  score: { color: colors.gold, fontFamily: display.heavy, fontSize: 34 },
   reviewHead: { fontSize: 15, fontWeight: '700', marginBottom: 4 },
 });

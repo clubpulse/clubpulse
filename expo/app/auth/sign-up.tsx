@@ -5,7 +5,7 @@ import { Link, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { PRIVACY_URL, TERMS_URL } from '../../constants/features';
 import { useAuth } from '../../hooks/useAuth';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 export default function SignUpScreen() {
   const { signUp } = useAuth();
@@ -74,7 +74,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.navy },
   container: { flexGrow: 1, justifyContent: 'center', padding: spacing.xl, gap: spacing.md },
-  logo: { color: colors.white, fontSize: 40, fontWeight: '800', textAlign: 'center' },
+  logo: { color: colors.white, fontFamily: display.heavy, fontSize: 34, textAlign: 'center' },
   input: {
     backgroundColor: colors.navyLight, color: colors.white, borderRadius: radius.md, borderWidth: 1,
     borderColor: colors.navyBorder, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg, fontSize: 16,

@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api, ApiError } from '../lib/api';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 type Role = 'bat' | 'bowl' | 'all' | 'keep';
 type Plan = 'steady' | 'balanced' | 'attack';
@@ -297,11 +297,11 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   card: { backgroundColor: colors.surface1, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border as string, padding: spacing.lg },
-  h1: { color: colors.white, fontSize: 22, fontWeight: '800' },
+  h1: { color: colors.white, fontFamily: display.heavy, fontSize: 20 },
   scoreline: { color: colors.white, fontSize: 16, fontWeight: '700', marginVertical: 6 },
   hero: { backgroundColor: '#1D4ED8', borderRadius: radius.xl, borderWidth: 1, borderColor: 'rgba(96,165,250,0.45)', padding: spacing.xl },
   heroEyebrow: { color: '#BFDBFE', fontSize: 13, fontWeight: '600' },
-  heroTitle: { color: colors.white, fontSize: 26, fontWeight: '800', letterSpacing: -0.5, marginTop: 4 },
+  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 23, letterSpacing: -0.5, marginTop: 4 },
   heroSub: { color: 'rgba(255,255,255,0.85)', fontSize: 14, marginTop: 4 },
   goldBtn: { backgroundColor: colors.gold, borderRadius: radius.md, paddingVertical: 14, alignItems: 'center', marginTop: spacing.md },
   goldBtnText: { color: colors.background, fontSize: 15, fontWeight: '800' },

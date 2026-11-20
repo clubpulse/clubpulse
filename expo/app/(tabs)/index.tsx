@@ -17,7 +17,7 @@ import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import { menuFor, type MenuGroup } from '../../lib/menu';
 import { UpsellBanner } from '../../components/UpsellBanner';
 import { DEALS_ENABLED, STORE_ENABLED } from '../../constants/features';
-import { colors, fonts, spacing, radius } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 type Home = {
   club: string | null;
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.md },
-  greeting: { fontSize: 24, fontWeight: '800', color: colors.white, letterSpacing: -0.3 },
+  greeting: { fontFamily: display.heavy, fontSize: 22, color: colors.white, letterSpacing: -0.3 },
   scoreBadge: {
     backgroundColor: colors.goldDim as string, borderWidth: 1, borderColor: colors.goldBorder as string,
     borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
 
   hero: { backgroundColor: '#1D4ED8', borderRadius: radius.xl, borderWidth: 1, borderColor: 'rgba(96,165,250,0.45)', padding: spacing.xl },
   heroEyebrow: { color: '#BFDBFE', fontSize: 13, fontWeight: '600' },
-  heroTitle: { color: colors.white, fontSize: 26, fontWeight: '800', letterSpacing: -0.5, marginTop: 4 },
+  heroTitle: { color: colors.white, fontFamily: display.heavy, fontSize: 23, letterSpacing: -0.5, marginTop: 4 },
   heroSub: { color: 'rgba(255,255,255,0.85)', fontSize: 14, marginTop: 6 },
   heroButtons: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.lg },
   heroBtn: { borderRadius: radius.md, paddingVertical: 11, paddingHorizontal: 18 },
@@ -418,8 +418,8 @@ const styles = StyleSheet.create({
 
   tileRow: { flexDirection: 'row', gap: spacing.md },
   tile: { flex: 1, backgroundColor: colors.surface1, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border as string, padding: spacing.lg, minHeight: 138 },
-  tileBig: { fontSize: 34, fontWeight: '800', color: colors.white, letterSpacing: -0.5, marginTop: 6 },
-  tilePhrase: { fontSize: 19, fontWeight: '800', color: colors.white, marginTop: 6 },
+  tileBig: { fontFamily: display.heavy, fontSize: 28, color: colors.white, letterSpacing: -0.5, marginTop: 6 },
+  tilePhrase: { fontFamily: display.heavy, fontSize: 17, color: colors.white, marginTop: 6 },
   tileLabel: { fontSize: 14, fontWeight: '700', color: colors.white, marginTop: 2 },
   tileHint: { fontSize: 12, color: colors.textMuted as string, marginTop: 3 },
   insight: { fontSize: 13, fontWeight: '600', marginTop: 5 },

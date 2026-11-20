@@ -20,7 +20,7 @@ import { useRoles } from '../../hooks/useRoles';
 import { api, ApiError } from '../../lib/api';
 import { ROLE_CONFIG } from '../../lib/roles';
 import type { ApprovalRequest } from '../../lib/roles';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 import { BackBar } from '../../components/BackBar';
 
 type Tab = 'overview' | 'approvals' | 'members';
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
 
   statsRow: { flexDirection: 'row', gap: spacing.md },
   stat: { flex: 1, alignItems: 'center', gap: spacing.xs },
-  statValue: { fontSize: 28, fontWeight: '800' },
+  statValue: { fontFamily: display.heavy, fontSize: 24 },
 
   tabBar: { flexDirection: 'row', backgroundColor: colors.surface1, borderRadius: radius.md, padding: 3 },
   tabBtn: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: radius.sm },

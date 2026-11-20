@@ -17,7 +17,7 @@ import {
   newAuction, nextBid, objectives, overseasCount, rivalOrder, shortfall, squadScore, standings, totalShortfall, upcomingLots,
   type Auction, type Lot, type LotResult, type Rival, type Role, type Standing, type Team,
 } from '../lib/auctionEngine';
-import { colors, fonts, radius, spacing } from '../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 type Status = {
   /** The server's version of the game. Missing on a server older than the app. */
@@ -782,16 +782,16 @@ const styles = StyleSheet.create({
   pillRow: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
   rolePill: { alignSelf: 'flex-start', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
   rolePillText: { fontSize: 12, fontWeight: '800' },
-  lotName: { color: colors.white, fontSize: 24, fontWeight: '800', marginTop: spacing.sm },
+  lotName: { color: colors.white, fontFamily: display.heavy, fontSize: 21, marginTop: spacing.sm },
   ratingBox: {
     alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface2, borderRadius: radius.md,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm, minWidth: 68,
   },
-  ratingNum: { color: colors.white, fontSize: 30, fontWeight: '800' },
+  ratingNum: { color: colors.white, fontFamily: display.heavy, fontSize: 26 },
   ratingLabel: { color: colors.textMuted as string, fontSize: 10, fontWeight: '700', letterSpacing: 1 },
   bidBox: { alignItems: 'center', marginTop: spacing.lg, minHeight: 104 },
   callRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: 4, minHeight: 26 },
-  bidPrice: { color: colors.gold, fontSize: 40, fontWeight: '800' },
+  bidPrice: { color: colors.gold, fontFamily: display.heavy, fontSize: 34 },
   callText: { color: colors.orange, fontSize: 16, fontWeight: '800' },
 
   purse: { color: colors.gold, fontSize: 16, fontWeight: '800' },

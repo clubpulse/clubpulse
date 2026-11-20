@@ -21,7 +21,7 @@ import {
   getUpsell,
 } from '../../lib/iap';
 import { STORE_ENABLED } from '../../constants/features';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 export default function ScratchCardScreen() {
   // Reachable by deep link even with the Store switched off
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   scoreLabel: { color: colors.textMuted as string, fontSize: 14, fontWeight: '600', letterSpacing: 1 },
-  scoreValue: { color: colors.gold, fontSize: 48, fontWeight: '800' },
+  scoreValue: { color: colors.gold, fontFamily: display.heavy, fontSize: 40 },
 
   panelsContainer: {
     flexDirection: 'row',
