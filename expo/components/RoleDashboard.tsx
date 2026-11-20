@@ -130,7 +130,7 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
               ))}
             </View>
 
-            {nextSlot ?? <GlowCard index={5} tint={page.from}>
+            {nextSlot ?? <GlowCard index={5} tint={page.from} style={{ backgroundColor: `${page.from}26`, borderColor: `${page.from}88` }}>
               <Text style={[styles.cardEyebrow, { color: page.from }]}>{data.next ? data.next.eyebrow.toUpperCase() : 'COMING UP'}</Text>
               <Text style={styles.nextTitle}>{data.next ? data.next.title : 'Nothing in the diary'}</Text>
               <Text style={[fonts.small, { marginTop: 4 }]}>{data.next ? data.next.detail : 'What is next for you appears here.'}</Text>
@@ -151,17 +151,10 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
               ))}
             </GlowCard>
 
-            <Text style={styles.section} accessibilityRole="header">Your {page.title.toLowerCase()} tools</Text>
+            <Text style={styles.section} accessibilityRole="header">More {page.title.toLowerCase()} tools</Text>
             <View style={styles.grid}>
-              {page.tools.map((tool, i) => i < 2 ? (
-                // The two leading tools wear the page's own colour
-                <GlowCard key={tool.label} index={7 + i} tint={page.from} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={{ backgroundColor: `${page.from}1F`, borderColor: `${page.from}77` }}>
-                  <View style={[styles.toolIcon, { backgroundColor: i === 0 ? page.from : page.to, borderColor: i === 0 ? page.from : page.to }]}><Text style={{ fontSize: 24 }}>{tool.icon}</Text></View>
-                  <Text style={styles.toolLabel}>{tool.label}</Text>
-                  <Text style={styles.toolDetail} numberOfLines={2}>{tool.detail}</Text>
-                </GlowCard>
-              ) : (
-                <GlowCard key={tool.label} index={7 + i} tint={tool.tint} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={styles.toolSmall}>
+              {page.tools.map((tool, i) => (
+                <GlowCard key={tool.label} index={7 + i} tint={i % 2 === 0 ? page.from : page.to} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={styles.toolSmall}>
                   <Text style={{ fontSize: 19 }}>{tool.icon}</Text>
                   <Text style={styles.toolSmallLabel} numberOfLines={1}>{tool.label}</Text>
                 </GlowCard>
@@ -204,7 +197,4 @@ const styles = StyleSheet.create({
   tool: { flexBasis: '47%', flexGrow: 1, minWidth: 140 },
   toolSmall: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 },
   toolSmallLabel: { flex: 1, fontSize: 14, fontWeight: '700', color: colors.white },
-  toolIcon: { width: 50, height: 50, borderRadius: 16, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  toolLabel: { fontFamily: display.heavy, fontSize: 16, color: colors.white, marginTop: 12 },
-  toolDetail: { fontSize: 12.5, lineHeight: 17, color: 'rgba(255,255,255,0.5)', marginTop: 3 },
 });

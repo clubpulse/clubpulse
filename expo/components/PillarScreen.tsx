@@ -1,10 +1,9 @@
-// One pillar's page, opened from the footer. A header in the pillar's own colours, its one or two
-// most important tiles large at the top, and everything else as smaller tiles underneath.
+// One pillar's page, opened from the footer. The same layout as the role dashboards: a header in
+// the page's own colour, four tiles, one large tile beneath them, then smaller tiles.
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useRoles } from '../hooks/useRoles';
 import { pillarByKey, pillarTiles, type PillarKey } from '../lib/pillars';
 import { DEALS_ENABLED, STORE_ENABLED } from '../constants/features';
@@ -16,7 +15,7 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
   const router = useRouter();
   const { active, isAdmin, juniors, approvalQueue } = useRoles();
   // Junior accounts are held back by each screen and by the server; no pillar tile is adult-only
-  const { lead, rest } = pillarTiles(key, { roles: active, junior: false, switches: { store: STORE_ENABLED, deals: DEALS_ENABLED, cards: false } });
+  const { top, big, rest } = pillarTiles(key, { roles: active, junior: false, switches: { store: STORE_ENABLED, deals: DEALS_ENABLED, cards: false } });
 
   const waiting: Record<string, number> = {
     club: isAdmin ? approvalQueue.length : 0,
@@ -35,22 +34,38 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
           <Text style={styles.tagline}>{pillar.tagline}</Text>
         </Hero>
 
-        {/* The most important tiles, in the pillar's colours */}
-        {lead.map((tile, i) => {
-          const tint = i === 0 ? pillar.from : pillar.to;
-          return (
-            <Pressable key={tile.key} onPress={() => open(tile.route)} accessibilityRole="button" accessibilityLabel={`${tile.label}. ${tile.detail}`}
-              style={({ pressed }) => [styles.lead, { backgroundColor: `${tint}26`, borderColor: `${tint}88` }, pressed && { opacity: 0.8 }]}>
-              <View style={[styles.leadIcon, { backgroundColor: tint }]}><Text style={{ fontSize: 28 }}>{tile.icon}</Text></View>
+        {/* Four tiles, the same place every page keeps its four */}
+        {top.length > 0 && (
+          <View style={styles.grid}>
+            {top.map((tile, i) => (
+              <GlowCard key={tile.key} index={i + 1} tint={i % 2 === 0 ? pillar.from : pillar.to} onPress={() => open(tile.route)} label={`${tile.label}. ${tile.detail}`} slot={styles.small}
+                style={{ backgroundColor: `${pillar.from}14`, borderColor: `${pillar.from}55` }}>
+                <View style={styles.smallRow}>
+                  <View style={[styles.topIcon, { backgroundColor: i % 2 === 0 ? pillar.from : pillar.to }]}><Text style={{ fontSize: 20 }}>{tile.icon}</Text></View>
+                  {(waiting[tile.key] ?? 0) > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{waiting[tile.key]}</Text></View>}
+                </View>
+                <Text style={styles.topLabel} numberOfLines={1}>{tile.label}</Text>
+                <Text style={styles.topDetail} numberOfLines={2}>{tile.detail}</Text>
+              </GlowCard>
+            ))}
+          </View>
+        )}
+
+        {/* One large tile beneath them: what this pillar is for */}
+        {big && (
+          <Pressable onPress={() => open(big.route)} accessibilityRole="button" accessibilityLabel={`${big.label}. ${big.detail}`}
+            style={({ pressed }) => [styles.lead, { backgroundColor: `${pillar.from}26`, borderColor: `${pillar.from}88` }, pressed && { opacity: 0.8 }]}>
+            <Text style={[styles.leadEyebrow, { color: pillar.from }]}>START HERE</Text>
+            <View style={styles.leadRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.leadLabel}>{tile.label}</Text>
-                <Text style={styles.leadDetail} numberOfLines={2}>{tile.detail}</Text>
+                <Text style={styles.leadLabel}>{big.label}</Text>
+                <Text style={styles.leadDetail} numberOfLines={2}>{big.detail}</Text>
               </View>
-              {(waiting[tile.key] ?? 0) > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{waiting[tile.key]}</Text></View>}
-              <Ionicons name="arrow-forward" size={20} color={tint} />
-            </Pressable>
-          );
-        })}
+              {(waiting[big.key] ?? 0) > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{waiting[big.key]}</Text></View>}
+              <View style={[styles.leadIcon, { backgroundColor: pillar.from }]}><Text style={{ fontSize: 28 }}>{big.icon}</Text></View>
+            </View>
+          </Pressable>
+        )}
 
         {rest.length > 0 && (
           <>
@@ -70,7 +85,7 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
           </>
         )}
 
-        {lead.length === 0 && rest.length === 0 && !pillar.soon && (
+        {top.length === 0 && !big && rest.length === 0 && !pillar.soon && (
           <Text style={fonts.small}>Nothing here for your role yet.</Text>
         )}
 
@@ -92,9 +107,14 @@ const styles = StyleSheet.create({
   title: { flex: 1, fontFamily: display.heavy, fontSize: 28, color: colors.white, letterSpacing: -0.6, lineHeight: 36 },
   heroIcon: { fontSize: 40, transform: [{ rotate: '-6deg' }] },
   tagline: { fontSize: 15, lineHeight: 21, color: 'rgba(255,255,255,0.74)', marginTop: 8 },
-  lead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.xl, borderWidth: 1, padding: spacing.lg, minHeight: 96 },
+  lead: { borderRadius: radius.xl, borderWidth: 1, padding: spacing.lg },
+  leadEyebrow: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2 },
+  leadRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: 8 },
+  topIcon: { width: 40, height: 40, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  topLabel: { fontSize: 15, fontWeight: '700', color: colors.white, marginTop: 10 },
+  topDetail: { fontSize: 12.5, lineHeight: 17, color: 'rgba(255,255,255,0.6)', marginTop: 3 },
   leadIcon: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  leadLabel: { fontFamily: display.heavy, fontSize: 19, color: colors.white, letterSpacing: -0.3 },
+  leadLabel: { fontFamily: display.heavy, fontSize: 23, color: colors.white, letterSpacing: -0.3 },
   leadDetail: { fontSize: 13.5, lineHeight: 18, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
   section: { fontFamily: display.heavy, fontSize: 17, color: colors.white, letterSpacing: -0.2, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
