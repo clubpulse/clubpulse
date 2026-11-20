@@ -25,10 +25,10 @@ export type RolePage = {
 };
 
 export const ROLE_PAGES: Record<PageRole, RolePage> = {
-  player: { role: 'player', lead: 'as a', href: '/player', title: 'Player', tagline: 'Your game, your form and your next match.', icon: '🏏', from: '#22C55E', to: '#60A5FA' },
-  coach: { role: 'coach', lead: 'as a', href: '/coach', title: 'Coach', tagline: 'Your sessions, your players and your qualifications.', icon: '🎓', from: '#F97316', to: '#EFC84A' },
-  parent: { role: 'parent', lead: 'as a', href: '/parent', title: 'Parent', tagline: 'Your children, their consents and what the club needs from you.', icon: '👨‍👩‍👧', from: '#A78BFA', to: '#F472B6' },
-  admin: { role: 'admin', lead: 'as an', href: '/club-admin', title: 'Admin', tagline: 'Your club at a glance, and what is waiting for you.', icon: '🛡️', from: '#F87171', to: '#F97316' },
+  player: { role: 'player', lead: 'as a', href: '/player', title: 'Player', tagline: 'Your game, your form and your next match.', icon: '🏏', from: '#22C55E', to: '#86EFAC' },
+  coach: { role: 'coach', lead: 'as a', href: '/coach', title: 'Coach', tagline: 'Your sessions, your players and your qualifications.', icon: '🎓', from: '#F97316', to: '#FDBA74' },
+  parent: { role: 'parent', lead: 'as a', href: '/parent', title: 'Parent', tagline: 'Your children, their consents and what the club needs from you.', icon: '👨‍👩‍👧', from: '#A78BFA', to: '#C4B5FD' },
+  admin: { role: 'admin', lead: 'as an', href: '/club-admin', title: 'Admin', tagline: 'Your club at a glance, and what is waiting for you.', icon: '🛡️', from: '#F87171', to: '#FCA5A5' },
   volunteer: { role: 'volunteer', lead: 'your', href: '/volunteer', title: 'Volunteering', tagline: 'Shifts at your club and the difference you make.', icon: '🙌', from: '#38BDF8', to: '#34D399' },
 };
 

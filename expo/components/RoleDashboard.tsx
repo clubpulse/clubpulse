@@ -154,8 +154,9 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
             <Text style={styles.section} accessibilityRole="header">Your {page.title.toLowerCase()} tools</Text>
             <View style={styles.grid}>
               {page.tools.map((tool, i) => i < 2 ? (
-                <GlowCard key={tool.label} index={7 + i} tint={tool.tint} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={{ backgroundColor: `${tool.tint}1F`, borderColor: `${tool.tint}77` }}>
-                  <View style={[styles.toolIcon, { backgroundColor: tool.tint, borderColor: tool.tint }]}><Text style={{ fontSize: 24 }}>{tool.icon}</Text></View>
+                // The two leading tools wear the page's own colour
+                <GlowCard key={tool.label} index={7 + i} tint={page.from} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={{ backgroundColor: `${page.from}1F`, borderColor: `${page.from}77` }}>
+                  <View style={[styles.toolIcon, { backgroundColor: i === 0 ? page.from : page.to, borderColor: i === 0 ? page.from : page.to }]}><Text style={{ fontSize: 24 }}>{tool.icon}</Text></View>
                   <Text style={styles.toolLabel}>{tool.label}</Text>
                   <Text style={styles.toolDetail} numberOfLines={2}>{tool.detail}</Text>
                 </GlowCard>

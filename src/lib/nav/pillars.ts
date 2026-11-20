@@ -21,25 +21,25 @@ export type Pillar = {
 
 export const PILLARS: Pillar[] = [
   {
-    key: 'technique', href: '/technique', title: 'Technique', icon: '🎯', from: '#F97316', to: '#EFC84A',
+    key: 'technique', href: '/technique', title: 'Technique', icon: '🎯', from: '#FBBF24', to: '#FDE68A',
     tagline: 'Film your batting or bowling and see exactly what to work on.',
     short: 'Video analysis and coaching',
     soon: ['Front-on ball tracking', 'Your own arm baseline for the bowling check'],
   },
   {
-    key: 'community', href: '/community', title: 'Community', icon: '🤝', from: '#60A5FA', to: '#A78BFA',
+    key: 'community', href: '/community', title: 'Community', icon: '🤝', from: '#60A5FA', to: '#93C5FD',
     tagline: 'Your club, your matches and the people you play with.',
     short: 'Your club and the game around you',
     soon: ['A feed for your club, your county and the country', 'Club against club leaderboards', 'Clubs looking for players, and players open to a club'],
   },
   {
-    key: 'wellness', href: '/wellness', title: 'Wellness', icon: '🧡', from: '#34D399', to: '#38BDF8',
+    key: 'wellness', href: '/wellness', title: 'Wellness', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Look after your body and get your head ready to play.',
     short: 'Body and mind, ready to play',
     soon: ['Pre-match routines', 'Focus and breathing exercises', 'Getting through a bad run of form'],
   },
   {
-    key: 'academy', href: '/academy', title: 'Academy', icon: '📚', from: '#A78BFA', to: '#F472B6',
+    key: 'academy', href: '/academy', title: 'Academy', icon: '📚', from: '#2DD4BF', to: '#5EEAD4',
     tagline: 'Learn the game: its Laws, its tactics and its skills.',
     short: 'Learn the Laws, tactics and skills',
     soon: ['Courses with a certificate when you finish', 'Preparing for umpiring and coaching awards'],

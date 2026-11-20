@@ -28,7 +28,7 @@ const analyse: Target = { web: '/analyse', title: 'Analyse', camera: true };
 
 export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
   player: {
-    role: 'player', title: 'Player', lead: 'as a', icon: '🏏', from: '#22C55E', to: '#60A5FA',
+    role: 'player', title: 'Player', lead: 'as a', icon: '🏏', from: '#22C55E', to: '#86EFAC',
     tagline: 'Your game, your form and your next match.',
     action: { label: 'Analyse my technique', to: analyse },
     tools: [
@@ -41,7 +41,7 @@ export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
     ],
   },
   coach: {
-    role: 'coach', title: 'Coach', lead: 'as a', icon: '🎓', from: '#F97316', to: '#EFC84A',
+    role: 'coach', title: 'Coach', lead: 'as a', icon: '🎓', from: '#F97316', to: '#FDBA74',
     tagline: 'Your sessions, your players and your qualifications.',
     action: { label: 'Manage my coaching', to: { web: '/coaching?tab=coach', title: 'Coaching' } },
     tools: [
@@ -53,7 +53,7 @@ export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
     ],
   },
   parent: {
-    role: 'parent', title: 'Parent', lead: 'as a', icon: '👪', from: '#A78BFA', to: '#F472B6',
+    role: 'parent', title: 'Parent', lead: 'as a', icon: '👪', from: '#A78BFA', to: '#C4B5FD',
     tagline: 'Your children, their consents and what the club needs from you.',
     action: { label: 'Manage my children', to: { screen: '/safeguarding' } },
     tools: [
@@ -65,7 +65,7 @@ export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
     ],
   },
   admin: {
-    role: 'admin', title: 'Admin', lead: 'as an', icon: '🛡️', from: '#F87171', to: '#F97316',
+    role: 'admin', title: 'Admin', lead: 'as an', icon: '🛡️', from: '#F87171', to: '#FCA5A5',
     tagline: 'Your club at a glance, and what is waiting for you.',
     action: { label: 'Open my club', to: { screen: '/(tabs)/club' } },
     tools: [
