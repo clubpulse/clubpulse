@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { MagicCard } from '@/components/magic/MagicCard';
 import { NumberTicker } from '@/components/magic/NumberTicker';
+import { RememberRole } from '@/components/roles/RememberRole';
 import type { RolePage, RoleTool } from '@/lib/nav/role-pages';
 import type { RoleData } from '@/lib/roles/data';
 
@@ -24,14 +25,17 @@ type Props = {
   name: string;
   data: RoleData;
   tools: RoleTool[];
+  /** On Home: the pills change the dashboard in place, and there is no way back to show */
+  home?: boolean;
 };
 
-export function RolePageView({ page, pages, name, data, tools }: Props) {
+export function RolePageView({ page, pages, name, data, tools, home = false }: Props) {
   const colours = { '--mg-from': page.from, '--mg-to': page.to } as CSSProperties;
   const next = data.next;
 
   return (
     <div style={{ ...colours, display: 'flex', flexDirection: 'column', gap: '16px', fontFamily: "'Inter', sans-serif" }}>
+      <RememberRole role={page.role} />
       {/* Header */}
       <section className="mg-hero mg-in" style={{ padding: 'clamp(22px, 4vw, 40px)' }}>
         <div className="mg-dots" aria-hidden />
@@ -51,7 +55,7 @@ export function RolePageView({ page, pages, name, data, tools }: Props) {
             <p style={{ margin: 0, fontSize: '16px', lineHeight: 1.5, color: 'rgba(255,255,255,0.72)' }}>{page.tagline}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '22px' }}>
               <Link href={data.action.href} className="mg-btn">{data.action.label} <span aria-hidden>→</span></Link>
-              <Link href="/dashboard" className="mg-pill">Back to Home</Link>
+              {!home && <Link href="/dashboard" className="mg-pill">Back to Home</Link>}
             </div>
           </div>
           <div aria-hidden style={{
@@ -62,7 +66,7 @@ export function RolePageView({ page, pages, name, data, tools }: Props) {
         {pages.length > 1 && (
           <nav aria-label="Your pages" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '26px' }}>
             {pages.map((p) => (
-              <Link key={p.role} href={p.href} className="mg-pill" aria-current={p.role === page.role ? 'page' : undefined}>
+              <Link key={p.role} href={home ? `/dashboard?as=${p.role}` : p.href} className="mg-pill" aria-current={p.role === page.role ? 'page' : undefined}>
                 <span aria-hidden>{p.icon}</span> {p.title}
               </Link>
             ))}
