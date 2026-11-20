@@ -71,3 +71,25 @@ describe('role pages', () => {
     expect(isRolePath('/volunteer')).toBe(false);
   });
 });
+
+describe('homeRole', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { homeRole } = require('@/lib/nav/role-pages');
+  const both = { roles: ['player', 'coach'], admin: false, junior: false };
+
+  it('opens on the first role held when nothing is remembered', () => {
+    expect(homeRole(both, undefined, undefined).role).toBe('player');
+  });
+  it('opens on the role last used', () => {
+    expect(homeRole(both, undefined, 'coach').role).toBe('coach');
+  });
+  it('lets the address choose over what is remembered', () => {
+    expect(homeRole(both, 'player', 'coach').role).toBe('player');
+  });
+  it('ignores a role the person does not hold', () => {
+    expect(homeRole(both, 'admin', 'parent').role).toBe('player');
+  });
+  it('gives nothing to someone with none of the four roles', () => {
+    expect(homeRole({ roles: ['volunteer'], admin: false, junior: false }, undefined, undefined)).toBeNull();
+  });
+});

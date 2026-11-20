@@ -40,6 +40,18 @@ export function rolePagesFor(audience: Audience): RolePage[] {
   return ORDER.filter((r) => holdsRole(audience, r)).map((r) => ROLE_PAGES[r]);
 }
 
+/** The cookie that remembers which role's dashboard Home last showed. */
+export const ROLE_COOKIE = 'cp_role';
+
+/**
+ * The dashboard Home opens with: the one asked for, else the one last used, else the first held.
+ * Null when the person holds none of the four roles (a volunteer only, say).
+ */
+export function homeRole(audience: Audience, asked: string | undefined, remembered: string | undefined): RolePage | null {
+  const pages = rolePagesFor(audience);
+  return pages.find((p) => p.role === asked) ?? pages.find((p) => p.role === remembered) ?? pages[0] ?? null;
+}
+
 /** Whether this person may open a page. Anyone may open Volunteering; a club admin may open all. */
 export function holdsRole(audience: Audience, role: PageRole): boolean {
   if (role === 'volunteer') return true;
