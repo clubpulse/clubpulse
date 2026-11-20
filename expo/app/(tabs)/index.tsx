@@ -56,7 +56,7 @@ export default function HomeScreen() {
   const [rewardsReady, setRewardsReady] = useState(0);
   const [saving, setSaving] = useState(false);
   const [matchError, setMatchError] = useState('');
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>('scores');
   const [chosen, setChosen] = useState<PageRole | null>(null);
 
   // The dashboard Home opens with: the role last used on this phone, or the first one held
@@ -114,11 +114,12 @@ export default function HomeScreen() {
   const pendingJuniors = juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
   const badges: Record<string, number> = { club: isAdmin ? approvalQueue.length : 0, children: pendingJuniors, rewards: rewardsReady };
 
+  // The four pillars are in the footer, so Home's menu keeps only Rewards
   const groups = menuFor({
     roles: active,
     junior: home?.junior ?? false,
     switches: { store: STORE_ENABLED, deals: DEALS_ENABLED, cards: home?.cards.on ?? false },
-  });
+  }).filter((g) => g.key === 'scores');
 
   async function reply(status: 'available' | 'unavailable' | 'unknown') {
     if (!home?.fixture || saving) return;
@@ -194,6 +195,9 @@ export default function HomeScreen() {
           </View>
           <Pressable onPress={() => router.push('/wallet')} style={styles.scoreBadge} accessibilityRole="button" accessibilityLabel={`${num(balance)} Scores. Open wallet`}>
             <Text style={styles.scoreBadgeText}>⭐ {num(balance)}</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)/profile')} style={styles.profileBtn} accessibilityRole="button" accessibilityLabel="Your profile">
+            <Ionicons name="person" size={17} color={colors.white} />
           </Pressable>
         </View>
 
@@ -344,6 +348,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.md },
   greeting: { fontFamily: display.heavy, fontSize: 18, color: colors.white, letterSpacing: -0.3 },
+  profileBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)' },
   scoreBadge: {
     backgroundColor: colors.goldDim as string, borderWidth: 1, borderColor: colors.goldBorder as string,
     borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2,

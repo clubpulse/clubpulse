@@ -2,32 +2,17 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoles } from '../../hooks/useRoles';
 import { Wide, WideWithSwipeBack } from '../../components/Wide';
+import { PILLARS } from '../../lib/pillars';
 import { colors } from '../../constants/theme';
 
-type IconName = React.ComponentProps<typeof Ionicons>['name'];
-
-// Every tab screen. Only five are shown in the bar at a time; the rest stay in the navigator so
-// they can be opened from Home and the menu.
-const TABS: { name: string; title: string; icon: IconName }[] = [
-  { name: 'index',       title: 'Home',     icon: 'home' },
-  { name: 'coaching',    title: 'Coaching', icon: 'videocam' },
-  { name: 'shifts',      title: 'Shifts',   icon: 'calendar' },
-  { name: 'games',       title: 'Games',    icon: 'game-controller' },
-  { name: 'club',        title: 'Club',     icon: 'shield' },
-  { name: 'profile',     title: 'Profile',  icon: 'person' },
-  { name: 'coaches',     title: 'Coaches',  icon: 'people' },
-  { name: 'wallet',      title: 'Wallet',   icon: 'wallet' },
-  { name: 'marketplace', title: 'Market',   icon: 'storefront' },
-  { name: 'companion',   title: 'Coach AI', icon: 'chatbubbles' },
-];
+// The footer: Home, then the four pillars, each in its own colour. Every other tab screen stays
+// in the navigator so it can be opened from Home and from the pillars.
+const HIDDEN = ['coaching', 'shifts', 'games', 'club', 'profile', 'coaches', 'wallet', 'marketplace', 'companion'];
 
 export default function TabsLayout() {
-  const { active, isAdmin, isCoach, isPlayer } = useRoles();
-  // Players, coaches and admins get Coaching in the bar. Someone who is only a parent or a
-  // volunteer gets Shifts there, which is what they come for. Anyone with no role yet is
-  // treated as a player.
-  const plays = isPlayer || isCoach || isAdmin || active.length === 0;
-  const shown = new Set(['index', plays ? 'coaching' : 'shifts', 'games', 'club', 'profile']);
+  const { isAdmin, juniors, approvalQueue } = useRoles();
+  // What is waiting for this person in Community: members to approve, children's consents
+  const waiting = (isAdmin ? approvalQueue.length : 0) + juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
 
   return (
     <Tabs
@@ -41,21 +26,25 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.brandSky,
         tabBarInactiveTintColor: colors.textMuted as string,
+        tabBarLabelStyle: { fontSize: 10.5, fontWeight: '600' },
         tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border as string },
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
-      {TABS.map((tab) => (
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} /> }} />
+      {PILLARS.map((pillar) => (
         <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
+          key={pillar.tab}
+          name={pillar.tab}
           options={{
-            title: tab.title,
-            tabBarIcon: ({ color, size }) => <Ionicons name={tab.icon} color={color} size={size} />,
-            ...(shown.has(tab.name) ? {} : { href: null }),
+            title: pillar.title,
+            tabBarActiveTintColor: pillar.from,
+            tabBarIcon: ({ color, size }) => <Ionicons name={pillar.icon} color={color} size={size} />,
+            ...(pillar.key === 'community' && waiting > 0 ? { tabBarBadge: waiting } : {}),
           }}
         />
       ))}
+      {HIDDEN.map((name) => <Tabs.Screen key={name} name={name} options={{ href: null }} />)}
     </Tabs>
   );
 }
