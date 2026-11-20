@@ -7,6 +7,9 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 // Imported for its side effect too: it defines the background task, which must exist as soon
 // as the JS loads because the OS can start the app headless just to run it.
 import { registerStepsBackgroundSync } from '../lib/backgroundSync';
+import { useFonts } from 'expo-font';
+import { Syne_700Bold } from '@expo-google-fonts/syne/700Bold';
+import { Syne_800ExtraBold } from '@expo-google-fonts/syne/800ExtraBold';
 import { AppHeader } from '../components/AppHeader';
 import { Wide } from '../components/Wide';
 import { colors } from '../constants/theme';
@@ -90,6 +93,8 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  // Headings use the same face as the website. The app does not wait for it to load.
+  useFonts({ Syne_700Bold, Syne_800ExtraBold });
   return (
     <AuthProvider>
       <StatusBar style="light" />

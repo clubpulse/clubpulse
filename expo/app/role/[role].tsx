@@ -9,7 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../lib/api';
 import { ROLE_PAGES, isPageRole, type PageRole, type Target } from '../../lib/rolePages';
 import { CountUp, GlowCard, Hero } from '../../components/Magic';
-import { colors, fonts, radius, spacing } from '../../constants/theme';
+import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 type Stat = { label: string; hint: string; value?: number; text?: string; suffix?: string };
 type RolePageData = {
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   heroTop: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   eyebrow: { fontSize: 11, fontWeight: '700', letterSpacing: 1.4, color: 'rgba(255,255,255,0.72)' },
-  title: { fontSize: 46, fontWeight: '800', color: colors.white, letterSpacing: -1.2, marginTop: 6, lineHeight: 50 },
+  title: { fontFamily: display.heavy, fontSize: 44, color: colors.white, letterSpacing: -1, marginTop: 6, lineHeight: 50 },
   heroIcon: { fontSize: 52, transform: [{ rotate: '-6deg' }] },
   tagline: { fontSize: 15, lineHeight: 21, color: 'rgba(255,255,255,0.74)', marginTop: 8 },
   action: { alignSelf: 'flex-start', borderRadius: radius.pill, paddingHorizontal: 18, paddingVertical: 12, marginTop: spacing.lg },
@@ -181,16 +181,16 @@ const styles = StyleSheet.create({
   stat: { flexBasis: '47%', flexGrow: 1, minWidth: 140 },
   statLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
   statRow: { flexDirection: 'row', alignItems: 'baseline', marginTop: 8, marginBottom: 6 },
-  statValue: { fontSize: 36, fontWeight: '800', color: colors.white, letterSpacing: -1 },
+  statValue: { fontFamily: display.heavy, fontSize: 32, color: colors.white, letterSpacing: -0.8 },
   statSuffix: { fontSize: 15, fontWeight: '700', color: 'rgba(255,255,255,0.45)', marginLeft: 4 },
   statHint: { fontSize: 12.5, lineHeight: 17, color: 'rgba(255,255,255,0.5)' },
   cardEyebrow: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2 },
-  nextTitle: { fontSize: 24, fontWeight: '800', color: colors.white, letterSpacing: -0.5, marginTop: 8 },
+  nextTitle: { fontFamily: display.heavy, fontSize: 23, color: colors.white, letterSpacing: -0.4, marginTop: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: 8, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   rowTitle: { fontSize: 14, fontWeight: '600', color: colors.white },
   rowDetail: { fontSize: 12.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   badge: { fontSize: 12, fontWeight: '700', borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
-  section: { fontSize: 19, fontWeight: '800', color: colors.white, letterSpacing: -0.3, marginTop: spacing.sm },
+  section: { fontFamily: display.heavy, fontSize: 18, color: colors.white, letterSpacing: -0.2, marginTop: spacing.sm },
   tool: { flexBasis: '47%', flexGrow: 1, minWidth: 140 },
   toolIcon: { width: 42, height: 42, borderRadius: 13, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   toolLabel: { fontSize: 15, fontWeight: '700', color: colors.white, marginTop: 12 },
