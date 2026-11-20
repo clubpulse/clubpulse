@@ -14,6 +14,7 @@ import { totalBalance } from '@/lib/types/scores';
 import { formatScores } from '@/lib/utils/format';
 import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
 import { getAudience } from '@/lib/nav/audience';
+import { rolePagesFor } from '@/lib/nav/role-pages';
 import type { CoachingInsight } from '@/lib/types/coaching-insights';
 
 const SYNE = "'Syne', sans-serif";
@@ -107,6 +108,15 @@ export default async function DashboardPage() {
       <h1 style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '26px', color: '#fff', margin: '4px 0 6px', letterSpacing: '-0.3px' }}>
         {greeting}, {name}
       </h1>
+
+      {/* The way in to each role's own page */}
+      <nav aria-label="Your pages" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '-6px' }}>
+        {rolePagesFor(audience).map((page) => (
+          <Link key={page.role} href={page.href} className="mg-pill">
+            <span aria-hidden>{page.icon}</span> {page.title} page
+          </Link>
+        ))}
+      </nav>
 
       <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} canPlay={plays} />
 

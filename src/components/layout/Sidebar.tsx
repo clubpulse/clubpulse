@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { audienceLabel, menuFor, type Audience, type NavLink } from '@/lib/nav/menu';
+import { rolePagesFor } from '@/lib/nav/role-pages';
 
 // Top-level links, also used for the short list on phones
 export const NAV_LINKS: NavLink[] = [
@@ -173,6 +174,10 @@ export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { aud
 
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="space-y-1">
           <NavItem link={HOME} pathname={pathname} folded={folded} />
+          {/* One page for each role this person holds */}
+          {rolePagesFor(audience).map((page) => (
+            <NavItem key={page.role} link={{ href: page.href, label: page.title, icon: page.icon }} pathname={pathname} folded={folded} />
+          ))}
           {groups.map((group) => {
             const holdsPage = group.key === current;
             const isOpen = !folded && openKey === group.key;

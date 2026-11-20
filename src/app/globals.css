@@ -56,3 +56,67 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
+
+/* ── Magic: animated surfaces used by the role pages ───────────────────────── */
+@property --mg-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+@keyframes mg-spin { to { --mg-angle: 360deg; } }
+@keyframes mg-drift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(4%, -6%, 0) scale(1.12); } }
+@keyframes mg-shine { to { background-position: 200% center; } }
+@keyframes mg-in { from { opacity: 0; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes mg-meteor { 0% { transform: rotate(215deg) translateX(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: rotate(215deg) translateX(-520px); opacity: 0; } }
+@keyframes mg-sweep { 0% { transform: translateX(-120%) skewX(-18deg); } 60%, 100% { transform: translateX(320%) skewX(-18deg); } }
+@keyframes mg-pulse { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.35); } }
+
+/* Hero: slow colour clouds behind a dotted grid */
+.mg-hero { position: relative; overflow: hidden; isolation: isolate; border-radius: 28px; background: #060d24; border: 1px solid rgba(255,255,255,.08); }
+.mg-hero::before, .mg-hero::after { content: ''; position: absolute; z-index: -2; width: 60%; aspect-ratio: 1; border-radius: 50%; filter: blur(70px); opacity: .55; animation: mg-drift 14s ease-in-out infinite; }
+.mg-hero::before { background: var(--mg-from); top: -45%; left: -12%; }
+.mg-hero::after { background: var(--mg-to); bottom: -55%; right: -10%; animation-delay: -7s; opacity: .42; }
+.mg-dots { position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1px); background-size: 22px 22px; mask-image: radial-gradient(ellipse 75% 85% at 30% 20%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 75% 85% at 30% 20%, #000 20%, transparent 75%); }
+
+/* A light that travels round the border */
+.mg-beam { position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--mg-angle), transparent 0 72%, var(--mg-from) 84%, var(--mg-to) 94%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: mg-spin 7s linear infinite; }
+
+/* Card with a glow that follows the pointer */
+.mg-card { position: relative; display: block; overflow: hidden; border-radius: 22px; background: rgba(9,18,46,.72); border: 1px solid rgba(255,255,255,.08); color: inherit; text-decoration: none;
+  backdrop-filter: blur(10px); transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s, box-shadow .25s; }
+.mg-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--mg-tint, #60A5FA) 26%, transparent), transparent 62%); }
+.mg-card:hover::before, .mg-card:focus-visible::before { opacity: 1; }
+a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-color: color-mix(in srgb, var(--mg-tint, #60A5FA) 55%, transparent); box-shadow: 0 18px 44px -18px color-mix(in srgb, var(--mg-tint, #60A5FA) 60%, transparent); outline: none; }
+.mg-card > * { position: relative; }
+
+/* Headline with colour moving through it */
+.mg-shine { background: linear-gradient(100deg, #fff 0%, var(--mg-from) 28%, var(--mg-to) 52%, #fff 78%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: mg-shine 6s linear infinite; }
+
+/* Button with a streak of light crossing it */
+.mg-btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font-weight: 700; font-size: 14px; color: #04091A; text-decoration: none;
+  background: linear-gradient(100deg, var(--mg-from), var(--mg-to)); box-shadow: 0 10px 30px -10px var(--mg-from); transition: transform .2s, box-shadow .2s; }
+.mg-btn::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation: mg-sweep 3.6s ease-in-out infinite; }
+.mg-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 16px 36px -10px var(--mg-from); }
+.mg-pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; text-decoration: none; color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(8px); transition: background .2s, color .2s, border-color .2s; }
+.mg-pill:hover { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.25); }
+.mg-pill[aria-current='page'] { background: rgba(255,255,255,.16); color: #fff; border-color: rgba(255,255,255,.35); }
+
+.mg-in { opacity: 0; animation: mg-in .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--mg-i, 0) * 70ms); }
+.mg-meteor { position: absolute; top: var(--t); left: var(--l); width: 2px; height: 2px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,.1); animation: mg-meteor var(--s) linear infinite; animation-delay: var(--d); opacity: 0; }
+.mg-meteor::before { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 70px; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,.7), transparent); }
+.mg-live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mg-from); box-shadow: 0 0 12px var(--mg-from); animation: mg-pulse 1.8s ease-in-out infinite; }
+.mg-bento { display: grid; gap: 14px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.mg-bento > * { grid-column: span 12; }
+.mg-bento.mg-two > * { grid-column: span 6; }
+.mg-bento.mg-two > .mg-wide { grid-column: span 12; }
+@media (min-width: 640px) { .mg-bento > * { grid-column: span 6; } }
+@media (min-width: 640px) { .mg-bento.mg-two > .mg-wide { grid-column: span 6; } }
+@media (min-width: 1024px) { .mg-bento > * { grid-column: span 3; } .mg-bento > .mg-wide { grid-column: span 6; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-hero::before, .mg-hero::after, .mg-beam, .mg-shine, .mg-btn::after, .mg-meteor, .mg-live { animation: none; }
+  .mg-in { animation: none; opacity: 1; }
+  .mg-meteor { display: none; }
+}
