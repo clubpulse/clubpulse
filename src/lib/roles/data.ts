@@ -9,9 +9,9 @@ import { getPrimaryClubId } from '@/lib/scores/context';
 import { getPlaySummary } from '@/lib/actions/scores-engine';
 import { getMyFixtures } from '@/lib/actions/availability';
 import { getMyCoachingRequests } from '@/lib/actions/coaching';
-import { listMemberShifts } from '@/lib/mobile/club-data';
+import { getAdminClubIds, listApprovals, listMemberShifts } from '@/lib/mobile/club-data';
 import { totalBalance } from '@/lib/types/scores';
-import type { Role } from '@/lib/nav/menu';
+import type { PageRole } from '@/lib/nav/role-pages';
 
 export type RoleStat = { label: string; hint: string; value?: number; text?: string; suffix?: string };
 export type RoleNext = { eyebrow: string; title: string; detail: string; href: string; cta: string } | null;
@@ -201,8 +201,51 @@ async function volunteer(userId: string): Promise<RoleData> {
   };
 }
 
-const LOADERS: Record<Role, (userId: string) => Promise<RoleData>> = { player, coach, parent, volunteer };
+const APPROVAL: Record<string, string> = { link_junior: 'Parent and child link', coach_verification: 'Coach to approve', join_club: 'Wants to join' };
 
-export function getRoleData(role: Role, userId: string): Promise<RoleData> {
+async function admin(userId: string): Promise<RoleData> {
+  const db = createAdminClient();
+  const clubIds = await getAdminClubIds(userId);
+  const primary = clubIds[0] ?? (await getPrimaryClubId(userId));
+  const [members, approvals, fixtures, open] = await Promise.all([
+    clubIds.length
+      ? db.from('club_members').select('user_id', { count: 'exact', head: true }).in('club_id', clubIds).eq('is_active', true)
+      : Promise.resolve({ count: 0 }),
+    listApprovals(userId),
+    primary ? getMyFixtures(primary) : Promise.resolve([]),
+    listMemberShifts(userId, 'available'),
+  ]);
+  const unfilled = open.filter((s) => s.spots_filled < s.spots_total);
+  const fixture = fixtures[0] ?? null;
+  const oldest = [...approvals].sort((a, b) => a.created_at.localeCompare(b.created_at))[0] ?? null;
+
+  return {
+    stats: [
+      { label: 'Members', value: members.count ?? 0, hint: 'Active at your club' },
+      { label: 'Waiting for you', value: approvals.length, hint: approvals.length ? 'Requests to approve or decline' : 'Nothing to approve' },
+      { label: 'Fixtures ahead', value: fixtures.length, hint: 'Matches in the diary' },
+      { label: 'Shifts to fill', value: unfilled.length, hint: unfilled.length ? 'Still need a volunteer' : 'All covered for now' },
+    ],
+    next: oldest
+      ? { eyebrow: `Waiting since ${dayLabel(oldest.created_at)}`, title: oldest.requester_name, detail: `${APPROVAL[oldest.type] ?? 'Request'}${oldest.details ? ` · ${oldest.details}` : ''}`, href: '/admin/club/members', cta: 'Review requests' }
+      : fixture
+        ? { eyebrow: `Next match · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/admin/club/availability', cta: 'See who is available' }
+        : null,
+    nothingNext: { title: 'Nothing is waiting for you', detail: 'Requests from members and the next fixture appear here.', href: '/admin/club', cta: 'Open club admin' },
+    listTitle: 'Requests to review',
+    rows: approvals.slice(0, 5).map((a) => ({
+      title: a.requester_name,
+      detail: `${APPROVAL[a.type] ?? 'Request'} · ${dayLabel(a.created_at)}`,
+      badge: 'Pending',
+      href: '/admin/club/members',
+    })),
+    empty: 'No requests are waiting. New members, coaches and parent links appear here for you to approve.',
+    action: { label: 'Open club admin', href: '/admin/club' },
+  };
+}
+
+const LOADERS: Record<PageRole, (userId: string) => Promise<RoleData>> = { player, coach, parent, admin, volunteer };
+
+export function getRoleData(role: PageRole, userId: string): Promise<RoleData> {
   return LOADERS[role](userId);
 }

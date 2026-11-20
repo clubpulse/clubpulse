@@ -43,7 +43,7 @@ export function RolePageView({ page, pages, name, data, tools }: Props) {
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '18px' }}>
           <div style={{ minWidth: 0, flex: '1 1 320px', maxWidth: '720px' }}>
             <p style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: 0, fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)' }}>
-              <span className="mg-live" aria-hidden /> {name}, as a
+              <span className="mg-live" aria-hidden /> {name}, {page.lead}
             </p>
             <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(34px, 6.5vw, 68px)', lineHeight: 1, overflowWrap: 'anywhere', letterSpacing: '-0.03em', margin: '10px 0 12px' }}>
               {page.title}
@@ -153,7 +153,9 @@ export function RoleNotHeld({ page }: { page: RolePage }) {
       <div aria-hidden style={{ fontSize: '64px', lineHeight: 1 }}>{page.icon}</div>
       <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(34px, 6vw, 56px)', letterSpacing: '-0.03em', margin: '14px 0 10px' }}>{page.title}</h1>
       <p style={{ margin: '0 auto', maxWidth: '460px', fontSize: '15px', lineHeight: 1.6, color: 'rgba(255,255,255,0.7)' }}>
-        This page is for members with the {page.title.toLowerCase()} role. You can ask to add it from your profile, and your club will confirm it.
+        {page.role === 'admin'
+          ? 'This page is for the people who run a club on ClubPulse. If that should be you, ask your club to make you an admin.'
+          : `This page is for members with the ${page.title.toLowerCase()} role. You can ask to add it from your profile, and your club will confirm it.`}
       </p>
       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '22px' }}>
         <Link href="/profile" className="mg-btn">Go to my profile <span aria-hidden>→</span></Link>
