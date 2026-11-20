@@ -109,10 +109,8 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
 .mg-live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mg-from); box-shadow: 0 0 12px var(--mg-from); animation: mg-pulse 1.8s ease-in-out infinite; }
 .mg-bento { display: grid; gap: 14px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
 .mg-bento > * { grid-column: span 12; }
-.mg-bento.mg-two > * { grid-column: span 6; }
-.mg-bento.mg-two > .mg-wide { grid-column: span 12; }
+@media (max-width: 639px) { .mg-bento.mg-two > * { grid-column: span 6; } .mg-bento.mg-two > .mg-wide { grid-column: span 12; } }
 @media (min-width: 640px) { .mg-bento > * { grid-column: span 6; } }
-@media (min-width: 640px) { .mg-bento.mg-two > .mg-wide { grid-column: span 6; } }
 @media (min-width: 1024px) { .mg-bento > * { grid-column: span 3; } .mg-bento > .mg-wide { grid-column: span 6; } }
 
 @media (prefers-reduced-motion: reduce) {

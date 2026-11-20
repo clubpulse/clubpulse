@@ -1,4 +1,6 @@
 // Pure. The signed-in menu: every page, the group it sits in, and who it is for.
+// The groups follow the four pillars of the product (Technique, Community, Wellness, Academy),
+// with Rewards running alongside them: Scores are earned in every pillar.
 // Hiding a link is for tidiness only. Each page still checks for itself who may open it.
 
 export type Role = 'player' | 'coach' | 'parent' | 'volunteer';
@@ -20,6 +22,8 @@ export type NavLink = {
   for?: Role[];
   /** Hidden from junior accounts. */
   adult?: boolean;
+  /** A sub-heading inside a long group. Links with the same one sit together. */
+  section?: string;
 };
 
 export type NavGroup = { key: string; label: string; icon: string; tint: string; adminOnly?: boolean; links: NavLink[] };
@@ -28,85 +32,85 @@ const PLAYING: Role[] = ['player', 'coach'];
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    key: 'match',
-    label: 'Match day',
-    icon: '🏏',
-    tint: '#22C55E',
-    links: [
-      { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING },
-      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
-      { href: '/scorecard', label: 'Scorecard', icon: '📝' },
-      { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
-      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
-      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️', for: PLAYING },
-      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING },
-    ],
-  },
-  {
-    key: 'play',
-    label: 'Play',
-    icon: '🎮',
-    tint: '#A78BFA',
-    links: [
-      { href: '/games', label: 'Games', icon: '🎲' },
-      { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️', adult: true },
-      { href: '/auction', label: 'The Auction', icon: '🔨' },
-      { href: '/raffle', label: 'Raffle', icon: '🎫', adult: true },
-      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀' },
-      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅' },
-      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦' },
-    ],
-  },
-  {
-    key: 'game',
-    label: 'My game',
+    key: 'technique',
+    label: 'Technique',
     icon: '🎯',
     tint: '#F97316',
     links: [
       { href: '/analyse', label: 'Analyse', icon: '🎥', for: PLAYING },
-      { href: '/companion', label: 'Coach AI', icon: '🧠' },
       { href: '/highlights', label: 'Highlights', icon: '🎬', for: PLAYING },
       { href: '/development', label: 'Development', icon: '📈', for: ['player'] },
       { href: '/player-report', label: 'Player Report', icon: '📊', for: PLAYING },
       { href: '/log-performance', label: 'Log Game', icon: '📋', for: ['player'] },
       { href: '/coaching', label: 'Coaching', icon: '🎓', for: ['player', 'coach', 'parent'] },
+      { href: '/companion', label: 'Coach AI', icon: '🧠' },
       { href: '/mentor-match', label: 'Mentor Match', icon: '🤝', for: PLAYING },
-      { href: '/qualifications', label: 'Qualifications', icon: '🎖️', for: ['player', 'coach', 'volunteer'] },
-      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING },
-      { href: '/pulse-score', label: 'Pulse Score', icon: '💓', for: ['player'] },
+      { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️', for: PLAYING },
+    ],
+  },
+  {
+    key: 'community',
+    label: 'Community',
+    icon: '🤝',
+    tint: '#60A5FA',
+    links: [
+      { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING, section: 'Match day' },
+      { href: '/match-day', label: 'Match Day', icon: '🏟️', section: 'Match day' },
+      { href: '/scorecard', label: 'Scorecard', icon: '📝', section: 'Match day' },
+      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡', section: 'Match day' },
+      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING, section: 'Match day' },
+      { href: '/noticeboard', label: 'Noticeboard', icon: '📌', section: 'My club' },
+      { href: '/dressing-room', label: 'Dressing Room', icon: '👕', for: PLAYING, section: 'My club' },
+      { href: '/club-bible', label: 'Club Bible', icon: '📖', section: 'My club' },
+      { href: '/documents', label: 'Documents', icon: '🗂️', section: 'My club' },
+      { href: '/finance', label: 'Finance', icon: '💷', for: ['player', 'parent'], adult: true, section: 'My club' },
+      { href: '/club-alumni', label: 'Alumni', icon: '🎓', section: 'My club' },
+      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING, section: 'People' },
+      { href: '/transfer-window', label: 'Transfer Window', icon: '🔄', for: PLAYING, adult: true, section: 'People' },
+      { href: '/leaderboard', label: 'Leaderboard', icon: '🏅', section: 'People' },
+      { href: '/auction', label: 'The Auction', icon: '🔨', section: 'Together' },
+      { href: '/curse-the-pitch', label: 'Curse the Pitch', icon: '🌀', section: 'Together' },
+      { href: '/hall-of-infamy', label: 'Hall of Infamy', icon: '🤦', section: 'Together' },
+    ],
+  },
+  {
+    key: 'wellness',
+    label: 'Wellness',
+    icon: '🧡',
+    tint: '#34D399',
+    links: [
       { href: '/wellbeing', label: 'Wellbeing', icon: '🧡', for: ['player'] },
+      { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
+      { href: '/pulse-score', label: 'Pulse Score', icon: '💓', for: ['player'] },
       { href: '/injury-intel', label: 'Injury Intel', icon: '🩹', for: PLAYING },
     ],
   },
   {
+    key: 'academy',
+    label: 'Academy',
+    icon: '📚',
+    tint: '#A78BFA',
+    links: [
+      { href: '/games', label: 'Games', icon: '🎲' },
+      { href: '/qualifications', label: 'Qualifications', icon: '🎖️', for: ['player', 'coach', 'volunteer'] },
+    ],
+  },
+  {
     key: 'scores',
-    label: 'Scores',
+    label: 'Rewards',
     icon: '⭐',
     tint: '#EFC84A',
     links: [
       { href: '/play', label: 'Earn Scores', icon: '💰' },
       { href: '/marketplace', label: 'Marketplace', icon: '🛍️' },
       { href: '/kit-discounts', label: 'Kit Discounts', icon: '🧢' },
+      { href: '/scratch-cards', label: 'Scratch Cards', icon: '🎟️', adult: true },
+      { href: '/raffle', label: 'Raffle', icon: '🎫', adult: true },
       { href: '/fee-offset', label: 'Fee Offset', icon: '🏷️', for: ['player', 'parent'], adult: true },
       { href: '/travel', label: 'Travel', icon: '🗺️', adult: true },
       { href: '/sponsor-a-kid', label: 'Sponsor a Kid', icon: '💝', adult: true },
       { href: '/community-pot', label: 'Community Pot', icon: '🪙', adult: true },
       { href: '/charity', label: 'Charity', icon: '🤲', adult: true },
-    ],
-  },
-  {
-    key: 'club',
-    label: 'My club',
-    icon: '🛡️',
-    tint: '#60A5FA',
-    links: [
-      { href: '/noticeboard', label: 'Noticeboard', icon: '📌' },
-      { href: '/dressing-room', label: 'Dressing Room', icon: '👕', for: PLAYING },
-      { href: '/club-bible', label: 'Club Bible', icon: '📖' },
-      { href: '/documents', label: 'Documents', icon: '🗂️' },
-      { href: '/finance', label: 'Finance', icon: '💷', for: ['player', 'parent'], adult: true },
-      { href: '/transfer-window', label: 'Transfer Window', icon: '🔄', for: PLAYING, adult: true },
-      { href: '/club-alumni', label: 'Alumni', icon: '🎓' },
     ],
   },
   {
@@ -124,7 +128,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export const SCHOOL_LINK: NavLink = { href: '/school', label: 'School', icon: '🏫' };
+export const SCHOOL_LINK: NavLink = { href: '/school', label: 'School', icon: '🏫', section: 'My club' };
 
 const ROLES: Role[] = ['player', 'coach', 'parent', 'volunteer'];
 
@@ -154,7 +158,12 @@ export function menuFor(audience: Audience, options: { showSchool?: boolean } = 
   return NAV_GROUPS
     .filter((g) => !g.adminOnly || audience.admin)
     .map((g) => {
-      const links = g.key === 'club' && options.showSchool ? [...g.links, SCHOOL_LINK] : g.links;
+      let links = g.links;
+      if (g.key === 'community' && options.showSchool) {
+        // School sits at the end of its own section, not at the end of the group
+        const after = links.map((l) => l.section).lastIndexOf(SCHOOL_LINK.section) + 1;
+        links = [...links.slice(0, after), SCHOOL_LINK, ...links.slice(after)];
+      }
       return { ...g, links: links.filter((l) => canSee(l, audience)) };
     })
     .filter((g) => g.links.length > 0);
