@@ -41,11 +41,11 @@ export function RolePageView({ page, pages, name, data, tools }: Props) {
         <div className="mg-beam" aria-hidden />
 
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '18px' }}>
-          <div style={{ minWidth: 0, maxWidth: '640px' }}>
+          <div style={{ minWidth: 0, flex: '1 1 320px', maxWidth: '720px' }}>
             <p style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: 0, fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)' }}>
               <span className="mg-live" aria-hidden /> {name}, as a
             </p>
-            <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(44px, 8vw, 84px)', lineHeight: 0.95, letterSpacing: '-0.03em', margin: '10px 0 12px' }}>
+            <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(34px, 6.5vw, 68px)', lineHeight: 1, overflowWrap: 'anywhere', letterSpacing: '-0.03em', margin: '10px 0 12px' }}>
               {page.title}
             </h1>
             <p style={{ margin: 0, fontSize: '16px', lineHeight: 1.5, color: 'rgba(255,255,255,0.72)' }}>{page.tagline}</p>

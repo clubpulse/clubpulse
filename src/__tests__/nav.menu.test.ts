@@ -1,4 +1,5 @@
 import { NAV_GROUPS, audienceLabel, buildAudience, menuFor } from '@/lib/nav/menu';
+import { PILLARS, pillarCounts, pillarSections } from '@/lib/nav/pillars';
 
 const hrefs = (a: Parameters<typeof menuFor>[0], o = {}) => menuFor(a, o).flatMap((g) => g.links.map((l) => l.href));
 const aud = (userRoles: string[], extra: Partial<{ memberRoles: string[]; junior: boolean; admin: boolean }> = {}) =>
@@ -71,5 +72,41 @@ describe('menu by role', () => {
     expect(audienceLabel(aud(['player', 'coach']))).toBe('Player · Coach');
     expect(audienceLabel(aud(['parent'], { admin: true }))).toBe('Club admin');
     expect(audienceLabel(aud([], { junior: true }))).toBe('Junior player');
+  });
+
+  it('groups the menu by the four pillars, with rewards alongside', () => {
+    expect(NAV_GROUPS.map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'tools']);
+    expect(PILLARS.map((p) => p.key)).toEqual(['technique', 'community', 'wellness', 'academy']);
+  });
+
+  it('keeps a group\'s sections together', () => {
+    for (const g of NAV_GROUPS) {
+      const seen: string[] = [];
+      for (const l of g.links) {
+        const s = l.section ?? '';
+        if (seen[seen.length - 1] !== s) {
+          // A section name never comes back once another has started
+          expect(seen).not.toContain(s);
+          seen.push(s);
+        }
+      }
+    }
+  });
+
+  it('shows each person their own pages in a pillar', () => {
+    const player = pillarSections('community', aud(['player']));
+    expect(player.map((s) => s.title)).toEqual(['Match day', 'My club', 'People', 'Together']);
+    const parent = pillarSections('community', aud(['parent'])).flatMap((s) => s.links.map((l) => l.href));
+    expect(parent).toContain('/noticeboard');
+    expect(parent).not.toContain('/dressing-room');
+    // A parent has no wellness pages of their own yet
+    expect(pillarSections('wellness', aud(['parent']))).toEqual([]);
+    expect(pillarCounts(aud(['parent'])).wellness).toBe(0);
+    expect(pillarCounts(aud(['player'])).technique).toBeGreaterThan(5);
+  });
+
+  it('puts School in the community pillar', () => {
+    const links = pillarSections('community', aud(['player']), { showSchool: true }).find((s) => s.title === 'My club')!.links;
+    expect(links.map((l) => l.href)).toContain('/school');
   });
 });

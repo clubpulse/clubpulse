@@ -1,10 +1,11 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { Fragment, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { audienceLabel, menuFor, type Audience, type NavLink } from '@/lib/nav/menu';
 import { rolePagesFor } from '@/lib/nav/role-pages';
+import { pillarByKey } from '@/lib/nav/pillars';
 
 // Top-level links, also used for the short list on phones
 export const NAV_LINKS: NavLink[] = [
@@ -135,7 +136,7 @@ export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { aud
 
   // The group holding the current page is open, unless the person has opened or closed one
   // since arriving on this page
-  const current = groups.find((g) => g.links.some((l) => isActive(l, pathname)))?.key ?? null;
+  const current = groups.find((g) => pillarByKey(g.key)?.href === pathname || g.links.some((l) => isActive(l, pathname)))?.key ?? null;
   const openKey = state.at === pathname ? state.open : current;
 
   return (
@@ -216,7 +217,20 @@ export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { aud
                     style={{ listStyle: 'none', padding: '0 0 0 12px', margin: '4px 0 8px 28px', borderLeft: `2px solid ${group.tint}55` }}
                     className="space-y-0.5"
                   >
-                    {group.links.map((link) => <NavItem key={link.href} link={link} pathname={pathname} small />)}
+                    {/* A pillar opens with its own page */}
+                    {pillarByKey(group.key) && (
+                      <NavItem link={{ href: pillarByKey(group.key)!.href, label: 'Overview', icon: '✨' }} pathname={pathname} small />
+                    )}
+                    {group.links.map((link, i) => (
+                      <Fragment key={link.href}>
+                        {link.section && link.section !== group.links[i - 1]?.section && (
+                          <li aria-hidden style={{ padding: '8px 12px 2px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                            {link.section}
+                          </li>
+                        )}
+                        <NavItem link={link} pathname={pathname} small />
+                      </Fragment>
+                    ))}
                   </ul>
                 )}
               </li>

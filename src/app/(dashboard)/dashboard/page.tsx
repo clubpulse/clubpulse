@@ -15,6 +15,8 @@ import { formatScores } from '@/lib/utils/format';
 import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
 import { getAudience } from '@/lib/nav/audience';
 import { rolePagesFor } from '@/lib/nav/role-pages';
+import { PILLARS, pillarCounts } from '@/lib/nav/pillars';
+import { MagicCard } from '@/components/magic/MagicCard';
 import type { CoachingInsight } from '@/lib/types/coaching-insights';
 
 const SYNE = "'Syne', sans-serif";
@@ -63,6 +65,7 @@ export default async function DashboardPage() {
   ]);
 
   // Players, coaches and club admins get the playing parts of Home; parents and volunteers get club news
+  const counts = pillarCounts(audience);
   const plays = audience.admin || audience.roles.includes('player') || audience.roles.includes('coach');
 
   const walletData = wallet.success ? wallet.data : null;
@@ -117,6 +120,20 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </nav>
+
+      {/* The four pillars: the way in to everything */}
+      <section aria-label="The four pillars" className="mg-bento mg-two">
+        {PILLARS.map((p, i) => (
+          <MagicCard key={p.key} href={p.href} tint={p.from} index={i} style={{ padding: '18px', '--mg-from': p.from, '--mg-to': p.to } as CSSProperties}>
+            <span aria-hidden style={{ fontSize: '26px', lineHeight: 1 }}>{p.icon}</span>
+            <p className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', letterSpacing: '-0.02em', margin: '10px 0 4px' }}>{p.title}</p>
+            <p style={{ ...hint, margin: 0 }}>{p.short}</p>
+            <p style={{ fontSize: '12px', fontWeight: 700, color: p.from, margin: '10px 0 0' }}>
+              {counts[p.key] > 0 ? `${counts[p.key]} ${counts[p.key] === 1 ? 'page' : 'pages'}` : 'On the way'}
+            </p>
+          </MagicCard>
+        ))}
+      </section>
 
       <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} canPlay={plays} />
 
