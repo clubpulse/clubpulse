@@ -4,14 +4,16 @@ import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { fetchProfile } from '@/lib/profile/service';
 import { getAudience } from '@/lib/nav/audience';
-import type { Role } from '@/lib/nav/menu';
-import { ROLE_PAGES, holdsRole, rolePagesFor, roleTools } from '@/lib/nav/role-pages';
+import { ROLE_PAGES, holdsRole, rolePagesFor, roleTools, type PageRole } from '@/lib/nav/role-pages';
+import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { getRoleData } from '@/lib/roles/data';
 import { RoleNotHeld, RolePageView } from '@/components/roles/RolePageView';
 
-export async function renderRolePage(role: Role) {
+export async function renderRolePage(role: PageRole) {
   const user = await requireUser();
-  const audience = await getAudience(user.id);
+  // A club admin is recognised the same way the menu recognises one
+  const [base, adminClubs] = await Promise.all([getAudience(user.id), getAdminClubIds(user.id)]);
+  const audience = { ...base, admin: base.admin || adminClubs.length > 0 };
   const page = ROLE_PAGES[role];
   if (!holdsRole(audience, role)) return <RoleNotHeld page={page} />;
 

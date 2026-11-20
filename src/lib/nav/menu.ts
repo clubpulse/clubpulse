@@ -64,6 +64,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/club-bible', label: 'Club Bible', icon: '📖', section: 'My club' },
       { href: '/documents', label: 'Documents', icon: '🗂️', section: 'My club' },
       { href: '/finance', label: 'Finance', icon: '💷', for: ['player', 'parent'], adult: true, section: 'My club' },
+      { href: '/volunteer', label: 'Volunteering', icon: '🙌', section: 'My club' },
       { href: '/club-alumni', label: 'Alumni', icon: '🎓', section: 'My club' },
       { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING, section: 'People' },
       { href: '/transfer-window', label: 'Transfer Window', icon: '🔄', for: PLAYING, adult: true, section: 'People' },

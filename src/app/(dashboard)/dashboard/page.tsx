@@ -15,6 +15,7 @@ import { formatScores } from '@/lib/utils/format';
 import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
 import { getAudience } from '@/lib/nav/audience';
 import { rolePagesFor } from '@/lib/nav/role-pages';
+import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { PILLARS, pillarCounts } from '@/lib/nav/pillars';
 import { MagicCard } from '@/components/magic/MagicCard';
 import type { CoachingInsight } from '@/lib/types/coaching-insights';
@@ -65,6 +66,8 @@ export default async function DashboardPage() {
   ]);
 
   // Players, coaches and club admins get the playing parts of Home; parents and volunteers get club news
+  const adminClubs = await getAdminClubIds(user.id);
+  const pages = rolePagesFor({ ...audience, admin: audience.admin || adminClubs.length > 0 });
   const counts = pillarCounts(audience);
   const plays = audience.admin || audience.roles.includes('player') || audience.roles.includes('coach');
 
@@ -114,7 +117,7 @@ export default async function DashboardPage() {
 
       {/* The way in to each role's own page */}
       <nav aria-label="Your pages" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '-6px' }}>
-        {rolePagesFor(audience).map((page) => (
+        {pages.map((page) => (
           <Link key={page.role} href={page.href} className="mg-pill">
             <span aria-hidden>{page.icon}</span> {page.title} page
           </Link>
