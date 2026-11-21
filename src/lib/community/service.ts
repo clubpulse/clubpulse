@@ -9,10 +9,10 @@ import {
   type LookingFor, type Scope,
 } from './rules';
 
-type Admin = ReturnType<typeof createAdminClient>;
+export type Admin = ReturnType<typeof createAdminClient>;
 export type Result<T> = { success: true; data: T } | { success: false; error: string };
-const ok = <T>(data: T): Result<T> => ({ success: true, data });
-const no = (error: string): Result<never> => ({ success: false, error });
+export const ok = <T>(data: T): Result<T> => ({ success: true, data });
+export const no = (error: string): Result<never> => ({ success: false, error });
 
 /** The Community is switched on with COMMUNITY_ENABLED=true, once its tables exist. */
 export const communityOpen = () => process.env.COMMUNITY_ENABLED === 'true';
@@ -55,7 +55,7 @@ async function clubsInScope(admin: Admin, viewer: Viewer, scope: Scope): Promise
   return out;
 }
 
-async function blockedIds(admin: Admin, userId: string): Promise<Set<string>> {
+export async function blockedIds(admin: Admin, userId: string): Promise<Set<string>> {
   const [{ data: mine }, { data: theirs }] = await Promise.all([
     admin.from('community_blocks').select('blocked_id').eq('blocker_id', userId),
     admin.from('community_blocks').select('blocker_id').eq('blocked_id', userId),
@@ -63,10 +63,10 @@ async function blockedIds(admin: Admin, userId: string): Promise<Set<string>> {
   return new Set([...(mine ?? []).map((r) => r.blocked_id as string), ...(theirs ?? []).map((r) => r.blocker_id as string)]);
 }
 
-type Person = { id: string; name: string; junior: boolean; clubId: string | null; clubName: string | null; roles: string[] };
+export type Person = { id: string; name: string; junior: boolean; clubId: string | null; clubName: string | null; roles: string[] };
 
 /** Names, clubs and roles for a set of people, with juniors shown by first name only. */
-async function people(admin: Admin, ids: string[]): Promise<Map<string, Person>> {
+export async function people(admin: Admin, ids: string[]): Promise<Map<string, Person>> {
   const unique = [...new Set(ids)];
   const out = new Map<string, Person>();
   if (unique.length === 0) return out;
@@ -213,7 +213,7 @@ export type CommunityProfile = {
   connectionId: string | null;
 };
 
-async function connectionBetween(admin: Admin, a: string, b: string) {
+export async function connectionBetween(admin: Admin, a: string, b: string) {
   const { data } = await admin.from('community_connections').select('id, requester_id, addressee_id, status')
     .or(`and(requester_id.eq.${a},addressee_id.eq.${b}),and(requester_id.eq.${b},addressee_id.eq.${a})`).limit(1);
   return (data ?? [])[0] as { id: string; requester_id: string; addressee_id: string; status: string } | undefined;

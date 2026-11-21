@@ -110,3 +110,39 @@ export function shownName(fullName: string | null | undefined, junior: boolean):
   const name = (fullName ?? '').trim() || 'Member';
   return junior ? name.split(/\s+/)[0] : name;
 }
+
+// ── Who may see and follow whom across the age line ─────────────────────────────────────────────
+
+export type CrossBandContext = {
+  viewerJunior: boolean;
+  subjectJunior: boolean;
+  /** They belong to at least one club in common */
+  sharesClub: boolean;
+  /** For an adult looking at a junior: the adult is a coach or club admin of a shared club. For a junior looking at an adult: that adult is one. */
+  adultIsStaffOfSharedClub: boolean;
+  /** The viewer is the linked parent of the junior */
+  isLinkedParent: boolean;
+};
+
+/**
+ * Whether one person may open another person's Community profile. Adults and juniors see their own
+ * age band freely. Across the line it takes a shared club and the adult being a coach or club
+ * admin there, or the adult being the junior's linked parent.
+ */
+export function mayViewProfile(c: CrossBandContext): boolean {
+  if (c.viewerJunior === c.subjectJunior) return true;
+  if (c.isLinkedParent && !c.viewerJunior) return true;
+  return c.sharesClub && c.adultIsStaffOfSharedClub;
+}
+
+/**
+ * Following is one-way and never opens private messaging. A club can be followed by anyone. A
+ * junior may follow another junior, not an adult player. An adult may follow a junior only as that
+ * junior's coach or club admin (sharing a club) or as their linked parent.
+ */
+export function mayFollow(subject: 'player' | 'club', c: CrossBandContext): boolean {
+  if (subject === 'club') return true;
+  if (c.viewerJunior) return c.subjectJunior;
+  if (!c.subjectJunior) return true;
+  return c.isLinkedParent || (c.sharesClub && c.adultIsStaffOfSharedClub);
+}
