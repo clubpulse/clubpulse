@@ -56,13 +56,18 @@ export const PILLARS: Pillar[] = [
   {
     key: 'wellness', tab: 'wellness', title: 'Warm-Up', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Wellness: your mindset, getting ready and being mentally prepared to play.',
-    big: 'soul',
-    top: ['check-in', 'talk'],
+    big: 'matchday',
+    top: ['mindfulness', 'meditation', 'mindset', 'awareness'],
     extra: [
+      { key: 'matchday', label: 'Match Day', detail: 'Game preparation: the night before to walking out', icon: '🏏', route: '/warmup/matchday' },
+      { key: 'mindfulness', label: 'Watch the Ball', detail: 'Mindfulness: stay in the moment', icon: '👁️', route: '/warmup/mindfulness' },
+      { key: 'meditation', label: 'Still Head', detail: 'Meditation: guided and timed', icon: '🧘', route: '/warmup/meditation' },
+      { key: 'mindset', label: 'Between the Ears', detail: 'Mindset: nerves, confidence, pressure', icon: '🧠', route: '/warmup/mindset' },
+      { key: 'awareness', label: 'Reading the Game', detail: 'Game awareness: what the situation needs', icon: '🧭', route: '/warmup/awareness' },
+      { key: 'tips', label: 'Team Talk', detail: 'Quick tips for batters, bowlers and fielders', icon: '💬', route: '/warmup/tips' },
+      { key: 'support', label: 'Talk to Someone', detail: 'Where to turn when things are hard', icon: '🤝', route: '/warmup/support' },
       { key: 'check-in', label: 'The Toss', detail: 'Your daily check-in: keep your streak going', icon: '🔥', route: '/rewards' },
-      { key: 'talk', label: 'Twelfth Man', detail: 'Coach AI: ask anything about your game', icon: '🧠', route: '/companion' },
     ],
-    soon: 'Match-day routines, breathing and focus exercises are on the way.',
   },
   {
     key: 'academy', tab: 'learn', title: 'Academy', emoji: '📚', icon: 'school', from: '#2DD4BF', to: '#5EEAD4',
