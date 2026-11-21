@@ -159,7 +159,7 @@ export default function AICoachPage() {
           <div>
             <p className="ai-eyebrow">🎯 AI Coach</p>
             <div className="ai-road-tag">🗺 Roadmap — coming 2027</div>
-            <h1 className="ai-h1">A batting coach in your pocket. <span className="green">On-device.</span></h1>
+            <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">On-device.</span></h1>
             <p className="ai-sub">MediaPipe Pose maps 33 3D body landmarks at 30fps — directly on your phone camera. No server, no upload, no waiting. Real-time feedback on stance, elbow position, head level, and follow-through.</p>
             <div className="ai-btns">
               <Link href="/contact" className="ai-btn-red">Register interest →</Link>
@@ -231,7 +231,7 @@ export default function AICoachPage() {
                 <p className="ai-step-n">01</p>
                 <div className="ai-step-icon"><Glyph e="📱" /></div>
                 <h3 className="ai-step-h">Open AI Coach</h3>
-                <p className="ai-step-body">Open the AI Coach screen in the ClubPulse app. Point your phone camera at the batter — or prop it up against a bag at the nets.</p>
+                <p className="ai-step-body">Open the AI Coach screen in the ClubPulse app. Point your phone camera at the batter or bowler — or prop it up against a bag at the nets.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">02</p>
@@ -243,7 +243,7 @@ export default function AICoachPage() {
                 <p className="ai-step-n">03</p>
                 <div className="ai-step-icon"><Glyph e="📊" /></div>
                 <h3 className="ai-step-h">Coaching feedback</h3>
-                <p className="ai-step-body">The app compares your pose to ideal batting geometry — head position, elbow height, front foot alignment, follow-through arc — and flags what needs attention.</p>
+                <p className="ai-step-body">The app compares your pose to ideal batting and bowling geometry — head position, elbow height, front foot alignment, follow-through arc — and flags what needs attention.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">04</p>
@@ -301,9 +301,9 @@ export default function AICoachPage() {
               ['When will AI Coach be available?', 'AI Coach is on the ClubPulse roadmap for 2027. You can register interest now and we\'ll notify you as soon as it\'s live. The core technology (MediaPipe Pose) already works — we\'re building the coaching logic and UI around it.'],
               ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose uses the device\'s neural processing unit and runs at 30fps on these chips without draining battery rapidly.'],
               ['Can it be used without an internet connection?', 'Yes — because everything runs on-device, AI Coach works completely offline. No signal, no Wi-Fi — it doesn\'t matter. This is intentional: cricket nets often have poor signal.'],
-              ['Will it work for bowling or fielding?', 'The first release focuses on batting technique. Bowling action analysis (particularly front-arm position and delivery stride) is planned for a later update. Fielding mechanics may follow.'],
+              ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],
               ['Who provides the coaching logic — is it a real coach?', 'The pose thresholds and feedback rules are written in collaboration with qualified coaches. MediaPipe provides the raw pose data; the coaching interpretation is built by humans with ECB coaching qualifications.'],
-              ['Is this only for batters at the nets?', 'The main use case is a tripod or phone propped up at the nets, but it works anywhere with a camera angle that shows the batter\'s full body. Some players use it in a garden or sports hall.'],
+              ['Is this only for the nets?', 'The main use case is a tripod or phone propped up at the nets, but it works anywhere with a camera angle that shows the batter\'s full body. Some players use it in a garden or sports hall.'],
             ].map(([q, a], i) => (
               <div key={i} className="ai-faq-item">
                 <div className="ai-faq-q">{q}</div>
