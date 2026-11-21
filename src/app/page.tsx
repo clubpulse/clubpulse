@@ -1148,6 +1148,7 @@ export default function HomePage() {
               <Link href="/features#finance">Finance</Link>
               <Link href="/features#rewards">Rewards</Link>
               <Link href="/about">About</Link>
+              <Link href="/our-story">Our story</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>

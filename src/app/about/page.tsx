@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'About — ClubPulse',
-  description: 'How a Sunday cricket club in Slough became the blueprint for grassroots cricket management.',
+  description: 'ClubPulse is one app for grassroots cricketers and clubs: technique, community, mindset and learning.',
 };
 
 export default function AboutPage() {
@@ -125,35 +125,9 @@ export default function AboutPage() {
 
       {/* ── Hero ── */}
       <section className="about-hero">
-        <p className="section-tag">Our story</p>
-        <h1 className="hero-h">Built on a real cricket club,<br />for every cricket club</h1>
-        <p className="hero-sub">ClubPulse started as a solution to the chaos of running Slough Cricket Club. It grew into a platform that every grassroots club deserves.</p>
-      </section>
-
-      {/* ── Story ── */}
-      <section className="story-wrap">
-        <div className="story-block">
-          <h2 className="story-h">The problem every club knows</h2>
-          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two volunteers who burn out.</p>
-          <p className="story-p">At Slough CC, we lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
-        </div>
-
-        <div className="pull-quote">
-          <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Co-Founder, ClubPulse</cite>
-        </div>
-
-        <div className="story-block">
-          <h2 className="story-h">Slough CC as the testbed</h2>
-          <p className="story-p">Every feature in ClubPulse was born from a real frustration at Slough CC. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
-          <p className="story-p">The AI coaching engine came when we realised players were recording sessions anyway, just without any feedback. Scores — our loyalty currency — came when we wanted to reward the players who show up week after week, not just the stars.</p>
-        </div>
-
-        <div className="story-block">
-          <h2 className="story-h">From one club to many</h2>
-          <p className="story-p">What started as an internal tool for Slough CC is now a platform built to serve any grassroots cricket club in the UK. We&apos;ve kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
-          <p className="story-p">We&apos;re not here to replace the human side of your club. We&apos;re here to remove the admin burden so you can focus on it.</p>
-        </div>
+        <p className="section-tag">About ClubPulse</p>
+        <h1 className="hero-h">Built by cricketers,<br />for every cricket club</h1>
+        <p className="hero-sub">One app for grassroots cricket: technique, community, mindset and learning for players, and the admin taken care of for clubs. <Link href="/our-story" style={{ color: '#EFC84A', textDecoration: 'none', fontWeight: 600 }}>Read our story →</Link></p>
       </section>
 
       {/* ── Values ── */}
@@ -179,31 +153,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Origin stats ── */}
-      <section className="origin-section">
-        <div className="origin-grid">
-          <div className="origin-text">
-            <p className="section-tag" style={{ marginBottom: '12px' }}>Live at Slough CC</p>
-            <h2>Running in production every weekend</h2>
-            <p>ClubPulse isn&apos;t a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
-            <p>That means every bug gets found fast, and every feature gets stress-tested in the most unforgiving environment: a cricket club where people actually care about the result.</p>
-          </div>
-          <div className="stat-cluster">
-            {[
-              { val: '2026', desc: 'Season running live on ClubPulse' },
-              { val: '<1s', desc: 'Scorecard sync via Supabase Realtime' },
-              { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
-              { val: '£0', desc: 'Admin overhead for tracking availability' },
-            ].map(s => (
-              <div key={s.val} className="stat-row">
-                <span className="stat-val">{s.val}</span>
-                <span className="stat-desc">{s.desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── CTA ── */}
       <section className="cta-section">
         <h2 className="cta-h">Ready to bring ClubPulse<br />to your club?</h2>
@@ -221,6 +170,7 @@ export default function AboutPage() {
           <div className="footer-links">
             <Link href="/">Home</Link>
             <Link href="/about">About</Link>
+            <Link href="/our-story">Our story</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/login">Sign in</Link>
           </div>
