@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 /* ─── Types ─────────────────────────────────────────── */
-type CategoryId = 'match' | 'ai' | 'performance' | 'team' | 'finance' | 'engagement' | 'community' | 'rewards';
+type CategoryId = 'match' | 'ai' | 'performance' | 'team' | 'finance' | 'engagement' | 'community' | 'rewards' | 'wellness' | 'academy';
 
 type Category = {
   id: CategoryId;
@@ -29,6 +29,8 @@ const CATEGORIES: Category[] = [
   { id: 'finance',    icon: '💰', label: 'Finance & Fees',        tagline: 'Club finances that actually make sense.',                   features: ['Finance ledger','Fee offset calculator','Community pot','Charity fund','Sponsor a kid'] },
   { id: 'engagement', icon: '🏅', label: 'Engagement',           tagline: 'Turn participation into pride.',                             features: ['Pulse score','Leaderboard','Hall of Infamy','Raffle','Badges & achievements'] },
   { id: 'community',  icon: '🤝', label: 'Community',            tagline: 'The heartbeat of your club between matchdays.',              features: ['Dressing room feed','Noticeboard','Club bible','Wellbeing check-in','Alumni network'] },
+  { id: 'wellness',   icon: '🧘', label: 'Warm-Up (coming soon)', tagline: 'Mental preparation for the game: mindset, mindfulness and match-day routines.', features: ['Mind Nets: six weeks of mental skills','Guided breathing and meditation','Match-day checklists','Pre-ball routine builder','Thought for the day'] },
+  { id: 'academy',    icon: '🎓', label: 'Academy',              tagline: 'Short lessons, daily questions and games.',                  features: ['Two-minute lessons','Personal practice plan','Daily cricket question','Auction Room','Honours Board badges (coming soon)'] },
   { id: 'rewards',    icon: '🛍️', label: 'Rewards',              tagline: 'Points that pay for kit, discounts and more.',              features: ['Reward marketplace','Kit discounts','Injury intel','Documents vault','Travel planner'] },
 ];
 
@@ -501,6 +503,24 @@ function OppositionDemo() {
   );
 }
 
+/* ─── Simple list demo ────────────────────────────────── */
+function ListDemo({ items, note }: { items: Array<[string, string, string]>; note?: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {items.map(([icon, title, text]) => (
+        <div key={title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.03)' }}>
+          <span style={{ fontSize: 22 }} aria-hidden>{icon}</span>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5' }}>{title}</div>
+            <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'rgba(232,237,245,0.55)', marginTop: 2 }}>{text}</div>
+          </div>
+        </div>
+      ))}
+      {note && <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(232,237,245,0.45)', marginTop: 4 }}>{note}</p>}
+    </div>
+  );
+}
+
 /* ─── Demo map ─────────────────────────────────────────── */
 const DEMOS: Record<CategoryId, React.ReactNode> = {
   match:       <MatchDemo />,
@@ -511,6 +531,8 @@ const DEMOS: Record<CategoryId, React.ReactNode> = {
   engagement:  <EngagementDemo />,
   community:   <CommunityDemo />,
   rewards:     <RewardsDemo />,
+  wellness:    <ListDemo items={[['🫁','Breathing and focus','Short guided sessions with a breathing circle and a timer'],['🎯','Mind Nets','Six weeks: breathing, focus, routines, self-talk, imagery, pressure'],['✅','Match-day checklists','The night before, the morning, at the ground and between balls'],['🔁','My routine','Build your own pre-ball routine and keep it on your phone'],['💬','Thought for the day','One short thought every day']]} note="Coming soon in the app. What you do in Warm-Up stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
+  academy:     <ListDemo items={[['🎓','Lessons','Skills, the game, fitness and the wider game of cricket'],['🗒️','Practice plan','A plan built around what you want to work on'],['☝️','Daily question','One cricket question a day, right answers earn Scores'],['🔨','Auction Room','Bid against the room and see where you finish'],['🏅','Honours Board','108 badges for what you achieve, shareable without your name (coming soon in the app)']]} />,
 };
 
 // Override AI category's demo with opposition intel for a richer second panel
