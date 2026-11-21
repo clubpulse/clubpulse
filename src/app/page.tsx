@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Pillars } from '@/components/marketing/Pillars';
 import { useState, useEffect, useRef } from 'react';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
@@ -798,7 +799,7 @@ export default function HomePage() {
 
               <div className="cp-hero-btns">
                 <Link href="/contact" className="cp-btn-hero">Get started free →</Link>
-                <Link href="/features" className="cp-btn-hero-ghost">See all 48 features →</Link>
+                <Link href="/features" className="cp-btn-hero-ghost">See all features →</Link>
               </div>
               <div className="cp-hero-stats">
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
@@ -952,6 +953,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
+        {/* ── FOUR PILLARS ── */}
+        <Pillars />
 
         {/* ── HOW IT WORKS ── */}
         <section className="cp-how" id="how-it-works">
