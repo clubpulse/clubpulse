@@ -55,7 +55,7 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
         {big && (
           <Pressable onPress={() => open(big.route)} accessibilityRole="button" accessibilityLabel={`${big.label}. ${big.detail}`}
             style={({ pressed }) => [styles.lead, { backgroundColor: `${pillar.from}26`, borderColor: `${pillar.from}88` }, pressed && { opacity: 0.8 }]}>
-            <Text style={[styles.leadEyebrow, { color: pillar.from }]}>START HERE</Text>
+            <Text style={[styles.leadEyebrow, { color: pillar.from }]}>TAKE GUARD</Text>
             <View style={styles.leadRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.leadLabel}>{big.label}</Text>
@@ -69,7 +69,7 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
 
         {rest.length > 0 && (
           <>
-            <Text style={styles.section} accessibilityRole="header">More in {pillar.title}</Text>
+            <Text style={styles.section} accessibilityRole="header">Extras</Text>
             <View style={styles.grid}>
               {rest.map((tile, i) => (
                 <GlowCard key={tile.key} index={i + 1} tint={i % 2 === 0 ? pillar.from : pillar.to} onPress={() => open(tile.route)} label={`${tile.label}. ${tile.detail}`} slot={styles.small}>
@@ -91,7 +91,7 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
 
         {pillar.soon && (
           <View style={[styles.soon, { borderColor: `${pillar.from}44` }]}>
-            <Text style={[styles.soonEyebrow, { color: pillar.from }]}>ON THE WAY</Text>
+            <Text style={[styles.soonEyebrow, { color: pillar.from }]}>NEXT IN</Text>
             <Text style={styles.soonText}>{pillar.soon}</Text>
           </View>
         )}

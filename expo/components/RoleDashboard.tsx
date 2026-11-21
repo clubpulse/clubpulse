@@ -151,7 +151,7 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
               ))}
             </GlowCard>
 
-            <Text style={styles.section} accessibilityRole="header">More {page.title.toLowerCase()} tools</Text>
+            <Text style={styles.section} accessibilityRole="header">Kit Bag</Text>
             <View style={styles.grid}>
               {page.tools.map((tool, i) => (
                 <GlowCard key={tool.label} index={7 + i} tint={i % 2 === 0 ? page.from : page.to} onPress={() => go(tool.to)} label={`${tool.label}. ${tool.detail}`} slot={styles.tool} style={styles.toolSmall}>

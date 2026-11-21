@@ -33,34 +33,34 @@ const PLAYING: MenuLink['for'] = ['player', 'coach'];
 
 export const PILLARS: Pillar[] = [
   {
-    key: 'technique', tab: 'technique', title: 'Technique', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
-    tagline: 'Film your batting or bowling and see exactly what to work on.',
+    key: 'technique', tab: 'technique', title: 'The Nets', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
+    tagline: 'Technique: film your batting or bowling and see exactly what to work on.',
     big: 'analyse',
     top: ['coaching', 'coach-ai', 'find-coach', 'plan'],
     extra: [
-      { key: 'find-coach', label: 'Find a coach', detail: 'Coaches approved by your club', icon: '🧑‍🏫', route: '/(tabs)/coaches', for: ['player', 'coach', 'parent', 'club_admin'] },
-      { key: 'plan', label: 'Practice plan', detail: 'What to work on this week', icon: '🗓️', route: '/academy-plan', for: PLAYING },
+      { key: 'find-coach', label: 'Coaches', detail: 'Find a coach approved by your club', icon: '🧑‍🏫', route: '/(tabs)/coaches', for: ['player', 'coach', 'parent', 'club_admin'] },
+      { key: 'plan', label: 'Net Plan', detail: 'Your practice plan for this week', icon: '🗓️', route: '/academy-plan', for: PLAYING },
     ],
   },
   {
-    key: 'community', tab: 'community', title: 'Community', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#93C5FD',
-    tagline: 'Your club, your matches and the people you play with.',
+    key: 'community', tab: 'community', title: 'Pavilion', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#93C5FD',
+    tagline: 'Community: your club, your matches and the people you play with.',
     big: 'club',
     top: ['children', 'post-shift', 'coaches', 'shifts', 'league', 'profile'],
     extra: [
-      { key: 'league', label: 'Club league', detail: 'See where you stand', icon: '🏆', route: '/rewards' },
+      { key: 'league', label: 'Points Table', detail: 'Your club league: see where you stand', icon: '🏆', route: '/rewards' },
       { key: 'profile', label: 'My profile', detail: 'Your roles and details', icon: '👤', route: '/(tabs)/profile' },
     ],
     soon: 'Cricket people across your region, beyond your own club, are on the way.',
   },
   {
-    key: 'wellness', tab: 'wellness', title: 'Wellness', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
-    tagline: 'Look after your body and get your head ready to play.',
+    key: 'wellness', tab: 'wellness', title: 'Warm-Up', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
+    tagline: 'Wellness: look after your body and get your head ready to play.',
     big: 'soul',
     top: ['check-in', 'talk'],
     extra: [
-      { key: 'check-in', label: 'Daily check-in', detail: 'Keep your streak going', icon: '🔥', route: '/rewards' },
-      { key: 'talk', label: 'Coach AI', detail: 'Ask anything about your game', icon: '🧠', route: '/companion' },
+      { key: 'check-in', label: 'The Toss', detail: 'Your daily check-in: keep your streak going', icon: '🔥', route: '/rewards' },
+      { key: 'talk', label: 'Twelfth Man', detail: 'Coach AI: ask anything about your game', icon: '🧠', route: '/companion' },
     ],
     soon: 'Match-day routines and mental preparation are on the way.',
   },
@@ -70,7 +70,7 @@ export const PILLARS: Pillar[] = [
     big: 'academy',
     top: ['games', 'plan', 'umpire', 'manager'],
     extra: [
-      { key: 'plan', label: 'Practice plan', detail: 'What to work on this week', icon: '🗓️', route: '/academy-plan', for: PLAYING },
+      { key: 'plan', label: 'Net Plan', detail: 'Your practice plan for this week', icon: '🗓️', route: '/academy-plan', for: PLAYING },
       { key: 'umpire', label: "Umpire's Call", detail: 'Five decisions a day', icon: '☝️', route: '/knowledge/umpire' },
       { key: 'whoami', label: 'Who Am I?', detail: 'Name the cricketer', icon: '🕵️', route: '/knowledge/whoami' },
       { key: 'scorecard', label: 'Scorecard Detective', detail: 'Find the missing number', icon: '🔢', route: '/knowledge/scorecard' },
@@ -93,7 +93,7 @@ const SOCIAL: MenuLink[] = [
 export const pillarByKey = (key: PillarKey): Pillar => {
   const pillar = PILLARS.find((p) => p.key === key)!;
   if (key !== 'community' || !COMMUNITY_ENABLED) return pillar;
-  return { ...pillar, tagline: 'Meet cricket people, share your game and build your network.', big: 'feed', top: ['nearby', 'connections', 'cv', 'club'], extra: [...SOCIAL, ...pillar.extra.filter((l) => l.key !== 'profile')], soon: undefined };
+  return { ...pillar, tagline: 'Community: meet cricket people, share your game and build your network.', big: 'feed', top: ['nearby', 'connections', 'cv', 'club'], extra: [...SOCIAL, ...pillar.extra.filter((l) => l.key !== 'profile')], soon: undefined };
 };
 /** A pillar's tiles for this person: up to four on top, the large one, then the rest. */
 export function pillarTiles(key: PillarKey, viewer: Viewer): { top: MenuLink[]; big: MenuLink | null; rest: MenuLink[] } {

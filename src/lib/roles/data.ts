@@ -66,10 +66,10 @@ async function player(userId: string): Promise<RoleData> {
       { label: 'Latest technique mark', value: latest?.overall ?? undefined, text: latest ? undefined : '–', suffix: latest ? '/100' : undefined, hint: latest ? 'From your last analysed clip' : 'Film a clip to get one' },
     ],
     next: fixture
-      ? { eyebrow: `Next match · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/availability', cta: 'Set your availability' }
+      ? { eyebrow: `Next fixture · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/availability', cta: 'Set your availability' }
       : null,
     nothingNext: { title: 'No match in the diary', detail: 'When your club adds a fixture it appears here.', href: '/match-day', cta: 'Open match day' },
-    listTitle: 'Recent technique sessions',
+    listTitle: 'Recent net sessions',
     rows: marked.map((m) => ({
       title: `${m.mode === 'bowling' ? 'Bowling' : 'Batting'}${m.shot ? ` · ${m.shot}` : ''}`,
       detail: dayLabel(m.at),
@@ -111,7 +111,7 @@ async function coach(userId: string): Promise<RoleData> {
       ? { eyebrow: `Next session · ${dayLabel(first.session_date)}`, title: first.listing?.title ?? 'Coaching session', detail: [clock(first.session_time), first.status === 'pending' ? 'Waiting for you to confirm' : 'Confirmed'].filter(Boolean).join(' · '), href: '/coaching?tab=coach', cta: 'Open my sessions' }
       : null,
     nothingNext: { title: 'No sessions booked', detail: 'Offer a session and players at your club can book it.', href: '/coaching?tab=coach', cta: 'Offer a session' },
-    listTitle: 'Bookings',
+    listTitle: 'On the fixture card',
     rows: upcoming.slice(0, 4).map((b) => ({
       title: b.listing?.title ?? 'Coaching session',
       detail: [dayLabel(b.session_date), clock(b.session_time)].filter(Boolean).join(' · '),
@@ -153,10 +153,10 @@ async function parent(userId: string): Promise<RoleData> {
       { label: 'Club fixtures ahead', value: fixtures.length, hint: 'Matches in the diary' },
     ],
     next: fixture
-      ? { eyebrow: `Next club match · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/match-day', cta: 'See match day' }
+      ? { eyebrow: `Next club fixture · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/match-day', cta: 'See match day' }
       : null,
     nothingNext: { title: 'No match in the diary', detail: 'Fixtures appear here when the club adds them.', href: '/noticeboard', cta: 'Read the noticeboard' },
-    listTitle: 'Your children',
+    listTitle: 'Your juniors',
     rows: children.map((c) => ({
       title: c.name,
       detail: `${granted(c.id)} ${granted(c.id) === 1 ? 'consent' : 'consents'} given`,
@@ -229,10 +229,10 @@ async function admin(userId: string): Promise<RoleData> {
     next: oldest
       ? { eyebrow: `Waiting since ${dayLabel(oldest.created_at)}`, title: oldest.requester_name, detail: `${APPROVAL[oldest.type] ?? 'Request'}${oldest.details ? ` · ${oldest.details}` : ''}`, href: '/admin/club/members', cta: 'Review requests' }
       : fixture
-        ? { eyebrow: `Next match · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/admin/club/availability', cta: 'See who is available' }
+        ? { eyebrow: `Next fixture · ${dayLabel(fixture.match_date)}`, title: `v ${fixture.opponent}`, detail: [clock(fixture.match_time), fixture.venue].filter(Boolean).join(' · '), href: '/admin/club/availability', cta: 'See who is available' }
         : null,
     nothingNext: { title: 'Nothing is waiting for you', detail: 'Requests from members and the next fixture appear here.', href: '/admin/club', cta: 'Open club admin' },
-    listTitle: 'Requests to review',
+    listTitle: 'Awaiting your decision',
     rows: approvals.slice(0, 5).map((a) => ({
       title: a.requester_name,
       detail: `${APPROVAL[a.type] ?? 'Request'} · ${dayLabel(a.created_at)}`,

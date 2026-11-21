@@ -31,7 +31,7 @@ export default function TabsLayout() {
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} /> }} />
+      <Tabs.Screen name="index" options={{ title: 'Home Ground', tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} /> }} />
       {PILLARS.map((pillar) => (
         <Tabs.Screen
           key={pillar.tab}

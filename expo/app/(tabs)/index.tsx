@@ -281,7 +281,7 @@ export default function HomeScreen() {
         ))}
 
         {/* ── Recent ── */}
-        <Text style={styles.recentTitle}>Recent</Text>
+        <Text style={styles.recentTitle}>Scorebook</Text>
         {(home?.recent ?? []).length === 0 ? (
           <Text style={fonts.small}>Nothing yet. Check in, walk or mark your availability to start earning.</Text>
         ) : (
