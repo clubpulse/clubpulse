@@ -108,6 +108,23 @@ export function AvailabilityCard({ fixture }: { fixture: FixtureWithMyStatus }) 
         </p>
       )}
 
+      {/* Team news (read-only) */}
+      {fixture.xi && fixture.xi !== 'pending' && (
+        <p
+          role="status"
+          style={{
+            margin: 0, padding: '8px 12px', borderRadius: '10px', fontSize: '13px', fontWeight: 700,
+            background: fixture.xi === 'in' ? 'rgba(22,163,74,0.18)' : fixture.xi === 'twelfth' ? 'rgba(217,119,6,0.18)' : 'rgba(255,255,255,0.05)',
+            color: fixture.xi === 'in' ? '#4ade80' : fixture.xi === 'twelfth' ? '#fbbf24' : 'rgba(255,255,255,0.55)',
+          }}
+        >
+          {fixture.xi === 'in' ? '🏏 You are in the XI' : fixture.xi === 'twelfth' ? 'You are twelfth man' : 'Team named: you are not in the XI this week'}
+        </p>
+      )}
+      {fixture.xi === 'pending' && (
+        <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Team not yet named</p>
+      )}
+
       {/* Status buttons */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
         {STATUS_BUTTONS.map(({ status, label, icon, activeStyle }) => {

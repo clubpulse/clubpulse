@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { getMyXIStates } from '@/lib/actions/xi-selection';
 import type { AvailabilityStatus, FixtureWithMyStatus, FixtureGridRow } from '@/lib/types/availability';
 
 /**
@@ -39,10 +40,13 @@ export async function getMyFixtures(clubId: string): Promise<FixtureWithMyStatus
     availMap.set(row.fixture_id, { status: row.status as AvailabilityStatus, note: row.note });
   }
 
+  const xi = await getMyXIStates(fixtureIds).catch(() => ({}) as Record<string, 'in' | 'twelfth' | 'out' | 'pending'>);
+
   return fixtures.map((f) => ({
     ...f,
     my_status: availMap.get(f.id)?.status ?? 'unknown',
     my_note: availMap.get(f.id)?.note ?? null,
+    xi: xi[f.id] ?? 'pending',
   }));
 }
 

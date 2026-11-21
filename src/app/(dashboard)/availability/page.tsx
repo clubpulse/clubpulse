@@ -2,6 +2,8 @@ import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMyFixtures } from '@/lib/actions/availability';
+import Link from 'next/link';
+import { getSelectorClubId } from '@/lib/actions/xi-selection';
 import { AvailabilityCard } from '@/components/availability/AvailabilityCard';
 
 export default async function AvailabilityPage() {
@@ -44,6 +46,7 @@ export default async function AvailabilityPage() {
 
   const clubName = (membership.clubs as unknown as { name: string } | null)?.name ?? 'Your Club';
   const fixtures = await getMyFixtures(membership.club_id);
+  const canSelect = !!(await getSelectorClubId(user.id));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -62,6 +65,9 @@ export default async function AvailabilityPage() {
         </h1>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
           {clubName} · Next 4 weeks
+          {canSelect && (
+            <> · <Link href="/team-selection" style={{ color: '#60A5FA', fontWeight: 600 }}>Select the XI</Link></>
+          )}
         </p>
       </div>
 

@@ -80,6 +80,11 @@ export function NextMatchCard({ fixture, clubName, canPlay = true }: { fixture: 
         <p style={eyebrow}>Next match · {day}</p>
         <h2 style={title}>{clubName} v {fixture.opponent}</h2>
         {details && <p style={sub}>{details}</p>}
+        {canPlay && fixture.xi && (
+          <p style={{ ...sub, fontWeight: 700, color: fixture.xi === 'in' ? '#86EFAC' : fixture.xi === 'twelfth' ? '#FCD34D' : 'rgba(255,255,255,0.7)' }}>
+            {fixture.xi === 'in' ? '🏏 You are in the XI' : fixture.xi === 'twelfth' ? 'You are twelfth man' : fixture.xi === 'out' ? 'Team named: not in the XI this week' : 'Team not yet named'}
+          </p>
+        )}
         {error && <p role="alert" style={{ ...sub, color: '#FCA5A5' }}>{error}</p>}
       </div>
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
