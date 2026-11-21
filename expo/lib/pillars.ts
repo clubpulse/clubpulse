@@ -4,6 +4,7 @@
 // website's pillars (src/lib/nav/pillars.ts). Who sees a tile follows the menu's rules.
 
 import { MENU, canSee, type MenuLink, type Viewer } from './menu';
+import { COMMUNITY_ENABLED } from '../constants/features';
 
 export type PillarKey = 'technique' | 'community' | 'wellness' | 'academy';
 
@@ -79,8 +80,20 @@ export const PILLARS: Pillar[] = [
   },
 ];
 
-export const pillarByKey = (key: PillarKey): Pillar => PILLARS.find((p) => p.key === key)!;
+// With the Community switched on, its page leads with the social side: the feed is the large tile
+// and Nearby, Connections and the profile come first.
+const SOCIAL: MenuLink[] = [
+  { key: 'feed', label: 'Feed', detail: 'What cricket people near you are sharing', icon: '📰', route: '/community/feed' },
+  { key: 'nearby', label: 'Nearby', detail: 'Meet cricket people around you', icon: '📍', route: '/community/nearby' },
+  { key: 'connections', label: 'Connections', detail: 'Requests and messages', icon: '💬', route: '/community/connections' },
+  { key: 'cv', label: 'My profile', detail: 'Your cricket CV', icon: '🪪', route: '/community/profile' },
+];
 
+export const pillarByKey = (key: PillarKey): Pillar => {
+  const pillar = PILLARS.find((p) => p.key === key)!;
+  if (key !== 'community' || !COMMUNITY_ENABLED) return pillar;
+  return { ...pillar, tagline: 'Meet cricket people, share your game and build your network.', big: 'feed', top: ['nearby', 'connections', 'cv', 'club'], extra: [...SOCIAL, ...pillar.extra.filter((l) => l.key !== 'profile')], soon: undefined };
+};
 /** A pillar's tiles for this person: up to four on top, the large one, then the rest. */
 export function pillarTiles(key: PillarKey, viewer: Viewer): { top: MenuLink[]; big: MenuLink | null; rest: MenuLink[] } {
   const pillar = pillarByKey(key);
