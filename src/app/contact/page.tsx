@@ -2,6 +2,7 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import FeaturesMenu from '@/components/marketing/FeaturesMenu';
 import { useState } from 'react';
 import { CLUB_SIZES, NEEDS } from '@/lib/enquiries/logic';
 
@@ -165,7 +166,7 @@ export default function ContactPage() {
             <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
           </Link>
           <div className="cp-menu">
-            <Link href="/features">Features</Link>
+            <FeaturesMenu />
             <Link href="/pricing">Pricing</Link>
             <Link href="/about">About</Link>
             <Link href="/contact" className="active">Contact</Link>
