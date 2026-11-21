@@ -89,7 +89,7 @@ function AuthGate() {
       <Stack.Screen name="scratch-card/[type]" options={screen('Scratch card')} />
       <Stack.Screen name="role/[role]" options={screen('My page')} />
       <Stack.Screen name="community/feed" options={screen('Feed')} />
-      <Stack.Screen name="community/nearby" options={screen('Nearby')} />
+      <Stack.Screen name="community/nearby" options={screen('Partnerships')} />
       <Stack.Screen name="community/connections" options={screen('Connections')} />
       <Stack.Screen name="community/profile" options={screen('Profile')} />
       <Stack.Screen name="community/chat/[id]" options={screen('Messages')} />

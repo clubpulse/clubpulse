@@ -3,6 +3,7 @@
 // as each page's tools. The figures come from GET /api/role-page.
 
 import type { UserRole } from './roles';
+import { VOLUNTEERS_ENABLED } from '../constants/features';
 
 export type PageRole = 'player' | 'coach' | 'parent' | 'admin';
 
@@ -70,8 +71,10 @@ export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
     action: { label: 'Open my club', to: { screen: '/(tabs)/club' } },
     tools: [
       { label: 'Club', detail: 'Members, invites and requests', icon: '🏟️', tint: '#60A5FA', to: { screen: '/(tabs)/club' } },
-      { label: 'Post a shift', detail: 'Ask members for help', icon: '📣', tint: '#34D399', to: { screen: '/post-shift' } },
-      { label: 'Volunteer shifts', detail: 'What is covered and what is not', icon: '🤝', tint: '#34D399', to: { screen: '/(tabs)/shifts' } },
+      ...(VOLUNTEERS_ENABLED ? [
+        { label: 'Post a shift', detail: 'Ask members for help', icon: '📣', tint: '#34D399', to: { screen: '/post-shift' } },
+        { label: 'Volunteer shifts', detail: 'What is covered and what is not', icon: '🤝', tint: '#34D399', to: { screen: '/(tabs)/shifts' } },
+      ] : []),
       { label: 'Coaches', detail: 'Approve and review coaches', icon: '🧑‍🏫', tint: '#F97316', to: { screen: '/(tabs)/coaches' } },
       { label: 'Club admin', detail: 'Every admin tool, on the website', icon: '🧰', tint: '#F87171', to: { web: '/admin/club', title: 'Club admin' } },
     ],

@@ -129,6 +129,11 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+// Volunteering is parked for now: its pages still exist, but nothing links to them. Set
+// NEXT_PUBLIC_VOLUNTEERS_ENABLED=true to bring the links back.
+export const VOLUNTEERS_ENABLED = process.env.NEXT_PUBLIC_VOLUNTEERS_ENABLED === 'true';
+const PARKED = VOLUNTEERS_ENABLED ? [] : ['/volunteer'];
+
 export const SCHOOL_LINK: NavLink = { href: '/school', label: 'School', icon: '🏫', section: 'My club' };
 
 const ROLES: Role[] = ['player', 'coach', 'parent', 'volunteer'];
@@ -165,7 +170,7 @@ export function menuFor(audience: Audience, options: { showSchool?: boolean } = 
         const after = links.map((l) => l.section).lastIndexOf(SCHOOL_LINK.section) + 1;
         links = [...links.slice(0, after), SCHOOL_LINK, ...links.slice(after)];
       }
-      return { ...g, links: links.filter((l) => canSee(l, audience)) };
+      return { ...g, links: links.filter((l) => !PARKED.includes(l.href) && canSee(l, audience)) };
     })
     .filter((g) => g.links.length > 0);
 }

@@ -22,8 +22,13 @@ describe('menu by role', () => {
   });
 
   it('shows an admin everything, admin tools included', () => {
-    const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href));
+    // Volunteering is parked, so its link is the one thing even an admin does not see
+    const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href)).filter((h) => h !== '/volunteer');
     expect(hrefs(aud(['parent'], { admin: true }))).toEqual(all);
+  });
+
+  it('parks volunteering: nobody is shown the link', () => {
+    for (const r of ['player', 'coach', 'parent', 'volunteer']) expect(hrefs(aud([r]))).not.toContain('/volunteer');
   });
 
   it('keeps admin tools from everyone else', () => {
