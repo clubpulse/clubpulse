@@ -1,4 +1,4 @@
-// Connections: people who want to connect with you, the people you are connected to (tap to
+// My Squad: people who want to connect with you, the people you are connected to (tap to
 // message) and requests you have sent.
 
 import { useCallback, useState } from 'react';
@@ -50,8 +50,8 @@ export default function ConnectionsScreen() {
           </View>
         ))}
 
-        <Text style={styles.section} accessibilityRole="header">Connected</Text>
-        {rows && group('connected').length === 0 && <Text style={fonts.small}>Nobody yet. Find cricket people under Partnerships.</Text>}
+        <Text style={styles.section} accessibilityRole="header">In your squad</Text>
+        {rows && group('connected').length === 0 && <Text style={fonts.small}>Nobody in your squad yet. Find cricket people under Partnerships.</Text>}
         {group('connected').map((r) => (
           <Pressable key={r.id} onPress={() => router.push({ pathname: '/community/chat/[id]', params: { id: r.id } })} style={[styles.card, styles.row]} accessibilityRole="button" accessibilityLabel={`${r.person.name}. Open messages`}>
             <Avatar name={r.person.name} />

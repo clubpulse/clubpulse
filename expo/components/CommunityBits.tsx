@@ -31,7 +31,7 @@ export function Avatar({ name, size = 44, tint = BLUE }: { name: string; size?: 
   );
 }
 
-/** Shown when a post, reply or message was stopped by the safety check. */
+/** Shown when a post, reply or message was stopped by the safety check (the "Third Umpire"). */
 export function Stopped({ tell, onClose }: { tell: string; onClose: () => void }) {
   return (
     <View style={styles.stopped} accessibilityRole="alert">

@@ -37,7 +37,7 @@ export default function NearbyScreen() {
     setBusy(true); setNote(null);
     try {
       const r = await api<{ link: 'requested' | 'connected' | 'passed' }>('/api/community/connections', { method: 'POST', body: { userId: person.id, yes } });
-      if (r.link === 'connected') setNote(`You and ${person.name} are connected. Find them under Connections.`);
+      if (r.link === 'connected') setNote(`You and ${person.name} are connected. Find them in My Squad.`);
       else if (r.link === 'requested') setNote(`Sent. You will be connected if ${person.name} says yes too.`);
       setPeople((list) => (list ?? []).slice(1));
     } catch (e) { setNote(e instanceof Error ? e.message : 'That did not work.'); }
@@ -60,8 +60,8 @@ export default function NearbyScreen() {
           <View style={styles.empty}>
             <Ionicons name="people-outline" size={40} color={BLUE} />
             <Text style={styles.emptyTitle}>That is everyone for now</Text>
-            <Text style={[fonts.small, { textAlign: 'center' }]}>Try a wider area, or fill in your profile so others can find you.</Text>
-            <Pressable onPress={() => router.push('/community/profile')} accessibilityRole="button" style={styles.ghost}><Text style={styles.ghostText}>Open my profile</Text></Pressable>
+            <Text style={[fonts.small, { textAlign: 'center' }]}>Try a wider area, or fill in your Scorecard so others can find you.</Text>
+            <Pressable onPress={() => router.push('/community/profile')} accessibilityRole="button" style={styles.ghost}><Text style={styles.ghostText}>Open My Scorecard</Text></Pressable>
           </View>
         )}
 
