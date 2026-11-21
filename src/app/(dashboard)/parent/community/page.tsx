@@ -24,6 +24,9 @@ export default async function ParentCommunity() {
           {!k.linkedUserId ? <p>{k.name} has no Community account linked yet. Ask the club admin to link it.</p> : (<>
             {k.profile?.headline && <p><strong>{k.profile.headline}</strong></p>}
             {k.profile?.about && <p>{k.profile.about}</p>}
+            <h3>Recent posts</h3>
+            {k.posts.length === 0 && <p>None.</p>}
+            {k.posts.map((p) => <p key={p.id} style={{ margin: '4px 0' }}>{p.body}</p>)}
             <h3>Connections</h3>
             {k.connections.length === 0 && <p>None.</p>}
             {k.connections.map((c) => (

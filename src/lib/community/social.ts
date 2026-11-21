@@ -4,6 +4,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
+import { liveRecentPostsBy } from './review';
 import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted } from './service';
 import { mayFollow, mayViewProfile, milesBetween, roughDistance, type CrossBandContext } from './rules';
 
@@ -123,6 +124,7 @@ export type ChildOversight = {
   profile: { headline: string; about: string; lookingFor: string[] } | null;
   connections: Array<{ id: string; name: string; state: 'connected' | 'requested' | 'incoming' }>;
   following: Array<{ type: 'player' | 'club'; id: string; name: string }>;
+  posts: Array<{ id: string; body: string; createdAt: string }>;
 };
 
 /** Each child the parent is linked to. A child with no linked account has nothing in Community yet. */
@@ -136,7 +138,7 @@ export async function getChildrenOversight(parentId: string): Promise<Result<Chi
   const out: ChildOversight[] = [];
   for (const k of kids) {
     const uid = k.linked_user_id;
-    if (!uid) { out.push({ childId: k.id, name: k.first_name, linkedUserId: null, profile: null, connections: [], following: [] }); continue; }
+    if (!uid) { out.push({ childId: k.id, name: k.first_name, linkedUserId: null, profile: null, connections: [], following: [], posts: [] }); continue; }
     const [{ data: prof }, { data: conns }, { data: follows }] = await Promise.all([
       admin.from('community_profiles').select('headline, about, looking_for').eq('user_id', uid).maybeSingle(),
       admin.from('community_connections').select('id, requester_id, addressee_id, status').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`).in('status', ['pending', 'accepted']),
@@ -150,8 +152,9 @@ export async function getChildrenOversight(parentId: string): Promise<Result<Chi
       clubIds.length ? admin.from('clubs').select('id, name').in('id', clubIds) : Promise.resolve({ data: [] as Array<{ id: string; name: string }> }),
       people(admin, playerIds),
     ]);
+    const posts = await liveRecentPostsBy(uid);
     out.push({
-      childId: k.id, name: k.first_name, linkedUserId: uid,
+      childId: k.id, name: k.first_name, linkedUserId: uid, posts,
       // Names of other juniors are first names only, as everywhere else
       profile: prof ? { headline: (prof.headline as string | null) ?? '', about: (prof.about as string | null) ?? '', lookingFor: (prof.looking_for as string[] | null) ?? [] } : { headline: '', about: '', lookingFor: [] },
       connections: (conns ?? []).map((c) => ({
