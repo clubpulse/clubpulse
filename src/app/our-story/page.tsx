@@ -166,7 +166,7 @@ export default function OurStoryPage() {
           <div className="stat-cluster">
             {[
               { val: '2026', desc: 'Season running live on ClubPulse' },
-              { val: '<1s', desc: 'Scorecard sync via Supabase Realtime' },
+              { val: 'Live', desc: 'Ball-by-ball scoring, updated as it happens' },
               { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
               { val: '£0', desc: 'Admin overhead for tracking availability' },
             ].map(s => (
