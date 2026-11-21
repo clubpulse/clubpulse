@@ -51,7 +51,6 @@ export const MENU: MenuGroup[] = [
       { key: 'coaches', label: 'Coaches', detail: 'Coaches approved by your club', icon: '🧑‍🏫', route: '/(tabs)/coaches', for: ['player', 'coach', 'parent', 'club_admin'] },
       { key: 'children', label: 'My Juniors', detail: 'Your children: consents, details and safeguarding', icon: '👪', route: '/safeguarding', for: ['parent'], strict: true },
       { key: 'add-child', label: 'Add a Junior', detail: 'Link your child to their club', icon: '➕', route: '/register-child', for: ['parent'], strict: true },
-      { key: 'post-shift', label: 'Post a shift', detail: 'Ask members for help', icon: '📣', route: '/post-shift', for: ['club_admin'] },
     ],
   },
   {
@@ -91,7 +90,7 @@ export const MENU: MenuGroup[] = [
 ];
 
 // Parked with volunteering (constants/features.ts)
-const PARKED = ['shifts', 'post-shift'];
+const PARKED = ['shifts'];
 
 export type Viewer = { roles: UserRole[]; junior: boolean; switches: { store: boolean; deals: boolean; cards: boolean } };
 
@@ -99,10 +98,18 @@ export function canSee(link: MenuLink, viewer: Viewer): boolean {
   if (!VOLUNTEERS_ENABLED && PARKED.includes(link.key)) return false;
   if (link.needs && !viewer.switches[link.needs]) return false;
   if (link.adult && viewer.junior) return false;
-  if (viewer.roles.includes('club_admin') && !link.strict) return true;
+  // The player side is for people who hold a player-side role. A club admin who is not also a
+  // player has the Club tab and nothing of the player side.
+  const playing = viewer.roles.filter((r) => r !== 'club_admin');
+  if (viewer.roles.length > 0 && playing.length === 0) return false;
   // Someone with no approved role yet is treated as a player, so nobody gets an empty menu
-  const roles = viewer.roles.length > 0 ? viewer.roles : (['player'] as UserRole[]);
+  const roles = playing.length > 0 ? playing : (['player'] as UserRole[]);
   return !link.for || link.for.some((r) => roles.includes(r));
+}
+
+/** Whether the player side (the four pillars and Bonus Points) is theirs. */
+export function playsCricket(roles: UserRole[]): boolean {
+  return roles.length === 0 || roles.some((r) => r !== 'club_admin');
 }
 
 /** The groups this person sees, each with only their rows. Empty groups are dropped. */
