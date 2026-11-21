@@ -2,6 +2,8 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export default function AvailabilityPage() {
   return (
@@ -233,30 +235,7 @@ export default function AvailabilityPage() {
 
       <div className="av-root">
         {/* NAV */}
-        <nav className="av-nav">
-          <div className="av-nav-inner">
-            <Link href="/" className="av-logo">
-              <span className="av-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="avNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#avNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span>
-              <span className="av-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
-            </Link>
-            <Link href="/#features" className="av-nav-back">← All features</Link>
-            <Link href="/contact" className="av-nav-cta">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
 
         {/* HERO */}
         <section className="av-hero">
@@ -267,7 +246,7 @@ export default function AvailabilityPage() {
             <p className="av-sub">Players mark availability in one tap. Captains get a live squad count. The XI is confirmed and notified in seconds — not days of back-and-forth in a 30-person group chat.</p>
             <div className="av-hero-btns">
               <Link href="/contact" className="av-btn-red">Bring this to my club →</Link>
-              <Link href="/#features" className="av-btn-ghost">See all features</Link>
+              <Link href="/features" className="av-btn-ghost">See all features</Link>
             </div>
           </div>
 
@@ -435,36 +414,7 @@ export default function AvailabilityPage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="av-footer">
-          <div className="av-footer-inner">
-            <Link href="/" className="av-logo">
-              <span className="av-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="avFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#avFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span>
-              <span className="av-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
-            </Link>
-            <div className="av-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
-            </div>
-            <p className="av-footer-copy">© 2026 ClubPulse</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
   );

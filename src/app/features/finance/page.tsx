@@ -1,5 +1,7 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export default function FinancePage() {
   return (
@@ -135,27 +137,7 @@ export default function FinancePage() {
       `}</style>
 
       <div className="fn-root">
-        <nav className="fn-nav">
-          <div className="fn-nav-inner">
-            <Link href="/" className="fn-logo"><span className="fn-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="fnNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#fnNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="fn-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <Link href="/#features" className="fn-nav-back">← All features</Link>
-            <Link href="/contact" className="fn-nav-cta">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
 
         <section className="fn-hero">
           <div>
@@ -164,7 +146,7 @@ export default function FinancePage() {
             <p className="fn-sub">ClubPulse tracks who owes what per match and keeps your club&apos;s income and expenses in one place, so treasurers stop chasing players on WhatsApp. Paying match fees in the app is coming soon.</p>
             <div className="fn-btns">
               <Link href="/contact" className="fn-btn-red">Get started →</Link>
-              <Link href="/#features" className="fn-btn-ghost">See all features</Link>
+              <Link href="/features" className="fn-btn-ghost">See all features</Link>
             </div>
           </div>
 
@@ -327,33 +309,7 @@ export default function FinancePage() {
           </div>
         </section>
 
-        <footer className="fn-footer">
-          <div className="fn-footer-inner">
-            <Link href="/" className="fn-logo"><span className="fn-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="fnFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#fnFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="fn-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <div className="fn-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
-            </div>
-            <p className="fn-footer-copy">© 2026 ClubPulse</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
   );

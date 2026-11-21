@@ -1,6 +1,7 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
-import FeaturesMenu from '@/components/marketing/FeaturesMenu';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -89,36 +90,7 @@ export default function OurStoryPage() {
 
       {/* ── Nav ── */}
       <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(8,8,8,0.94)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <nav className="cp-nav">
-          <Link href="/" className="cp-logo">
-            <span className="cp-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="cpNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#cpNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span>
-            <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
-          </Link>
-          <div className="cp-menu">
-            <FeaturesMenu />
-            <Link href="/pricing">Pricing</Link>
-            <Link href="/about" className="active">About</Link>
-            <Link href="/contact">Contact</Link>
-          </div>
-          <div className="cp-nav-ctas">
-            <Link href="/auth/sign-in" className="cp-signin">Sign in</Link>
-            <Link href="/auth/sign-up" className="cp-cta-sm">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
       </header>
 
       {/* ── Hero ── */}
@@ -190,18 +162,7 @@ export default function OurStoryPage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer>
-        <div className="footer">
-          <span className="footer-copy">© 2026 ClubPulse · Built for grassroots cricket</span>
-          <div className="footer-links">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/our-story">Our story</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/auth/sign-in">Sign in</Link>
-          </div>
-        </div>
-      </footer>
+        <MarketingFooter />
     </div>
   );
 }
