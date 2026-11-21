@@ -1,4 +1,4 @@
-// A private conversation between two connected people. Every message is read by the safety
+// Mid-Pitch Chat: a private conversation between two connected people. Every message is read by the safety
 // check before it is delivered, and Report and Block are one tap away.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -47,7 +47,7 @@ export default function ChatScreen() {
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <ScrollView ref={scroller} contentContainerStyle={styles.content} onContentSizeChange={() => scroller.current?.scrollToEnd({ animated: false })} keyboardShouldPersistTaps="handled">
-          <Text style={[fonts.small, { textAlign: 'center' }]}>Messages are checked for safety before they are delivered.</Text>
+          <Text style={[fonts.small, { textAlign: 'center' }]}>The Third Umpire checks every message before it is delivered.</Text>
           {error && <Text style={[fonts.small, { color: colors.danger, textAlign: 'center' }]}>{error}</Text>}
           {!thread && !error && <ActivityIndicator color={BLUE} />}
           {thread?.messages.map((m) => (

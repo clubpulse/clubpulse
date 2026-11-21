@@ -80,13 +80,14 @@ export const PILLARS: Pillar[] = [
   },
 ];
 
-// With the Community switched on, its page leads with the social side: the feed is the large tile
-// and Partnerships, Connections and the profile come first.
+// With the Community switched on, its page leads with the social side. The headings are cricket
+// terms, each with a plain line underneath saying what it is: Commentary Box (the feed),
+// Partnerships (meeting people), My Squad (connections) and My Scorecard (the profile).
 const SOCIAL: MenuLink[] = [
-  { key: 'feed', label: 'Feed', detail: 'What cricket people near you are sharing', icon: '📰', route: '/community/feed' },
+  { key: 'feed', label: 'Commentary Box', detail: 'The feed: what cricket people near you are sharing', icon: '🎙️', route: '/community/feed' },
   { key: 'nearby', label: 'Partnerships', detail: 'Meet cricket people around you', icon: '🤝', route: '/community/nearby' },
-  { key: 'connections', label: 'Connections', detail: 'Requests and messages', icon: '💬', route: '/community/connections' },
-  { key: 'cv', label: 'My profile', detail: 'Your cricket CV', icon: '🪪', route: '/community/profile' },
+  { key: 'connections', label: 'My Squad', detail: 'Your connections and messages', icon: '🧢', route: '/community/connections' },
+  { key: 'cv', label: 'My Scorecard', detail: 'Your profile and cricket CV', icon: '📋', route: '/community/profile' },
 ];
 
 export const pillarByKey = (key: PillarKey): Pillar => {

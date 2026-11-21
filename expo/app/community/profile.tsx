@@ -1,4 +1,4 @@
-// A Community profile: someone's cricket CV. Your own can be edited; anyone else's shows Connect,
+// Scorecard: a Community profile, someone's cricket CV. Your own can be edited; anyone else's shows Connect,
 // or Message once you are connected.
 
 import { useCallback, useEffect, useState } from 'react';
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
               <Pressable onPress={save} disabled={busy} style={[styles.btn, { backgroundColor: BLUE }]} accessibilityRole="button">{busy ? <ActivityIndicator color="#04091A" /> : <Text style={styles.btnText}>Save</Text>}</Pressable>
             </View>
           ) : (
-            <Pressable onPress={() => setEditing(true)} style={[styles.btn, { backgroundColor: BLUE, flex: 0 }]} accessibilityRole="button"><Text style={styles.btnText}>Edit profile</Text></Pressable>
+            <Pressable onPress={() => setEditing(true)} style={[styles.btn, { backgroundColor: BLUE, flex: 0 }]} accessibilityRole="button"><Text style={styles.btnText}>Edit my Scorecard</Text></Pressable>
           )
         ) : (
           <>

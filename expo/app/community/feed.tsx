@@ -1,4 +1,4 @@
-// The Community feed: posts from your club, your area, your league or your county. Everything
+// Commentary Box, the Community feed: posts from your club, your area, your league or your county. Everything
 // posted here is read by the safety check first, and Report sits on every post.
 
 import { useCallback, useEffect, useState } from 'react';
@@ -53,7 +53,7 @@ export default function FeedScreen() {
           <TextInput value={draft} onChangeText={setDraft} placeholder="Share something with cricket people near you" placeholderTextColor={colors.textSubtle} multiline maxLength={1000}
             style={styles.input} accessibilityLabel="Write a post" />
           <View style={styles.composerRow}>
-            <Text style={[fonts.small, { flex: 1 }]}>Checked for safety before anyone sees it.</Text>
+            <Text style={[fonts.small, { flex: 1 }]}>The Third Umpire checks every post before anyone sees it.</Text>
             <Pressable onPress={post} disabled={!draft.trim() || busy} accessibilityRole="button" style={[styles.postBtn, (!draft.trim() || busy) && { opacity: 0.4 }]}>
               {busy ? <ActivityIndicator color="#04091A" /> : <Text style={styles.postBtnText}>Post</Text>}
             </Pressable>
@@ -83,7 +83,7 @@ export default function FeedScreen() {
             </View>
             <Text style={styles.body}>{p.body}</Text>
             {p.held ? (
-              <Text style={[fonts.small, { color: colors.gold }]}>Waiting for ClubPulse to check. Only you can see this.</Text>
+              <Text style={[fonts.small, { color: colors.gold }]}>With the Third Umpire. Only you can see this until it is checked.</Text>
             ) : (
               <View style={styles.actions}>
                 <Pressable onPress={() => like(p)} style={styles.action} accessibilityRole="button" accessibilityLabel={p.liked ? 'Unlike' : 'Like'} hitSlop={8}>
