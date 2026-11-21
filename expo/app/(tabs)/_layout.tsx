@@ -3,16 +3,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoles } from '../../hooks/useRoles';
 import { Wide, WideWithSwipeBack } from '../../components/Wide';
 import { PILLARS } from '../../lib/pillars';
+import { playsCricket } from '../../lib/menu';
 import { colors } from '../../constants/theme';
 
 // The footer: Home, then the four pillars, each in its own colour. Every other tab screen stays
 // in the navigator so it can be opened from Home and from the pillars.
-const HIDDEN = ['coaching', 'shifts', 'games', 'club', 'profile', 'coaches', 'wallet', 'marketplace', 'companion'];
+const HIDDEN = ['coaching', 'shifts', 'games', 'profile', 'coaches', 'wallet', 'marketplace', 'companion'];
 
 export default function TabsLayout() {
-  const { isAdmin, juniors, approvalQueue } = useRoles();
+  const { isAdmin, juniors, approvalQueue, active } = useRoles();
+  // The player side and the club side are apart: players get the four pillars, a club admin gets
+  // the Club tab, and an admin who also plays gets both.
+  const playerSide = playsCricket(active);
   // What is waiting for this person in Community: members to approve, children's consents
-  const waiting = (isAdmin ? approvalQueue.length : 0) + juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
+  const waiting = juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
 
   return (
     <Tabs
@@ -37,6 +41,7 @@ export default function TabsLayout() {
           key={pillar.tab}
           name={pillar.tab}
           options={{
+            ...(playerSide ? {} : { href: null }),
             title: pillar.title,
             tabBarActiveTintColor: pillar.from,
             tabBarIcon: ({ color, size }) => <Ionicons name={pillar.icon} color={color} size={size} />,
@@ -44,6 +49,17 @@ export default function TabsLayout() {
           }}
         />
       ))}
+      <Tabs.Screen
+        name="club"
+        options={{
+          // Only for the club admin. Players reach their club from Pavilion.
+          ...(isAdmin ? {} : { href: null }),
+          title: 'Club',
+          tabBarActiveTintColor: '#F87171',
+          tabBarIcon: ({ color, size }) => <Ionicons name="shield-checkmark" color={color} size={size} />,
+          ...(isAdmin && approvalQueue.length > 0 ? { tabBarBadge: approvalQueue.length } : {}),
+        }}
+      />
       {HIDDEN.map((name) => <Tabs.Screen key={name} name={name} options={{ href: null }} />)}
     </Tabs>
   );

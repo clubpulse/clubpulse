@@ -29,7 +29,9 @@ type Invite = { clubName: string; code: string };
 type JoinState = { state: 'none' } | { state: 'pending' | 'member'; clubName: string };
 
 export default function ClubScreen() {
-  const { club, isAdmin, approvalQueue, loading, refresh } = useRoles();
+  const { club, isAdmin, isPlayer, approvalQueue, loading, refresh } = useRoles();
+  const [addingPlayer, setAddingPlayer] = useState(false);
+  const [addPlayerError, setAddPlayerError] = useState(false);
   const [tab, setTab] = useState<Tab>('overview');
   const [refreshing, setRefreshing] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -38,6 +40,21 @@ export default function ClubScreen() {
   const [membersError, setMembersError] = useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const clubId = club?.id;
+
+  // For an admin who also plays: holding the Player role puts the player side next to the club side
+  async function addPlayerSide() {
+    if (addingPlayer) return;
+    setAddingPlayer(true);
+    setAddPlayerError(false);
+    try {
+      await api('/api/profile/roles', { method: 'POST', body: { role: 'player' } });
+      await refresh();
+    } catch {
+      setAddPlayerError(true);
+    } finally {
+      setAddingPlayer(false);
+    }
+  }
 
   const loadMembers = useCallback(async () => {
     if (!clubId || !isAdmin) return;
@@ -161,6 +178,36 @@ export default function ClubScreen() {
                     <Text style={[styles.quickText, { color: colors.gold }]}>Members</Text>
                   </Pressable>
                 </View>
+
+                <Pressable
+                  style={({ pressed }) => [styles.alertCard, { backgroundColor: colors.surface1 }, pressed && { opacity: 0.7 }]}
+                  onPress={() => router.push('/web?path=%2Fadmin%2Fclub&title=Club%20admin')}
+                  accessibilityRole="button" accessibilityLabel="Open every club admin tool"
+                >
+                  <Ionicons name="shield-checkmark" size={20} color="#F87171" />
+                  <View style={{ flex: 1 }}>
+                    <Text style={fonts.regular}>All club tools</Text>
+                    <Text style={[fonts.small, { fontSize: 11 }]}>Availability, finance, safeguarding, Scores rules and more</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+                </Pressable>
+
+                {!isPlayer && (
+                  <Pressable
+                    style={({ pressed }) => [styles.alertCard, { backgroundColor: colors.surface1 }, pressed && { opacity: 0.7 }]}
+                    onPress={addPlayerSide} disabled={addingPlayer}
+                    accessibilityRole="button" accessibilityLabel="Add the player side"
+                  >
+                    <Ionicons name="person-add" size={20} color={colors.brandSky} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={fonts.regular}>{addingPlayer ? 'Adding…' : 'Do you play for the club too?'}</Text>
+                      <Text style={[fonts.small, { fontSize: 11 }]}>
+                        {addPlayerError ? 'That did not work. Tap to try again.' : 'Add the player side: Scores, technique, Warm-Up and the rest.'}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={16} color={colors.textSubtle} />
+                  </Pressable>
+                )}
 
                 {approvalQueue.length > 0 && (
                   <Pressable style={styles.alertCard} onPress={() => setTab('approvals')}>

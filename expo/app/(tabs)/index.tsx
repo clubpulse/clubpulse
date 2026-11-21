@@ -109,8 +109,9 @@ export default function HomeScreen() {
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'Player';
   const pending = pendingRoles(roles);
   const balance = (wallet?.flexi_balance ?? 0) + (wallet?.reward_balance ?? 0);
-  // Players, coaches and club admins get the playing parts; so does anyone with no role yet
-  const plays = isPlayer || isCoach || isAdmin || active.length === 0;
+  // Players and coaches get the playing parts, and so does anyone with no role yet. A club admin
+  // gets them only as a player too.
+  const plays = isPlayer || isCoach || active.length === 0;
   const pendingJuniors = juniors.filter((j) => j.link_status === 'pending' || !j.consent_given).length;
   const badges: Record<string, number> = { club: isAdmin ? approvalQueue.length : 0, children: pendingJuniors, rewards: rewardsReady };
 
