@@ -36,7 +36,7 @@ export const PILLARS: Pillar[] = [
     key: 'wellness', href: '/wellness', title: 'Wellness', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Your mindset, getting ready and being mentally prepared to play.',
     short: 'Mindset and mental readiness',
-    soon: ['Pre-match readiness and preparation checklist on the web', 'Mental-skills routines (in the app today)', 'Support for a bad run of form'],
+    soon: ['Readiness trends over time', 'Mental-skills routines on the web (in the app today)', 'Support for a bad run of form'],
   },
   {
     key: 'academy', href: '/academy', title: 'Academy', icon: '📚', from: '#2DD4BF', to: '#5EEAD4',

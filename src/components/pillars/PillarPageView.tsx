@@ -3,16 +3,16 @@ import { Glyph } from '@/components/icons/Glyph';
 // still to come. Shares its look with the role pages.
 
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { MagicCard } from '@/components/magic/MagicCard';
 import type { NavLink } from '@/lib/nav/menu';
 import { PILLARS, type Pillar } from '@/lib/nav/pillars';
 
 const SYNE = "'Bricolage Grotesque', sans-serif";
 
-type Props = { pillar: Pillar; sections: Array<{ title: string | null; links: NavLink[] }> };
+type Props = { pillar: Pillar; sections: Array<{ title: string | null; links: NavLink[] }>; /** Shown straight after the header, before the page links */ lead?: ReactNode };
 
-export function PillarPageView({ pillar, sections }: Props) {
+export function PillarPageView({ pillar, sections, lead }: Props) {
   const colours = { '--mg-from': pillar.from, '--mg-to': pillar.to } as CSSProperties;
   const first = sections[0]?.links[0] ?? null;
   // Where each section's cards start in the order they appear, so they fade in one after another
@@ -48,6 +48,7 @@ export function PillarPageView({ pillar, sections }: Props) {
           ))}
         </nav>
       </section>
+      {lead}
 
       {sections.length === 0 && (
         <MagicCard tint={pillar.from} style={{ padding: '26px' }}>

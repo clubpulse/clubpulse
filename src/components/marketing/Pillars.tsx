@@ -37,7 +37,7 @@ const PILLARS: Pillar[] = [
     name: 'Wellness', href: '/players/wellness', tag: 'Preparation', colour: '#F472B6', icon: '🧘', col: 2,
     line: 'Look after your body and your head, and arrive ready to play.',
     items: [
-      { text: 'Private weekly check-in, match mood and injury log', status: 'live' },
+      { text: 'Pre-match readiness check-in, match-day checklist, weekly check-in, match mood and injury log', status: 'live' },
       { text: 'Mind Nets, guided breathing and match-day routines', status: 'app' },
     ],
   },

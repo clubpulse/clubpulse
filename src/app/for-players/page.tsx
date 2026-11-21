@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const CARDS = [
   { href: '/players/analysis', h: 'Player Analysis', colour: '#FBBF24', status: 'Live now', promise: 'Film a shot or a delivery and see exactly what to work on, with Coach AI, stats and a Cricket CV.' },
   { href: '/players/community', h: 'Community', colour: '#60A5FA', status: 'Coming soon', promise: 'Your club’s noticeboard and dressing room today, and a network to find players, clubs and games next.' },
-  { href: '/players/wellness', h: 'Wellness', colour: '#F472B6', status: 'Live now · routines in the app', promise: 'A private weekly check-in, match mood and an injury log, with mental-skills routines in the app.' },
+  { href: '/players/wellness', h: 'Wellness', colour: '#F472B6', status: 'Live now · routines in the app', promise: 'A private pre-match readiness check-in and checklist, weekly check-in, match mood and an injury log, with mental-skills routines in the app.' },
   { href: '/players/academy', h: 'Academy', colour: '#2DD4BF', status: 'Live in the app', promise: 'Two-minute lessons and a practice plan in the app, and daily games on the website.' },
 ];
 
