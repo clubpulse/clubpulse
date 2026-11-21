@@ -36,6 +36,7 @@ export const MENU: MenuGroup[] = [
     links: [
       { key: 'analyse', label: 'Action Replay', detail: 'Analyse: film a shot or a delivery and get a mark', icon: '🎥', route: '/web?path=%2Fanalyse&title=Analyse&camera=1', for: PLAYING },
       { key: 'coaching', label: 'Coaching', detail: 'Highlights, progress and booking a coach', icon: '📈', route: '/coaching', for: ['player', 'coach', 'parent'] },
+      { key: 'form', label: 'Form Guide', detail: "Your players' technique progress", icon: '📊', route: '/player-progress', for: ['coach'], strict: true },
       { key: 'coach-ai', label: 'Twelfth Man', detail: 'Coach AI: ask anything about your game', icon: '🧠', route: '/companion' },
     ],
   },
