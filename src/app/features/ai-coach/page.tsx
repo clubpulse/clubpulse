@@ -158,11 +158,11 @@ export default function AICoachPage() {
         <section className="ai-hero">
           <div>
             <p className="ai-eyebrow">🎯 AI Coach</p>
-            <div className="ai-road-tag">🗺 Roadmap — coming 2027</div>
+            <div className="ai-road-tag">✓ In the ClubPulse app</div>
             <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">On-device.</span></h1>
             <p className="ai-sub">MediaPipe Pose maps 33 3D body landmarks at 30fps — directly on your phone camera. No server, no upload, no waiting. Real-time feedback on stance, elbow position, head level, and follow-through.</p>
             <div className="ai-btns">
-              <Link href="/contact" className="ai-btn-red">Register interest →</Link>
+              <Link href="/auth/sign-up" className="ai-btn-red">Get started free →</Link>
               <Link href="/#features" className="ai-btn-ghost">See all features</Link>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function AICoachPage() {
           <h2 className="ai-section-h2">Common questions about AI Coach.</h2>
           <div className="ai-faq-list">
             {[
-              ['When will AI Coach be available?', 'AI Coach is on the ClubPulse roadmap for 2027. You can register interest now and we\'ll notify you as soon as it\'s live. The core technology (MediaPipe Pose) already works — we\'re building the coaching logic and UI around it.'],
+              ['Where do I find AI Coach?', 'In the ClubPulse app. Open the AI Coach screen, choose batting or bowling, and film a shot or a delivery. The analysis runs on your phone.'],
               ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose uses the device\'s neural processing unit and runs at 30fps on these chips without draining battery rapidly.'],
               ['Can it be used without an internet connection?', 'Yes — because everything runs on-device, AI Coach works completely offline. No signal, no Wi-Fi — it doesn\'t matter. This is intentional: cricket nets often have poor signal.'],
               ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],
@@ -316,10 +316,10 @@ export default function AICoachPage() {
         <section className="ai-cta">
           <div className="ai-cta-inner">
             <div>
-              <h2 className="ai-cta-h">Be first to try AI coaching.</h2>
-              <p className="ai-cta-sub">Register your club&apos;s interest and we&apos;ll reach out when AI Coach launches.</p>
+              <h2 className="ai-cta-h">Try AI coaching today.</h2>
+              <p className="ai-cta-sub">Sign up, open the AI Coach screen and film your first shot or delivery.</p>
             </div>
-            <Link href="/contact" className="ai-cta-btn">Register interest →</Link>
+            <Link href="/auth/sign-up" className="ai-cta-btn">Get started free →</Link>
           </div>
         </section>
 

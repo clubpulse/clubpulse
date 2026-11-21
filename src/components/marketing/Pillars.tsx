@@ -24,18 +24,18 @@ const PILLARS: Pillar[] = [
     name: 'Pavilion', tag: 'Community', colour: '#60A5FA', icon: '🤝', col: 2,
     line: 'A social network for cricketers: find players and clubs near you.',
     items: [
-      { text: 'Club feed with photos and video', soon: true },
-      { text: 'Find people by miles, club, league or county', soon: true },
-      { text: 'Every post checked before it appears', soon: true },
+      { text: 'Club feed with photos and video' },
+      { text: 'Find people by miles, club, league or county' },
+      { text: 'Every post checked before it appears' },
     ],
   },
   {
     name: 'Warm-Up', tag: 'Wellness', colour: '#F472B6', icon: '🧘', col: 2,
     line: 'Mental preparation: mindset, mindfulness and match-day routines.',
     items: [
-      { text: 'Mind Nets: a six-week programme', soon: true },
-      { text: 'Guided breathing and meditation', soon: true },
-      { text: 'Match-day checklists and a pre-ball routine', soon: true },
+      { text: 'Mind Nets: a six-week programme' },
+      { text: 'Guided breathing and meditation' },
+      { text: 'Match-day checklists and a pre-ball routine' },
     ],
   },
   {

@@ -1059,7 +1059,7 @@ export default function HomePage() {
               {/* AI Coach */}
               <div className="cp-feat-card">
                 <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
-                <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
+                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">AI Coach</h3>
                 <p className="cp-feat-card-body">Your phone camera analyses your batting stance, head position and follow-through, and your bowling action, front knee and foot position, at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
                 <div className="cp-feat-card-bullets">
@@ -1073,7 +1073,7 @@ export default function HomePage() {
               {/* Finance */}
               <div className="cp-feat-card">
                 <div className="cp-feat-card-icon"><Glyph e="💷" /></div>
-                <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
+                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Club finance</h3>
                 <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments, and send Wise payouts — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
                 <div className="cp-feat-card-bullets">
