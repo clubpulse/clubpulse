@@ -99,3 +99,23 @@ export async function moderateAction(action: string, kind: string, targetId: str
   const r = await resolveItem(staff.id, { action, kind, targetId, reportId });
   return done(r, 'Done.', '/admin/community/reports');
 }
+
+// ── Nets and pick-up games ──
+import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
+
+export async function createSessionAction(input: Record<string, unknown>): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await createSession(u.id, input as never);
+  if (!r.success) return { success: false, error: r.error };
+  if (r.data.held) return { success: false, error: r.data.tell ?? 'Not created.' };
+  revalidatePath('/community/near');
+  return { success: true, message: 'Session created.' };
+}
+export async function joinSessionAction(sessionId: string, on: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await joinSession(u.id, sessionId, on), on ? 'You are in.' : 'You have left.', '/community/near');
+}
+export async function cancelSessionAction(sessionId: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await cancelSession(u.id, sessionId), 'Cancelled.', '/community/near');
+}

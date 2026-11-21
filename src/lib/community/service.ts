@@ -35,7 +35,7 @@ export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
 }
 
 /** The clubs a scope covers, with how far each is from the viewer's own ground where known. */
-async function clubsInScope(admin: Admin, viewer: Viewer, scope: Scope): Promise<Map<string, { name: string; miles: number | null }> | 'all'> {
+export async function clubsInScope(admin: Admin, viewer: Viewer, scope: Scope): Promise<Map<string, { name: string; miles: number | null }> | 'all'> {
   if (scope === 'all') return 'all';
   const { data } = await admin.from('clubs').select('id, name, county, league, ground_lat, ground_lng');
   const clubs = (data ?? []) as ClubRow[];

@@ -146,3 +146,60 @@ export function mayFollow(subject: 'player' | 'club', c: CrossBandContext): bool
   if (!c.subjectJunior) return true;
   return c.isLinkedParent || (c.sharesClub && c.adultIsStaffOfSharedClub);
 }
+
+// ── Nets and pick-up games ──────────────────────────────────────────────────────────────────────
+
+export const SESSION_KINDS = ['nets', 'pickup'] as const;
+export type SessionKind = (typeof SESSION_KINDS)[number];
+export type AgeBand = 'adult' | 'junior';
+export const SESSION_MAX_DAYS = 60;
+
+export type SessionContext = {
+  viewerJunior: boolean;
+  viewerClubIds: string[];
+  /** The viewer is a coach or club admin at the session's club */
+  viewerIsClubStaff: boolean;
+};
+
+/**
+ * Who may host. Adults host adult sessions. Under-18s never host. A junior session is hosted only
+ * by a coach or club admin of the club it is for, so it is always a club session with an adult
+ * responsible, never a stranger's pick-up game.
+ */
+export function mayHost(band: AgeBand, c: SessionContext, clubId: string): boolean {
+  if (c.viewerJunior) return false;
+  if (!c.viewerClubIds.includes(clubId)) return false;
+  return band === 'adult' ? true : c.viewerIsClubStaff;
+}
+
+/** Who may sign up. Adult sessions are for adults. Junior sessions are for juniors of that club only. */
+export function maySignUp(band: AgeBand, c: Pick<SessionContext, 'viewerJunior' | 'viewerClubIds'>, clubId: string): boolean {
+  if (band === 'adult') return !c.viewerJunior;
+  return c.viewerJunior && c.viewerClubIds.includes(clubId);
+}
+
+/** Whether a session is shown to someone at all. Junior sessions are invisible outside the club's own juniors and staff. */
+export function maySeeSession(band: AgeBand, c: SessionContext, clubId: string): boolean {
+  if (band === 'adult') return !c.viewerJunior;
+  return c.viewerClubIds.includes(clubId) && (c.viewerJunior || c.viewerIsClubStaff);
+}
+
+const HOMEISH = /\b(my|our)\s+(house|home|flat|place|garden|address)\b|\bat\s+mine\b|\bcome\s+to\s+mine\b|\bmy\s+(road|street)\b/i;
+
+/** The place must be a club ground or a public venue, never someone's home. */
+export function checkPlace(place: string): Verdict {
+  const t = place.trim();
+  if (t.length < 3) return { ok: false, reason: 'Say where it is: the club ground or a public venue.' };
+  if (t.length > 120) return { ok: false, reason: 'Keep the place short.' };
+  if (HOMEISH.test(t)) return { ok: false, reason: 'Sessions must be at a club ground or a public venue, not at someone’s home.' };
+  if (hasPersonalDetails(t)) return { ok: false, reason: 'Do not put phone numbers, emails or links in the place.' };
+  return { ok: true };
+}
+
+export function checkWhen(startsAt: Date, now: Date = new Date()): Verdict {
+  if (!(startsAt.getTime() > now.getTime())) return { ok: false, reason: 'Pick a time in the future.' };
+  if (startsAt.getTime() > now.getTime() + SESSION_MAX_DAYS * 86_400_000) return { ok: false, reason: `Sessions can be set up to ${SESSION_MAX_DAYS} days ahead.` };
+  return { ok: true };
+}
+
+export const checkCapacity = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 2 && n <= 30;
