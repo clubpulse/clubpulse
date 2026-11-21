@@ -59,7 +59,6 @@ export function BadgeWall() {
           <ShimmerButton href="/contact">Start earning →</ShimmerButton>
           <Link href="/features" style={{ fontSize: 14, fontWeight: 700, color: '#EFC84A', textDecoration: 'none' }}>See all features →</Link>
         </div>
-        <p style={{ marginTop: 14, fontSize: 12, color: 'rgba(232,237,245,0.4)' }}>Badges in the app are coming soon.</p>
       </div>
     </section>
   );
