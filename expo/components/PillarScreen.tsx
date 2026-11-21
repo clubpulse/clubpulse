@@ -11,6 +11,14 @@ import { GlowCard, Hero } from './Magic';
 import { DailyThought } from './DailyThought';
 import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
+// How each pillar earns Scores, in one line
+const EARN: Record<PillarKey, string> = {
+  technique: 'Earn Scores for analysing your technique.',
+  community: 'Earn Scores for turning up for your club.',
+  wellness: 'Earn Scores for Warm-Up sessions and Mind Nets weeks.',
+  academy: 'Earn Scores for lessons, the daily question and games.',
+};
+
 export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
   const pillar = pillarByKey(key);
   const router = useRouter();
@@ -34,6 +42,17 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
           </View>
           <Text style={styles.tagline}>{pillar.tagline}</Text>
         </Hero>
+
+        {/* Rewards run through every pillar: what is done here counts towards the Run Chase */}
+        <Pressable onPress={() => open('/rewards')} accessibilityRole="button" accessibilityLabel={`Run Chase. ${EARN[key]} Open your tasks`}
+          style={({ pressed }) => [styles.earn, pressed && { opacity: 0.75 }]}>
+          <Text style={{ fontSize: 18 }}>⭐</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.earnTitle}>Run Chase</Text>
+            <Text style={styles.earnText}>{EARN[key]}</Text>
+          </View>
+          <Text style={styles.earnLink}>My tasks ›</Text>
+        </Pressable>
 
         {/* Warm-Up opens with the thought for the day */}
         {key === 'wellness' && <DailyThought />}
@@ -120,6 +139,10 @@ const styles = StyleSheet.create({
   leadIcon: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   leadLabel: { fontFamily: display.heavy, fontSize: 23, color: colors.white, letterSpacing: -0.3 },
   leadDetail: { fontSize: 13.5, lineHeight: 18, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
+  earn: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(239,200,74,0.35)', backgroundColor: 'rgba(239,200,74,0.08)', paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  earnTitle: { fontSize: 13, fontWeight: '800', color: colors.gold, letterSpacing: 0.3 },
+  earnText: { fontSize: 13, lineHeight: 18, color: colors.text },
+  earnLink: { fontSize: 13, fontWeight: '700', color: colors.gold },
   section: { fontFamily: display.heavy, fontSize: 17, color: colors.white, letterSpacing: -0.2, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   small: { flexBasis: '47%', flexGrow: 1, minWidth: 140 },

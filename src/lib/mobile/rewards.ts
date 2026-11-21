@@ -53,7 +53,7 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
   const week = weekStart(today);
   const month = monthStart(today);
 
-  const [steps, checkins, plays, activity, ledger, earned, signups, attendance, shiftsDone, redemptions, lessons, plans] = await Promise.all([
+  const [steps, checkins, plays, activity, ledger, earned, signups, attendance, shiftsDone, redemptions, lessons, plans, analyses] = await Promise.all([
     admin.from('steps_log').select('log_date, step_count, streak_day').eq('user_id', userId).gte('log_date', stepsFrom).lte('log_date', today),
     admin.from('daily_checkins').select('checkin_date').eq('user_id', userId).gte('checkin_date', from),
     admin.from('game_plays').select('play_date, state, score').eq('user_id', userId).eq('game', 'auction').eq('finished', true).gte('play_date', from),
@@ -71,6 +71,7 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
       .not('status', 'in', '(cancelled,refunded)').gte('redeemed_at', fromTs(month)),
     admin.from('academy_progress').select('updated_at, first_passed_at').eq('user_id', userId).gte('updated_at', fromTs(from)),
     admin.from('academy_plans').select('created_at').eq('user_id', userId).gte('created_at', fromTs(from)),
+    admin.from('analysis_results').select('created_at').eq('user_id', userId).eq('analysis_type', 'pose').gte('created_at', fromTs(from)),
   ]);
 
   const ukDay = (ts: unknown) => ukToday(new Date(ts as string));
@@ -96,6 +97,10 @@ async function loadFacts(admin: Admin, userId: string, clubId: string, today: st
     lessonAttempts: (lessons.data ?? []).map((r) => ukDay(r.updated_at)),
     lessonPasses: (lessons.data ?? []).filter((r) => r.first_passed_at).map((r) => ukDay(r.first_passed_at)),
     plansMade: (plans.data ?? []).map((r) => ukDay(r.created_at)),
+    warmupOn: process.env.WARMUP_REWARDS_ENABLED === 'true',
+    warmups: acts.filter((a) => a.kind === 'warmup').map((a) => a.activity_date as string),
+    mindWeeks: acts.filter((a) => a.kind === 'mind_week').map((a) => a.activity_date as string),
+    analyses: (analyses.data ?? []).map((r) => ukDay(r.created_at)),
     coachAi: acts.filter((a) => a.kind === 'coach_ai').map((a) => a.activity_date as string),
     questions: acts
       .filter((a) => a.kind === 'daily_question')
@@ -159,11 +164,11 @@ export async function answerQuestion(
 }
 
 /** Records that the person used a feature today. Safe to call more than once a day; never throws. */
-export async function logActivity(userId: string, kind: 'coach_ai'): Promise<void> {
+export async function logActivity(userId: string, kind: 'coach_ai' | 'warmup' | 'mind_week', data: Record<string, unknown> = {}): Promise<void> {
   try {
     await createAdminClient()
       .from('app_activity')
-      .upsert({ user_id: userId, kind, activity_date: ukToday(), data: {} }, { onConflict: 'user_id,kind,activity_date', ignoreDuplicates: true });
+      .upsert({ user_id: userId, kind, activity_date: ukToday(), data }, { onConflict: 'user_id,kind,activity_date', ignoreDuplicates: true });
   } catch {
     // Logging a task must never break the feature it is logging
   }
