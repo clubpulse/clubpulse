@@ -1,6 +1,6 @@
 // Pure. The signed-in menu: every page, the group it sits in, and who it is for.
-// The groups follow the four pillars of the product (Technique, Community, Wellness, Academy),
-// with Rewards running alongside them: Scores are earned in every pillar.
+// The groups follow the four pillars of the product (Analysis, Community, Wellness, Academy),
+// with Match Day first (the club's Saturday) and Rewards running alongside: Scores are earned in every pillar.
 // Hiding a link is for tidiness only. Each page still checks for itself who may open it.
 
 export type Role = 'player' | 'coach' | 'parent' | 'volunteer';
@@ -34,8 +34,21 @@ const PLAYING: Role[] = ['player', 'coach'];
 
 export const NAV_GROUPS: NavGroup[] = [
   {
+    key: 'matchday',
+    label: 'Match Day',
+    icon: '🏟️',
+    tint: '#22C55E',
+    links: [
+      { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING },
+      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
+      { href: '/team-selection', label: 'Team Selection', icon: '🧢', for: PLAYING },
+      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
+      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING },
+    ],
+  },
+  {
     key: 'technique',
-    label: 'The Nets',
+    label: 'Analysis',
     icon: '🎯',
     tint: '#FBBF24',
     links: [
@@ -48,18 +61,15 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/companion', label: 'Coach AI', icon: '🧠' },
       { href: '/mentor-match', label: 'Mentor Match', icon: '🤝', for: PLAYING },
       { href: '/opposition-intel', label: 'Opposition Intel', icon: '🕵️', for: PLAYING },
+      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING },
     ],
   },
   {
     key: 'community',
-    label: 'Pavilion',
+    label: 'Community',
     icon: '🤝',
     tint: '#60A5FA',
     links: [
-      { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING, section: 'Match day' },
-      { href: '/match-day', label: 'Match Day', icon: '🏟️', section: 'Match day' },
-      { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡', section: 'Match day' },
-      { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING, section: 'Match day' },
       { href: '/noticeboard', label: 'Noticeboard', icon: '📌', section: 'My club' },
       { href: '/dressing-room', label: 'Dressing Room', icon: '👕', for: PLAYING, section: 'My club' },
       { href: '/club-bible', label: 'Club Bible', icon: '📖', section: 'My club' },
@@ -67,7 +77,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/finance', label: 'Finance', icon: '💷', for: ['player', 'parent'], adult: true, section: 'My club' },
       { href: '/volunteer', label: 'Volunteering', icon: '🙌', section: 'My club' },
       { href: '/club-alumni', label: 'Alumni', icon: '🎓', section: 'My club' },
-      { href: '/cricket-cv', label: 'My Cricket CV', icon: '📄', for: PLAYING, section: 'People' },
       { href: '/transfer-window', label: 'Transfer Window', icon: '🔄', for: PLAYING, adult: true, section: 'People' },
       { href: '/leaderboard', label: 'Leaderboard', icon: '🏅', section: 'People' },
       { href: '/auction', label: 'The Auction', icon: '🔨', section: 'Together' },
@@ -77,13 +86,12 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: 'wellness',
-    label: 'Warm-Up',
+    label: 'Wellness',
     icon: '🧡',
     tint: '#F472B6',
     links: [
       { href: '/wellbeing', label: 'Wellbeing', icon: '🧡', for: ['player'] },
       { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
-      { href: '/pulse-score', label: 'Pulse Score', icon: '💓', for: ['player'] },
       { href: '/injury-intel', label: 'Injury Intel', icon: '🩹', for: PLAYING },
     ],
   },
@@ -99,7 +107,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: 'scores',
-    label: 'Bonus Points',
+    label: 'Rewards',
     icon: '⭐',
     tint: '#EFC84A',
     links: [
@@ -123,19 +131,19 @@ export const NAV_GROUPS: NavGroup[] = [
     tint: '#F87171',
     adminOnly: true,
     links: [
-      { href: '/admin/club', label: 'Club admin', icon: '🛡️' },
+      { href: '/admin/club', label: 'Club home', icon: '🛡️' },
+      { href: '/admin/club/availability', label: 'Match Day', icon: '🏟️' },
       { href: '/admin/club/members', label: 'Members', icon: '👥' },
-      { href: '/admin/club/availability', label: 'Availability', icon: '📅' },
-      { href: '/admin/club/noticeboard', label: 'Noticeboard', icon: '📌' },
-      { href: '/admin/club/scores-rules', label: 'Scores rules', icon: '⭐' },
-      { href: '/admin/club/scratch-cards', label: 'Scratch cards', icon: '🎟️' },
-      { href: '/admin/club/coaches', label: 'Coaches', icon: '🎓' },
-      { href: '/admin/club/safeguarding', label: 'Safeguarding', icon: '🧷' },
       { href: '/admin/club/finance', label: 'Finance', icon: '💷' },
-      { href: '/admin-query', label: 'Club Intelligence', icon: '🤖' },
-      { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
-      { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉' },
-      { href: '/admin/club/gut-feeling', label: 'Gut Feeling results', icon: '🗳️' },
+      { href: '/admin/club/safeguarding', label: 'Safeguarding', icon: '🧷' },
+      { href: '/admin/club/noticeboard', label: 'Noticeboard', icon: '📌', section: 'More' },
+      { href: '/admin/club/coaches', label: 'Coaches', icon: '🎓', section: 'More' },
+      { href: '/admin/club/scores-rules', label: 'Scores rules', icon: '⭐', section: 'More' },
+      { href: '/admin/club/scratch-cards', label: 'Scratch cards', icon: '🎟️', section: 'More' },
+      { href: '/admin-query', label: 'Club Intelligence', icon: '🤖', section: 'More' },
+      { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍', section: 'More' },
+      { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉', section: 'More' },
+      { href: '/admin/club/gut-feeling', label: 'Gut Feeling results', icon: '🗳️', section: 'More' },
     ],
   },
 ];
@@ -182,7 +190,7 @@ export function asStaff(audience: Audience): Audience {
   return { ...audience, admin: true, defaulted: false, roles: ROLES };
 }
 
-/** Whether the player side (The Nets, Pavilion, Warm-Up, Academy, Bonus Points) is theirs. */
+/** Whether the player side (Match Day, Analysis, Community, Wellness, Academy, Rewards) is theirs. */
 export function playsCricket(audience: Audience): boolean {
   return audience.roles.length > 0;
 }

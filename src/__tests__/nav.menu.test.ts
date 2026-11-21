@@ -1,5 +1,6 @@
 import { NAV_GROUPS, asAdmin, asStaff, audienceLabel, buildAudience, menuFor } from '@/lib/nav/menu';
 import { PILLARS, pillarCounts, pillarSections } from '@/lib/nav/pillars';
+import { bottomLinksFor } from '@/lib/nav/bottom';
 
 const hrefs = (a: Parameters<typeof menuFor>[0], o = {}) => menuFor(a, o).flatMap((g) => g.links.map((l) => l.href));
 const aud = (userRoles: string[], extra: Partial<{ memberRoles: string[]; junior: boolean; admin: boolean }> = {}) =>
@@ -48,7 +49,7 @@ describe('menu by role', () => {
 
   it('shows ClubPulse staff both sides', () => {
     const staff = asStaff(aud([]));
-    expect(menuFor(staff).map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'club']);
+    expect(menuFor(staff).map((g) => g.key)).toEqual(['matchday', 'technique', 'community', 'wellness', 'academy', 'scores', 'club']);
   });
 
   it('parks volunteering: nobody is shown the link', () => {
@@ -104,8 +105,41 @@ describe('menu by role', () => {
     expect(audienceLabel(aud([], { junior: true }))).toBe('Junior player');
   });
 
+  it('puts Match Day first, Cricket CV under Analysis, and Pulse Score outside Wellness', () => {
+    const player = menuFor(aud(['player']));
+    expect(player[0].key).toBe('matchday');
+    const by = (k: string) => player.find((g) => g.key === k)!.links.map((l) => l.href);
+    expect(by('matchday')).toEqual(expect.arrayContaining(['/availability', '/match-day', '/team-selection', '/gut-feeling', '/season-wrap']));
+    expect(by('technique')).toContain('/cricket-cv');
+    expect(by('community')).not.toContain('/cricket-cv');
+    expect(by('wellness')).not.toContain('/pulse-score');
+    expect(hrefs(aud(['player']))).not.toContain('/pulse-score');
+    expect(player.find((g) => g.key === 'scores')!.label).toBe('Rewards');
+  });
+
+  it('keeps a parent out of team selection', () => {
+    expect(hrefs(aud(['parent']))).not.toContain('/team-selection');
+    expect(hrefs(aud(['parent']))).toContain('/match-day');
+  });
+
+  it('leads the club group with the five main tools', () => {
+    const club = NAV_GROUPS.find((g) => g.key === 'club')!;
+    expect(club.links.slice(0, 5).map((l) => l.href)).toEqual(['/admin/club', '/admin/club/availability', '/admin/club/members', '/admin/club/finance', '/admin/club/safeguarding']);
+  });
+
+  it('gives every phone tab bar five items and never Rewards', () => {
+    for (const a of [aud(['player']), aud(['coach']), aud(['parent']), aud([], { admin: true }), aud([], { junior: true })]) {
+      const links = bottomLinksFor(a);
+      expect(links).toHaveLength(5);
+      expect(links.map((l) => l.href)).not.toContain('/marketplace');
+    }
+    expect(bottomLinksFor(aud(['player'])).map((l) => l.label)).toEqual(['Home', 'Match Day', 'Analysis', 'Academy', 'Profile']);
+    expect(bottomLinksFor(aud(['parent'])).map((l) => l.href)).not.toContain('/technique');
+    expect(bottomLinksFor(aud([], { admin: true }))[0].href).toBe('/admin/club');
+  });
+
   it('groups the menu by the four pillars, with rewards alongside', () => {
-    expect(NAV_GROUPS.map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'club']);
+    expect(NAV_GROUPS.map((g) => g.key)).toEqual(['matchday', 'technique', 'community', 'wellness', 'academy', 'scores', 'club']);
     expect(PILLARS.map((p) => p.key)).toEqual(['technique', 'community', 'wellness', 'academy']);
   });
 
@@ -125,7 +159,7 @@ describe('menu by role', () => {
 
   it('shows each person their own pages in a pillar', () => {
     const player = pillarSections('community', aud(['player']));
-    expect(player.map((s) => s.title)).toEqual(['Match day', 'My club', 'People', 'Together']);
+    expect(player.map((s) => s.title)).toEqual(['My club', 'People', 'Together']);
     const parent = pillarSections('community', aud(['parent'])).flatMap((s) => s.links.map((l) => l.href));
     expect(parent).toContain('/noticeboard');
     expect(parent).not.toContain('/dressing-room');

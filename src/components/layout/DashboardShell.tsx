@@ -71,7 +71,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
           <div className="mx-auto max-w-5xl px-4 py-6 pb-24 md:px-8 md:pb-10">{children}</div>
         </main>
       </div>
-      <BottomNav isPlatformAdmin={isPlatformAdmin} />
+      <BottomNav audience={audience} isPlatformAdmin={isPlatformAdmin} />
     </div>
   );
 }

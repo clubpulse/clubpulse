@@ -3,17 +3,12 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { bottomLinksFor } from '@/lib/nav/bottom';
+import type { Audience } from '@/lib/nav/menu';
 
-const BOTTOM_LINKS = [
-  { href: '/dashboard',   label: 'Home',     icon: '🏠' },
-  { href: '/analyse',     label: 'Analyse',  icon: '🎯' },
-  { href: '/match-day',   label: 'Match Day', icon: '🏟️' },
-  { href: '/marketplace', label: 'Rewards',  icon: '🛍️' },
-  { href: '/profile',     label: 'Profile',  icon: '👤' },
-];
-
-export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boolean }) {
+export function BottomNav({ audience }: { audience: Audience; isPlatformAdmin?: boolean }) {
   const pathname = usePathname();
+  const BOTTOM_LINKS = bottomLinksFor(audience);
 
   return (
     <nav
