@@ -47,6 +47,8 @@ export default function BadgesScreen() {
   const [data, setData] = useState<Response | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // With over a hundred badges, "Earned" is the quick way to find the ones to share
+  const [only, setOnly] = useState<'all' | 'earned'>('all');
 
   const load = useCallback(async () => {
     try {
@@ -71,17 +73,29 @@ export default function BadgesScreen() {
           <Text style={styles.heroText}>badges earned. Tap Share on any badge you have earned to show it off.</Text>
         </View>
 
+        {data && (
+          <View style={styles.filter}>
+            {(['all', 'earned'] as const).map((f) => (
+              <Pressable key={f} onPress={() => setOnly(f)} accessibilityRole="button" accessibilityState={{ selected: only === f }}
+                style={[styles.chip, only === f && styles.chipOn]}>
+                <Text style={[styles.chipText, only === f && { color: colors.background }]}>{f === 'all' ? `All ${data.total}` : `Earned ${data.earned}`}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+
         {error && <Text style={[fonts.regular, { color: colors.danger }]}>{error}</Text>}
         {!data && !error && <ActivityIndicator color={colors.gold} style={{ marginTop: spacing.xl }} />}
 
         {data && GROUPS.map((g) => {
-          const list = data.badges.filter((b) => b.group === g.key);
+          const all = data.badges.filter((b) => b.group === g.key);
+          const list = only === 'earned' ? all.filter((b) => b.earned) : all;
           if (list.length === 0) return null;
           return (
             <View key={g.key} style={{ gap: spacing.md }}>
               <View style={styles.groupHead}>
                 <Text style={[styles.groupTitle, { color: g.tint }]}>{g.title}</Text>
-                <Text style={fonts.small}>{list.filter((b) => b.earned).length} of {list.length}</Text>
+                <Text style={fonts.small}>{all.filter((b) => b.earned).length} of {all.length}</Text>
               </View>
               {list.map((b) => (
                 <View key={b.key} style={[styles.badge, b.earned && { borderColor: g.tint, backgroundColor: `${g.tint}14` }]}
@@ -116,6 +130,7 @@ export default function BadgesScreen() {
           );
         })}
 
+        {data && only === 'earned' && data.earned === 0 && <Text style={[fonts.regular, { textAlign: 'center' }]}>Nothing earned yet. Your first badge is close.</Text>}
         {data && <Text style={[fonts.small, { textAlign: 'center' }]}>Sharing sends a sentence and a link about the badge. It does not include your name or your club.</Text>}
       </ScrollView>
     </SafeAreaView>
@@ -129,6 +144,10 @@ const styles = StyleSheet.create({
   heroKicker: { fontSize: 12, fontWeight: '800', letterSpacing: 2, color: colors.gold },
   heroCount: { fontFamily: display.heavy, fontSize: 40, color: colors.white },
   heroText: { fontSize: 14, lineHeight: 20, color: colors.text, textAlign: 'center' },
+  filter: { flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' },
+  chip: { borderRadius: 999, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 8 },
+  chipOn: { backgroundColor: colors.gold, borderColor: colors.gold },
+  chipText: { fontSize: 13, fontWeight: '800', color: colors.text },
   groupHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   groupTitle: { fontFamily: display.heavy, fontSize: 18 },
   badge: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface1, padding: spacing.md },

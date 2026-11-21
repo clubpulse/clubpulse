@@ -11,9 +11,12 @@ export async function getBadges(userId: string): Promise<BadgesResponse> {
   const count = { count: 'exact' as const, head: true };
   const activity = (kind: string) => admin.from('app_activity').select('user_id', count).eq('user_id', userId).eq('kind', kind);
 
-  const [analyses, coachAi, warmups, mindWeeks, lessons, questions, auctions, trainings, checkins, activeDays, streak, earned, claimed] =
+  const [analyses, ballSessions, plans, steps, coachAi, warmups, mindWeeks, lessons, questions, auctions, trainings, checkins, activeDays, streak, earned, claimed] =
     await Promise.all([
       admin.from('analysis_results').select('id', count).eq('user_id', userId).eq('analysis_type', 'pose'),
+      admin.from('analysis_results').select('id', count).eq('user_id', userId).eq('analysis_type', 'ball'),
+      admin.from('academy_plans').select('id', count).eq('user_id', userId),
+      admin.from('steps_log').select('step_count').eq('user_id', userId).limit(5000),
       activity('coach_ai'),
       activity('warmup'),
       admin.from('app_activity').select('data').eq('user_id', userId).eq('kind', 'mind_week').limit(500),
@@ -31,6 +34,10 @@ export async function getBadges(userId: string): Promise<BadgesResponse> {
   const weeks = new Set((mindWeeks.data ?? []).map((r) => (r.data as { week?: number } | null)?.week).filter((w) => Number.isInteger(w)));
   const stats: Stats = {
     analyses: analyses.count ?? 0,
+    ballSessions: ballSessions.count ?? 0,
+    plansMade: plans.count ?? 0,
+    totalSteps: (steps.data ?? []).reduce((a, r) => a + ((r.step_count as number) ?? 0), 0),
+    auctionsPlayed: (auctions.data ?? []).length,
     coachAiDays: coachAi.count ?? 0,
     warmupDays: warmups.count ?? 0,
     mindWeeks: weeks.size,
