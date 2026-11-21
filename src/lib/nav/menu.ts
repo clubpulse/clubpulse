@@ -33,7 +33,7 @@ const PLAYING: Role[] = ['player', 'coach'];
 export const NAV_GROUPS: NavGroup[] = [
   {
     key: 'technique',
-    label: 'Technique',
+    label: 'The Nets',
     icon: '🎯',
     tint: '#FBBF24',
     links: [
@@ -50,7 +50,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: 'community',
-    label: 'Community',
+    label: 'Pavilion',
     icon: '🤝',
     tint: '#60A5FA',
     links: [
@@ -76,7 +76,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: 'wellness',
-    label: 'Wellness',
+    label: 'Warm-Up',
     icon: '🧡',
     tint: '#F472B6',
     links: [
@@ -98,7 +98,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: 'scores',
-    label: 'Rewards',
+    label: 'Bonus Points',
     icon: '⭐',
     tint: '#EFC84A',
     links: [
