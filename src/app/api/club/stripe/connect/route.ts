@@ -26,7 +26,7 @@ async function assertClubAdmin(userId: string, clubId: string) {
     .eq('club_id', clubId)
     .eq('is_active', true)
     .maybeSingle();
-  return data?.role === 'club_admin' || data?.role === 'admin';
+  return data?.role === 'club_admin';
 }
 
 export async function POST(req: NextRequest) {

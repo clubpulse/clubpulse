@@ -19,7 +19,7 @@ async function getAdminClubId(userId: string, requestedClubId?: string | null) {
     .select('club_id')
     .eq('user_id', userId)
     .eq('is_active', true)
-    .in('role', ['club_admin', 'admin'])
+    .in('role', ['club_admin'])
     .limit(1)
     .maybeSingle();
   return data?.club_id ?? null;

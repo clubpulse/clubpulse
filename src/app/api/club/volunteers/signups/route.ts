@@ -13,7 +13,7 @@ async function getAdminClubId(userId: string): Promise<string | null> {
     .from('club_members')
     .select('club_id')
     .eq('user_id', userId)
-    .in('role', ['admin', 'club_admin'])
+    .in('role', ['club_admin'])
     .eq('is_active', true)
     .limit(1)
     .single();

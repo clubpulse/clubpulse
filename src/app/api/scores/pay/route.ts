@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     .eq('is_active', true)
     .maybeSingle();
 
-  if (!role || role.role !== 'admin') {
+  if (!role || role.role !== 'club_admin') {
     return NextResponse.json({ error: 'Must be a club admin to accept payments' }, { status: 403 });
   }
 

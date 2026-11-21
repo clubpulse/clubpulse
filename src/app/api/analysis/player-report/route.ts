@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         .eq('user_id', user.id)
         .eq('is_active', true)
         .maybeSingle();
-      if (!membership || !['admin', 'club_admin', 'coach'].includes(membership.role)) {
+      if (!membership || !['club_admin', 'coach'].includes(membership.role)) {
         return NextResponse.json({ error: 'Admin access required to view other players\' reports' }, { status: 403 });
       }
     }

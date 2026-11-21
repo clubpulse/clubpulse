@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
       .select('club_id')
       .eq('user_id', user.id)
       .eq('is_active', true)
-      .in('role', ['club_admin', 'admin'])
+      .in('role', ['club_admin'])
       .limit(1)
       .maybeSingle();
     clubId = data?.club_id;

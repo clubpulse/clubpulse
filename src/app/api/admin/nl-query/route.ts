@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       .eq('is_active', true)
       .maybeSingle();
 
-    if (!membership || !['admin', 'club_admin', 'coach'].includes(membership.role)) {
+    if (!membership || !['club_admin', 'coach'].includes(membership.role)) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

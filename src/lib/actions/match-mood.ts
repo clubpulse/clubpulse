@@ -99,7 +99,7 @@ export async function getTeamMood(
     .select('role')
     .eq('user_id', userId)
     .eq('club_id', clubId)
-    .in('role', ['admin', 'coach'])
+    .in('role', ['club_admin', 'coach'])
     .single();
 
   if (!membership) return { success: false, error: 'Not authorised' };
