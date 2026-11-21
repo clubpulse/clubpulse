@@ -194,6 +194,18 @@ const FRONT_METRICS: Record<Mode, MetricDef[]> = {
 
 export const METRICS_BY_VIEW: Record<View, Record<Mode, MetricDef[]>> = { side: METRICS, front: FRONT_METRICS };
 
+/**
+ * The definition of one measure (its target range, unit and tip) for a discipline, view and shot.
+ * A saved analysis keeps only each measure's key, value and mark, so this is how its targets are
+ * looked up again later. Null for a measure that no longer exists.
+ */
+export function metricDefFor(key: string, mode: Mode, view: View = 'side', shotType?: ShotType): MetricDef | null {
+  const def = METRICS_BY_VIEW[view]?.[mode]?.find((d) => d.key === key);
+  if (!def) return null;
+  const ideal = mode === 'batting' && shotType ? SHOT_OVERRIDES[shotType]?.[key] : undefined;
+  return ideal ? { ...def, ideal } : def;
+}
+
 export function angleAt(a: Point, b: Point, c: Point) {
   const ab = Math.atan2(a.y - b.y, a.x - b.x);
   const cb = Math.atan2(c.y - b.y, c.x - b.x);

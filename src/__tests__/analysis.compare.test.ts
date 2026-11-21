@@ -58,3 +58,54 @@ describe('compareAnalyses', () => {
     expect(r.better.map((x) => x.key)).toEqual(['b', 'a']);
   });
 });
+
+describe('trends', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { directionOf, trendOver, progressByKind, describeKind, rebuild } = require('@/lib/analysis/compare');
+
+  it('reads which way a run of marks is heading', () => {
+    expect(directionOf([62, 68, 72, 80])).toBe('improving');
+    expect(directionOf([80, 74, 70, 61])).toBe('slipping');
+    expect(directionOf([71, 72, 70, 72])).toBe('steady');
+    expect(directionOf([60, 80, 58, 79, 61])).toBe('mixed');
+  });
+  it('needs three analyses before calling a trend', () => {
+    const now = { overall: 80, metrics: [metric('knee', 158, 92)] };
+    expect(trendOver(now, [saved(72, [['knee', 139, 70]])])).toBeNull();
+    const t = trendOver(now, [saved(72, [['knee', 139, 70]]), saved(65, [['knee', 130, 58]])]);
+    expect(t.marks).toEqual([65, 72, 80]);
+    expect(t.direction).toBe('improving');
+    expect(t.text).toBe('Your last 3: 65, 72, 80. You are improving.');
+    expect(t.measures[0]).toMatchObject({ key: 'knee', direction: 'improving', marks: [58, 70, 92] });
+  });
+  it('lists what is slipping before what is improving, and leaves out what is steady', () => {
+    const now = { overall: 70, metrics: [metric('a', 1, 90), metric('b', 1, 50), metric('c', 1, 71)] };
+    const t = trendOver(now, [saved(70, [['a', 1, 80], ['b', 1, 65], ['c', 1, 70]]), saved(70, [['a', 1, 70], ['b', 1, 80], ['c', 1, 72]])]);
+    expect(t.measures.map((m: { key: string }) => m.key)).toEqual(['b', 'a']);
+    expect(t.measures[0].text).toBe('80, 65, 50. Slipping, so this is the one to work on.');
+  });
+  it('skips a measure that was not taken every time', () => {
+    const t = trendOver({ overall: 80, metrics: [metric('knee', 1, 90)] }, [saved(70, [['knee', 1, 70]]), saved(60, [])]);
+    expect(t.measures).toEqual([]);
+  });
+  it('names a kind of analysis', () => {
+    expect(describeKind({ mode: 'bowling', view: 'front' })).toBe('Bowling · front-on');
+    expect(describeKind({ mode: 'batting', shotType: 'drive' })).toMatch(/^Batting · .*rive · side-on$/);
+  });
+  it('puts a saved analysis back together with its targets', () => {
+    const r = rebuild({ mode: 'bowling', view: 'side', overall: 70, metrics: [{ key: 'nope', label: 'x', value: 1, score: 1 }] });
+    expect(r.metrics).toEqual([]);
+  });
+  it('groups saved analyses by kind, newest first', () => {
+    const list = [
+      saved(80, [], { createdAt: 'c' }), saved(72, [], { createdAt: 'b' }),
+      saved(60, [], { mode: 'batting', shotType: 'drive', createdAt: 'd' }), saved(65, [], { createdAt: 'a' }),
+    ];
+    const p = progressByKind(list);
+    expect(p.map((x: { kind: string }) => x.kind)[0]).toBe('Bowling · side-on');
+    expect(p[0]).toMatchObject({ sessions: 3, overall: 80, when: 'c' });
+    expect(p[0].comparison.headline).toBe('Overall 80, up 8 from 72 last time.');
+    expect(p[0].trend.marks).toEqual([65, 72, 80]);
+    expect(p[1]).toMatchObject({ sessions: 1, comparison: null, trend: null });
+  });
+});

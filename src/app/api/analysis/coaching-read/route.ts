@@ -71,6 +71,30 @@ export async function POST(req: NextRequest) {
         .map((m) => `- ${m.label}: ${m.score}/100  (measured ${typeof m.value === 'number' ? m.value.toFixed(2) : m.value})`)
         .join('\n');
 
+      // What changed since the player's last analysis of this kind, when there is one. Only numbers
+      // come from the request; the names are the ones already listed above.
+      const prevRaw = (body as { previous?: { overall?: unknown; metrics?: unknown } }).previous;
+      const prevOverall = typeof prevRaw?.overall === 'number' && Number.isFinite(prevRaw.overall) ? Math.round(prevRaw.overall) : null;
+      const prevScores = new Map<string, number>();
+      if (Array.isArray(prevRaw?.metrics)) {
+        for (const item of prevRaw.metrics.slice(0, 30) as Array<{ key?: unknown; score?: unknown }>) {
+          if (typeof item?.key === 'string' && typeof item.score === 'number' && Number.isFinite(item.score)) prevScores.set(item.key, Math.round(item.score));
+        }
+      }
+      const moved = metrics.filter((m) => prevScores.has(m.key)).map((m) => ({ label: m.label, now: Math.round(m.score), before: prevScores.get(m.key)! }));
+      const improved = moved.filter((m) => m.now - m.before >= 4).sort((x, y) => (y.now - y.before) - (x.now - x.before));
+      const slipped = moved.filter((m) => m.before - m.now >= 4).sort((x, y) => (y.before - y.now) - (x.before - x.now));
+      const trendRaw = (body as { trend?: unknown }).trend;
+      const trendMarks = Array.isArray(trendRaw) ? trendRaw.filter((v): v is number => typeof v === 'number' && Number.isFinite(v)).slice(-5).map(Math.round) : [];
+      const list = (items: typeof moved) => items.slice(0, 3).map((m) => `${m.label} (${m.before} to ${m.now})`).join(', ');
+      const progressBlock = prevOverall === null ? '' : `
+Compared with this player's last analysis of the same kind: overall ${prevOverall} then, ${Math.round(overall)} now.
+Improved since then: ${improved.length ? list(improved) : 'nothing by a clear margin'}
+Slipped since then: ${slipped.length ? list(slipped) : 'nothing by a clear margin'}${trendMarks.length >= 2 ? `\nOverall marks across their recent sessions, oldest first, ending with today: ${[...trendMarks, Math.round(overall)].join(', ')}` : ''}
+`;
+      const progressRule = prevOverall === null ? '' : `
+Also say, in one sentence, what has improved and what has slipped since last time, naming the measures. Use only the changes listed above; if nothing moved by a clear margin, say it is holding steady. Do not invent a change.`;
+
       if (discipline === 'batting') {
         const shotLabel = shotType
           ? { drive: 'drive', pull: 'pull/hook', cut: 'cut', sweep: 'sweep', defence: 'defensive push', leave: 'leave' }[shotType] ?? shotType
@@ -101,16 +125,17 @@ ${metricLines}
 
 Three weakest areas this session: ${worst.map(m => `${m.label} (${m.score}/100)`).join(', ')}
 Strongest area: ${best.label} (${best.score}/100)
-${combos.length > 0 ? `\nMechanical combinations to reason about:\n${combos.map(c => `- ${c}`).join('\n')}` : ''}
+${progressBlock}${combos.length > 0 ? `\nMechanical combinations to reason about:\n${combos.map(c => `- ${c}`).join('\n')}` : ''}
 
 Write ONE coaching paragraph (4–6 sentences) for this player. You must:
 1. Acknowledge their best point briefly (one phrase, not a full sentence)
 2. Focus the rest on the TWO most damaging weaknesses, explaining the mechanical chain (why each flaw produces the outcome it does for a ${shotLabel})
 3. If a combination above is relevant, name it — a specific combined diagnosis is more useful than two separate observations
 4. End with ONE concrete, phase-specific drill or mental cue for their very next session, tailored to the ${shotLabel}
+${progressRule}
 
 Tone: direct, knowledgeable, British. Use proper cricket terms (bat face, loading position, follow-through, trigger movement, etc.).
-No bullet points, no headings, no markdown. Speak directly to the player as "you". Under 120 words.`;
+No bullet points, no headings, no markdown. Speak directly to the player as "you". Under ${prevOverall === null ? 120 : 150} words.`;
 
       } else {
         // Bowling prompt — improved but still concise
@@ -123,13 +148,14 @@ ${metricLines}
 
 Weakest: ${worst[0].label} (${worst[0].score}/100)
 Strongest: ${best.label} (${best.score}/100)
-
+${progressBlock}
 Write ONE coaching paragraph (3–5 sentences) that:
 - Praises the strongest metric in one phrase
 - Explains why the weakest metric matters mechanically for bowling (not just that it's low)
 - Ends with one specific drill or bowling cue
+${progressRule}
 
-Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to the player directly. Under 100 words.`;
+Tone: warm, British, specific. No headings, no bullets, no markdown. Speak to the player directly. Under ${prevOverall === null ? 100 : 130} words.`;
       }
 
     } else {
