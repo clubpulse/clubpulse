@@ -1,5 +1,5 @@
 // The thought for the day: one line about the mind side of cricket, changing at midnight.
-// Shown on Home and at the top of Warm-Up.
+// Shown at the top of Warm-Up, the wellness page.
 
 import { StyleSheet, Text, View } from 'react-native';
 import { thoughtFor } from '../lib/quotes';
