@@ -21,28 +21,28 @@ export type Pillar = {
 
 export const PILLARS: Pillar[] = [
   {
-    key: 'technique', href: '/technique', title: 'The Nets', icon: '🎯', from: '#FBBF24', to: '#FDE68A',
+    key: 'technique', href: '/technique', title: 'Analysis', icon: '🎯', from: '#FBBF24', to: '#FDE68A',
     tagline: 'Film your batting or bowling and see exactly what to work on.',
     short: 'Video analysis and coaching',
     soon: ['Front-on ball tracking', 'Your own arm baseline for the bowling check'],
   },
   {
-    key: 'community', href: '/community', title: 'Pavilion', icon: '🤝', from: '#60A5FA', to: '#93C5FD',
-    tagline: 'Your club, your matches and the people you play with.',
+    key: 'community', href: '/community', title: 'Community', icon: '🤝', from: '#60A5FA', to: '#93C5FD',
+    tagline: 'Your club, and the people you play with.',
     short: 'Your club and the game around you',
-    soon: ['A feed for your club, your county and the country', 'Club against club leaderboards', 'Clubs looking for players, and players open to a club'],
+    soon: ['The social network: feeds, connections, and finding players, clubs and games nearby', 'Club against club leaderboards'],
   },
   {
-    key: 'wellness', href: '/wellness', title: 'Warm-Up', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
+    key: 'wellness', href: '/wellness', title: 'Wellness', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Your mindset, getting ready and being mentally prepared to play.',
     short: 'Mindset and mental readiness',
-    soon: ['Pre-match routines', 'Focus and breathing exercises', 'Getting through a bad run of form'],
+    soon: ['Pre-match readiness and preparation checklist on the web', 'Mental-skills routines (in the app today)', 'Support for a bad run of form'],
   },
   {
     key: 'academy', href: '/academy', title: 'Academy', icon: '📚', from: '#2DD4BF', to: '#5EEAD4',
     tagline: 'Learn the game: its Laws, its tactics and its skills.',
     short: 'Learn the Laws, tactics and skills',
-    soon: ['Courses with a certificate when you finish', 'Preparing for umpiring and coaching awards'],
+    soon: ['Lessons on the web (in the app today)', 'Courses with a ClubPulse certificate when you finish'],
   },
 ];
 

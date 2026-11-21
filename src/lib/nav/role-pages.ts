@@ -61,8 +61,8 @@ export function holdsRole(audience: Audience, role: PageRole): boolean {
 
 /** The tools each page leads with, by address, most useful first. */
 const FEATURED: Record<PageRole, string[]> = {
-  player: ['/analyse', '/availability', '/development', '/highlights', '/player-report', '/log-performance', '/games', '/leaderboard', '/cricket-cv', '/coaching', '/wellbeing', '/pulse-score'],
-  coach: ['/coaching', '/analyse', '/qualifications', '/opposition-intel', '/player-report', '/mentor-match', '/match-day', '/injury-intel', '/companion'],
+  player: ['/match-day', '/availability', '/team-selection', '/analyse', '/cricket-cv', '/development', '/highlights', '/player-report', '/log-performance', '/games', '/wellbeing', '/leaderboard', '/coaching'],
+  coach: ['/match-day', '/team-selection', '/coaching', '/analyse', '/qualifications', '/opposition-intel', '/player-report', '/mentor-match', '/injury-intel', '/companion'],
   parent: ['/coaching', '/match-day', '/noticeboard', '/documents', '/fee-offset', '/finance', '/club-bible', '/companion'],
   admin: [],
   volunteer: ['/match-day', '/noticeboard', '/qualifications', '/play', '/documents', '/club-bible', '/marketplace'],

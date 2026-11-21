@@ -582,7 +582,7 @@ const DEMOS: Record<CategoryId, React.ReactNode> = {
   rewards:     <RewardsDemo />,
   coach: <ListDemo items={COACH_ITEMS} />,
   hub: <ListDemo items={HUB_ITEMS} />,
-  wellness: <ListDemo items={WELLNESS_ITEMS} note="What you do in Warm-Up stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
+  wellness: <ListDemo items={WELLNESS_ITEMS} note="What you do in the app's wellness routines stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
   academy: <ListDemo items={ACADEMY_ITEMS} />,
 };
 

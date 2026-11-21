@@ -33,7 +33,7 @@ const PLAYING: MenuLink['for'] = ['player', 'coach'];
 
 export const PILLARS: Pillar[] = [
   {
-    key: 'technique', tab: 'technique', title: 'The Nets', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
+    key: 'technique', tab: 'technique', title: 'Analysis', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
     tagline: 'Technique: film your batting or bowling and see exactly what to work on.',
     big: 'analyse',
     top: ['form', 'coaching', 'coach-ai', 'find-coach', 'plan'],
@@ -43,7 +43,7 @@ export const PILLARS: Pillar[] = [
     ],
   },
   {
-    key: 'community', tab: 'community', title: 'Pavilion', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#93C5FD',
+    key: 'community', tab: 'community', title: 'Community', emoji: '🤝', icon: 'people', from: '#60A5FA', to: '#93C5FD',
     tagline: 'Community: your club, your matches and the people you play with.',
     big: 'club',
     top: ['children', 'post-shift', 'coaches', 'shifts', 'league', 'profile'],
@@ -54,7 +54,7 @@ export const PILLARS: Pillar[] = [
     soon: 'Cricket people across your region, beyond your own club, are on the way.',
   },
   {
-    key: 'wellness', tab: 'wellness', title: 'Warm-Up', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
+    key: 'wellness', tab: 'wellness', title: 'Wellness', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Wellness: your mindset, getting ready and being mentally prepared to play.',
     big: 'training',
     top: ['mindfulness', 'meditation', 'mindset', 'matchday'],
