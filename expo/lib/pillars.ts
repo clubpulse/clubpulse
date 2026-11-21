@@ -36,7 +36,7 @@ export const PILLARS: Pillar[] = [
     key: 'technique', tab: 'technique', title: 'The Nets', emoji: '🎯', icon: 'analytics', from: '#FBBF24', to: '#FDE68A',
     tagline: 'Technique: film your batting or bowling and see exactly what to work on.',
     big: 'analyse',
-    top: ['coaching', 'coach-ai', 'find-coach', 'plan'],
+    top: ['form', 'coaching', 'coach-ai', 'find-coach', 'plan'],
     extra: [
       { key: 'find-coach', label: 'Coaches', detail: 'Find a coach approved by your club', icon: '🧑‍🏫', route: '/(tabs)/coaches', for: ['player', 'coach', 'parent', 'club_admin'] },
       { key: 'plan', label: 'Net Plan', detail: 'Your practice plan for this week', icon: '🗓️', route: '/academy-plan', for: PLAYING },

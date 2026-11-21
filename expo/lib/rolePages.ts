@@ -47,6 +47,7 @@ export const ROLE_PAGES: Record<PageRole, RolePageConfig> = {
     action: { label: 'Manage my coaching', to: { web: '/coaching?tab=coach', title: 'Coaching' } },
     tools: [
       { label: 'Fixture Card', detail: 'Your sessions and bookings', icon: '🗓️', tint: '#F97316', to: { web: '/coaching?tab=coach', title: 'Coaching' } },
+      { label: 'Form Guide', detail: "Your players' technique progress", icon: '📊', tint: '#F97316', to: { screen: '/player-progress' } },
       { label: 'Action Replay', detail: 'Film a player and mark the clip', icon: '🎥', tint: '#F97316', to: analyse },
       { label: 'Coaches', detail: 'Coaches approved by your club', icon: '🧑‍🏫', tint: '#60A5FA', to: { screen: '/(tabs)/coaches' } },
       { label: 'Academy', detail: 'Lessons to share with players', icon: '📚', tint: '#A78BFA', to: { screen: '/academy' } },

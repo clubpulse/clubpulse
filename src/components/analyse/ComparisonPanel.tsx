@@ -6,6 +6,11 @@ import type { Comparison, Trend } from '@/lib/analysis/compare';
 const BLUE = '#60A5FA';
 const DIRECTION_COLOUR = { improving: '#22C55E', slipping: '#FBBF24', mixed: '#A3A3A3', steady: '#A3A3A3' } as const;
 
+// Bars are scaled between the lowest and highest mark in the run, so a small rise is still visible
+const barHeight = (mark: number, all: number[]) => {
+  const lo = Math.min(...all); const hi = Math.max(...all);
+  return hi === lo ? 70 : 30 + (70 * (mark - lo)) / (hi - lo);
+};
 const day = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
 export function ComparisonPanel({ comparison, trend, title }: { comparison: Comparison | null; trend: Trend | null; title?: string }) {
@@ -51,7 +56,7 @@ export function ComparisonPanel({ comparison, trend, title }: { comparison: Comp
           <div className="mt-2 flex items-end gap-1.5" style={{ height: 44 }} role="img" aria-label={trend.text}>
             {trend.marks.map((mark, i) => (
               <div key={i} className="flex flex-1 flex-col items-center justify-end" style={{ height: '100%', maxWidth: 44 }}>
-                <div style={{ width: '100%', height: `${Math.max(8, mark)}%`, borderRadius: 4, background: i === trend.marks.length - 1 ? BLUE : 'rgba(96,165,250,0.35)' }} />
+                <div style={{ width: '100%', height: `${barHeight(mark, trend.marks)}%`, borderRadius: 4, background: i === trend.marks.length - 1 ? BLUE : 'rgba(96,165,250,0.35)' }} />
               </div>
             ))}
           </div>
