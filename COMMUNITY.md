@@ -8,7 +8,7 @@ The Community (feed, profiles, connections, follows, messages) is off by default
 Preferably on a **preview or demo environment first**. If clubpulse.co already has real under-18 members, do not
 enable it there until every box below is ticked and a person who handles safeguarding at the club has agreed.
 
-- [ ] All Community migrations are run in Supabase: `20261121000001_community.sql`, `20261122000002_community_follows.sql`, `20261122000003_community_moderation.sql`
+- [ ] All Community migrations are run in Supabase: `20261121000001_community.sql`, `20261122000002_community_follows.sql`, `20261122000003_community_moderation.sql`, `20261122000004_community_sessions.sql`
 - [ ] `ANTHROPIC_API_KEY` is set. Without it the safety check **holds every post** (it fails closed), so nothing goes live.
 - [ ] At least one ClubPulse staff account has `profiles.role = 'admin'` and can open `/admin/community/reports`
 - [ ] Someone has agreed to look at that inbox daily (held posts wait there until a person decides)
@@ -25,7 +25,8 @@ enable it there until every box below is ticked and a person who handles safegua
 7. Adult tries to follow the junior. Expected: refused.
 8. Junior and adult cannot message each other unless the existing rules allow it (see `rules.ts`, `mayMessage`).
 9. Block a person. Expected: their posts vanish from your feed and they cannot message you.
-10. Linked parent opens `/parent/community`. Expected: sees the child's profile, posts, connections and follows, but no private messages.
+10. Adult sets up nets at `/community/near`. A junior account must not see it. A coach sets up a junior session; an adult outside that club must not see it, and a junior at another club cannot join it. A place like "my house" is refused.
+11. Linked parent opens `/parent/community`. Expected: sees the child's profile, posts, connections and follows, but no private messages.
 
 If any step fails, stop and switch it off.
 
