@@ -81,10 +81,10 @@ export const PILLARS: Pillar[] = [
 ];
 
 // With the Community switched on, its page leads with the social side: the feed is the large tile
-// and Nearby, Connections and the profile come first.
+// and Partnerships, Connections and the profile come first.
 const SOCIAL: MenuLink[] = [
   { key: 'feed', label: 'Feed', detail: 'What cricket people near you are sharing', icon: '📰', route: '/community/feed' },
-  { key: 'nearby', label: 'Nearby', detail: 'Meet cricket people around you', icon: '📍', route: '/community/nearby' },
+  { key: 'nearby', label: 'Partnerships', detail: 'Meet cricket people around you', icon: '🤝', route: '/community/nearby' },
   { key: 'connections', label: 'Connections', detail: 'Requests and messages', icon: '💬', route: '/community/connections' },
   { key: 'cv', label: 'My profile', detail: 'Your cricket CV', icon: '🪪', route: '/community/profile' },
 ];

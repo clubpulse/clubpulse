@@ -19,7 +19,7 @@ import { menuFor, type MenuGroup } from '../../lib/menu';
 import { isPageRole, rolePagesFor, type PageRole } from '../../lib/rolePages';
 import { RoleDashboard, useRolePage } from '../../components/RoleDashboard';
 import { UpsellBanner } from '../../components/UpsellBanner';
-import { DEALS_ENABLED, STORE_ENABLED } from '../../constants/features';
+import { DEALS_ENABLED, STORE_ENABLED, VOLUNTEERS_ENABLED } from '../../constants/features';
 import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 type Home = {
@@ -141,6 +141,9 @@ export default function HomeScreen() {
   const available = fixture?.myStatus === 'available';
   const cards = home?.cards;
 
+  // A request to become a volunteer is not shown while volunteering is parked
+  const waitingRoles = pending.filter((r) => VOLUNTEERS_ENABLED || r !== 'volunteer');
+
   const matchCard = (
     <View style={styles.hero}>
       <Text style={styles.heroEyebrow}>Next match{when ? ` · ${when.day}` : ''}</Text>
@@ -216,15 +219,15 @@ export default function HomeScreen() {
           />
         ) : null}
 
-        {(active.includes('volunteer') || pending.length > 0) && (
+        {((VOLUNTEERS_ENABLED && active.includes('volunteer')) || waitingRoles.length > 0) && (
           <View style={styles.roleBadgeRow}>
-            {active.includes('volunteer') && (
+            {VOLUNTEERS_ENABLED && active.includes('volunteer') && (
               <Pressable onPress={() => router.push('/(tabs)/shifts')} accessibilityRole="button" accessibilityLabel="Volunteer. Open volunteer shifts"
                 style={({ pressed }) => [styles.roleBadge, { backgroundColor: ROLE_CONFIG.volunteer.dimColor, borderWidth: 1, borderColor: `${ROLE_CONFIG.volunteer.color}55` }, pressed && { opacity: 0.7 }]}>
                 <Text style={[styles.roleBadgeText, { color: ROLE_CONFIG.volunteer.color }]}>{ROLE_CONFIG.volunteer.icon} {ROLE_CONFIG.volunteer.label}  ›</Text>
               </Pressable>
             )}
-            {pending.map((r) => (
+            {waitingRoles.map((r) => (
               <View key={`p-${r}`} style={[styles.roleBadge, { backgroundColor: 'rgba(255,255,255,0.04)' }]}>
                 <Text style={[styles.roleBadgeText, { color: colors.textMuted as string }]}>⏳ {ROLE_CONFIG[r].label} · waiting for your club</Text>
               </View>

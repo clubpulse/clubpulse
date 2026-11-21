@@ -1,4 +1,4 @@
-// Nearby: cricket people around you, one at a time. Say what you are looking for, then Connect or
+// Partnerships: cricket people around you, one at a time. (Named after a batting partnership.) Say what you are looking for, then Connect or
 // Not now. Two yeses make a connection, and only then can you message each other. Juniors are
 // shown other juniors, adults are shown adults.
 

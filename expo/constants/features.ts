@@ -14,6 +14,10 @@ export const STORE_ENABLED = process.env.EXPO_PUBLIC_STORE_ENABLED === 'true';
 // listing says the app has member content and messaging.
 export const COMMUNITY_ENABLED = process.env.EXPO_PUBLIC_COMMUNITY_ENABLED === 'true';
 
+// Volunteering (shifts, posting a shift, the volunteer badge) is parked for now. The screens still
+// exist; nothing links to them until this is switched back on.
+export const VOLUNTEERS_ENABLED = process.env.EXPO_PUBLIC_VOLUNTEERS_ENABLED === 'true';
+
 // Legal pages, opened in the in-app browser. Apple and Google both require the privacy policy
 // to be reachable from inside the app. They live on the website at /privacy and /terms; the
 // two variables are only for pointing somewhere else.

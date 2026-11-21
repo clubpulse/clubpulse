@@ -4,6 +4,7 @@
 // each screen and the server still check for themselves what the person may do.
 
 import type { UserRole } from './roles';
+import { VOLUNTEERS_ENABLED } from '../constants/features';
 
 export type MenuLink = {
   key: string;
@@ -87,9 +88,13 @@ export const MENU: MenuGroup[] = [
   },
 ];
 
+// Parked with volunteering (constants/features.ts)
+const PARKED = ['shifts', 'post-shift'];
+
 export type Viewer = { roles: UserRole[]; junior: boolean; switches: { store: boolean; deals: boolean; cards: boolean } };
 
 export function canSee(link: MenuLink, viewer: Viewer): boolean {
+  if (!VOLUNTEERS_ENABLED && PARKED.includes(link.key)) return false;
   if (link.needs && !viewer.switches[link.needs]) return false;
   if (link.adult && viewer.junior) return false;
   if (viewer.roles.includes('club_admin') && !link.strict) return true;

@@ -51,7 +51,7 @@ export default function ConnectionsScreen() {
         ))}
 
         <Text style={styles.section} accessibilityRole="header">Connected</Text>
-        {rows && group('connected').length === 0 && <Text style={fonts.small}>Nobody yet. Find cricket people under Nearby.</Text>}
+        {rows && group('connected').length === 0 && <Text style={fonts.small}>Nobody yet. Find cricket people under Partnerships.</Text>}
         {group('connected').map((r) => (
           <Pressable key={r.id} onPress={() => router.push({ pathname: '/community/chat/[id]', params: { id: r.id } })} style={[styles.card, styles.row]} accessibilityRole="button" accessibilityLabel={`${r.person.name}. Open messages`}>
             <Avatar name={r.person.name} />
