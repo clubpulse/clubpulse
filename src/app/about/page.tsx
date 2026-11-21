@@ -140,7 +140,7 @@ export default function AboutPage() {
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Founder, ClubPulse · Slough CC member since 2019</cite>
+          <cite>— Co-Founder, ClubPulse</cite>
         </div>
 
         <div className="story-block">
