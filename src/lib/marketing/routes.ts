@@ -1,6 +1,6 @@
-// Where the public header and footer point. Prompts 2 and 3 replace these with /for-clubs,
-// /for-players and /players/* once those pages exist; until then they use the live pages.
-export const FOR_CLUBS_HREF = '/features/clubs';
+// Where the public header and footer point. /for-clubs is live; /for-players and /players/* replace the player
+// targets once those pages exist (until then they use the live pages).
+export const FOR_CLUBS_HREF = '/for-clubs';
 export const FOR_PLAYERS_HREF = '/features/players';
 
 export const PILLAR_LINKS = [
