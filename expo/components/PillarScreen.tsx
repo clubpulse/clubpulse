@@ -8,6 +8,7 @@ import { useRoles } from '../hooks/useRoles';
 import { pillarByKey, pillarTiles, type PillarKey } from '../lib/pillars';
 import { DEALS_ENABLED, STORE_ENABLED } from '../constants/features';
 import { GlowCard, Hero } from './Magic';
+import { DailyThought } from './DailyThought';
 import { colors, display, fonts, radius, spacing } from '../constants/theme';
 
 export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
@@ -33,6 +34,9 @@ export function PillarScreen({ pillar: key }: { pillar: PillarKey }) {
           </View>
           <Text style={styles.tagline}>{pillar.tagline}</Text>
         </Hero>
+
+        {/* Warm-Up opens with the thought for the day */}
+        {key === 'wellness' && <DailyThought />}
 
         {/* Four tiles, the same place every page keeps its four */}
         {top.length > 0 && (

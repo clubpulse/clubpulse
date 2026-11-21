@@ -34,8 +34,8 @@ export const PILLARS: Pillar[] = [
   },
   {
     key: 'wellness', href: '/wellness', title: 'Warm-Up', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
-    tagline: 'Look after your body and get your head ready to play.',
-    short: 'Body and mind, ready to play',
+    tagline: 'Your mindset, getting ready and being mentally prepared to play.',
+    short: 'Mindset and mental readiness',
     soon: ['Pre-match routines', 'Focus and breathing exercises', 'Getting through a bad run of form'],
   },
   {
