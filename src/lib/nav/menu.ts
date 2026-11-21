@@ -90,9 +90,15 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: '🧡',
     tint: '#F472B6',
     links: [
+      { href: '/wellness/skills', label: 'Mental Skills', icon: '🧘', for: PLAYING },
+      { href: '/wellness/routine', label: 'My Routine', icon: '✅', for: ['player'] },
+      { href: '/wellness/recovery', label: 'Recovery Log', icon: '🛌', for: ['player'] },
       { href: '/wellbeing', label: 'Wellbeing', icon: '🧡', for: ['player'] },
       { href: '/match-mood', label: 'Match Mood', icon: '😤', for: ['player'] },
       { href: '/injury-intel', label: 'Injury Intel', icon: '🩹', for: PLAYING },
+      { href: '/wellness/settings', label: 'Sharing', icon: '🔒', for: ['player'] },
+      { href: '/wellness/team', label: 'Team Readiness', icon: '📊', for: ['coach'] },
+      { href: '/wellness/support', label: 'Support', icon: '☎️', for: PLAYING },
     ],
   },
   {

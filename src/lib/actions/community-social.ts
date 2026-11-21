@@ -4,6 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth/server';
 import { communityOpen, saveProfile, answerPerson, report, block } from '@/lib/community/service';
 import { setFollow, saveClubProfile, parentCancelRequest, parentBlock, parentReport } from '@/lib/community/social';
+import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
+import { requireAdmin } from '@/lib/auth/admin';
+import { resolveItem } from '@/lib/community/review';
+import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 type R = { success: boolean; error?: string; message?: string };
 const CLOSED: R = { success: false, error: 'The Community is not open yet.' };
@@ -63,9 +67,6 @@ export async function parentReportAction(childId: string, kind: string, targetId
 }
 
 // ── Feed ──
-import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
-import { requireAdmin } from '@/lib/auth/admin';
-import { resolveItem } from '@/lib/community/review';
 
 export async function postAction(body: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
@@ -101,7 +102,6 @@ export async function moderateAction(action: string, kind: string, targetId: str
 }
 
 // ── Nets and pick-up games ──
-import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 export async function createSessionAction(input: Record<string, unknown>): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
