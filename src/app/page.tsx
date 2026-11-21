@@ -1060,11 +1060,11 @@ export default function HomePage() {
               <div className="cp-feat-card">
                 <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
                 <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
-                <h3 className="cp-feat-card-h">AI batting coach</h3>
-                <p className="cp-feat-card-body">Your phone camera analyses your stance, elbow position, head level and follow-through at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
+                <h3 className="cp-feat-card-h">AI batting and bowling coach</h3>
+                <p className="cp-feat-card-body">Your phone camera analyses your batting stance, head position and follow-through, and your bowling action, front knee and foot position, at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
                 <div className="cp-feat-card-bullets">
                   <div className="cp-feat-card-bullet"><strong>On-device only</strong> — nothing leaves your phone</div>
-                  <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot feedback</div>
+                  <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot and action feedback</div>
                   <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
                 </div>
                 <Link href="/features#ai" className="cp-feat-card-link">Learn more →</Link>
