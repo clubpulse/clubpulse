@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import React, { useState } from 'react';
 import Link from 'next/link';
 
@@ -103,8 +104,8 @@ const PLAYER_TIERS = [
 type TierKey = 'free' | 'pro' | 'elite' | 'legend';
 
 function cellValue(val: Limit, tier: TierKey) {
-  if (val === '✓') return <span style={{ color: '#4ade80', fontWeight: 700, fontSize: '16px' }}>✓</span>;
-  if (val === '✕') return <span style={{ color: 'var(--cp-muted)', fontSize: '15px' }}>✕</span>;
+  if (val === '✓') return <span style={{ color: '#4ade80', fontWeight: 700, fontSize: '16px' }}><Glyph e="✓" /></span>;
+  if (val === '✕') return <span style={{ color: 'var(--cp-muted)', fontSize: '15px' }}><Glyph e="✕" /></span>;
   const isHighlight = tier !== 'free' && val !== '✕';
   return <span style={{ fontSize: '12px', fontWeight: isHighlight ? 600 : 400, color: isHighlight ? 'var(--cp-fg)' : 'var(--cp-muted)', lineHeight: 1.3, display: 'block' }}>{val}</span>;
 }
@@ -640,7 +641,7 @@ export default function PricingPage() {
       {audience === 'club' && (
         <div style={{ padding: '0 24px 80px' }}>
           <div className="cp-coming-soon">
-            <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏟️</div>
+            <div style={{ fontSize: '40px', marginBottom: '16px' }}><Glyph e="🏟️" /></div>
             <h3>Club plans from £29.99 a month</h3>
             <p>
               Three plans, each covering your whole club: Pro at £29.99 a month for up to 75 members, Elite at

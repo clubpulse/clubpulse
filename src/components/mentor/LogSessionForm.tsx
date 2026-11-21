@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState } from 'react';
 import type { MentorRequest } from '@/lib/types/mentor';
 import { logSession } from '@/lib/actions/mentor';
@@ -54,7 +55,7 @@ export function LogSessionForm({ request, onLogged }: Props) {
         display: 'flex', flexDirection: 'column', gap: '12px',
         alignItems: 'center', textAlign: 'center',
       }}>
-        <span style={{ fontSize: '32px' }}>🎉</span>
+        <span style={{ fontSize: '32px' }}><Glyph e="🎉" /></span>
         <p style={{ margin: 0, fontWeight: 700, fontSize: '16px', color: '#4ade80' }}>
           Session logged!
         </p>

@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getClubAuctions, getAuctionLots, getMyBids, getWalletBalance } from '@/lib/actions/auction';
@@ -97,7 +98,7 @@ export default async function AuctionPage() {
         }}>
           {upcomingAuction ? (
             <>
-              <p style={{ margin: '0 0 6px', fontSize: '28px' }}>📅</p>
+              <p style={{ margin: '0 0 6px', fontSize: '28px' }}><Glyph e="📅" /></p>
               <p style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
                 {upcomingAuction.name}
               </p>
@@ -107,7 +108,7 @@ export default async function AuctionPage() {
             </>
           ) : (
             <>
-              <p style={{ margin: '0 0 6px', fontSize: '28px' }}>🏏</p>
+              <p style={{ margin: '0 0 6px', fontSize: '28px' }}><Glyph e="🏏" /></p>
               <p style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
                 No auction open yet
               </p>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * BallTrackClient
  * ---------------
@@ -70,7 +71,7 @@ function DropZone({ onFile, disabled }: DropZoneProps) {
         opacity:      disabled ? 0.5 : 1,
       }}
     >
-      <div style={{ fontSize: '32px', marginBottom: '10px' }}>🎥</div>
+      <div style={{ fontSize: '32px', marginBottom: '10px' }}><Glyph e="🎥" /></div>
       <p style={{ fontSize: '15px', fontWeight: 600, color: '#f0ece4', marginBottom: '6px' }}>
         Drop a bowling video here
       </p>
@@ -357,7 +358,7 @@ function CoachingCard({ paragraph, loading }: { paragraph: string | null; loadin
       padding:      '20px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-        <span style={{ fontSize: '15px' }}>🧠</span>
+        <span style={{ fontSize: '15px' }}><Glyph e="🧠" /></span>
         <h3 style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
           AI Coaching Read
         </h3>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { logPerformance } from '@/lib/actions/rivalry';
@@ -55,7 +56,7 @@ export function LogPerformanceForm({ clubId, members }: { clubId: string; member
   if (success) {
     return (
       <div style={{ background: 'rgba(0,139,0,0.15)', border: '1px solid rgba(0,200,0,0.25)', borderRadius: '14px', padding: '32px', textAlign: 'center' }}>
-        <div style={{ fontSize: '36px', marginBottom: '12px' }}>✅</div>
+        <div style={{ fontSize: '36px', marginBottom: '12px' }}><Glyph e="✅" /></div>
         <p style={{ fontSize: '18px', fontWeight: 700, color: '#fff', margin: '0 0 6px' }}>Performance logged!</p>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>Returning to your profile…</p>
       </div>

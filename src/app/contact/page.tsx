@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { useState } from 'react';
 import { CLUB_SIZES, NEEDS } from '@/lib/enquiries/logic';
@@ -198,7 +199,7 @@ export default function ContactPage() {
           </div>
 
           <div className="contact-method">
-            <div className="method-icon">🏏</div>
+            <div className="method-icon"><Glyph e="🏏" /></div>
             <div>
               <p className="method-label">Currently live at</p>
               <p className="method-val">Slough Cricket Club</p>
@@ -230,7 +231,7 @@ export default function ContactPage() {
         <div className="form-card">
           {submitted ? (
             <div className="success-state">
-              <div className="success-icon">🎉</div>
+              <div className="success-icon"><Glyph e="🎉" /></div>
               <h2 className="success-h">We&apos;ve got your message</h2>
               <p className="success-p">Thanks for getting in touch. We&apos;ll reply within 2 working days to arrange a call and confirm what your club needs.</p>
             </div>

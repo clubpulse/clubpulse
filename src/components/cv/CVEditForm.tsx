@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -419,7 +420,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
                         title="Remove season"
                         aria-label="Remove season"
                       >
-                        ✕
+                        <Glyph e="✕" />
                       </button>
                     </td>
                   </tr>

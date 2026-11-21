@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { getKitRewards, getMyKitRedemptions, getMyCredsBalance } from '@/lib/actions/kit-discounts';
 import { KitRewardCard } from '@/components/kit/KitRewardCard';
@@ -46,7 +47,7 @@ export default async function KitDiscountsPage() {
 
         {rewards.length === 0 ? (
           <div style={{ padding: '48px 24px', textAlign: 'center', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.07)', background: '#07102B' }}>
-            <p style={{ fontSize: '32px', margin: '0 0 12px' }} aria-hidden>🏏</p>
+            <p style={{ fontSize: '32px', margin: '0 0 12px' }} aria-hidden><Glyph e="🏏" /></p>
             <p style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 600, color: '#fff' }}>
               No kit deals available right now — check back soon
             </p>

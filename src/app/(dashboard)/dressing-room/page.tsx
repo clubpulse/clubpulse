@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { isClubAdmin } from '@/lib/auth/admin';
 import { getPosts, getUserClubId } from '@/lib/actions/dressing-room';
@@ -21,7 +22,7 @@ export default async function DressingRoomPage() {
         textAlign: 'center',
         padding: '0 24px',
       }}>
-        <span style={{ fontSize: '48px' }}>🏏</span>
+        <span style={{ fontSize: '48px' }}><Glyph e="🏏" /></span>
         <h2 style={{ margin: 0, color: '#fff', fontFamily: "'Syne', sans-serif", fontSize: '20px' }}>
           Not in a club yet
         </h2>

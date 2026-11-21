@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useEffect, useCallback } from 'react';
 
 export interface SeasonStats {
@@ -110,7 +111,7 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
   const slides = [
     /* 0 — opener */
     <div key="opener" className="sw-slide">
-      <div style={{ fontSize: '80px', marginBottom: '24px' }}>🏏</div>
+      <div style={{ fontSize: '80px', marginBottom: '24px' }}><Glyph e="🏏" /></div>
       <p style={{ fontSize: '14px', letterSpacing: '5px', color: '#6ee7b7', marginBottom: '12px', textTransform: 'uppercase' }}>
         {stats.displayName}
       </p>
@@ -145,7 +146,7 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
     <div key="superlative" className="sw-slide">
       <p style={{ fontSize: '13px', letterSpacing: '4px', color: '#6ee7b7', textTransform: 'uppercase', marginBottom: '32px' }}>This season you were</p>
       <div style={{ border: '2px solid #f59e0b', borderRadius: '16px', padding: '28px 32px', maxWidth: '320px', margin: '0 auto', background: 'rgba(245,158,11,0.08)' }}>
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>⭐</div>
+        <div style={{ fontSize: '48px', marginBottom: '12px' }}><Glyph e="⭐" /></div>
         <h2 style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: '28px', fontWeight: 900, color: '#f59e0b', margin: '0 0 12px' }}>{superlative.title}</h2>
         <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.5 }}>{superlative.subtitle}</p>
       </div>

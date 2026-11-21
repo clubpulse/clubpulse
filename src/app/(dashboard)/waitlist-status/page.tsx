@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 
@@ -54,7 +55,7 @@ export default async function WaitlistStatusPage() {
           padding: '40px',
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🏏</p>
+          <p style={{ fontSize: '32px', margin: '0 0 12px' }}><Glyph e="🏏" /></p>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
             You haven&apos;t joined any club waiting lists yet.
           </p>

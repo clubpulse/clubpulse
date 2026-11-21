@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import type { MemberQualification } from '@/lib/types/ecb-courses';
 import { CATEGORY_CONFIG } from '@/lib/types/ecb-courses';
 
@@ -30,7 +31,7 @@ export function QualificationBadge({ qual }: { qual: MemberQualification }) {
         {cat && <span style={{ fontSize: 16 }}>{cat.emoji}</span>}
         <span style={{ fontWeight: 600, fontSize: 14, color: '#fff', flex: 1 }}>{course?.name ?? 'Unknown course'}</span>
         {qual.is_verified && (
-          <span title="Verified by club admin" style={{ fontSize: 16 }}>✅</span>
+          <span title="Verified by club admin" style={{ fontSize: 16 }}><Glyph e="✅" /></span>
         )}
       </div>
 

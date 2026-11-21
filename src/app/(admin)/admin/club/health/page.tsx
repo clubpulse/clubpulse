@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
@@ -92,7 +93,7 @@ export default async function ClubHealthPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {alerts.map((a) => (
             <div key={a.type} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '16px', background: a.bg, border: `1px solid ${a.border}`, borderRadius: '12px' }}>
-              <span style={{ fontSize: '20px', flexShrink: 0 }}>{a.icon}</span>
+              <span style={{ fontSize: '20px', flexShrink: 0 }}><Glyph e={a.icon} /></span>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '14px', fontWeight: 600, color: a.color, marginBottom: '4px' }}>{a.title}</p>
                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, margin: 0 }}>{a.detail}</p>
@@ -127,7 +128,7 @@ export default async function ClubHealthPage() {
 
       {/* Roadmap notice */}
       <div style={{ background: 'rgba(249,115,22,0.05)', border: '1px solid rgba(249,115,22,0.12)', borderRadius: '12px', padding: '16px 20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-        <span style={{ fontSize: '20px', flexShrink: 0 }}>🚧</span>
+        <span style={{ fontSize: '20px', flexShrink: 0 }}><Glyph e="🚧" /></span>
         <div>
           <p style={{ fontSize: '14px', fontWeight: 600, color: '#f97316', marginBottom: '4px' }}>Full smart alerts on the roadmap</p>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5, margin: 0 }}>

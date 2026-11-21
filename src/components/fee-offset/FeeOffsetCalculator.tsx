@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { applyFeeOffset } from '@/lib/actions/fee-offsets';
 import type { FeeOffsetSummary } from '@/lib/types/fee-offsets';
@@ -54,7 +55,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
         padding: '28px',
         textAlign: 'center',
       }}>
-        <div style={{ fontSize: '40px', marginBottom: '12px' }}>✅</div>
+        <div style={{ fontSize: '40px', marginBottom: '12px' }}><Glyph e="✅" /></div>
         <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '20px', color: '#fff', margin: '0 0 6px' }}>
           Offset applied!
         </p>
@@ -81,7 +82,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
         alignItems: 'center',
         gap: '10px',
       }}>
-        <span style={{ fontSize: '18px' }}>💡</span>
+        <span style={{ fontSize: '18px' }}><Glyph e="💡" /></span>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>
           <strong style={{ color: '#EFC84A' }}>{settings.scores_per_pound.toLocaleString()} Scores = £1.00 off</strong>
           {' '}· Up to {settings.max_offset_percent}% of your annual fee

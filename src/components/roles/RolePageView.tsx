@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 // One role's page: an animated header, four figures, what is next, a short list and that role's
 // tools. The same layout serves player, coach, parent and volunteer; only the colours and the
 // content change.
@@ -60,14 +61,14 @@ export function RolePageView({ page, pages, name, data, tools, home = false }: P
           </div>
           <div aria-hidden style={{
             fontSize: 'clamp(54px, 9vw, 96px)', lineHeight: 1, filter: `drop-shadow(0 12px 34px ${page.from})`, transform: 'rotate(-6deg)',
-          }}>{page.icon}</div>
+          }}><Glyph e={page.icon} /></div>
         </div>
 
         {pages.length > 1 && (
           <nav aria-label="Your pages" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '26px' }}>
             {pages.map((p) => (
               <Link key={p.role} href={home ? `/dashboard?as=${p.role}` : p.href} className="mg-pill" aria-current={p.role === page.role ? 'page' : undefined}>
-                <span aria-hidden>{p.icon}</span> {p.title}
+                <span aria-hidden><Glyph e={p.icon} /></span> {p.title}
               </Link>
             ))}
           </nav>
@@ -137,7 +138,7 @@ export function RolePageView({ page, pages, name, data, tools, home = false }: P
               <span aria-hidden style={{
                 display: 'inline-grid', placeItems: 'center', width: i < 2 ? '52px' : '42px', height: i < 2 ? '52px' : '42px', borderRadius: '14px', fontSize: i < 2 ? '26px' : '21px',
                 background: `color-mix(in srgb, ${tool.tint} 16%, transparent)`, border: `1px solid color-mix(in srgb, ${tool.tint} 34%, transparent)`,
-              }}>{tool.icon}</span>
+              }}><Glyph e={tool.icon} /></span>
               <span aria-hidden style={{ position: 'absolute', top: i < 2 ? '24px' : '18px', right: i < 2 ? '24px' : '18px', fontSize: '16px', color: 'rgba(255,255,255,0.35)' }}>↗</span>
               <p style={{ margin: '14px 0 0', fontSize: i < 2 ? '18px' : '15px', fontWeight: 700, color: '#fff' }}>{tool.label}</p>
             </MagicCard>
@@ -154,7 +155,7 @@ export function RoleNotHeld({ page }: { page: RolePage }) {
   return (
     <section className="mg-hero mg-in" style={{ ...colours, padding: 'clamp(26px, 5vw, 48px)', textAlign: 'center' }}>
       <div className="mg-dots" aria-hidden />
-      <div aria-hidden style={{ fontSize: '64px', lineHeight: 1 }}>{page.icon}</div>
+      <div aria-hidden style={{ fontSize: '64px', lineHeight: 1 }}><Glyph e={page.icon} /></div>
       <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(34px, 6vw, 56px)', letterSpacing: '-0.03em', margin: '14px 0 10px' }}>{page.title}</h1>
       <p style={{ margin: '0 auto', maxWidth: '460px', fontSize: '15px', lineHeight: 1.6, color: 'rgba(255,255,255,0.7)' }}>
         {page.role === 'admin'

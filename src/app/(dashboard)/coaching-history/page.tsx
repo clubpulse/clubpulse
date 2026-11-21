@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
@@ -145,7 +146,7 @@ export default async function CoachingHistoryPage() {
         /* Empty state */
         <Card>
           <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏏</div>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}><Glyph e="🏏" /></div>
             <p style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>No sessions yet</p>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '24px' }}>
               Run your first ball-track or pose analysis to start building your coaching history.

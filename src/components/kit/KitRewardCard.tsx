@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { redeemKitReward } from '@/lib/actions/kit-discounts';
 import { formatScores } from '@/lib/utils/format';
@@ -94,7 +95,7 @@ export function KitRewardCard({ reward, balance }: KitRewardCardProps) {
 
         {/* Cost row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: 'auto', paddingTop: '8px' }}>
-          <span aria-hidden style={{ fontSize: '14px' }}>💰</span>
+          <span aria-hidden style={{ fontSize: '14px' }}><Glyph e="💰" /></span>
           <span style={{ fontSize: '16px', fontWeight: 700, color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
             {formatScores(reward.creds_cost)} Scores
           </span>

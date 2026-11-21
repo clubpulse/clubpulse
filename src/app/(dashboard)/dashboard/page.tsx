@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import type { CSSProperties } from 'react';
 import { cookies } from 'next/headers';
 import { fetchProfile } from '@/lib/profile/service';
@@ -78,7 +79,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <section aria-label="The four pillars" className="mg-bento mg-two">
         {PILLARS.map((p, i) => (
           <MagicCard key={p.key} href={p.href} tint={p.from} index={i} style={{ padding: '18px', '--mg-from': p.from, '--mg-to': p.to } as CSSProperties}>
-            <span aria-hidden style={{ fontSize: '26px', lineHeight: 1 }}>{p.icon}</span>
+            <span aria-hidden style={{ fontSize: '26px', lineHeight: 1 }}><Glyph e={p.icon} /></span>
             <p className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', letterSpacing: '-0.02em', margin: '10px 0 4px' }}>{p.title}</p>
             <p style={{ ...hint, margin: 0 }}>{p.short}</p>
             <p style={{ fontSize: '12px', fontWeight: 700, color: p.from, margin: '10px 0 0' }}>

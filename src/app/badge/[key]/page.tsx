@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 // The page a shared badge links to. It is public and says what the badge is for. It names nobody:
 // the link is the same for everyone who earns the badge, so nothing about a member is in it.
 
@@ -34,7 +35,7 @@ export default async function BadgePage({ params }: Props) {
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#04091A] px-6 py-16 text-center text-white">
       <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#EFC84A]">ClubPulse badge · {group.title}</p>
       <div className="mt-8 flex h-40 w-40 items-center justify-center rounded-full border-4 border-[#EFC84A] bg-[#EFC84A]/10 text-7xl" aria-hidden>
-        {def.icon}
+        <Glyph e={def.icon} />
       </div>
       <h1 className="mt-8 text-4xl font-extrabold">{def.title}</h1>
       <p className="mt-3 max-w-md text-lg text-white/75">{def.how}</p>

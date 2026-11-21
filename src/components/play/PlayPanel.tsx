@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
@@ -161,7 +162,7 @@ export function PlayPanel({ summary }: { summary: PlaySummary }) {
             </div>
             {challenges.list.map((c, i) => (
               <div key={c.key} style={{ ...row, borderBottom: i === challenges.list.length - 1 ? 'none' : row.borderBottom }}>
-                <span aria-hidden style={{ fontSize: '20px', lineHeight: 1 }}>{c.icon}</span>
+                <span aria-hidden style={{ fontSize: '20px', lineHeight: 1 }}><Glyph e={c.icon} /></span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: c.claimed ? 'rgba(255,255,255,0.45)' : '#fff', textDecoration: c.claimed ? 'line-through' : 'none' }}>{c.title}</p>
                   <p style={{ ...muted, fontSize: '11px' }}>{c.detail}</p>

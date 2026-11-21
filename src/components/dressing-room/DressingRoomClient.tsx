@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { DressingRoomPost } from '@/lib/types/dressing-room';
@@ -141,7 +142,7 @@ export function DressingRoomClient({
                   borderBottom: active ? '2px solid #3B82F6' : '2px solid transparent',
                 }}
               >
-                <span aria-hidden>{tab.icon}</span>
+                <span aria-hidden><Glyph e={tab.icon} /></span>
                 <span className="hidden sm:inline">{tab.label}</span>
                 {tab.id === 'announcements' && announcements.length > 0 && (
                   <span style={{

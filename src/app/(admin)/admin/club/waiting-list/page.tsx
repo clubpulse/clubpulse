@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getClubWaitlist } from '@/lib/actions/waiting-list';
 import { WaitlistAdminTable } from '@/components/waiting-list/WaitlistAdminTable';
@@ -103,7 +104,7 @@ export default async function WaitingListAdminPage() {
           padding: '48px',
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🏏</p>
+          <p style={{ fontSize: '32px', margin: '0 0 12px' }}><Glyph e="🏏" /></p>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
             Share the link above and players can join the waiting list — no account required.
           </p>

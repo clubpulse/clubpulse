@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
@@ -33,7 +34,7 @@ export default async function HighlightsPage({ searchParams }: { searchParams: P
         <h1 className="text-2xl font-semibold">Your Highlights</h1>
         <Card>
           <div className="py-8 text-center">
-            <p className="text-4xl" aria-hidden>🎬</p>
+            <p className="text-4xl" aria-hidden><Glyph e="🎬" /></p>
             <p className="mt-3 font-medium text-white">{id ? 'Session not found' : 'No highlights yet'}</p>
             <p className="mt-1 text-sm text-neutral-400">
               Start the camera on Analyse, play a few deliveries or shots, then stop the camera. Your best 3 clips land here.

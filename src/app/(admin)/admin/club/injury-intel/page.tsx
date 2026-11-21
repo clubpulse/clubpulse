@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getClubInjuryAggregate } from '@/lib/actions/injury';
 import { BODY_PART_LABELS, SEVERITY_CONFIG, type InjuryAggregate } from '@/lib/types/injury';
@@ -46,7 +47,7 @@ export default async function AdminInjuryIntelPage() {
         gap: '12px',
         alignItems: 'flex-start',
       }}>
-        <span style={{ fontSize: '20px', lineHeight: 1 }}>🔒</span>
+        <span style={{ fontSize: '20px', lineHeight: 1 }}><Glyph e="🔒" /></span>
         <div>
           <p style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: '#93c5fd' }}>
             Individual injury details are never shown to coaches or admins

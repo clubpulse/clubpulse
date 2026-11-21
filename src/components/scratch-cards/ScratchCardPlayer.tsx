@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { revealExistingCard } from '@/lib/actions/scratch-cards';
 import type { ScratchCardConfig, ScratchCard, ScratchPrize } from '@/lib/actions/scratch-cards';
@@ -200,7 +201,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             </div>
           ) : phase === 'idle' ? (
             <div style={{ textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '32px' }}>🎰</p>
+              <p style={{ margin: 0, fontSize: '32px' }}><Glyph e="🎰" /></p>
               <p style={{ margin: '8px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
                 {hasFreeCard ? 'You have a card to open!' : 'No cards to open yet'}
               </p>

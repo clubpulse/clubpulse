@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getWellbeingAggregate } from '@/lib/actions/wellbeing';
 import type { WellbeingAggregate } from '@/lib/types/wellbeing';
@@ -90,7 +91,7 @@ export default async function AdminWellbeingPage() {
         gap: '10px',
         alignItems: 'flex-start',
       }}>
-        <span style={{ fontSize: '16px', flexShrink: 0 }}>🔒</span>
+        <span style={{ fontSize: '16px', flexShrink: 0 }}><Glyph e="🔒" /></span>
         <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
           <strong style={{ color: 'rgba(255,255,255,0.7)' }}>These are anonymous group averages.</strong>{' '}
           No individual data is shown. Player responses are strictly private and cannot be attributed to any individual — only aggregated counts and averages are visible here.

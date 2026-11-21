@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import type { NemesisPair } from '@/lib/types/rivalry';
 
@@ -42,7 +43,7 @@ export function NemesisWidget({ nemesis }: { nemesis: NemesisPair | null }) {
           </div>
         </div>
         <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'rgba(255,200,200,0.5)' }}>
-          <span aria-hidden>⚔️</span>
+          <span aria-hidden><Glyph e="⚔️" /></span>
           <span>View head-to-head rivalry</span>
           <span style={{ marginLeft: 'auto' }} aria-hidden>→</span>
         </div>

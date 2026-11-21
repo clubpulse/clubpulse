@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /player-report  —  AI Player Performance Report
  *
@@ -87,7 +88,7 @@ export default function PlayerReportPage() {
       {/* Generate button */}
       {!generated && (
         <div style={{ background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: '14px', padding: '28px', textAlign: 'center' }}>
-          <div style={{ fontSize: '44px', marginBottom: '14px' }}>📊</div>
+          <div style={{ fontSize: '44px', marginBottom: '14px' }}><Glyph e="📊" /></div>
           <p style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
             Get your performance breakdown
           </p>
@@ -129,7 +130,7 @@ export default function PlayerReportPage() {
               <span style={{ fontSize: '18px', fontWeight: 800, color: ratingCfg.color }}>{ratingCfg.label}</span>
             </div>
             <div style={{ padding: '10px 18px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '18px', color: trendCfg.color, fontWeight: 800 }}>{trendCfg.icon}</span>
+              <span style={{ fontSize: '18px', color: trendCfg.color, fontWeight: 800 }}><Glyph e={trendCfg.icon} /></span>
               <span style={{ fontSize: '14px', color: trendCfg.color, fontWeight: 600 }}>{trendCfg.label}</span>
             </div>
             <div style={{ padding: '10px 18px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px' }}>
@@ -188,7 +189,7 @@ export default function PlayerReportPage() {
 
           {/* Next match target */}
           <div style={{ background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: '14px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-            <div style={{ fontSize: '28px', flexShrink: 0 }}>🎯</div>
+            <div style={{ fontSize: '28px', flexShrink: 0 }}><Glyph e="🎯" /></div>
             <div>
               <p style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>Next Match Target</p>
               <p style={{ fontSize: '15px', color: '#fff', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>{report.nextMatchTarget}</p>

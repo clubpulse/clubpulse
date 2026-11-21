@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import type { DressingRoomPost } from '@/lib/types/dressing-room';
 
 interface AnnouncementCardProps {
@@ -37,7 +38,7 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <span style={{ fontSize: '16px' }}>📢</span>
+        <span style={{ fontSize: '16px' }}><Glyph e="📢" /></span>
         <span style={{
           fontFamily: "'Syne', sans-serif",
           fontWeight: 700,

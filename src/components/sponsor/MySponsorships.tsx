@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { BENEFIT_TYPE_CONFIG, AGE_GROUP_LABELS } from '@/lib/types/sponsor';
 import type { Sponsorship } from '@/lib/types/sponsor';
 
@@ -38,7 +39,7 @@ export function MySponsorships({ sponsorships }: MySponsorshipsProps) {
         padding: '32px 20px',
         textAlign: 'center',
       }}>
-        <p style={{ fontSize: '28px', margin: '0 0 8px' }}>💝</p>
+        <p style={{ fontSize: '28px', margin: '0 0 8px' }}><Glyph e="💝" /></p>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
           You haven&apos;t sponsored anyone yet — be the first to give a junior a start!
         </p>

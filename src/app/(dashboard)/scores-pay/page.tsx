@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /scores-pay
  *
@@ -225,7 +226,7 @@ export default function ScoresPayPage() {
       {/* Step: confirmed */}
       {step === 'confirmed' && session && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
+          <div style={{ fontSize: 56, marginBottom: 16 }}><Glyph e="✅" /></div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#04091A', margin: '0 0 8px' }}>Payment confirmed!</h2>
           <p style={{ color: '#6b7280', fontSize: 15, marginBottom: 24 }}>
             <strong style={{ color: '#2563EB' }}>{session.scores_amount.toLocaleString()} Scores</strong> spent
@@ -245,7 +246,7 @@ export default function ScoresPayPage() {
       {/* Step: error */}
       {step === 'error' && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}><Glyph e="⚠️" /></div>
           <p style={{ color: '#374151', fontSize: 15, marginBottom: 24 }}>{errorMsg}</p>
           <button
             onClick={() => { setStep('amount'); setErrorMsg(''); }}

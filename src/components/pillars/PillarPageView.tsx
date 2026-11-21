@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 // One pillar's page: an animated header, every page in the pillar for this person, and what is
 // still to come. Shares its look with the role pages.
 
@@ -37,12 +38,12 @@ export function PillarPageView({ pillar, sections }: Props) {
               <Link href="/dashboard" className="mg-pill">Back to Home</Link>
             </div>
           </div>
-          <div aria-hidden style={{ fontSize: 'clamp(54px, 9vw, 96px)', lineHeight: 1, filter: `drop-shadow(0 12px 34px ${pillar.from})`, transform: 'rotate(-6deg)' }}>{pillar.icon}</div>
+          <div aria-hidden style={{ fontSize: 'clamp(54px, 9vw, 96px)', lineHeight: 1, filter: `drop-shadow(0 12px 34px ${pillar.from})`, transform: 'rotate(-6deg)' }}><Glyph e={pillar.icon} /></div>
         </div>
         <nav aria-label="The four pillars" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '26px' }}>
           {PILLARS.map((p) => (
             <Link key={p.key} href={p.href} className="mg-pill" aria-current={p.key === pillar.key ? 'page' : undefined}>
-              <span aria-hidden>{p.icon}</span> {p.title}
+              <span aria-hidden><Glyph e={p.icon} /></span> {p.title}
             </Link>
           ))}
         </nav>
@@ -69,7 +70,7 @@ export function PillarPageView({ pillar, sections }: Props) {
                   <span aria-hidden style={{
                     display: 'inline-grid', placeItems: 'center', width: '44px', height: '44px', borderRadius: '14px', fontSize: '22px',
                     background: `color-mix(in srgb, ${pillar.from} 16%, transparent)`, border: `1px solid color-mix(in srgb, ${pillar.from} 34%, transparent)`,
-                  }}>{link.icon}</span>
+                  }}><Glyph e={link.icon} /></span>
                   <span aria-hidden style={{ position: 'absolute', top: '18px', right: '18px', fontSize: '16px', color: 'rgba(255,255,255,0.35)' }}>↗</span>
                   <p style={{ margin: '14px 0 0', fontSize: '15px', fontWeight: 700, color: '#fff' }}>{link.label}</p>
                 </MagicCard>

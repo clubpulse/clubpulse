@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useCallback } from 'react';
 import type { ShiftWithSignups, ShiftRole } from '@/lib/types/volunteer-shifts';
 import { SHIFT_ROLE_LABELS, SIGNUP_STATUS_LABELS, formatTime, shiftDurationHours } from '@/lib/types/volunteer-shifts';
@@ -220,7 +221,7 @@ function ShiftCard({
         onClick={onToggle}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {shift.is_critical && <span title="Critical">🔴</span>}
+          {shift.is_critical && <span title="Critical"><Glyph e="🔴" /></span>}
           <div>
             <div style={{ fontWeight: 600, color: '#fff' }}>{shift.title}</div>
             <div style={muted}>

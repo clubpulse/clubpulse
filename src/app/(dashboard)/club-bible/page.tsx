@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getClubBible } from '@/lib/actions/club-bible';
@@ -56,7 +57,7 @@ export default async function ClubBiblePage() {
           alignItems: 'center',
           gap: '10px',
         }}>
-          <span aria-hidden>📖</span> The Club Bible
+          <span aria-hidden><Glyph e="📖" /></span> The Club Bible
         </h1>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
           {club.clubName} · The official club history
@@ -128,7 +129,7 @@ export default async function ClubBiblePage() {
           padding: '32px',
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: '28px', margin: '0 0 8px' }}>📖</p>
+          <p style={{ fontSize: '28px', margin: '0 0 8px' }}><Glyph e="📖" /></p>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', margin: '0 0 4px' }}>
             Your Club Bible hasn&apos;t been written yet.
           </p>

@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import {
@@ -38,7 +39,7 @@ export default async function HallOfInfamyPage() {
           textAlign: 'center',
         }}
       >
-        <span style={{ fontSize: '40px' }}>🏆</span>
+        <span style={{ fontSize: '40px' }}><Glyph e="🏆" /></span>
         <h1
           style={{
             fontFamily: "'Syne', sans-serif",

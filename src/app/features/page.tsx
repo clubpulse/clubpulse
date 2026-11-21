@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /features  —  ClubPulse Feature Showcase
  *
@@ -163,7 +164,7 @@ function AIDemo() {
         ))}
         {loading && (
           <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(96,165,250,0.12)', display: 'grid', placeItems: 'center', fontSize: 12 }}>🤖</div>
+            <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(96,165,250,0.12)', display: 'grid', placeItems: 'center', fontSize: 12 }}><Glyph e="🤖" /></div>
             <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '3px 12px 12px 12px', padding: '10px 14px', display: 'flex', gap: 4 }}>
               {[0,1,2].map(d => <span key={d} style={{ width: 6, height: 6, borderRadius: '50%', background: '#60A5FA', display: 'inline-block', animation: `bounce 1s ${d*0.2}s infinite` }} />)}
             </div>
@@ -442,12 +443,12 @@ function RewardsDemo() {
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(239,200,74,0.6)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Your balance</div>
           <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} pts</div>
         </div>
-        <div style={{ fontSize: 36 }}>⚡</div>
+        <div style={{ fontSize: 36 }}><Glyph e="⚡" /></div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rewards.map((r, i) => (
           <div key={i} style={{ background: '#04091A', border: `1px solid ${redeemed.includes(i) ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 24, flexShrink: 0 }}>{r.icon}</span>
+            <span style={{ fontSize: 24, flexShrink: 0 }}><Glyph e={r.icon} /></span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{r.name}</div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{r.desc}</div>
@@ -674,14 +675,14 @@ export default function FeaturesPage() {
 
       {/* Mobile category toggle */}
       <button className="fp-mobile-cat-btn" onClick={() => setNavOpen(o => !o)}>
-        <span>{cat.icon}</span>
+        <span><Glyph e={cat.icon} /></span>
         <span>{cat.label}</span>
         <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{navOpen ? '▲' : '▼'}</span>
       </button>
       <div className={`fp-mobile-drawer ${navOpen ? 'open' : ''}`}>
         {CATEGORIES.map(c => (
           <button key={c.id} onClick={() => select(c.id)} className={`fp-sidenav-item ${active === c.id ? 'active' : ''}`}>
-            <span className="fp-sidenav-icon">{c.icon}</span>
+            <span className="fp-sidenav-icon"><Glyph e={c.icon} /></span>
             <span className="fp-sidenav-label">{c.label}</span>
             <span className="fp-sidenav-count">{c.features.length}</span>
           </button>
@@ -695,7 +696,7 @@ export default function FeaturesPage() {
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14, padding: '0 12px' }}>Categories</div>
           {CATEGORIES.map(c => (
             <button key={c.id} onClick={() => select(c.id)} className={`fp-sidenav-item ${active === c.id ? 'active' : ''}`}>
-              <span className="fp-sidenav-icon">{c.icon}</span>
+              <span className="fp-sidenav-icon"><Glyph e={c.icon} /></span>
               <span className="fp-sidenav-label">{c.label}</span>
               <span className="fp-sidenav-count">{c.features.length}</span>
             </button>
@@ -711,7 +712,7 @@ export default function FeaturesPage() {
         <main className="fp-demo-area" ref={demoRef}>
           <div key={active} className="fp-demo-panel">
             <div className="fp-demo-header">
-              <div className="fp-demo-icon">{cat.icon}</div>
+              <div className="fp-demo-icon"><Glyph e={cat.icon} /></div>
               <h2 className="fp-demo-h2">{cat.label}</h2>
               <p className="fp-demo-tagline">{cat.tagline}</p>
               <div className="fp-feat-chips">

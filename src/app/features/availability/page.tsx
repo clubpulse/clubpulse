@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 export default function AvailabilityPage() {
@@ -318,19 +319,19 @@ export default function AvailabilityPage() {
             <div className="av-steps">
               <div className="av-step">
                 <p className="av-step-n">01</p>
-                <div className="av-step-icon">📤</div>
+                <div className="av-step-icon"><Glyph e="📤" /></div>
                 <h3 className="av-step-h">Captain sends availability poll</h3>
                 <p className="av-step-body">One tap from the admin dashboard sends a push notification to every registered player asking if they&apos;re available for the upcoming match. No group message. No copy-paste.</p>
               </div>
               <div className="av-step">
                 <p className="av-step-n">02</p>
-                <div className="av-step-icon">📱</div>
+                <div className="av-step-icon"><Glyph e="📱" /></div>
                 <h3 className="av-step-h">Players respond in one tap</h3>
                 <p className="av-step-body">Players open the notification and tap Available, Unavailable, or Unsure. They spend 2 seconds — not 20 reading a thread. Each response earns them +5 Scores automatically.</p>
               </div>
               <div className="av-step">
                 <p className="av-step-n">03</p>
-                <div className="av-step-icon">🏏</div>
+                <div className="av-step-icon"><Glyph e="🏏" /></div>
                 <h3 className="av-step-h">Captain confirms XI, squad notified</h3>
                 <p className="av-step-body">Once enough players confirm, the captain selects the XI and publishes it. All 11 players get a push notification with the squad details, start time, and venue instantly.</p>
               </div>
@@ -338,22 +339,22 @@ export default function AvailabilityPage() {
 
             <div className="av-details">
               <div className="av-detail-card">
-                <div className="av-detail-icon">⚡</div>
+                <div className="av-detail-icon"><Glyph e="⚡" /></div>
                 <h3 className="av-detail-h">Real-time squad count</h3>
                 <p className="av-detail-body">The captain sees the live count update as responses come in — 7/11, 9/11, 10/11. No manual tallying. No scrolling through a thread to count green ticks. The dashboard shows everything at a glance.</p>
               </div>
               <div className="av-detail-card">
-                <div className="av-detail-icon">🔔</div>
+                <div className="av-detail-icon"><Glyph e="🔔" /></div>
                 <h3 className="av-detail-h">Automatic push notifications</h3>
                 <p className="av-detail-body">Players are nudged automatically if they haven&apos;t responded within a set window. No more chasing individuals. The system sends reminder notifications so you don&apos;t have to.</p>
               </div>
               <div className="av-detail-card">
-                <div className="av-detail-icon">⭐</div>
+                <div className="av-detail-icon"><Glyph e="⭐" /></div>
                 <h3 className="av-detail-h">+5 Scores for every response</h3>
                 <p className="av-detail-body">Every player who responds — available or not — earns 5 Scores automatically. This alone drives response rates up dramatically. Players are rewarded just for communicating with the club.</p>
               </div>
               <div className="av-detail-card">
-                <div className="av-detail-icon">📊</div>
+                <div className="av-detail-icon"><Glyph e="📊" /></div>
                 <h3 className="av-detail-h">Availability history</h3>
                 <p className="av-detail-body">Every response is logged permanently. At season end, you have a full record of who showed up, who was unavailable and when, and who never responded. Useful for selection conversations and retention.</p>
               </div>

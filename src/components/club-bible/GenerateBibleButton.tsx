@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useTransition, useState } from 'react';
 import { generateClubBible } from '@/lib/actions/club-bible';
 
@@ -41,7 +42,7 @@ export function GenerateBibleButton({ clubId, generationCount }: Props) {
           gap: '8px',
         }}
       >
-        <span aria-hidden>✨</span>
+        <span aria-hidden><Glyph e="✨" /></span>
         {isPending ? 'Generating…' : generationCount === 0 ? 'Generate Club Bible' : 'Regenerate Club Bible'}
       </button>
       {error && (

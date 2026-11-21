@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMyCheckins, getThisWeeksCheckin } from '@/lib/actions/wellbeing';
@@ -123,7 +124,7 @@ export default async function WellbeingPage() {
         gap: '10px',
         alignItems: 'flex-start',
       }}>
-        <span style={{ fontSize: '16px', flexShrink: 0 }}>🔒</span>
+        <span style={{ fontSize: '16px', flexShrink: 0 }}><Glyph e="🔒" /></span>
         <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
           <strong style={{ color: 'rgba(255,255,255,0.5)' }}>Your privacy is protected.</strong>{' '}
           Only you see your responses. Your coach sees only group averages (e.g. &ldquo;6 players rated physical below 3 this week&rdquo;) — never your individual rating, never your name.

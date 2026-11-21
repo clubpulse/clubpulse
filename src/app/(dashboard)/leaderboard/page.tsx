@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getClubLeaderboard, getMyBadges, getAllBadges } from '@/lib/actions/badges';
@@ -115,7 +116,7 @@ export default async function LeaderboardPage() {
             padding: '24px',
             textAlign: 'center',
           }}>
-            <p style={{ margin: '0 0 6px', fontSize: '22px' }}>🏆</p>
+            <p style={{ margin: '0 0 6px', fontSize: '22px' }}><Glyph e="🏆" /></p>
             <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
               No badges yet — keep playing, predicting, and engaging to earn your first!
             </p>

@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * Predictive Development Tracking
  * -----------------------------------
@@ -257,7 +258,7 @@ export default async function DevelopmentPage() {
       {!hasAnyData ? (
         <Card>
           <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📈</div>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}><Glyph e="📈" /></div>
             <p style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>No data yet</p>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '24px' }}>
               Run at least two analysis sessions to unlock your development trajectory.
@@ -282,7 +283,7 @@ export default async function DevelopmentPage() {
             gap: '12px',
             alignItems: 'flex-start',
           }}>
-            <span style={{ fontSize: '18px', flexShrink: 0 }}>📐</span>
+            <span style={{ fontSize: '18px', flexShrink: 0 }}><Glyph e="📐" /></span>
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: 0 }}>
               Projections use linear regression on your session history. The dashed line shows where
               each metric is trending over your next 5 sessions if the current rate continues.

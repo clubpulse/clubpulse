@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import type { Badge, PlayerBadge } from '@/lib/types/badges';
 import { RARITY_CONFIG } from '@/lib/types/badges';
 
@@ -95,7 +96,7 @@ export function BadgeGrid({ badges, earned }: BadgeGridProps) {
                 }}
                 aria-hidden
               >
-                🔒
+                <Glyph e="🔒" />
               </span>
             )}
 

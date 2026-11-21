@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -29,7 +30,7 @@ export function AdminNav() {
               active ? 'bg-[rgba(37,99,235,0.20)] text-white' : 'text-neutral-400 hover:bg-white/5 hover:text-white'
             }`}
           >
-            <span aria-hidden>{link.icon}</span>
+            <span aria-hidden><Glyph e={link.icon} /></span>
             <span className="whitespace-nowrap">{link.label}</span>
           </Link>
         );

@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMyMentorDashboard, getAvailableMentors } from '@/lib/actions/mentor';
@@ -334,7 +335,7 @@ function RateSession({ sessionId }: { sessionId: string }) {
           }}
           title={`Rate ${star} star${star > 1 ? 's' : ''}`}
         >
-          ⭐
+          <Glyph e="⭐" />
         </button>
       ))}
     </form>

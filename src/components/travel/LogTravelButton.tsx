@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState } from 'react';
 import { LogTravelForm } from './LogTravelForm';
 
@@ -50,7 +51,7 @@ export function LogTravelButton({ clubId }: Props) {
           fontFamily: "'Inter', sans-serif",
         }}
       >
-        <span>✈️</span> Log a trip
+        <span><Glyph e="✈️" /></span> Log a trip
       </button>
 
       {open && (

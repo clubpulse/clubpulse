@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { getLatestPulseScore, getPulseHistory, getClubIdForUser } from '@/lib/actions/pulse-score';
 import { getPulseRating, COMPONENT_CONFIG, type PulseScoreComponents } from '@/lib/types/pulse-score';
@@ -226,7 +227,7 @@ export default async function PulseScorePage() {
       ) : (
         /* No score yet — prompt to calculate */
         <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center', padding: '48px 24px' }}>
-          <span style={{ fontSize: '3rem' }}>💓</span>
+          <span style={{ fontSize: '3rem' }}><Glyph e="💓" /></span>
           <div>
             <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: '0 0 6px', fontFamily: "'Syne', sans-serif" }}>
               No Pulse Score yet

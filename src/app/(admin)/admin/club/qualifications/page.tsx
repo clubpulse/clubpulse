@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getClubQualifications, getExpiringQualifications, verifyQualification } from '@/lib/actions/ecb-courses';
 import { CATEGORY_CONFIG } from '@/lib/types/ecb-courses';
@@ -121,7 +122,7 @@ function MemberRow({ summary }: { summary: ClubQualificationSummary }) {
                   {new Date(q.completed_date).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
                 </span>
                 {q.is_verified ? (
-                  <span style={{ fontSize: 12, color: '#86efac' }}>✅</span>
+                  <span style={{ fontSize: 12, color: '#86efac' }}><Glyph e="✅" /></span>
                 ) : (
                   <VerifyButton qualId={q.id} />
                 )}

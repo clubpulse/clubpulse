@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMyFeeOffsetStatus } from '@/lib/actions/fee-offsets';
@@ -81,7 +82,7 @@ export default async function FeeOffsetPage() {
       {!statusRes.success ? (
         card(
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🔒</p>
+            <p style={{ fontSize: '32px', margin: '0 0 12px' }}><Glyph e="🔒" /></p>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
               Fee offset hasn&apos;t been set up for your club yet. Ask your admin to configure it.
             </p>
@@ -109,7 +110,7 @@ export default async function FeeOffsetPage() {
                       borderRadius: '14px',
                       padding: '16px',
                     }}>
-                      <p style={{ margin: '0 0 4px', fontSize: '18px' }}>{tile.icon}</p>
+                      <p style={{ margin: '0 0 4px', fontSize: '18px' }}><Glyph e={tile.icon} /></p>
                       <p style={{ margin: '0 0 2px', fontSize: '18px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
                         {tile.value}
                       </p>
