@@ -1,11 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { Glyph } from '@/components/icons/Glyph';
 // The four pillars of ClubPulse as a bento grid. Each card says plainly what is available now and
 // what is coming, so the page never promises more than the app does today.
 
 import { BentoCard, BentoGrid } from '@/components/magic';
-import { FOR_PLAYERS_HREF as FEATURES_PLAYERS } from '@/lib/marketing/routes';
 
 type Status = 'live' | 'app' | 'soon';
 type Item = { text: string; status: Status };
@@ -17,7 +17,7 @@ const STATUS_COLOUR: Record<Status, string> = { live: '#4ADE80', app: '#60A5FA',
 // Every bullet carries a status, so the page never promises more than the product does today.
 const PILLARS: Pillar[] = [
   {
-    name: 'Player Analysis', tag: 'Technique', colour: '#FBBF24', icon: '🎥', col: 4, href: FEATURES_PLAYERS,
+    name: 'Player Analysis', href: '/players/analysis', tag: 'Technique', colour: '#FBBF24', icon: '🎥', col: 4,
     line: 'Film a shot or a delivery and see exactly what to work on.',
     items: [
       { text: 'Video analysis of your batting and bowling', status: 'live' },
@@ -26,7 +26,7 @@ const PILLARS: Pillar[] = [
     ],
   },
   {
-    name: 'Community', tag: 'Connection', colour: '#60A5FA', icon: '🤝', col: 2, href: FEATURES_PLAYERS,
+    name: 'Community', href: '/players/community', tag: 'Connection', colour: '#60A5FA', icon: '🤝', col: 2,
     line: 'A social network for cricketers: find players, clubs and games near you.',
     items: [
       { text: 'Club noticeboard and dressing room, inside your club', status: 'live' },
@@ -34,7 +34,7 @@ const PILLARS: Pillar[] = [
     ],
   },
   {
-    name: 'Wellness', tag: 'Preparation', colour: '#F472B6', icon: '🧘', col: 2, href: FEATURES_PLAYERS,
+    name: 'Wellness', href: '/players/wellness', tag: 'Preparation', colour: '#F472B6', icon: '🧘', col: 2,
     line: 'Look after your body and your head, and arrive ready to play.',
     items: [
       { text: 'Private weekly check-in, match mood and injury log', status: 'live' },
@@ -42,7 +42,7 @@ const PILLARS: Pillar[] = [
     ],
   },
   {
-    name: 'Academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4, href: FEATURES_PLAYERS,
+    name: 'Academy', href: '/players/academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4,
     line: 'Short lessons, daily questions and games that make you a better cricketer.',
     items: [
       { text: 'Two-minute lessons and a practice plan', status: 'app' },
@@ -71,7 +71,7 @@ export function Pillars() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span className="mu-float" style={{ fontSize: 34, animationDelay: `${idx * 0.6}s` }} aria-hidden><Glyph e={p.icon} /></span>
                   <div>
-                    <h3 style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 26, fontWeight: 800, color: p.colour, lineHeight: 1.05 }}>{p.name}</h3>
+                    <h3 style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 26, fontWeight: 800, color: p.colour, lineHeight: 1.05 }}><Link href={p.href} style={{ color: 'inherit', textDecoration: 'none' }}>{p.name}</Link></h3>
                     <p style={{ fontSize: 11.5, fontWeight: 700, color: 'rgba(232,237,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{p.tag}</p>
                   </div>
                 </div>
