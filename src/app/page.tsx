@@ -16,7 +16,7 @@ type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
 type NavOpen = boolean;
 
 function useCountUp(target: number, duration = 1800) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   useEffect(() => {

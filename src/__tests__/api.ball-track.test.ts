@@ -35,15 +35,25 @@ function makeProcess(opts: {
   proc.stdout = new EventEmitter();
   proc.stderr = new EventEmitter();
 
-  setTimeout(() => {
-    if (opts.spawnError) {
-      proc.emit('error', opts.spawnError);
-      return;
+  // Fire only once the route has attached its listeners (not at creation time).
+  let scheduled = false;
+  const origOn = proc.on.bind(proc);
+  proc.on = ((event: string, listener: (...args: unknown[]) => void) => {
+    origOn(event, listener);
+    if ((event === 'close' || event === 'error') && !scheduled) {
+      scheduled = true;
+      setTimeout(() => {
+        if (opts.spawnError) {
+          proc.emit('error', opts.spawnError);
+          return;
+        }
+        if (opts.stdout) proc.stdout.emit('data', Buffer.from(opts.stdout));
+        if (opts.stderr) proc.stderr.emit('data', Buffer.from(opts.stderr));
+        proc.emit('close', opts.exitCode ?? 0);
+      }, 0);
     }
-    if (opts.stdout) proc.stdout.emit('data', Buffer.from(opts.stdout));
-    if (opts.stderr) proc.stderr.emit('data', Buffer.from(opts.stderr));
-    proc.emit('close', opts.exitCode ?? 0);
-  }, 0);
+    return proc;
+  }) as typeof proc.on;
 
   return proc;
 }

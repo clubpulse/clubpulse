@@ -1,4 +1,5 @@
 import type { FullCricketCV } from '@/lib/types/cricket-cv';
+import { APP_URL } from '@/lib/share-urls';
 import { BATTING_STYLE_LABELS, BOWLING_STYLE_LABELS, PRIMARY_ROLE_LABELS } from '@/lib/types/cricket-cv';
 
 interface Props {
@@ -310,7 +311,7 @@ export function CricketCVCard({ cv, isPreview = false }: Props) {
           <span style={{ fontSize: '11px', color: '#4b5563' }}>
             Built with{' '}
             <a
-              href="https://clubpulse.app"
+              href={APP_URL}
               style={{ color: '#3B82F6', textDecoration: 'none', fontWeight: 600 }}
               target="_blank"
               rel="noopener noreferrer"

@@ -2,6 +2,7 @@
 
 import { after } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { ukToday } from '@/lib/utils/uk-date';
 import { generateCoachingInsights } from '@/lib/ai/coaching-insights';
 import { summarise, nextBallPosition, commentaryFor, isLegal, type Delivery, type DeliveryInput, type InningsSide } from '@/lib/match-day/scoring';
 import type { ActionResult } from '@/lib/types/action';
@@ -26,7 +27,7 @@ export async function getTodaysMatch(clubId: string): Promise<ActionResult<Match
   if (!userId) return { success: false, error: 'Not authenticated' };
 
   const supabase = await createClient();
-  const today = new Date().toISOString().split('T')[0];
+  const today = ukToday();
 
   const { data, error } = await supabase
     .from('match_scorecards')
@@ -113,7 +114,7 @@ export async function adminCreateScorecard(data: {
       club_id: data.clubId,
       opposition: data.opposition,
       venue: data.venue,
-      match_date: data.matchDate ?? new Date().toISOString().split('T')[0],
+      match_date: data.matchDate ?? ukToday(),
       scorer_user_id: userId,
       status: 'setup',
     })

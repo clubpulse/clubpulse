@@ -44,10 +44,7 @@ export async function isAdultPlayer(userId: string, clubId: string): Promise<boo
 export const AGE_GATE_MESSAGE =
   'This feature is for players aged 18 or over. Confirm your age on the Play page to use it.';
 
-/** Today in UK time as YYYY-MM-DD: the day boundary for check-ins and games. */
-export function ukToday(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(now);
-}
+export { ukToday } from '@/lib/utils/uk-date';
 
 /** Monday 00:00 UTC of the current week, matching date_trunc('week', now()) in the database. */
 export function weekStartIso(now: Date = new Date()): string {

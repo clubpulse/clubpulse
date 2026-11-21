@@ -20,7 +20,7 @@ export function getStripe(): Stripe {
     appInfo: {
       name: 'ClubPulse',
       version: '1.0.0',
-      url: 'https://clubpulse.app',
+      url: 'https://clubpulse.co',
     },
   });
 
