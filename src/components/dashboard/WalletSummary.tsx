@@ -7,7 +7,7 @@ export function WalletSummary({ flexi, reward }: { flexi: number; reward: number
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
       `}</style>
       <div style={{
         background: 'linear-gradient(135deg, rgba(37,99,235,0.28) 0%, #07102B 60%)',
@@ -23,7 +23,7 @@ export function WalletSummary({ flexi, reward }: { flexi: number; reward: number
         }}>Total Scores</p>
 
         <p style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800, fontSize: '52px',
           color: '#fff', margin: '8px 0 4px',
           lineHeight: 1, letterSpacing: '-1px',
@@ -45,7 +45,7 @@ export function WalletSummary({ flexi, reward }: { flexi: number; reward: number
               padding: '12px',
             }}>
               <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>{label}</p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '20px', color: '#fff', margin: '4px 0 2px' }}>{formatScores(value)}</p>
+              <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '20px', color: '#fff', margin: '4px 0 2px' }}>{formatScores(value)}</p>
               <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>{formatGBP(scoresToPence(value))}</p>
             </div>
           ))}

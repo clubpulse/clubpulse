@@ -25,7 +25,7 @@ export default async function ClubAlumniPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28, fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 28,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 28,
           color: '#fff', margin: '0 0 6px', letterSpacing: '-0.5px',
         }}>
           🏆 Club Alumni &amp; Legends

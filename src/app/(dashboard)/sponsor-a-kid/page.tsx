@@ -53,7 +53,7 @@ export default async function SponsorAKidPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px',
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px',
           color: '#fff', margin: '0 0 8px', letterSpacing: '-0.3px',
         }}>
           💝 Sponsor a Kid
@@ -69,7 +69,7 @@ export default async function SponsorAKidPage() {
 
       {/* Sponsorship packages + my sponsorships (client, handles post-sponsor refresh) */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
           Available packages
         </h2>
         <SponsorPackagesClient
@@ -84,7 +84,7 @@ export default async function SponsorAKidPage() {
       {/* Anonymous junior slots — static info panel */}
       {slots.length > 0 && (
         <section>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 4px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 4px' }}>
             Young players awaiting support
           </h2>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: '0 0 14px' }}>

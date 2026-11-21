@@ -66,7 +66,7 @@ export default async function CoachingPage({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
             🎓 Coaching Sessions
           </h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -150,7 +150,7 @@ export default async function CoachingPage({
 
           {upcomingBookings.length > 0 && (
             <section>
-              <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 12px' }}>
+              <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 12px' }}>
                 Upcoming
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -181,7 +181,7 @@ export default async function CoachingPage({
 
           {pastBookings.length > 0 && (
             <section>
-              <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 12px' }}>
+              <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 12px' }}>
                 Past Sessions
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

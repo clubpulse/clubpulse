@@ -85,7 +85,7 @@ export function NominationCard({
           <div>
             <div
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 fontSize: '15px',
                 color: '#fff',

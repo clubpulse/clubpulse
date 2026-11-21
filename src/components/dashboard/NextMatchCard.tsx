@@ -36,7 +36,7 @@ export function NextMatchCard({ fixture, clubName, canPlay = true }: { fixture: 
   };
   const eyebrow: React.CSSProperties = { fontSize: '13px', fontWeight: 600, color: '#93C5FD', margin: '0 0 6px' };
   const title: React.CSSProperties = {
-    fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(22px, 3.4vw, 34px)', color: '#fff', margin: 0, letterSpacing: '-0.5px', lineHeight: 1.1,
+    fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 'clamp(22px, 3.4vw, 34px)', color: '#fff', margin: 0, letterSpacing: '-0.5px', lineHeight: 1.1,
   };
   const sub: React.CSSProperties = { fontSize: '14px', color: 'rgba(255,255,255,0.8)', margin: '8px 0 0' };
   const ghost: React.CSSProperties = {

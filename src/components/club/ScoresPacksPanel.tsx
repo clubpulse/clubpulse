@@ -42,7 +42,7 @@ export function ScoresPacksPanel({ clubId, packs, poolBalance, recentPurchases }
           <p
             style={{
               margin: '4px 0 0',
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800,
               fontSize: '36px',
               color: '#EFC84A',
@@ -91,7 +91,7 @@ export function ScoresPacksPanel({ clubId, packs, poolBalance, recentPurchases }
                 style={{
                   fontSize: '22px',
                   fontWeight: 800,
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   color: '#EFC84A',
                 }}
               >

@@ -46,7 +46,7 @@ export default async function CommunityPotPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '26px',
           color: '#fff',
@@ -72,7 +72,7 @@ export default async function CommunityPotPage() {
           Scores in the pot
         </p>
         <p style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '52px',
           color: '#fff',
@@ -95,7 +95,7 @@ export default async function CommunityPotPage() {
       {/* Active proposals */}
       <section>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '17px',
           color: '#fff',
@@ -128,7 +128,7 @@ export default async function CommunityPotPage() {
       {contributions.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '17px',
             color: '#fff',
@@ -161,7 +161,7 @@ export default async function CommunityPotPage() {
                   </p>
                 </div>
                 <span style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 700,
                   fontSize: '15px',
                   color: '#86efac',
@@ -178,7 +178,7 @@ export default async function CommunityPotPage() {
       {pastProposals.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '17px',
             color: '#fff',

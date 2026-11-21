@@ -27,7 +27,7 @@ export default async function NotiboardPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '26px',
           color: '#fff',
@@ -58,7 +58,7 @@ export default async function NotiboardPage() {
       {pinned.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '13px',
             textTransform: 'uppercase',
@@ -78,7 +78,7 @@ export default async function NotiboardPage() {
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {pinned.length > 0 && (
             <h2 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               fontSize: '13px',
               textTransform: 'uppercase',

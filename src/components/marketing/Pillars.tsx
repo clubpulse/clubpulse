@@ -4,8 +4,7 @@ import { Glyph } from '@/components/icons/Glyph';
 // The four pillars of ClubPulse as a bento grid. Each card says plainly what is available now and
 // what is coming, so the page never promises more than the app does today.
 
-import Link from 'next/link';
-import { BentoCard, BentoGrid, BorderBeam, NumberTicker } from '@/components/magic';
+import { BentoCard, BentoGrid } from '@/components/magic';
 
 type Item = { text: string; soon?: boolean };
 type Pillar = { name: string; tag: string; colour: string; icon: string; line: string; items: Item[]; col: number };
@@ -56,7 +55,7 @@ export function Pillars() {
     <section id="pillars" style={{ padding: '96px 24px', background: '#05080f', borderTop: '1px solid rgba(255,255,255,0.06)' }} aria-labelledby="pillars-h">
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#EFC84A', marginBottom: 12 }}>One app, four pillars</p>
-        <h2 id="pillars-h" style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, lineHeight: 1.08, color: '#E8EDF5', maxWidth: 720 }}>
+        <h2 id="pillars-h" style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, lineHeight: 1.08, color: '#E8EDF5', maxWidth: 720 }}>
           Technique, community, mindset and learning, in one place.
         </h2>
         <p style={{ marginTop: 16, maxWidth: 640, fontSize: 16, lineHeight: 1.6, color: 'rgba(232,237,245,0.6)' }}>
@@ -70,7 +69,7 @@ export function Pillars() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span className="mu-float" style={{ fontSize: 34, animationDelay: `${idx * 0.6}s` }} aria-hidden><Glyph e={p.icon} /></span>
                   <div>
-                    <h3 style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 26, fontWeight: 800, color: p.colour, lineHeight: 1.05 }}>{p.name}</h3>
+                    <h3 style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 26, fontWeight: 800, color: p.colour, lineHeight: 1.05 }}>{p.name}</h3>
                     <p style={{ fontSize: 11.5, fontWeight: 700, color: 'rgba(232,237,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{p.tag}</p>
                   </div>
                 </div>
@@ -89,20 +88,6 @@ export function Pillars() {
               </BentoCard>
             ))}
 
-            <article className="mu-bento-card" style={{ padding: 26, gridColumn: 'span 6', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 28, borderColor: 'rgba(239,200,74,0.35)', background: 'radial-gradient(120% 140% at 0% 50%, rgba(239,200,74,0.14), transparent 60%), rgba(7,16,43,0.85)' }}>
-              <div style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 'clamp(54px, 8vw, 88px)', fontWeight: 800, lineHeight: 1, color: '#EFC84A' }}>
-                <NumberTicker value={108} />
-              </div>
-              <div style={{ flex: 1, minWidth: 240 }}>
-                <h3 style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 24, fontWeight: 800, color: '#E8EDF5' }}>badges on the Honours Board</h3>
-                <p style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.55, color: 'rgba(232,237,245,0.7)' }}>
-                  Daily, weekly and monthly Run Chase tasks earn Scores, and every milestone earns a badge. Share one with your friends. It never shows your name or your club.
-                  <span style={{ color: 'rgba(232,237,245,0.5)' }}> Badges in the app are coming soon.</span>
-                </p>
-              </div>
-              <Link href="/features" style={{ fontSize: 14, fontWeight: 700, color: '#EFC84A', textDecoration: 'none' }}>See all features →</Link>
-              <BorderBeam from="#EFC84A" to="#F472B6" duration={10} />
-            </article>
           </BentoGrid>
         </div>
       </div>

@@ -73,7 +73,7 @@ export default async function CurseThePitchPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '26px',
           color: '#fff',
@@ -134,7 +134,7 @@ export default async function CurseThePitchPage() {
       {/* Next fixture vote card */}
       {nextFixture ? (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
             Next fixture
           </h2>
           <PitchVoteCard
@@ -163,7 +163,7 @@ export default async function CurseThePitchPage() {
       {/* Ground history breakdown */}
       {groundHistory.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
             Ground history
           </h2>
           <div style={{
@@ -197,7 +197,7 @@ export default async function CurseThePitchPage() {
       {/* Past votes */}
       {resolvedVotes.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
             Past predictions
           </h2>
           <div style={{

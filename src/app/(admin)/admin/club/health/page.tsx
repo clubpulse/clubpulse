@@ -58,7 +58,7 @@ export default async function ClubHealthPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-            <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, letterSpacing: '-0.3px' }}>
+            <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, letterSpacing: '-0.3px' }}>
               Club Health &amp; Intelligence
             </h1>
             <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(249,115,22,0.12)', color: '#f97316', border: '1px solid rgba(249,115,22,0.25)', borderRadius: '6px', padding: '3px 8px' }}>
@@ -79,7 +79,7 @@ export default async function ClubHealthPage() {
         {engagementStats.map((s) => (
           <div key={s.label} style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px' }}>
             <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px', fontWeight: 600 }}>{s.label}</p>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '36px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{s.value}</p>
+            <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '36px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{s.value}</p>
             <p style={{ fontSize: '12px', color: s.positive ? '#2ecc71' : '#e74c3c', margin: 0, fontWeight: 600 }}>{s.trend}</p>
           </div>
         ))}

@@ -49,7 +49,7 @@ export default async function TravelPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800, fontSize: '26px',
             color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
           }}>
@@ -78,7 +78,7 @@ export default async function TravelPage() {
               {tile.label}
             </p>
             <p style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800, fontSize: '30px',
               color: '#fff', margin: 0,
               fontVariantNumeric: 'tabular-nums',
@@ -107,7 +107,7 @@ export default async function TravelPage() {
       {tours.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700, fontSize: '17px',
             color: '#fff', margin: '0 0 14px',
           }}>
@@ -169,7 +169,7 @@ export default async function TravelPage() {
       {/* Recent travel log */}
       <section>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700, fontSize: '17px',
           color: '#fff', margin: '0 0 14px',
         }}>
@@ -214,7 +214,7 @@ export default async function TravelPage() {
                       {entry.travel_date} · {entry.distance_miles ? `${entry.distance_miles} mi` : 'distance unknown'} · {modeConfig.label}
                     </p>
                   </div>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', whiteSpace: 'nowrap' }}>
                     +{entry.creds_awarded}
                   </div>
                 </div>

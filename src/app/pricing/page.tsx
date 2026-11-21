@@ -199,7 +199,7 @@ export default function PricingPage() {
         }
         .cp-nav-logo {
           display: flex; align-items: center; gap: 8px;
-          text-decoration: none; font-family: 'Syne', sans-serif;
+          text-decoration: none; font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 17px; font-weight: 800;
         }
         .cp-nav-logo .club { color: var(--cp-fg); }
@@ -239,7 +239,7 @@ export default function PricingPage() {
           margin-bottom: 16px;
         }
         .cp-pricing-h1 {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-size: clamp(32px, 5vw, 52px);
           font-weight: 800;
           color: var(--cp-fg);
@@ -322,14 +322,14 @@ export default function PricingPage() {
           white-space: nowrap;
         }
         .cp-tier-name {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 18px; font-weight: 800;
           color: var(--cp-fg);
           margin-bottom: 4px;
         }
         .cp-tier-card.featured .cp-tier-name { color: #fff; }
         .cp-tier-price {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 36px; font-weight: 800;
           color: var(--cp-fg);
           line-height: 1;
@@ -404,7 +404,7 @@ export default function PricingPage() {
           overflow-x: auto;
         }
         .cp-section-title {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 13px; font-weight: 700;
           letter-spacing: 0.1em; text-transform: uppercase;
           color: var(--cp-sky);
@@ -489,7 +489,7 @@ export default function PricingPage() {
           text-align: center;
         }
         .cp-coming-soon h3 {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 22px; font-weight: 800;
           color: var(--cp-fg);
           margin-bottom: 10px;
@@ -519,7 +519,7 @@ export default function PricingPage() {
         }
         .cp-footer-simple a { color: var(--cp-sky); text-decoration: none; }
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap');
       `}</style>
 
       {/* NAV */}

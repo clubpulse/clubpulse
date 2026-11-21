@@ -22,7 +22,7 @@ export function WantedListingCard({ listing, alreadyApplied = false }: Props) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
           <div>
             <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{listing.club?.name ?? 'Unknown club'}</p>
-            <h3 style={{ margin: '2px 0 0', fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>{listing.position}</h3>
+            <h3 style={{ margin: '2px 0 0', fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{listing.position}</h3>
           </div>
           <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, background: 'rgba(37,99,235,0.28)', color: '#f87171', whiteSpace: 'nowrap' }}>{listing.level_required}</span>
         </div>
@@ -39,7 +39,7 @@ export function WantedListingCard({ listing, alreadyApplied = false }: Props) {
         <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
           <div onClick={(e) => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '28px 24px', width: '100%', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <h2 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '18px', color: '#fff' }}>Apply — {listing.position}</h2>
+              <h2 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '18px', color: '#fff' }}>Apply — {listing.position}</h2>
               <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>{listing.club?.name}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

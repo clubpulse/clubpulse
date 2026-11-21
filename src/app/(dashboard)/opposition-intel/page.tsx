@@ -125,7 +125,7 @@ export default function OppositionIntelPage() {
 
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
           Opposition Intelligence
         </h1>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>

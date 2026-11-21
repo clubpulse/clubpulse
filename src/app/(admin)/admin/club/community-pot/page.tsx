@@ -22,7 +22,7 @@ export default async function AdminCommunityPotPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '24px',
           color: '#fff',
@@ -52,7 +52,7 @@ export default async function AdminCommunityPotPage() {
             Scores in pot
           </p>
           <p style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '36px',
             color: '#fff',
@@ -72,7 +72,7 @@ export default async function AdminCommunityPotPage() {
             Contributors
           </p>
           <p style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '36px',
             color: '#fff',
@@ -91,7 +91,7 @@ export default async function AdminCommunityPotPage() {
       {completedProposals.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '17px',
             color: '#fff',

@@ -150,7 +150,7 @@ export function ScorecardUpload() {
           padding: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#34d399', margin: 0 }}>
+            <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#34d399', margin: 0 }}>
               ✓ Scorecard parsed
             </p>
             <span style={{
@@ -172,7 +172,7 @@ export function ScorecardUpload() {
             {result.batting && (
               <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '10px' }}>
                 <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255,255,255,0.3)', margin: '0 0 6px' }}>Batting</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
+                <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
                   {result.batting.runs}
                   <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>
                     ({result.batting.balls}b)
@@ -187,7 +187,7 @@ export function ScorecardUpload() {
             {result.bowling && (
               <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '10px' }}>
                 <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255,255,255,0.3)', margin: '0 0 6px' }}>Bowling</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
+                <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
                   {result.bowling.wickets}/{result.bowling.runs}
                   <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>
                     ({result.bowling.overs}ov)

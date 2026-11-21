@@ -41,7 +41,7 @@ export function PlayersProgress() {
 
   return (
     <section style={{ marginTop: '28px', fontFamily: "'Inter', sans-serif" }}>
-      <h3 style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>Players&apos; progress</h3>
+      <h3 style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>Players&apos; progress</h3>
       <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
         Technique analyses saved by players you have a confirmed or completed session with.
       </p>

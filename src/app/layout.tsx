@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Syne } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -8,11 +8,11 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-// Headings: var(--font-syne)
-const syne = Syne({
+// Headings: var(--font-syne). The variable keeps its old name so nothing that uses it has to change.
+const syne = Bricolage_Grotesque({
   variable: "--font-syne",
   subsets: ["latin"],
-  weight: "800",
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {

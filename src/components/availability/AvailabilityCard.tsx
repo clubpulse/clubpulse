@@ -86,7 +86,7 @@ export function AvailabilityCard({ fixture }: { fixture: FixtureWithMyStatus }) 
           <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {FORMAT_LABELS[fixture.format] ?? fixture.format}
           </p>
-          <h3 style={{ margin: '2px 0 0', fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+          <h3 style={{ margin: '2px 0 0', fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             vs {fixture.opponent}
           </h3>
         </div>

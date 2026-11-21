@@ -160,7 +160,7 @@ export default async function ClubQualificationsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontFamily: "'Inter', sans-serif" }}>
 
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 22, color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 22, color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
           Qualifications
         </h1>
         <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
@@ -181,7 +181,7 @@ export default async function ClubQualificationsPage() {
             padding: '16px 20px',
             textAlign: 'center',
           }}>
-            <p style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+            <p style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               {stat.value}
             </p>
             <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{stat.label}</p>

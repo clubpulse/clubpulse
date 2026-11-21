@@ -17,7 +17,7 @@ function StatPill({ label, value, sub }: { label: string; value: string | number
       padding: '16px 20px',
       flex: '1 1 120px',
     }}>
-      <div style={{ fontSize: '24px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif", letterSpacing: '-0.5px' }}>
+      <div style={{ fontSize: '24px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: '-0.5px' }}>
         {value}
       </div>
       <div style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: '2px' }}>
@@ -64,7 +64,7 @@ export default async function GutFeelingPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '26px',
           color: '#fff',

@@ -32,7 +32,7 @@ export default async function AdminCurseThePitchPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
           🌀 Curse the Pitch — Admin
         </h1>
         <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -42,7 +42,7 @@ export default async function AdminCurseThePitchPage() {
 
       {/* Pending fixtures */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
           Pending fixtures
         </h2>
 
@@ -105,7 +105,7 @@ export default async function AdminCurseThePitchPage() {
       {/* Ground history */}
       {groundHistory.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
             Ground history
           </h2>
           <div style={{

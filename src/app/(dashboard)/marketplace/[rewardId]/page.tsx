@@ -43,7 +43,7 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
 
         <div style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-            <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: 0, letterSpacing: '-0.2px' }}>
+            <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: 0, letterSpacing: '-0.2px' }}>
               {r.title}
             </h1>
             {r.category && (
@@ -61,7 +61,7 @@ export default async function RewardPage({ params }: { params: Promise<{ rewardI
 
           <div style={{ marginTop: '24px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
             <div>
-              <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '32px', color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
+              <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '32px', color: '#EFC84A', fontVariantNumeric: 'tabular-nums' }}>
                 {formatScores(r.creds_cost)} Scores
               </p>
               <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>

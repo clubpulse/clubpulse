@@ -40,7 +40,7 @@ export function PollCard({ post, currentUserId, onUpdate }: PollCardProps) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
         <span style={{ fontSize: '16px' }}><Glyph e="📊" /></span>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '13px',
           color: 'rgba(255,255,255,0.5)',

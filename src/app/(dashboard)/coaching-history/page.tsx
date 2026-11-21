@@ -85,7 +85,7 @@ function StatBadge({ label, value, unit, color }: { label: string; value: number
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>{label}</span>
-      <span style={{ fontSize: '20px', fontWeight: 800, color, fontFamily: "'Syne', sans-serif" }}>
+      <span style={{ fontSize: '20px', fontWeight: 800, color, fontFamily: "'Bricolage Grotesque', sans-serif" }}>
         {value != null ? `${typeof value === 'number' ? value.toFixed(1) : value}${unit}` : '—'}
       </span>
     </div>
@@ -127,7 +127,7 @@ export default async function CoachingHistoryPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
             Coaching History
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
@@ -170,7 +170,7 @@ export default async function CoachingHistoryPage() {
                     <div>
                       <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: '4px' }}>Ball Speed</p>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                        <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                        <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                           {latestSpeed?.toFixed(1)}
                         </span>
                         <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>km/h</span>
@@ -194,7 +194,7 @@ export default async function CoachingHistoryPage() {
                   <div style={{ marginBottom: '16px' }}>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: '4px' }}>Swing Movement</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {latestSwing?.toFixed(1)}
                       </span>
                       <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>px</span>
@@ -212,7 +212,7 @@ export default async function CoachingHistoryPage() {
                   <div style={{ marginBottom: '16px' }}>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: '4px' }}>Batting Balance</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {balanceValues.at(-1)?.toFixed(0)}
                       </span>
                       <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>/ 100</span>
@@ -230,7 +230,7 @@ export default async function CoachingHistoryPage() {
                   <div style={{ marginBottom: '16px' }}>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: '4px' }}>Bat Lift</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                      <span style={{ fontSize: '30px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {batLiftValues.at(-1)?.toFixed(0)}
                       </span>
                       <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>/ 100</span>

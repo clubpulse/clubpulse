@@ -42,7 +42,7 @@ export function ScoutDataTable({ stats, session, allowReveal = false }: Props) {
     ...tdStyle,
     fontWeight: 600,
     color: '#fff',
-    fontFamily: "'Syne', sans-serif",
+    fontFamily: "'Bricolage Grotesque', sans-serif",
   };
 
   return (

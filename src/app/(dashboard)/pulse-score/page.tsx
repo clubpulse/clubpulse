@@ -137,7 +137,7 @@ export default async function PulseScorePage() {
   if (!clubId) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0 }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0 }}>
           💓 Club Pulse Score
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.45)', margin: 0 }}>You are not a member of any club yet.</p>
@@ -165,7 +165,7 @@ export default async function PulseScorePage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
             💓 Club Pulse Score
           </h1>
           <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
@@ -229,7 +229,7 @@ export default async function PulseScorePage() {
         <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center', padding: '48px 24px' }}>
           <span style={{ fontSize: '3rem' }}><Glyph e="💓" /></span>
           <div>
-            <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: '0 0 6px', fontFamily: "'Syne', sans-serif" }}>
+            <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: '0 0 6px', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               No Pulse Score yet
             </p>
             <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', margin: 0 }}>

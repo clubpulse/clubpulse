@@ -78,7 +78,7 @@ export function ChatWindow({
         padding: '14px 18px',
       }}>
         <div>
-          <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
+          <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
             Your ClubPulse Coach
           </p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>

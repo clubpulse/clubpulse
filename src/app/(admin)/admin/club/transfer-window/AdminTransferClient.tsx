@@ -72,7 +72,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>🔄 Transfer Window</h1>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>🔄 Transfer Window</h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Manage incoming and outgoing player transfer requests</p>
         </div>
         <button onClick={() => setShowNew(true)} style={{ padding: '9px 16px', borderRadius: '10px', border: 'none', background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
@@ -83,7 +83,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
       {showNew && (
         <div onClick={() => setShowNew(false)} style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '28px 24px', width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h2 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '18px', color: '#fff' }}>New Transfer Request</h2>
+            <h2 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '18px', color: '#fff' }}>New Transfer Request</h2>
             <form onSubmit={handleNewRequest} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div><label style={lbl}>Destination club ID *</label><input required value={nForm.to_club_id} onChange={e => setNForm(f => ({ ...f, to_club_id: e.target.value }))} placeholder="Club UUID" style={inp} /></div>
               <div><label style={lbl}>Notes</label><textarea value={nForm.notes} onChange={e => setNForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Reason or context for the request…" style={{ ...inp, resize: 'vertical' }} /></div>
@@ -99,7 +99,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
-          <h2 style={{ margin: '0 0 2px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>Incoming Requests</h2>
+          <h2 style={{ margin: '0 0 2px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>Incoming Requests</h2>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{incoming.length === 0 ? 'No incoming requests' : `${incoming.length} request${incoming.length !== 1 ? 's' : ''}`}</p>
         </div>
         {incoming.map(req => <RequestRow key={req.id} req={req} direction="in" />)}
@@ -107,7 +107,7 @@ export function AdminTransferClient({ clubId, incoming: iIn, outgoing: iOut }: P
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
-          <h2 style={{ margin: '0 0 2px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>Outgoing Requests</h2>
+          <h2 style={{ margin: '0 0 2px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>Outgoing Requests</h2>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{outgoing.length === 0 ? 'No outgoing requests' : `${outgoing.length} request${outgoing.length !== 1 ? 's' : ''}`}</p>
         </div>
         {outgoing.map(req => <RequestRow key={req.id} req={req} direction="out" />)}

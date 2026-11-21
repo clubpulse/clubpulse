@@ -42,7 +42,7 @@ export function CheckinForm({ clubId }: Props) {
         fontFamily: "'Inter', sans-serif",
       }}>
         <div style={{ fontSize: '36px', marginBottom: '10px' }}><Glyph e="🧡" /></div>
-        <h2 style={{ color: '#10b981', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', margin: '0 0 6px' }}>
+        <h2 style={{ color: '#10b981', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', margin: '0 0 6px' }}>
           Checked in — thank you
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px', margin: 0 }}>

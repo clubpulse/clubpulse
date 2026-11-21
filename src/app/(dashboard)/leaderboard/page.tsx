@@ -62,7 +62,7 @@ export default async function LeaderboardPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '26px',
           color: '#fff',
@@ -78,7 +78,7 @@ export default async function LeaderboardPage() {
 
       {/* Club Scores Leaderboard */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
           Club Scores Ranking
         </h2>
         <div style={{
@@ -98,7 +98,7 @@ export default async function LeaderboardPage() {
       {/* My Badges This Season */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
             Your Badges
           </h2>
           {myBadgesThisSeason.length > 0 && (
@@ -132,7 +132,7 @@ export default async function LeaderboardPage() {
       {/* Badge Catalogue */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
             Badge Catalogue
           </h2>
           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>

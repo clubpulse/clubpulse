@@ -72,7 +72,7 @@ export function LogTravelButton({ clubId }: Props) {
             overflowY: 'auto',
           }}>
             <h2 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800, fontSize: '18px',
               color: '#fff', margin: '0 0 20px',
             }}>

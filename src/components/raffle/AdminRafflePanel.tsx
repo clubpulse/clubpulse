@@ -106,7 +106,7 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
             flexDirection: 'column',
             gap: '14px',
           }}>
-            <h3 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
+            <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
               New Raffle
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -176,7 +176,7 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
       </div>
 
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           Active ({activeRaffles.length})
         </h2>
         {activeRaffles.length === 0 ? (
@@ -226,7 +226,7 @@ export function AdminRafflePanel({ clubId, activeRaffles, pastRaffles }: Props) 
 
       {pastRaffles.length > 0 && (
         <section>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Past ({pastRaffles.length})
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

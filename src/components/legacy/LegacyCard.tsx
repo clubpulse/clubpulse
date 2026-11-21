@@ -14,7 +14,7 @@ function Initials({ name }: { name: string }) {
       background: 'linear-gradient(135deg, rgba(29,78,216,0.6) 0%, rgba(90,10,10,0.8) 100%)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 26, fontWeight: 700, color: '#fff',
-      fontFamily: "'Syne', sans-serif", flexShrink: 0,
+      fontFamily: "'Bricolage Grotesque', sans-serif", flexShrink: 0,
     }}>
       {initials.toUpperCase()}
     </div>
@@ -28,7 +28,7 @@ function StatChip({ label, value }: { label: string; value: number }) {
       background: 'rgba(255,255,255,0.05)', borderRadius: 8,
       padding: '6px 12px', minWidth: 52,
     }}>
-      <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+      <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
         {value.toLocaleString()}
       </span>
       <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -74,7 +74,7 @@ export function LegacyCard({ legacy }: { legacy: PlayerLegacy }) {
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif", letterSpacing: '-0.3px' }}>
+            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: '-0.3px' }}>
               {legacy.display_name}
             </h3>
             {legacy.nickname && (

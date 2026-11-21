@@ -165,13 +165,13 @@ function MetricCard({
         <div>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: '4px' }}>{label}</p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '28px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+            <span style={{ fontSize: '28px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               {current.toFixed(1)}{unit}
             </span>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: tc, fontFamily: "'Syne', sans-serif" }}>{icon}</div>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: tc, fontFamily: "'Bricolage Grotesque', sans-serif" }}>{icon}</div>
           <div style={{ fontSize: '12px', color: tc, fontWeight: 600 }}>
             {delta >= 0 ? '+' : ''}{delta.toFixed(1)}{unit} projected
           </div>
@@ -247,7 +247,7 @@ export default async function DevelopmentPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff', margin: 0, letterSpacing: '-0.3px', marginBottom: '6px' }}>
           Development Tracking
         </h1>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>

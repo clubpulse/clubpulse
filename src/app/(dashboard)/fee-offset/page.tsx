@@ -71,7 +71,7 @@ export default async function FeeOffsetPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
           💰 Club Fee Offset
         </h1>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
@@ -111,7 +111,7 @@ export default async function FeeOffsetPage() {
                       padding: '16px',
                     }}>
                       <p style={{ margin: '0 0 4px', fontSize: '18px' }}><Glyph e={tile.icon} /></p>
-                      <p style={{ margin: '0 0 2px', fontSize: '18px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                      <p style={{ margin: '0 0 2px', fontSize: '18px', fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {tile.value}
                       </p>
                       <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -136,7 +136,7 @@ export default async function FeeOffsetPage() {
                   card(
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+                        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
                           {season} Application
                         </h2>
                         {statusBadge(myApplication.status)}
@@ -144,13 +144,13 @@ export default async function FeeOffsetPage() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div>
                           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores spent</p>
-                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Syne', sans-serif" }}>
+                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                             {myApplication.scores_applied.toLocaleString()}
                           </p>
                         </div>
                         <div>
                           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fee discount</p>
-                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#4ade80', fontFamily: "'Syne', sans-serif" }}>
+                          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#4ade80', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                             {formatPounds(myApplication.pence_offset)}
                           </p>
                         </div>
@@ -165,7 +165,7 @@ export default async function FeeOffsetPage() {
                 ) : settings.is_active ? (
                   card(
                     <div>
-                      <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 20px' }}>
+                      <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 20px' }}>
                         Apply offset for {season}
                       </h2>
                       <FeeOffsetCalculator summary={statusRes.data} clubId={clubId} />

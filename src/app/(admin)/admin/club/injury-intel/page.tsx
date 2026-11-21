@@ -27,7 +27,7 @@ export default async function AdminInjuryIntelPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
         }}>
           🩹 Injury Intel

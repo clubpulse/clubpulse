@@ -57,7 +57,7 @@ export function LotCard({ lot, currentUserId, balance }: LotCardProps) {
           zIndex: 10,
         }}>
           <span style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 900,
             fontSize: '28px',
             color: '#EFC84A',

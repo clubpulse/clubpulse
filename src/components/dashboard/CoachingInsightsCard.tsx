@@ -60,7 +60,7 @@ export function CoachingInsightsCard({ playerId, initialInsights }: { playerId: 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
         <h2
           id="coaching-insights-heading"
-          style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 800, fontSize: '17px', color: '#fff', margin: 0, letterSpacing: '-0.2px' }}
+          style={{ fontFamily: "var(--font-syne), 'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '17px', color: '#fff', margin: 0, letterSpacing: '-0.2px' }}
         >
           Coaching insights
         </h2>

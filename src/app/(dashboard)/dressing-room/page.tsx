@@ -23,7 +23,7 @@ export default async function DressingRoomPage() {
         padding: '0 24px',
       }}>
         <span style={{ fontSize: '48px' }}><Glyph e="🏏" /></span>
-        <h2 style={{ margin: 0, color: '#fff', fontFamily: "'Syne', sans-serif", fontSize: '20px' }}>
+        <h2 style={{ margin: 0, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: '20px' }}>
           Not in a club yet
         </h2>
         <p style={{ margin: 0, fontSize: '14px' }}>

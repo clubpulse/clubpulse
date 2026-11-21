@@ -63,7 +63,7 @@ export function RaffleCard({ raffle, userBalance, onPurchased }: Props) {
     }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <h3 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
+          <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
             {raffle.title}
           </h3>
           <span style={{
@@ -191,7 +191,7 @@ export function DrawnRaffleCard({ raffle, winners }: DrawnRaffleCardProps) {
       fontFamily: "'Inter', sans-serif",
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-        <h3 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: 'rgba(255,255,255,0.7)' }}>
+        <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: 'rgba(255,255,255,0.7)' }}>
           {raffle.title}
         </h3>
         <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>

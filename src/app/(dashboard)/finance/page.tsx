@@ -49,7 +49,7 @@ export default async function FinancePage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800, fontSize: '24px',
           color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
         }}>
@@ -66,7 +66,7 @@ export default async function FinancePage() {
           <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px' }}>
             Total Income
           </p>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#22c55e', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#22c55e', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
             {stats ? formatPence(stats.total_income_pence) : '—'}
           </p>
         </div>
@@ -74,7 +74,7 @@ export default async function FinancePage() {
           <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px' }}>
             Total Expenses
           </p>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#ef4444', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#ef4444', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
             {stats ? formatPence(stats.total_expense_pence) : '—'}
           </p>
         </div>
@@ -83,7 +83,7 @@ export default async function FinancePage() {
             Net Balance
           </p>
           <p style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px',
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px',
             color: netPositive ? '#22c55e' : '#ef4444',
             margin: 0, fontVariantNumeric: 'tabular-nums',
           }}>
@@ -94,7 +94,7 @@ export default async function FinancePage() {
 
       {/* Monthly chart */}
       <div>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
           Monthly Summary
         </h2>
         <FinanceChart summaries={summaries} />
@@ -102,7 +102,7 @@ export default async function FinancePage() {
 
       {/* Recent entries */}
       <div>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
           Recent Entries
         </h2>
         <div style={{

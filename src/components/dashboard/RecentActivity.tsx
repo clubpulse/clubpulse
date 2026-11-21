@@ -11,7 +11,7 @@ export function RecentActivity({ items }: { items: WalletTransaction[] }) {
       fontFamily: "'Inter', sans-serif",
     }}>
       <p style={{
-        fontFamily: "'Syne', sans-serif", fontWeight: 700,
+        fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
         fontSize: '15px', color: '#fff', margin: '0 0 16px',
       }}>Recent activity</p>
 

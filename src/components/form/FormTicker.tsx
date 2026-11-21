@@ -91,7 +91,7 @@ export function FormTicker({ form }: FormTickerProps) {
           letterSpacing: '1.2px',
           textTransform: 'uppercase',
           color: 'rgba(255,255,255,0.35)',
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
         }}
       >
         Form
@@ -108,7 +108,7 @@ export function FormTicker({ form }: FormTickerProps) {
             color: rating !== null ? cfg.color : 'rgba(255,255,255,0.2)',
             fontVariantNumeric: 'tabular-nums',
             lineHeight: 1,
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
           }}
         >
           {rating !== null ? rating.toFixed(1) : '--'}

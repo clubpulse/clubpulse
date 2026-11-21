@@ -43,7 +43,7 @@ export function EarningNudges() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
         <div>
           <p style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 700,
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
             fontSize: '13px', color: '#EFC84A',
             textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0,
           }}>Earn more Scores</p>

@@ -152,7 +152,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             <p style={{ margin: 0, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,0.4)' }}>
               ClubPulse
             </p>
-            <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '16px', color: '#fff' }}>
+            <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '16px', color: '#fff' }}>
               Scratch Card
             </p>
           </div>
@@ -178,7 +178,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             <div style={{ textAlign: 'center', padding: '20px' }}>
               <div style={{ fontSize: '48px', marginBottom: '8px' }}>{PRIZE_EMOJI[prize.type] ?? '🎉'}</div>
               <p style={{
-                margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
                 fontSize: '18px', color: PRIZE_COLOR[prize.type] ?? '#fff',
               }}>
                 {prize.label}
@@ -256,7 +256,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
             padding: '14px 32px',
             fontSize: '14px', fontWeight: 700, color: '#fff',
             cursor: hasFreeCard ? 'pointer' : 'not-allowed',
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
           }}
         >
           {hasFreeCard ? '🎉 Scratch your card' : 'Earn a card to scratch'}

@@ -34,7 +34,7 @@ export default async function ClubHealthReportPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '26px',
             color: '#fff',
@@ -73,7 +73,7 @@ export default async function ClubHealthReportPage() {
       {/* Trend Chart */}
       <div>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '16px',
           color: '#fff',

@@ -19,7 +19,7 @@ export default async function TransferWindowPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
             🔄 Transfer Window
           </h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -32,7 +32,7 @@ export default async function TransferWindowPage() {
       </div>
 
       <section style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <h2 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
+        <h2 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
           How it works
         </h2>
         <ol style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -47,7 +47,7 @@ export default async function TransferWindowPage() {
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
-          <h2 style={{ margin: '0 0 2px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
+          <h2 style={{ margin: '0 0 2px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
             My Transfer Requests
           </h2>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>

@@ -44,7 +44,7 @@ export function PerformanceInsights() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
           <p style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 700,
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
             fontSize: '13px', color: 'rgba(255,255,255,0.4)',
             textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0,
           }}>Performance insights</p>

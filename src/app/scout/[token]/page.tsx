@@ -107,13 +107,13 @@ export default async function ScoutSharePage({ params }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <span style={{ fontSize: '22px' }}><Glyph e="🔍" /></span>
             <h1 style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
               fontSize: '22px', color: '#fff', margin: 0, letterSpacing: '-0.3px',
             }}>
               Scout Mode Report
             </h1>
           </div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: 'rgba(255,255,255,0.7)', margin: '0 0 6px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: 'rgba(255,255,255,0.7)', margin: '0 0 6px' }}>
             {typedSession.session_name}
           </h2>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
@@ -161,7 +161,7 @@ export default async function ScoutSharePage({ params }: Props) {
               ) : (
                 stats.map((stat) => (
                   <tr key={stat.code}>
-                    <td style={{ ...tdStyle, fontWeight: 600, color: '#fff', fontFamily: "'Syne', sans-serif" }}>
+                    <td style={{ ...tdStyle, fontWeight: 600, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {stat.code}
                     </td>
                     <td style={{ ...tdStyle, textAlign: 'right' }}>{stat.matches}</td>

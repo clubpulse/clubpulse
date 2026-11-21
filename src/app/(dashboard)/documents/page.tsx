@@ -137,7 +137,7 @@ export default async function DocumentsPage() {
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '24px',
           color: '#fff',
@@ -161,7 +161,7 @@ export default async function DocumentsPage() {
           padding: '20px',
         }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '15px',
             color: '#f87171',
@@ -261,7 +261,7 @@ export default async function DocumentsPage() {
             return (
               <section key={category}>
                 <h2 style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 700,
                   fontSize: '14px',
                   color: 'rgba(255,255,255,0.7)',

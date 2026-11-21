@@ -8,7 +8,7 @@ import { MagicCard } from '@/components/magic/MagicCard';
 import type { NavLink } from '@/lib/nav/menu';
 import { PILLARS, type Pillar } from '@/lib/nav/pillars';
 
-const SYNE = "'Syne', sans-serif";
+const SYNE = "'Bricolage Grotesque', sans-serif";
 
 type Props = { pillar: Pillar; sections: Array<{ title: string | null; links: NavLink[] }> };
 

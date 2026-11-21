@@ -97,13 +97,13 @@ export default function AdminCharityPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 4px' }}>❤️ Charity Management</h1>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 4px' }}>❤️ Charity Management</h1>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Configure charities, conversion rate, and process donation batches.</p>
       </div>
 
       {/* Settings */}
       <section>
-        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Syne', sans-serif" }}>Donation Settings</h2>
+        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Donation Settings</h2>
         <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '0 0 200px' }}>
@@ -124,7 +124,7 @@ export default function AdminCharityPage() {
       {/* Charities */}
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0, fontFamily: "'Syne', sans-serif" }}>Charities</h2>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif" }}>Charities</h2>
           <button onClick={() => setShowAdd(v => !v)} style={{ ...btnPrimary, background: showAdd ? 'rgba(255,255,255,0.06)' : '#1D4ED8', fontSize: '12px', padding: '7px 14px' }}>{showAdd ? 'Cancel' : '+ Add charity'}</button>
         </div>
         {showAdd && (
@@ -155,7 +155,7 @@ export default function AdminCharityPage() {
 
       {/* Pending */}
       <section>
-        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Syne', sans-serif" }}>Pending Donations</h2>
+        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Pending Donations</h2>
         {pending.length === 0 ? <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>No unbatched donations at the moment.</p> : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {pending.map(group => (
@@ -177,7 +177,7 @@ export default function AdminCharityPage() {
 
       {/* Batches */}
       <section>
-        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Syne', sans-serif" }}>Past Donation Batches</h2>
+        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '0 0 14px', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Past Donation Batches</h2>
         {batches.length === 0 ? <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', fontStyle: 'italic' }}>No batches processed yet.</p> : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>

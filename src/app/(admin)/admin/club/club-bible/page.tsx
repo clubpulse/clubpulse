@@ -33,7 +33,7 @@ export default async function AdminClubBiblePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '24px',
             color: '#fff',
@@ -55,7 +55,7 @@ export default async function AdminClubBiblePage() {
       {/* Current narrative preview */}
       {bible?.generated_narrative && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
             Current Narrative
           </h2>
           <div style={{
@@ -75,7 +75,7 @@ export default async function AdminClubBiblePage() {
 
       {/* Add Milestone */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
           Add Milestone
         </h2>
         <div style={{
@@ -91,7 +91,7 @@ export default async function AdminClubBiblePage() {
       {/* Milestone list */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
             All Milestones
           </h2>
           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{milestones.length} total</span>

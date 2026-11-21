@@ -17,7 +17,7 @@ export default async function AdminFeeOffsetPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
           💰 Fee Offset Settings
         </h1>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
@@ -32,7 +32,7 @@ export default async function AdminFeeOffsetPage() {
         borderRadius: '16px',
         padding: '24px',
       }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 20px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 20px' }}>
           Fee settings
         </h2>
         <FeeSettingsForm clubId={clubId} initialSettings={settings} />
@@ -45,7 +45,7 @@ export default async function AdminFeeOffsetPage() {
         borderRadius: '16px',
         padding: '24px',
       }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 4px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 4px' }}>
           {new Date().getFullYear()} Applications
         </h2>
         <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>

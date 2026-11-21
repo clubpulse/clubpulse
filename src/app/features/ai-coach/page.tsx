@@ -24,7 +24,7 @@ export default function AICoachPage() {
         .ai-nav-inner { max-width:1200px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px; }
         .ai-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
         .ai-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
-        .ai-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .ai-logo-name .club {color:#f0ece4;} .ai-logo-name .pulse {color:#60A5FA;}
+        .ai-logo-name {font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;} .ai-logo-name .club {color:#f0ece4;} .ai-logo-name .pulse {color:#60A5FA;}
         .ai-nav-back { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.15s; }
         .ai-nav-back:hover { color:var(--fg); }
         .ai-nav-cta { padding:9px 20px;font-size:13px;font-weight:700;background:var(--red);color:#fff;text-decoration:none;border-radius:9px;transition:opacity 0.12s; }
@@ -32,7 +32,7 @@ export default function AICoachPage() {
 
         .ai-hero { max-width:1200px;margin:0 auto;padding:80px 40px 64px;display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:start; }
         .ai-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:16px; }
-        .ai-h1 { font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
+        .ai-h1 { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
         .ai-h1 .green { color:var(--green); }
         .ai-sub { font-size:17px;color:var(--fg2);line-height:1.65;max-width:520px;margin-bottom:36px; }
         .ai-road-tag { display:inline-flex;align-items:center;gap:6px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25);color:var(--orange);font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border-radius:20px;padding:5px 12px;margin-bottom:24px; }
@@ -73,14 +73,14 @@ export default function AICoachPage() {
         /* HOW IT WORKS */
         .ai-section { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .ai-section-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:14px; }
-        .ai-section-h2 { font-family:'Syne',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
+        .ai-section-h2 { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
         .ai-section-sub { font-size:15px;color:var(--fg2);max-width:560px;line-height:1.65;margin-bottom:48px; }
 
         .ai-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
         .ai-step { background:var(--bg2);padding:32px 28px; }
-        .ai-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
+        .ai-step-n { font-family:'Bricolage Grotesque',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
         .ai-step-icon { font-size:26px;margin-bottom:12px; }
-        .ai-step-h { font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
+        .ai-step-h { font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
         .ai-step-body { font-size:12.5px;color:var(--fg2);line-height:1.65; }
 
         /* LANDMARKS */
@@ -93,7 +93,7 @@ export default function AICoachPage() {
         /* PRIVACY */
         .ai-privacy { background:rgba(46,204,113,0.04);border:1px solid rgba(46,204,113,0.12);border-radius:16px;padding:28px;margin-top:40px;display:flex;gap:16px;align-items:flex-start; }
         .ai-privacy-icon { font-size:28px;flex-shrink:0; }
-        .ai-privacy-h { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--green);margin-bottom:6px; }
+        .ai-privacy-h { font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--green);margin-bottom:6px; }
         .ai-privacy-body { font-size:13px;color:var(--fg2);line-height:1.65; }
 
         /* FAQ */
@@ -101,12 +101,12 @@ export default function AICoachPage() {
         .ai-faq-list { display:flex;flex-direction:column;gap:2px;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:48px; }
         .ai-faq-item { background:var(--bg2);padding:24px 28px;border-bottom:1px solid var(--border); }
         .ai-faq-item:last-child { border-bottom:none; }
-        .ai-faq-q { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
+        .ai-faq-q { font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
         .ai-faq-a { font-size:13.5px;color:var(--fg2);line-height:1.7; }
 
         .ai-cta { background:var(--red);border-top:1px solid rgba(255,255,255,0.08); }
         .ai-cta-inner { max-width:1200px;margin:0 auto;padding:72px 40px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap; }
-        .ai-cta-h { font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
+        .ai-cta-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
         .ai-cta-sub { font-size:14px;color:rgba(255,255,255,0.65);margin-top:6px; }
         .ai-cta-btn { padding:14px 30px;font-size:14px;font-weight:700;background:#fff;color:var(--red);text-decoration:none;border-radius:10px;white-space:nowrap;transition:opacity 0.12s; }
         .ai-cta-btn:hover { opacity:0.9; }

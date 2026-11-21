@@ -20,7 +20,7 @@ export default function FinancePage() {
         .fn-nav-inner { max-width:1200px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px; }
         .fn-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
         .fn-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
-        .fn-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .fn-logo-name .club {color:#f0ece4;} .fn-logo-name .pulse {color:#60A5FA;}
+        .fn-logo-name {font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;} .fn-logo-name .club {color:#f0ece4;} .fn-logo-name .pulse {color:#60A5FA;}
         .fn-nav-back { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.15s; }
         .fn-nav-back:hover { color:var(--fg); }
         .fn-nav-cta { padding:9px 20px;font-size:13px;font-weight:700;background:var(--red);color:#fff;text-decoration:none;border-radius:9px;transition:opacity 0.12s; }
@@ -28,7 +28,7 @@ export default function FinancePage() {
 
         .fn-hero { max-width:1200px;margin:0 auto;padding:80px 40px 64px;display:grid;grid-template-columns:1fr 400px;gap:64px;align-items:start; }
         .fn-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:16px; }
-        .fn-h1 { font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
+        .fn-h1 { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
         .fn-h1 .green { color:var(--green); }
         .fn-sub { font-size:17px;color:var(--fg2);line-height:1.65;max-width:520px;margin-bottom:36px; }
         .fn-btns { display:flex;gap:12px;flex-wrap:wrap; }
@@ -40,12 +40,12 @@ export default function FinancePage() {
         /* FINANCE MOCKUP */
         .fn-card { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:20px; }
         .fn-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-        .fn-card-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
+        .fn-card-title { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
         .fn-period { font-size:10px;color:var(--fg3); }
         .fn-balance-row { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px; }
         .fn-balance { background:#111;border:1px solid var(--border);border-radius:12px;padding:14px; }
         .fn-balance-label { font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px; }
-        .fn-balance-amount { font-family:'Syne',sans-serif;font-size:20px;font-weight:800; }
+        .fn-balance-amount { font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800; }
         .fn-balance-amount.pos { color:var(--green); }
         .fn-balance-amount.neg { color:var(--red); }
         .fn-balance-sub { font-size:10px;color:var(--fg3);margin-top:2px; }
@@ -65,14 +65,14 @@ export default function FinancePage() {
         /* SECTIONS */
         .fn-section { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .fn-section-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:14px; }
-        .fn-section-h2 { font-family:'Syne',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
+        .fn-section-h2 { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
         .fn-section-sub { font-size:15px;color:var(--fg2);max-width:560px;line-height:1.65;margin-bottom:48px; }
 
         .fn-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
         .fn-step { background:var(--bg2);padding:30px 24px; }
-        .fn-step-n { font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
+        .fn-step-n { font-family:'Bricolage Grotesque',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;color:rgba(29,78,216,0.4);margin-bottom:14px; }
         .fn-step-icon { font-size:24px;margin-bottom:12px; }
-        .fn-step-h { font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
+        .fn-step-h { font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;color:var(--fg);margin-bottom:6px; }
         .fn-step-body { font-size:12px;color:var(--fg2);line-height:1.65; }
 
         /* FEATURES GRID */
@@ -81,13 +81,13 @@ export default function FinancePage() {
         .fn-feat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px; }
         .fn-feat-card { background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px; }
         .fn-feat-icon { font-size:28px;margin-bottom:12px; }
-        .fn-feat-h { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:8px; }
+        .fn-feat-h { font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:8px; }
         .fn-feat-body { font-size:13px;color:var(--fg2);line-height:1.65; }
 
         /* WISE SECTION */
         .fn-wise { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .fn-wise-inner { background:rgba(46,204,113,0.04);border:1px solid rgba(46,204,113,0.12);border-radius:20px;padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center; }
-        .fn-wise-h { font-family:'Syne',sans-serif;font-size:clamp(20px,2.5vw,30px);font-weight:800;color:var(--fg);margin-bottom:12px; }
+        .fn-wise-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(20px,2.5vw,30px);font-weight:800;color:var(--fg);margin-bottom:12px; }
         .fn-wise-body { font-size:14px;color:var(--fg2);line-height:1.7;margin-bottom:20px; }
         .fn-wise-chips { display:flex;flex-wrap:wrap;gap:8px; }
         .fn-wise-chip { background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.15);color:var(--green);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px; }
@@ -103,12 +103,12 @@ export default function FinancePage() {
         .fn-faq-list { display:flex;flex-direction:column;gap:2px;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:48px; }
         .fn-faq-item { background:var(--bg2);padding:24px 28px;border-bottom:1px solid var(--border); }
         .fn-faq-item:last-child { border-bottom:none; }
-        .fn-faq-q { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
+        .fn-faq-q { font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
         .fn-faq-a { font-size:13.5px;color:var(--fg2);line-height:1.7; }
 
         .fn-cta { background:var(--red);border-top:1px solid rgba(255,255,255,0.08); }
         .fn-cta-inner { max-width:1200px;margin:0 auto;padding:72px 40px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap; }
-        .fn-cta-h { font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
+        .fn-cta-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
         .fn-cta-sub { font-size:14px;color:rgba(255,255,255,0.65);margin-top:6px; }
         .fn-cta-btn { padding:14px 30px;font-size:14px;font-weight:700;background:#fff;color:var(--red);text-decoration:none;border-radius:10px;white-space:nowrap;transition:opacity 0.12s; }
         .fn-cta-btn:hover { opacity:0.9; }

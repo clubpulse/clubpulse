@@ -43,7 +43,7 @@ export default async function WellbeingPage() {
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '24px',
           color: '#fff',
@@ -66,7 +66,7 @@ export default async function WellbeingPage() {
         marginBottom: '24px',
       }}>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '16px',
           color: '#fff',
@@ -103,7 +103,7 @@ export default async function WellbeingPage() {
         marginBottom: '20px',
       }}>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '16px',
           color: '#fff',

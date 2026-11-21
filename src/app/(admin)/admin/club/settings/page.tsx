@@ -84,7 +84,7 @@ export default async function ClubSettingsPage() {
             </p>
             <p
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 800,
                 fontSize: '20px',
                 color: '#fff',

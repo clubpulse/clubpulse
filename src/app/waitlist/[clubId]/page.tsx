@@ -35,7 +35,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
       }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: '48px', margin: '0 0 16px' }}><Glyph e="🏏" /></p>
-          <h1 style={{ color: '#fff', fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', margin: '0 0 8px' }}>
+          <h1 style={{ color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', margin: '0 0 8px' }}>
             Club not found
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', margin: 0 }}>
@@ -97,7 +97,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
           </div>
 
           <h1 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '32px',
             color: '#fff',
@@ -108,7 +108,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
             {club.name}
           </h1>
           <p style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '18px',
             color: 'rgba(255,255,255,0.5)',

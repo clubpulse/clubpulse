@@ -21,7 +21,7 @@ export default function ScoresPage() {
         .sr-nav-inner { max-width:1200px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px; }
         .sr-logo { display:flex;align-items:center;gap:8px;text-decoration:none; }
         .sr-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
-        .sr-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .sr-logo-name .club {color:#f0ece4;} .sr-logo-name .pulse {color:#60A5FA;}
+        .sr-logo-name {font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;} .sr-logo-name .club {color:#f0ece4;} .sr-logo-name .pulse {color:#60A5FA;}
         .sr-nav-back { font-size:13px;color:var(--fg3);text-decoration:none;transition:color 0.15s; }
         .sr-nav-back:hover { color:var(--fg); }
         .sr-nav-cta { padding:9px 20px;font-size:13px;font-weight:700;background:var(--red);color:#fff;text-decoration:none;border-radius:9px;transition:opacity 0.12s; }
@@ -29,7 +29,7 @@ export default function ScoresPage() {
 
         .sr-hero { max-width:1200px;margin:0 auto;padding:80px 40px 64px;display:grid;grid-template-columns:1fr 400px;gap:64px;align-items:start; }
         .sr-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:16px; }
-        .sr-h1 { font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
+        .sr-h1 { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-0.03em;line-height:1.05;color:var(--fg);margin-bottom:20px; }
         .sr-h1 .gold { color:var(--gold); }
         .sr-sub { font-size:17px;color:var(--fg2);line-height:1.65;max-width:520px;margin-bottom:36px; }
         .sr-btns { display:flex;gap:12px;flex-wrap:wrap; }
@@ -41,7 +41,7 @@ export default function ScoresPage() {
         /* LEADERBOARD MOCKUP */
         .sr-board { background:#04091A;border:1px solid var(--border);border-radius:20px;padding:20px; }
         .sr-board-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
-        .sr-board-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
+        .sr-board-title { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:var(--fg); }
         .sr-board-season { font-size:10px;color:var(--fg3); }
         .sr-rows { display:flex;flex-direction:column;gap:3px;margin-bottom:16px; }
         .sr-row { display:grid;grid-template-columns:26px 1fr 48px 48px;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;background:#111;border:1px solid transparent;transition:border-color 0.12s; }
@@ -64,15 +64,15 @@ export default function ScoresPage() {
         /* POINTS GRID */
         .sr-section { max-width:1200px;margin:0 auto;padding:80px 40px; }
         .sr-section-eyebrow { font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px; }
-        .sr-section-h2 { font-family:'Syne',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
+        .sr-section-h2 { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:12px; }
         .sr-section-sub { font-size:15px;color:var(--fg2);max-width:560px;line-height:1.65;margin-bottom:48px; }
 
         .sr-pts-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden; }
         .sr-pts-cell { background:var(--bg2);padding:24px 20px; }
         .sr-pts-cell-icon { font-size:22px;margin-bottom:10px; }
-        .sr-pts-cell-h { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--fg);margin-bottom:4px; }
+        .sr-pts-cell-h { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:var(--fg);margin-bottom:4px; }
         .sr-pts-cell-body { font-size:12px;color:var(--fg2);line-height:1.6; }
-        .sr-pts-cell-val { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gold);margin-top:8px; }
+        .sr-pts-cell-val { font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--gold);margin-top:8px; }
 
         /* REWARDS */
         .sr-rewards { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
@@ -81,8 +81,8 @@ export default function ScoresPage() {
         .sr-reward-card { background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px; }
         .sr-reward-card.featured { border-color:rgba(239,200,74,0.25);background:rgba(239,200,74,0.04); }
         .sr-reward-icon { font-size:32px;margin-bottom:12px; }
-        .sr-reward-pts { font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
-        .sr-reward-h { font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--fg);margin-bottom:8px; }
+        .sr-reward-pts { font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
+        .sr-reward-h { font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--fg);margin-bottom:8px; }
         .sr-reward-body { font-size:12.5px;color:var(--fg2);line-height:1.65; }
 
         /* FAQ */
@@ -90,12 +90,12 @@ export default function ScoresPage() {
         .sr-faq-list { display:flex;flex-direction:column;gap:2px;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:48px; }
         .sr-faq-item { background:var(--bg2);padding:24px 28px;border-bottom:1px solid var(--border); }
         .sr-faq-item:last-child { border-bottom:none; }
-        .sr-faq-q { font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
+        .sr-faq-q { font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--fg);margin-bottom:10px; }
         .sr-faq-a { font-size:13.5px;color:var(--fg2);line-height:1.7; }
 
         .sr-cta { background:var(--red);border-top:1px solid rgba(255,255,255,0.08); }
         .sr-cta-inner { max-width:1200px;margin:0 auto;padding:72px 40px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap; }
-        .sr-cta-h { font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
+        .sr-cta-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-0.02em;color:#fff; }
         .sr-cta-sub { font-size:14px;color:rgba(255,255,255,0.65);margin-top:6px; }
         .sr-cta-btn { padding:14px 30px;font-size:14px;font-weight:700;background:#fff;color:var(--red);text-decoration:none;border-radius:10px;white-space:nowrap;transition:opacity 0.12s; }
         .sr-cta-btn:hover { opacity:0.9; }

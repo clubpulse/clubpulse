@@ -54,7 +54,7 @@ export default async function AuctionPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
             🏏 The Auction
           </h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -99,7 +99,7 @@ export default async function AuctionPage() {
           {upcomingAuction ? (
             <>
               <p style={{ margin: '0 0 6px', fontSize: '28px' }}><Glyph e="📅" /></p>
-              <p style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
+              <p style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
                 {upcomingAuction.name}
               </p>
               <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
@@ -109,7 +109,7 @@ export default async function AuctionPage() {
           ) : (
             <>
               <p style={{ margin: '0 0 6px', fontSize: '28px' }}><Glyph e="🏏" /></p>
-              <p style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
+              <p style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
                 No auction open yet
               </p>
               <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
@@ -124,7 +124,7 @@ export default async function AuctionPage() {
       {activeAuction && myBids.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <h2 style={{ margin: '0 0 2px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
+            <h2 style={{ margin: '0 0 2px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
               My Winning Bids
             </h2>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -161,7 +161,7 @@ export default async function AuctionPage() {
       {activeAuction && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <h2 style={{ margin: '0 0 2px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
+            <h2 style={{ margin: '0 0 2px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff' }}>
               {activeAuction.name}
             </h2>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
