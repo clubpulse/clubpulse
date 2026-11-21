@@ -55,14 +55,14 @@ export const PILLARS: Pillar[] = [
   },
   {
     key: 'wellness', tab: 'wellness', title: 'Warm-Up', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
-    tagline: 'Wellness: look after your body and get your head ready to play.',
+    tagline: 'Wellness: your mindset, getting ready and being mentally prepared to play.',
     big: 'soul',
     top: ['check-in', 'talk'],
     extra: [
       { key: 'check-in', label: 'The Toss', detail: 'Your daily check-in: keep your streak going', icon: '🔥', route: '/rewards' },
       { key: 'talk', label: 'Twelfth Man', detail: 'Coach AI: ask anything about your game', icon: '🧠', route: '/companion' },
     ],
-    soon: 'Match-day routines and mental preparation are on the way.',
+    soon: 'Match-day routines, breathing and focus exercises are on the way.',
   },
   {
     key: 'academy', tab: 'learn', title: 'Academy', emoji: '📚', icon: 'school', from: '#2DD4BF', to: '#5EEAD4',
