@@ -2,6 +2,7 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import FeaturesMenu from '@/components/marketing/FeaturesMenu';
 import { Pillars } from '@/components/marketing/Pillars';
 import { BadgeWall } from '@/components/marketing/BadgeWall';
 import { AnimatedGradientText, BorderBeam, DotPattern, Marquee, Meteors, ShimmerButton } from '@/components/magic';
@@ -734,7 +735,7 @@ export default function HomePage() {
               <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-nav-links">
-              <Link href="/features">Features</Link>
+              <FeaturesMenu />
               <Link href="/pricing">Pricing</Link>
               <Link href="/#compare">Compare</Link>
               <Link href="/about">About</Link>
@@ -757,7 +758,8 @@ export default function HomePage() {
 
         {/* ── MOBILE NAV ── */}
         <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
-          <Link href="/features" onClick={() => setNavOpen(false)}>Features</Link>
+          <Link href="/features/players" onClick={() => setNavOpen(false)}>Features for players</Link>
+          <Link href="/features/clubs" onClick={() => setNavOpen(false)}>Features for clubs</Link>
           <Link href="/pricing" onClick={() => setNavOpen(false)}>Pricing</Link>
           <Link href="/#compare" onClick={() => setNavOpen(false)}>Compare</Link>
           <Link href="/about" onClick={() => setNavOpen(false)}>About</Link>
@@ -1004,7 +1006,7 @@ export default function HomePage() {
                       <div className="cp-feat-card-bullet"><strong>Live squad count</strong> for captains in real time</div>
                       <div className="cp-feat-card-bullet"><strong>+5 Scores</strong> awarded automatically for responding</div>
                     </div>
-                    <Link href="/features#team" className="cp-feat-card-link">Learn more →</Link>
+                    <Link href="/features/clubs#team" className="cp-feat-card-link">Learn more →</Link>
                   </div>
                   <div style={{background:'#04091A',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
@@ -1039,7 +1041,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>Career stats</strong> built automatically</div>
                   <div className="cp-feat-card-bullet"><strong>Shareable link</strong> for anyone outside the club</div>
                 </div>
-                <Link href="/features#match" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features/players#match" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* Scores */}
@@ -1053,7 +1055,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>+200</strong> pay season fee · <strong>+100</strong> referral</div>
                   <div className="cp-feat-card-bullet"><strong>Bronze / Silver / Gold</strong> tier multipliers</div>
                 </div>
-                <Link href="/features#engagement" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features/players#engagement" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* AI Coach */}
@@ -1067,7 +1069,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot and action feedback</div>
                   <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
                 </div>
-                <Link href="/features#ai" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features/players#coach" className="cp-feat-card-link">Learn more →</Link>
               </div>
 
               {/* Finance */}
@@ -1081,7 +1083,7 @@ export default function HomePage() {
                   <div className="cp-feat-card-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, chase in one click</div>
                   <div className="cp-feat-card-bullet"><strong>One-click export</strong> for AGM or committee</div>
                 </div>
-                <Link href="/features#finance" className="cp-feat-card-link">Learn more →</Link>
+                <Link href="/features/clubs#finance" className="cp-feat-card-link">Learn more →</Link>
               </div>
             </div>
             {/* See all features CTA */}
@@ -1153,11 +1155,11 @@ export default function HomePage() {
               <span className="cp-footer-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
             </Link>
             <div className="cp-footer-links">
-              <Link href="/features#match">Match Intel</Link>
-              <Link href="/features#ai">AI Tools</Link>
-              <Link href="/features#performance">Performance</Link>
-              <Link href="/features#finance">Finance</Link>
-              <Link href="/features#rewards">Rewards</Link>
+              <Link href="/features/players#match">Match day</Link>
+              <Link href="/features/players#coach">AI Coach</Link>
+              <Link href="/features/players#performance">Performance</Link>
+              <Link href="/features/clubs#finance">Finance</Link>
+              <Link href="/features/players#rewards">Rewards</Link>
               <Link href="/about">About</Link>
               <Link href="/our-story">Our story</Link>
               <Link href="/contact">Contact</Link>

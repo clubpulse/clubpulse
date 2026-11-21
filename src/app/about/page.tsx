@@ -1,5 +1,6 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import FeaturesMenu from '@/components/marketing/FeaturesMenu';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -108,7 +109,7 @@ export default function AboutPage() {
             <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
           </Link>
           <div className="cp-menu">
-            <Link href="/features">Features</Link>
+            <FeaturesMenu />
             <Link href="/pricing">Pricing</Link>
             <Link href="/about" className="active">About</Link>
             <Link href="/contact">Contact</Link>

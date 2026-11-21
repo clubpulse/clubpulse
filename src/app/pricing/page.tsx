@@ -3,6 +3,7 @@
 import { Glyph } from '@/components/icons/Glyph';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import FeaturesMenu from '@/components/marketing/FeaturesMenu';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
 const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
@@ -533,7 +534,7 @@ export default function PricingPage() {
             <span className="club">Club</span><span className="pulse">Pulse</span>
           </Link>
           <div className="cp-nav-links">
-            <Link href="/features">Features</Link>
+            <FeaturesMenu />
             <Link href="/pricing" className="active">Pricing</Link>
             <Link href="/about">About</Link>
             <Link href="/contact">Contact</Link>
