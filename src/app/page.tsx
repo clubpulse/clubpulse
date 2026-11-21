@@ -1103,7 +1103,7 @@ export default function HomePage() {
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
             <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Founder, ClubPulse · Performance &amp; Operations Manager, Slough CC</p>
+            <p className="cp-quote-attr">— Co-Founder, ClubPulse</p>
           </div>
         </section>
 
