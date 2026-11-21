@@ -76,7 +76,7 @@ export function SignUpForm() {
     return (
       <form onSubmit={handleDetails} className="space-y-4">
         <Input label="Full name" required autoComplete="name" value={fullName}
-          onChange={(e) => setFullName(e.target.value)} placeholder="Ishwar Suresh" />
+          onChange={(e) => setFullName(e.target.value)} placeholder="Sam Taylor" />
         <Input label="Email" type="email" required autoComplete="email" value={email}
           onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         <Input label="Password" type="password" required minLength={8} autoComplete="new-password" value={password}

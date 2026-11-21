@@ -197,7 +197,7 @@ function MetricCard({
 export default async function DevelopmentPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user) redirect('/auth/sign-in');
 
   const { data: rows } = await supabase
     .from('analysis_results')

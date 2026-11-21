@@ -54,10 +54,10 @@ export default function ContactPage() {
         .cp-menu { display: flex; align-items: center; gap: 24px }
         .cp-menu a { font-size: 14px; font-weight: 500; color: #fff; text-decoration: none; opacity: 0.55; transition: opacity 0.15s }
         .cp-menu a:hover, .cp-menu a.active { opacity: 1 }
-        @media(max-width: 767px) { .cp-menu { display: none } }
+        @media(max-width: 767px) { .cp-menu { display: none } .cp-signin { padding: 9px 10px } .cp-cta-sm { padding: 9px 14px } }
         .cp-nav-ctas { display: flex; align-items: center; gap: 8px }
-        .cp-signin { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
-        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
+        .cp-signin { white-space: nowrap; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
+        .cp-cta-sm { white-space: nowrap; padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
 
         /* Layout */
         .page-wrap { max-width: 1100px; margin: 0 auto; padding: 72px 32px 96px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: start }
@@ -165,17 +165,14 @@ export default function ContactPage() {
             <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
           </Link>
           <div className="cp-menu">
-            <Link href="/#availability">Availability</Link>
-            <Link href="/#scorecard">Scorecard</Link>
-            <Link href="/#ai-coach">AI Coach</Link>
-            <Link href="/#scores">Scores</Link>
-            <Link href="/#finance">Finance</Link>
+            <Link href="/features">Features</Link>
+            <Link href="/pricing">Pricing</Link>
             <Link href="/about">About</Link>
             <Link href="/contact" className="active">Contact</Link>
           </div>
           <div className="cp-nav-ctas">
-            <Link href="/login" className="cp-signin">Sign in</Link>
-            <Link href="/contact" className="cp-cta-sm">Get started</Link>
+            <Link href="/auth/sign-in" className="cp-signin">Sign in</Link>
+            <Link href="/auth/sign-up" className="cp-cta-sm">Get started</Link>
           </div>
         </nav>
       </header>

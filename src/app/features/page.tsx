@@ -659,11 +659,12 @@ export default function FeaturesPage() {
       <nav className="fp-topnav">
         <a href="/" className="fp-logo"><span className="club">Club</span><span className="pulse">Pulse</span></a>
         <div className="fp-topnav-links">
-          <a href="/">Home</a>
           <a href="/features" style={{ color: 'white' }}>Features</a>
+          <a href="/pricing">Pricing</a>
           <a href="/about">About</a>
+          <a href="/contact">Contact</a>
         </div>
-        <a href="/sign-up" className="fp-cta">Get started free →</a>
+        <a href="/auth/sign-up" className="fp-cta">Get started free →</a>
       </nav>
 
       {/* Hero */}
@@ -702,7 +703,7 @@ export default function FeaturesPage() {
             </button>
           ))}
           <div style={{ marginTop: 32, padding: '0 12px' }}>
-            <a href="/sign-up" style={{ display: 'block', padding: '11px', background: '#2563EB', color: '#fff', textAlign: 'center', borderRadius: 10, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 0 20px rgba(37,99,235,0.3)' }}>
+            <a href="/auth/sign-up" style={{ display: 'block', padding: '11px', background: '#2563EB', color: '#fff', textAlign: 'center', borderRadius: 10, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 0 20px rgba(37,99,235,0.3)' }}>
               Start free →
             </a>
           </div>
@@ -734,7 +735,7 @@ export default function FeaturesPage() {
         <h2>Ready to run a smarter club?</h2>
         <p>Join clubs across the UK who've replaced 5 different tools with ClubPulse.</p>
         <div className="fp-footer-btns">
-          <a href="/sign-up" className="fp-footer-btn-p">Get started — it's free</a>
+          <a href="/auth/sign-up" className="fp-footer-btn-p">Get started — it's free</a>
           <a href="/" className="fp-footer-btn-g">Back to home</a>
         </div>
       </div>

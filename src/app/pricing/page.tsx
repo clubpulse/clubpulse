@@ -118,22 +118,22 @@ export default function PricingPage() {
     <>
       <style>{`
         :root {
-          --cp-bg: #ffffff;
-          --cp-bg2: #f8f9fb;
-          --cp-bg3: #f1f3f7;
-          --cp-fg: #0a0f1e;
-          --cp-fg2: #2d3452;
-          --cp-muted: #8891aa;
-          --cp-border: rgba(0,0,0,0.08);
+          --cp-bg: #04091A;
+          --cp-bg2: #07102B;
+          --cp-bg3: #0C1A38;
+          --cp-fg: #F0ECE4;
+          --cp-fg2: rgba(240,236,228,0.7);
+          --cp-muted: rgba(240,236,228,0.3);
+          --cp-border: rgba(255,255,255,0.07);
           --cp-blue: #2563EB;
-          --cp-sky: #2563EB;
-          --cp-gold: #c89b1a;
-          --cp-featured-bg: #07102B;
+          --cp-sky: #60A5FA;
+          --cp-gold: #EFC84A;
+          --cp-featured-bg: #1a2f6e;
           --cp-featured-fg: #ffffff;
-          --cp-nav-bg: rgba(255,255,255,0.9);
-          --cp-nav-border: rgba(0,0,0,0.08);
-          --cp-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
-          color-scheme: light;
+          --cp-nav-bg: rgba(4,9,26,0.92);
+          --cp-nav-border: rgba(255,255,255,0.07);
+          --cp-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.3);
+          color-scheme: dark;
         }
         @media (prefers-color-scheme: dark) {
           :root:not([data-theme="light"]) {
@@ -198,7 +198,7 @@ export default function PricingPage() {
           display: flex; align-items: center; justify-content: space-between;
         }
         .cp-nav-logo {
-          display: flex; align-items: center; gap: 8px;
+          display: flex; align-items: center; gap: 0;
           text-decoration: none; font-family: 'Bricolage Grotesque', sans-serif;
           font-size: 17px; font-weight: 800;
         }
@@ -296,6 +296,10 @@ export default function PricingPage() {
         }
         @media (max-width: 540px) {
           .cp-tier-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+          .cp-nav-links { gap: 14px; }
+          .cp-nav-links a:not(.cp-nav-cta):not(.cp-nav-keep) { display: none; }
         }
         .cp-tier-card {
           background: var(--cp-bg2);
@@ -533,7 +537,7 @@ export default function PricingPage() {
             <Link href="/pricing" className="active">Pricing</Link>
             <Link href="/about">About</Link>
             <Link href="/contact">Contact</Link>
-            <Link href="/auth/sign-in">Sign in</Link>
+            <Link href="/auth/sign-in" className="cp-nav-keep">Sign in</Link>
             <Link href="/auth/sign-up" className="cp-nav-cta">Get started →</Link>
           </div>
         </div>
