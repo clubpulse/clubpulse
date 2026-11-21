@@ -9,6 +9,11 @@ export const DEALS_ENABLED = process.env.EXPO_PUBLIC_DEALS_ENABLED === 'true';
 // open for free, the buy buttons do nothing, and the brand codes are samples.
 export const STORE_ENABLED = process.env.EXPO_PUBLIC_STORE_ENABLED === 'true';
 
+// The Community: the feed, Nearby, connections and messages. Keep this off until the Community
+// tables exist in Supabase and COMMUNITY_ENABLED is set on the website, and until the App Store
+// listing says the app has member content and messaging.
+export const COMMUNITY_ENABLED = process.env.EXPO_PUBLIC_COMMUNITY_ENABLED === 'true';
+
 // Legal pages, opened in the in-app browser. Apple and Google both require the privacy policy
 // to be reachable from inside the app. They live on the website at /privacy and /terms; the
 // two variables are only for pointing somewhere else.
