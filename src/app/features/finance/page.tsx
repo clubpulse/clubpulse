@@ -160,8 +160,8 @@ export default function FinancePage() {
         <section className="fn-hero">
           <div>
             <p className="fn-eyebrow">💷 Club Finance</p>
-            <h1 className="fn-h1">Match fees collected. <span className="green">Automatically.</span></h1>
-            <p className="fn-sub">ClubPulse tracks who owes what per match, sends reminders, and collects fees via Wise. Treasurers stop chasing players on WhatsApp. Players pay in one tap from their phone.</p>
+            <h1 className="fn-h1">Match fees tracked. <span className="green">Clearly.</span></h1>
+            <p className="fn-sub">ClubPulse tracks who owes what per match and keeps your club&apos;s income and expenses in one place, so treasurers stop chasing players on WhatsApp. Paying match fees in the app is coming soon.</p>
             <div className="fn-btns">
               <Link href="/contact" className="fn-btn-red">Get started →</Link>
               <Link href="/#features" className="fn-btn-ghost">See all features</Link>
@@ -205,7 +205,7 @@ export default function FinancePage() {
                 </div>
               ))}
             </div>
-            <div className="fn-wise-badge"><span className="fn-wise-dot" />Connected to Wise · instant transfers</div>
+            <div className="fn-wise-badge"><span className="fn-wise-dot" />Online fee payments · coming soon</div>
           </div>
         </section>
 
@@ -231,8 +231,8 @@ export default function FinancePage() {
               <div className="fn-step">
                 <p className="fn-step-n">03</p>
                 <div className="fn-step-icon"><Glyph e="📱" /></div>
-                <h3 className="fn-step-h">Player pays in one tap</h3>
-                <p className="fn-step-body">Players see their outstanding balance in the app. One tap opens the Wise payment flow — no bank details to copy, no WhatsApp threads.</p>
+                <h3 className="fn-step-h">Players see their balance</h3>
+                <p className="fn-step-body">Players see where they stand in the app. Paying in the app is coming soon, so for now the club settles up as it does today.</p>
               </div>
               <div className="fn-step">
                 <p className="fn-step-n">04</p>
@@ -252,12 +252,12 @@ export default function FinancePage() {
             <p className="fn-section-sub">ClubPulse Finance covers the full financial picture — not just match fees, but expenses, budgets, and reporting.</p>
             <div className="fn-feat-grid">
               {[
-                { icon:'💳', h:'Match fee collection', body:'Automatic fee assignment per match. Players pay via Wise. Outstanding balances tracked in real time with automated reminders.' },
+                { icon:'💳', h:'Match fee tracking', body:'Fees assigned per match, with outstanding balances tracked. Paying in the app is coming soon.' },
                 { icon:'📤', h:'Expense tracking', body:'Log ground hire, kit, umpires, travel. Categorised automatically. Treasurer has a full view of outgoings alongside income.' },
                 { icon:'📊', h:'Finance dashboard', body:'Income vs expenses at a glance. Filter by month, season, or match type. No spreadsheet needed — the dashboard does it.' },
                 { icon:'🔔', h:'Payment reminders', body:'Automated reminders to players with outstanding balances. Frequency and tone configurable by admin. No more chasing on WhatsApp.' },
                 { icon:'📥', h:'CSV export', body:'One-click CSV export of all transactions. Ready to share with your accountant, drop into Xero, or present at the AGM.' },
-                { icon:'🏦', h:'Wise integration', body:'Club finances go through Wise, not a personal bank account. Transfers are instant. The club has its own financial identity.' },
+                { icon:'🏦', h:'Online payments (coming soon)', body:'Taking match fees by card, straight to the club\'s own account, is on the way. Tell us if you would like to try it first.' },
               ].map((c, i) => (
                 <div key={i} className="fn-feat-card">
                   <div className="fn-feat-icon"><Glyph e={c.icon} /></div>
@@ -269,34 +269,28 @@ export default function FinancePage() {
           </div>
         </div>
 
-        {/* WISE */}
+        {/* ONLINE PAYMENTS: coming soon */}
         <div className="fn-wise">
           <div className="fn-wise-inner">
             <div>
-              <p className="fn-section-eyebrow">Powered by Wise</p>
-              <h2 className="fn-wise-h">A real business account for your club.</h2>
-              <p className="fn-wise-body">ClubPulse connects to Wise Business. Fees go straight to the club account — not a personal account, not a tin in the changing room. It&apos;s auditable, transparent, and fast.</p>
+              <p className="fn-section-eyebrow">Coming soon</p>
+              <h2 className="fn-wise-h">Online fee payments.</h2>
+              <p className="fn-wise-body">We are working on letting players pay match fees in the app, with the money going to the club&apos;s own account rather than a personal one or a tin in the changing room. It is not live yet. Tell us if you would like to be one of the first clubs to try it.</p>
               <div className="fn-wise-chips">
-                <span className="fn-wise-chip">Instant transfers</span>
-                <span className="fn-wise-chip">No hidden fees</span>
-                <span className="fn-wise-chip">Multi-currency</span>
-                <span className="fn-wise-chip">Fully auditable</span>
-                <span className="fn-wise-chip">FCA regulated</span>
+                <span className="fn-wise-chip">Coming soon</span>
               </div>
             </div>
             <div className="fn-wise-visual">
               {[
-                ['Account type', 'Wise Business'],
-                ['Currency', 'GBP (+ 40 more)'],
-                ['Transfer speed', 'Instant (UK)'],
-                ['Treasurer access', 'Full admin'],
-                ['Player view', 'Own balance only'],
-                ['Export', 'CSV / PDF'],
-                ['Integration', 'ClubPulse native'],
+                ['Match fee tracking', 'Available'],
+                ['Income and expense ledger', 'Available'],
+                ['Finance dashboard', 'Available'],
+                ['Pay fees in the app', 'Coming soon'],
+                ['Payouts to the club account', 'Coming soon'],
               ].map(([k, v], i) => (
                 <div key={i} className="fn-wise-row">
                   <span className="fn-wise-key">{k}</span>
-                  <span className={`fn-wise-val${i===2?' green':''}`}>{v}</span>
+                  <span className={`fn-wise-val${v === 'Available' ? ' green' : ''}`}>{v}</span>
                 </div>
               ))}
             </div>
@@ -309,8 +303,7 @@ export default function FinancePage() {
           <h2 className="fn-section-h2">Common questions about Club Finance.</h2>
           <div className="fn-faq-list">
             {[
-              ['Do we need an existing Wise account?', 'You will need a Wise Business account for the club. If you don\'t have one, setup takes about 15 minutes on Wise\'s website. ClubPulse then connects to it via the Wise API. We\'ll walk you through it during onboarding.'],
-              ['What if a player doesn\'t have Wise?', 'Players don\'t need a Wise account. They pay through the ClubPulse app using a standard debit/credit card — Wise processes it behind the scenes. The player just sees a normal payment screen.'],
+              ['Can players pay match fees in the app?', 'Not yet. Online payment of match fees is coming soon. Until then ClubPulse tracks who owes what, and the club collects the money as it does today.'],
               ['Can we track expenses, not just income?', 'Yes. The treasurer can log any expense — ground hire, kit, umpire fees, travel, equipment. Every expense is categorised, and the dashboard shows your net position at any time.'],
               ['Is the finance data visible to all members?', 'No. Only users with the Treasurer or Admin role can see the finance dashboard. Players can see their own outstanding balance and payment history only. No one can see what anyone else has paid.'],
               ['Can we set different fees for different fixtures?', 'Yes. You can set different match fees for home matches, away matches, and cup games. You can also apply a one-off override for a specific fixture — for example, a benefit match or a tour game.'],

@@ -159,7 +159,6 @@ export const TIER_CONFIG: Record<
       '250,000 Scores/month',
       'Everything in Elite',
       'Player auction + transfer window',
-      'Multi-club federation',
       'White-label branding',
       'Priority support',
       'Engagement-weighted payouts',

@@ -791,7 +791,7 @@ export default function HomePage() {
                 now.
               </h1>
               <p className="cp-hero-sub">
-                For players who want to improve, clubs that want to run properly, federations that need visibility across their leagues, and county associations that need data compliance — one platform built for the whole game.
+                For players who want to improve and clubs that want to run properly — one platform built for the whole game.
               </p>
 
               {/* The four pillars */}
@@ -1035,11 +1035,11 @@ export default function HomePage() {
                 <div className="cp-feat-card-icon"><Glyph e="📋" /></div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Live scorecard</h3>
-                <p className="cp-feat-card-body">Scorer enters each delivery. Every player, parent and supporter sees the update in under a second. No paper. No spreadsheet. Ball-by-ball history stored forever.</p>
+                <p className="cp-feat-card-body">Your scorer enters each delivery. Club members see every ball as it happens, and a public link lets parents and supporters follow along. No paper. No spreadsheet. Ball-by-ball history kept.</p>
                 <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>Under 1s sync</strong> — Supabase Realtime</div>
+                  <div className="cp-feat-card-bullet"><strong>Live for members</strong> — every ball, as it happens</div>
                   <div className="cp-feat-card-bullet"><strong>Career stats</strong> built automatically</div>
-                  <div className="cp-feat-card-bullet"><strong>Shareable link</strong> for anyone outside the club</div>
+                  <div className="cp-feat-card-bullet"><strong>Public link</strong> for anyone outside the club, no sign-in</div>
                 </div>
                 <Link href="/features/players#match" className="cp-feat-card-link">Learn more →</Link>
               </div>
@@ -1063,10 +1063,10 @@ export default function HomePage() {
                 <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">AI Coach</h3>
-                <p className="cp-feat-card-body">Your phone camera analyses your batting stance, head position and follow-through, and your bowling action, front knee and foot position, at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
+                <p className="cp-feat-card-body">Film your batting stance, head position and follow-through, and your bowling action, front knee and foot position. Pose analysis runs on your own device, and ball tracking and your coaching report are processed on our servers. Real coaching feedback, every session.</p>
                 <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>On-device only</strong> — nothing leaves your phone</div>
-                  <div className="cp-feat-card-bullet"><strong>30fps live analysis</strong> — real-time shot and action feedback</div>
+                  <div className="cp-feat-card-bullet"><strong>Pose analysis on your device</strong> — stance and action feedback</div>
+                  <div className="cp-feat-card-bullet"><strong>Ball tracking and reports</strong> — processed on our servers</div>
                   <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
                 </div>
                 <Link href="/features/players#coach" className="cp-feat-card-link">Learn more →</Link>
@@ -1077,7 +1077,7 @@ export default function HomePage() {
                 <div className="cp-feat-card-icon"><Glyph e="💷" /></div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Club finance</h3>
-                <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments, and send Wise payouts — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
+                <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments and export for your AGM — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
                 <div className="cp-feat-card-bullets">
                   <div className="cp-feat-card-bullet"><strong>Full transaction history</strong> in one place</div>
                   <div className="cp-feat-card-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, chase in one click</div>
@@ -1282,7 +1282,7 @@ function PricingSection() {
         <button
           className={`cp-pricing-toggle-btn${audience === 'club' ? ' active' : ''}`}
           onClick={() => setAudience('club')}
-        >🏟️ Club / Federation</button>
+        >🏟️ Club</button>
       </div>
 
       {/* ── PLAYER PRICING ── */}
@@ -1441,7 +1441,6 @@ function PricingSection() {
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Unlimited members</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>250,000 Scores a month to give out</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Your club&apos;s own branding</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Multi-club federation</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Player auction and transfer window</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Priority support</span></div>
                 <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£6.99 a month</strong> each</span></div>
@@ -1484,7 +1483,7 @@ function AudienceSection() {
       checks: [
         'Sponsor player seats — pay for your squad',
         'Availability, XI selection & team logistics',
-        'Finance dashboard & Wise payouts',
+        'Finance dashboard & fee tracking',
         'Club-wide stats & season reporting',
         'Admin dashboard for every committee role',
       ],
@@ -1494,15 +1493,13 @@ function AudienceSection() {
     {
       key: 'fed',
       icon: '🏆',
-      label: 'Federations & Leagues',
-      h: 'See every club. Run every league.',
-      body: 'Oversee results, standings and compliance across all your member clubs without chasing emails. Automated aggregation means your league tables update the moment a scorecard is closed.',
+      label: 'Federations & Leagues · Coming soon',
+      h: 'League tools are on the way.',
+      body: 'We are building tools for leagues and federations with clubs like Slough CC. Tell us what your league needs and help shape them.',
       checks: [
-        'Aggregated standings across all member clubs',
-        'Cross-club results & performance reporting',
-        'Compliance monitoring & governance tools',
-        'Automated league table updates',
-        'Single dashboard for your entire federation',
+        'Planned: standings across member clubs',
+        'Planned: cross-club results reporting',
+        'Planned: governance and compliance tools',
       ],
       cta: 'Talk to us',
       href: '/contact',
@@ -1510,15 +1507,13 @@ function AudienceSection() {
     {
       key: 'county',
       icon: '🗺️',
-      label: 'County Associations',
-      h: 'County-wide visibility. ECB-ready.',
-      body: 'From club registration to end-of-season data submissions — ClubPulse gives county boards the structure, the data and the exports to run a compliant, well-governed cricket county.',
+      label: 'County Associations · Coming soon',
+      h: 'County tools are on the way.',
+      body: 'County boards are on our roadmap. If you run a county or association, tell us what data and governance you need.',
       checks: [
-        'Club registration & affiliation management',
-        'ECB-ready data exports & compliance reports',
-        'County-wide player & match data',
-        'Cross-club governance & audit trails',
-        'Dedicated account manager & SSO',
+        'Planned: club registration and affiliation',
+        'Planned: county-wide player and match data',
+        'Planned: data exports for reporting',
       ],
       cta: 'Talk to us',
       href: '/contact',
@@ -1638,7 +1633,7 @@ function PersonaSection() {
       body: 'Availability, scorecards, finance, Scores rewards — all in one place. Stop switching between spreadsheets, banking apps and WhatsApp threads. One platform handles it all.',
       checks: [
         { label: 'Full club overview', detail: 'Every team, every match, every player in one view.' },
-        { label: 'Finance & fee tracking', detail: 'Know who\'s paid, chase in one click, Wise payouts.' },
+        { label: 'Finance & fee tracking', detail: 'Know who\'s paid and chase in one click.' },
         { label: 'Scores management', detail: 'Award, adjust and redeem points across all players.' },
         { label: 'Match management', detail: 'Set fixtures, scorers, results — admin made simple.' },
       ],

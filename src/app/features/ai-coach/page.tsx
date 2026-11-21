@@ -159,8 +159,8 @@ export default function AICoachPage() {
           <div>
             <p className="ai-eyebrow">🎯 AI Coach</p>
             <div className="ai-road-tag">✓ In the ClubPulse app</div>
-            <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">On-device.</span></h1>
-            <p className="ai-sub">MediaPipe Pose maps 33 3D body landmarks at 30fps — directly on your phone camera. No server, no upload, no waiting. Real-time feedback on stance, elbow position, head level, and follow-through.</p>
+            <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">Pose analysis on your phone.</span></h1>
+            <p className="ai-sub">MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
             <div className="ai-btns">
               <Link href="/auth/sign-up" className="ai-btn-red">Get started free →</Link>
               <Link href="/#features" className="ai-btn-ghost">See all features</Link>
@@ -237,7 +237,7 @@ export default function AICoachPage() {
                 <p className="ai-step-n">02</p>
                 <div className="ai-step-icon"><Glyph e="🤖" /></div>
                 <h3 className="ai-step-h">MediaPipe tracks pose</h3>
-                <p className="ai-step-body">MediaPipe Pose runs entirely on your device — no server, no upload. It maps 33 3D body landmarks at 30 frames per second in real time.</p>
+                <p className="ai-step-body">MediaPipe Pose runs on your device to map 33 body landmarks from your camera. Ball tracking and session reports are processed on our servers.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">03</p>
@@ -260,13 +260,13 @@ export default function AICoachPage() {
           <div className="ai-lm-inner">
             <div>
               <p className="ai-section-eyebrow">The technology</p>
-              <h2 className="ai-section-h2">33 landmarks. 30fps. Zero latency.</h2>
-              <p className="ai-section-sub">MediaPipe Pose detects 33 key points across your entire body, from nose to heels, in three dimensions. At 30 frames per second, it can catch a technical fault mid-shot.</p>
+              <h2 className="ai-section-h2">33 body landmarks, tracked from your camera.</h2>
+              <p className="ai-section-sub">MediaPipe Pose detects 33 key points across your body, from nose to heels, so the app can spot a technical fault mid-shot.</p>
               <div className="ai-privacy">
                 <span className="ai-privacy-icon"><Glyph e="🔒" /></span>
                 <div>
-                  <div className="ai-privacy-h">On-device only. No data leaves your phone.</div>
-                  <p className="ai-privacy-body">Everything runs on your device using the phone&apos;s own neural processing unit. Pose data is never sent to any server. ClubPulse cannot see your sessions. Your training stays yours — completely private by design.</p>
+                  <div className="ai-privacy-h">Pose analysis runs on your phone.</div>
+                  <p className="ai-privacy-body">Body-pose tracking happens on your device. Ball tracking and session reports are processed on our servers, so some session data is sent to ClubPulse. See our privacy policy for how it is stored and used.</p>
                 </div>
               </div>
             </div>
@@ -299,8 +299,8 @@ export default function AICoachPage() {
           <div className="ai-faq-list">
             {[
               ['Where do I find AI Coach?', 'In the ClubPulse app. Open the AI Coach screen, choose batting or bowling, and film a shot or a delivery. The analysis runs on your phone.'],
-              ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose uses the device\'s neural processing unit and runs at 30fps on these chips without draining battery rapidly.'],
-              ['Can it be used without an internet connection?', 'Yes — because everything runs on-device, AI Coach works completely offline. No signal, no Wi-Fi — it doesn\'t matter. This is intentional: cricket nets often have poor signal.'],
+              ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose runs on-device, so a reasonably recent phone gives the smoothest results.'],
+              ['Can it be used without an internet connection?', 'Pose tracking runs on your phone, but ball tracking and session reports need a connection, so AI Coach is not fully offline.'],
               ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],
               ['Who provides the coaching logic — is it a real coach?', 'The pose thresholds and feedback rules are written in collaboration with qualified coaches. MediaPipe provides the raw pose data; the coaching interpretation is built by humans with ECB coaching qualifications.'],
               ['Is this only for the nets?', 'The main use case is a tripod or phone propped up at the nets, but it works anywhere with a camera angle that shows the batter\'s full body. Some players use it in a garden or sports hall.'],
