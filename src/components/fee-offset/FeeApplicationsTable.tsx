@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { approveApplication, rejectApplication } from '@/lib/actions/fee-offsets';
 import type { FeeOffsetApplication } from '@/lib/types/fee-offsets';
@@ -179,7 +180,7 @@ function ApplicationRow({ app }: { app: FeeOffsetApplication }) {
                   padding: '7px',
                 }}
               >
-                ✕
+                <Glyph e="✕" />
               </button>
             </div>
           )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState } from 'react';
 import { joinWaitlist } from '@/lib/actions/waiting-list';
 
@@ -49,7 +50,7 @@ export function JoinForm({ clubId, clubName }: JoinFormProps) {
         textAlign: 'center',
         fontFamily: "'Inter', sans-serif",
       }}>
-        <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎉</div>
+        <div style={{ fontSize: '56px', marginBottom: '16px' }}><Glyph e="🎉" /></div>
         <p style={{
           fontFamily: "'Syne', sans-serif",
           fontWeight: 800,

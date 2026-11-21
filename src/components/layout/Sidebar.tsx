@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { Fragment, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -112,7 +113,7 @@ function NavItem({ link, pathname, folded = false, small = false }: { link: NavL
         className="cp-nav-row"
         style={{ ...rowStyle(active, folded), ...(small ? { fontSize: '13px', padding: '7px 12px', gap: '10px' } : {}) }}
       >
-        <span aria-hidden style={{ fontSize: small ? '14px' : '17px', lineHeight: 1 }}>{link.icon}</span>
+        <span aria-hidden style={{ fontSize: small ? '14px' : '17px', lineHeight: 1 }}><Glyph e={link.icon} /></span>
         {!folded && link.label}
       </Link>
     </li>
@@ -201,7 +202,7 @@ export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { aud
                       background: `${group.tint}${isOpen || holdsPage ? '33' : '1F'}`, border: `1px solid ${group.tint}${isOpen || holdsPage ? '80' : '40'}`,
                     }}
                   >
-                    {group.icon}
+                    <Glyph e={group.icon} />
                   </span>
                   {!folded && (
                     <>

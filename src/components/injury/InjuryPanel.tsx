@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState } from 'react';
 import { markRecovered } from '@/lib/actions/injury';
 import { BODY_PART_LABELS, SEVERITY_CONFIG, type InjuryLog } from '@/lib/types/injury';
@@ -55,7 +56,7 @@ export function InjuryPanel({ clubId, active: initialActive, past: initialPast }
         alignItems: 'flex-start',
         gap: '10px',
       }}>
-        <span style={{ fontSize: '18px', lineHeight: 1 }}>🔒</span>
+        <span style={{ fontSize: '18px', lineHeight: 1 }}><Glyph e="🔒" /></span>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
           <strong style={{ color: '#93c5fd' }}>Your privacy is protected.</strong> Your injury details are never shared with your captain or club admins. Admins only see anonymised statistics (e.g. &quot;3 players — Knee — Moderate&quot;), with no names attached.
         </p>

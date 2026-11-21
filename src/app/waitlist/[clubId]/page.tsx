@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { createClient } from '@/lib/supabase/server';
 import { JoinForm } from '@/components/waiting-list/JoinForm';
 
@@ -33,7 +34,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
         padding: '24px',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '48px', margin: '0 0 16px' }}>🏏</p>
+          <p style={{ fontSize: '48px', margin: '0 0 16px' }}><Glyph e="🏏" /></p>
           <h1 style={{ color: '#fff', fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', margin: '0 0 8px' }}>
             Club not found
           </h1>
@@ -91,7 +92,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
             textTransform: 'uppercase',
             marginBottom: '20px',
           }}>
-            <span>🏏</span>
+            <span><Glyph e="🏏" /></span>
             <span>ClubPulse</span>
           </div>
 
@@ -158,7 +159,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
               textAlign: 'center',
               lineHeight: 1.4,
             }}>
-              <div style={{ fontSize: '20px', marginBottom: '4px' }}>{item.icon}</div>
+              <div style={{ fontSize: '20px', marginBottom: '4px' }}><Glyph e={item.icon} /></div>
               {item.label}
             </div>
           ))}

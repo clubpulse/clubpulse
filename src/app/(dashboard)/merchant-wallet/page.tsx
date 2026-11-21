@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /merchant-wallet
  *
@@ -271,7 +272,7 @@ export default function MerchantWalletPage() {
 
         {scanStep === 'done' && (
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 32, margin: '0 0 8px' }}>✅</p>
+            <p style={{ fontSize: 32, margin: '0 0 8px' }}><Glyph e="✅" /></p>
             <p style={{ fontWeight: 700, color: '#16a34a', marginBottom: 12 }}>Payment received!</p>
             <button
               onClick={() => { setScanStep('idle'); setScanned(null); setScanDesc(''); }}

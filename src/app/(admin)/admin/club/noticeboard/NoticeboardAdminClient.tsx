@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { adminCreateNotice, adminDeleteNotice, adminTogglePin } from '@/lib/actions/notices';
 import type { Notice, NoticePriority } from '@/lib/types/notices';
@@ -277,7 +278,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
                     cursor: 'pointer',
                   }}
                 >
-                  📌
+                  <Glyph e="📌" />
                 </button>
                 <button
                   onClick={() => handleDelete(notice.id)}

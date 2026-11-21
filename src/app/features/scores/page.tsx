@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 export default function ScoresPage() {
@@ -210,7 +211,7 @@ export default function ScoresPage() {
                 { icon:'📅', h:'End-of-season honours', body:'Top 3 players at season end earn bonus points in their profile history. The leaderboard resets each season so new players can compete.', val:'Season reset' },
               ].map((c, i) => (
                 <div key={i} className="sr-pts-cell">
-                  <div className="sr-pts-cell-icon">{c.icon}</div>
+                  <div className="sr-pts-cell-icon"><Glyph e={c.icon} /></div>
                   <div className="sr-pts-cell-h">{c.h}</div>
                   <div className="sr-pts-cell-body">{c.body}</div>
                   <div className="sr-pts-cell-val">{c.val}</div>
@@ -234,13 +235,13 @@ export default function ScoresPage() {
                 <div className="sr-reward-body">Players who reach 250 points in a season earn a permanent Club Legend badge on their profile. It shows in their record across future seasons.</div>
               </div>
               <div className="sr-reward-card">
-                <div className="sr-reward-icon">🏆</div>
+                <div className="sr-reward-icon"><Glyph e="🏆" /></div>
                 <div className="sr-reward-pts">Season end</div>
                 <div className="sr-reward-h">Top 3 recognition</div>
                 <div className="sr-reward-body">End-of-season leaderboard top 3 are permanently recorded in the club history. Exported to PDF for end-of-season presentation nights.</div>
               </div>
               <div className="sr-reward-card">
-                <div className="sr-reward-icon">⭐</div>
+                <div className="sr-reward-icon"><Glyph e="⭐" /></div>
                 <div className="sr-reward-pts">Per match</div>
                 <div className="sr-reward-h">Player of the Match</div>
                 <div className="sr-reward-body">Admin can award POTM after any match. It earns 30 points, shows in the player&apos;s profile, and is visible to the whole club.</div>

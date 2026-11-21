@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 export default function AICoachPage() {
@@ -204,8 +205,8 @@ export default function AICoachPage() {
               </svg>
             </div>
             <div className="ai-fb-cards">
-              <div className="ai-fb-card"><div className="ai-fb-icon">🧠</div><div className="ai-fb-label">Head</div><div className="ai-fb-val ok">Level ✓</div></div>
-              <div className="ai-fb-card"><div className="ai-fb-icon">💪</div><div className="ai-fb-label">Elbow</div><div className="ai-fb-val warn">Drop 8°</div></div>
+              <div className="ai-fb-card"><div className="ai-fb-icon"><Glyph e="🧠" /></div><div className="ai-fb-label">Head</div><div className="ai-fb-val ok">Level ✓</div></div>
+              <div className="ai-fb-card"><div className="ai-fb-icon"><Glyph e="💪" /></div><div className="ai-fb-label">Elbow</div><div className="ai-fb-val warn">Drop 8°</div></div>
               <div className="ai-fb-card"><div className="ai-fb-icon">👣</div><div className="ai-fb-label">Front foot</div><div className="ai-fb-val ok">Straight ✓</div></div>
             </div>
             <div className="ai-lm-row">
@@ -228,25 +229,25 @@ export default function AICoachPage() {
             <div className="ai-steps">
               <div className="ai-step">
                 <p className="ai-step-n">01</p>
-                <div className="ai-step-icon">📱</div>
+                <div className="ai-step-icon"><Glyph e="📱" /></div>
                 <h3 className="ai-step-h">Open AI Coach</h3>
                 <p className="ai-step-body">Open the AI Coach screen in the ClubPulse app. Point your phone camera at the batter — or prop it up against a bag at the nets.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">02</p>
-                <div className="ai-step-icon">🤖</div>
+                <div className="ai-step-icon"><Glyph e="🤖" /></div>
                 <h3 className="ai-step-h">MediaPipe tracks pose</h3>
                 <p className="ai-step-body">MediaPipe Pose runs entirely on your device — no server, no upload. It maps 33 3D body landmarks at 30 frames per second in real time.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">03</p>
-                <div className="ai-step-icon">📊</div>
+                <div className="ai-step-icon"><Glyph e="📊" /></div>
                 <h3 className="ai-step-h">Coaching feedback</h3>
                 <p className="ai-step-body">The app compares your pose to ideal batting geometry — head position, elbow height, front foot alignment, follow-through arc — and flags what needs attention.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">04</p>
-                <div className="ai-step-icon">📈</div>
+                <div className="ai-step-icon"><Glyph e="📈" /></div>
                 <h3 className="ai-step-h">Progress tracked</h3>
                 <p className="ai-step-body">Every session is logged. You can see improvement over time — whether your head is staying stiller, your elbow dropping less, your follow-through extending further.</p>
               </div>
@@ -262,7 +263,7 @@ export default function AICoachPage() {
               <h2 className="ai-section-h2">33 landmarks. 30fps. Zero latency.</h2>
               <p className="ai-section-sub">MediaPipe Pose detects 33 key points across your entire body, from nose to heels, in three dimensions. At 30 frames per second, it can catch a technical fault mid-shot.</p>
               <div className="ai-privacy">
-                <span className="ai-privacy-icon">🔒</span>
+                <span className="ai-privacy-icon"><Glyph e="🔒" /></span>
                 <div>
                   <div className="ai-privacy-h">On-device only. No data leaves your phone.</div>
                   <p className="ai-privacy-body">Everything runs on your device using the phone&apos;s own neural processing unit. Pose data is never sent to any server. ClubPulse cannot see your sessions. Your training stays yours — completely private by design.</p>

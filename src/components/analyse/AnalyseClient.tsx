@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -1124,7 +1125,7 @@ export function AnalyseClient() {
 
           {!cameraOn && !fileShown && !(source === 'file' && phase === 'loading') && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-              <span className="text-4xl" aria-hidden>🎯</span>
+              <span className="text-4xl" aria-hidden><Glyph e="🎯" /></span>
               {notice && <p className="max-w-sm text-sm font-medium text-white">{notice}</p>}
               <p className="max-w-sm text-sm text-neutral-400">
                 Set your phone or laptop {view === 'side' ? 'side-on' : 'front-on, looking straight down the pitch'}, step back so your whole body is in frame, then start the camera.
@@ -1242,7 +1243,7 @@ export function AnalyseClient() {
                     </button>
                     {shots.length > 1 && (
                       <button type="button" onClick={() => removeShot(i)} aria-label={`Remove ${mode === 'bowling' ? 'ball' : 'shot'} ${i + 1}`}
-                        className="rounded-lg border border-white/10 px-3 text-sm text-neutral-400 hover:bg-white/[0.05] hover:text-white">✕</button>
+                        className="rounded-lg border border-white/10 px-3 text-sm text-neutral-400 hover:bg-white/[0.05] hover:text-white"><Glyph e="✕" /></button>
                     )}
                     </div>
                   </li>

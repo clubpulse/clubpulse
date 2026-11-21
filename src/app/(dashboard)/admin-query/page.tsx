@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /admin-query  —  Natural Language Query
  *
@@ -91,7 +92,7 @@ export default function AdminQueryPage() {
   if (isAdmin === false) {
     return (
       <div style={{ textAlign: 'center', padding: '64px 24px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}><Glyph e="🔒" /></div>
         <p style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>Admin access required</p>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
           This feature is available to club admins and coaches only.
@@ -133,7 +134,7 @@ export default function AdminQueryPage() {
       }}>
         {messages.length === 0 ? (
           <div style={{ margin: 'auto', textAlign: 'center', padding: '32px 16px' }}>
-            <div style={{ fontSize: '36px', marginBottom: '12px' }}>🏏</div>
+            <div style={{ fontSize: '36px', marginBottom: '12px' }}><Glyph e="🏏" /></div>
             <p style={{ fontSize: '15px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '6px' }}>
               Ask your data a question
             </p>
@@ -177,7 +178,7 @@ export default function AdminQueryPage() {
         {loading && (
           <div className="msg-enter" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(96,165,250,0.12)', display: 'grid', placeItems: 'center', fontSize: '13px' }}>
-              🤖
+              <Glyph e="🤖" />
             </div>
             <div style={{ display: 'flex', gap: '5px', padding: '14px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px 14px 14px 14px', border: '1px solid rgba(255,255,255,0.08)' }}>
               {[0, 1, 2].map(d => (

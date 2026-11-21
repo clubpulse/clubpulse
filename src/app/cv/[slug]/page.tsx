@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import type { Metadata } from 'next';
 import { getPublicCV } from '@/lib/actions/cricket-cv';
 import { CricketCVCard } from '@/components/cv/CricketCVCard';
@@ -69,7 +70,7 @@ export default async function PublicCVPage({ params }: Props) {
         }}
       >
         <div style={{ textAlign: 'center', maxWidth: '400px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏏</div>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}><Glyph e="🏏" /></div>
           <h1 style={{ color: '#f9fafb', fontSize: '20px', fontWeight: 700, margin: '0 0 8px' }}>
             CV not found
           </h1>
@@ -133,7 +134,7 @@ export default async function PublicCVPage({ params }: Props) {
             fontWeight: 600,
           }}
         >
-          <span style={{ fontSize: '20px' }}>🏏</span>
+          <span style={{ fontSize: '20px' }}><Glyph e="🏏" /></span>
           ClubPulse
         </a>
         <a

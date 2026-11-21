@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
@@ -169,7 +170,7 @@ export default function AboutPage() {
               { icon: '💷', title: 'Fair pricing', desc: 'ClubPulse should cost less than the prize fund your club puts up for the end-of-season awards. We mean that literally.' },
             ].map(v => (
               <div key={v.title} className="value-card">
-                <div className="value-icon">{v.icon}</div>
+                <div className="value-icon"><Glyph e={v.icon} /></div>
                 <h3 className="value-title">{v.title}</h3>
                 <p className="value-desc">{v.desc}</p>
               </div>

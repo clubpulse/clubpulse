@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -57,7 +58,7 @@ export function BottomNav({ isPlatformAdmin = false }: { isPlatformAdmin?: boole
                   transition: 'color 0.15s',
                 }}
               >
-                <span style={{ fontSize: '20px', lineHeight: 1 }} aria-hidden>{link.icon}</span>
+                <span style={{ fontSize: '20px', lineHeight: 1 }} aria-hidden><Glyph e={link.icon} /></span>
                 {link.label}
               </Link>
             </li>

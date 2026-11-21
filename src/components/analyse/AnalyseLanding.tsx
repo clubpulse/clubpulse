@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 const GOLD = '#EFC84A';
@@ -79,7 +80,7 @@ export function AnalyseLanding() {
               <li key={feature.text}
                 className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#111] px-4 py-3 text-sm text-neutral-200">
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-base"
-                  style={{ background: 'rgba(37,99,235,0.18)' }} aria-hidden>{feature.icon}</span>
+                  style={{ background: 'rgba(37,99,235,0.18)' }} aria-hidden><Glyph e={feature.icon} /></span>
                 {feature.text}
               </li>
             ))}

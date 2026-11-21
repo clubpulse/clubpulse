@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { formatScores } from '@/lib/utils/format';
 import type { Reward } from '@/lib/types/reward';
@@ -16,7 +17,7 @@ export function RewardCard({ reward, balance }: { reward: Reward; balance: numbe
           // eslint-disable-next-line @next/next/no-img-element
           <img src={reward.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
         ) : (
-          <span style={{ fontSize: '40px' }} aria-hidden>🎁</span>
+          <span style={{ fontSize: '40px' }} aria-hidden><Glyph e="🎁" /></span>
         )}
       </div>
 

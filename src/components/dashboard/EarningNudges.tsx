@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -108,7 +109,7 @@ export function EarningNudges() {
                   color: 'rgba(255,255,255,0.2)', cursor: 'pointer',
                   fontSize: '16px', padding: '0', lineHeight: 1,
                 }}
-              >✕</button>
+              ><Glyph e="✕" /></button>
             </div>
           ))}
         </div>

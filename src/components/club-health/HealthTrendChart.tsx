@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import type { ClubHealthSnapshot } from '@/lib/types/club-health';
 
 interface Props {
@@ -95,7 +96,7 @@ export function HealthTrendChart({ snapshots }: Props) {
           textAlign: 'center',
         }}
       >
-        <p style={{ fontSize: '32px', margin: '0 0 12px' }}>📈</p>
+        <p style={{ fontSize: '32px', margin: '0 0 12px' }}><Glyph e="📈" /></p>
         <p
           style={{
             fontSize: '14px',

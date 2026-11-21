@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 export default function FinancePage() {
@@ -194,7 +195,7 @@ export default function FinancePage() {
               ].map((t, i) => (
                 <div key={i} className="fn-txn">
                   <div className="fn-txn-left">
-                    <div className="fn-txn-icon" style={{background:t.bg}}>{t.icon}</div>
+                    <div className="fn-txn-icon" style={{background:t.bg}}><Glyph e={t.icon} /></div>
                     <div className="fn-txn-info">
                       <div className="fn-txn-name">{t.name}</div>
                       <div className="fn-txn-date">{t.date}</div>
@@ -217,25 +218,25 @@ export default function FinancePage() {
             <div className="fn-steps">
               <div className="fn-step">
                 <p className="fn-step-n">01</p>
-                <div className="fn-step-icon">💷</div>
+                <div className="fn-step-icon"><Glyph e="💷" /></div>
                 <h3 className="fn-step-h">Set the match fee</h3>
                 <p className="fn-step-body">Admin sets the fee per match (home, away, or cup). You can set different rates for different competitions.</p>
               </div>
               <div className="fn-step">
                 <p className="fn-step-n">02</p>
-                <div className="fn-step-icon">📋</div>
+                <div className="fn-step-icon"><Glyph e="📋" /></div>
                 <h3 className="fn-step-h">Availability locks it in</h3>
                 <p className="fn-step-body">When a player confirms available and is selected, their fee is automatically added to their outstanding balance after the match.</p>
               </div>
               <div className="fn-step">
                 <p className="fn-step-n">03</p>
-                <div className="fn-step-icon">📱</div>
+                <div className="fn-step-icon"><Glyph e="📱" /></div>
                 <h3 className="fn-step-h">Player pays in one tap</h3>
                 <p className="fn-step-body">Players see their outstanding balance in the app. One tap opens the Wise payment flow — no bank details to copy, no WhatsApp threads.</p>
               </div>
               <div className="fn-step">
                 <p className="fn-step-n">04</p>
-                <div className="fn-step-icon">📊</div>
+                <div className="fn-step-icon"><Glyph e="📊" /></div>
                 <h3 className="fn-step-h">Treasurer sees it all</h3>
                 <p className="fn-step-body">The finance dashboard shows every payment in real time. Export to CSV for the AGM or send to your accountant directly.</p>
               </div>
@@ -259,7 +260,7 @@ export default function FinancePage() {
                 { icon:'🏦', h:'Wise integration', body:'Club finances go through Wise, not a personal bank account. Transfers are instant. The club has its own financial identity.' },
               ].map((c, i) => (
                 <div key={i} className="fn-feat-card">
-                  <div className="fn-feat-icon">{c.icon}</div>
+                  <div className="fn-feat-icon"><Glyph e={c.icon} /></div>
                   <div className="fn-feat-h">{c.h}</div>
                   <div className="fn-feat-body">{c.body}</div>
                 </div>

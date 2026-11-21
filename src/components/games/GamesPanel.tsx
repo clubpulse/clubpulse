@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { getDailyQuiz, pickHilo, playSpin, startHilo, submitQuiz, submitTiming } from '@/lib/actions/games';
@@ -282,7 +283,7 @@ export function GamesPanel({ state }: { state: GamesState }) {
                   border: `1px solid ${open === k ? '#60A5FA' : 'rgba(255,255,255,0.08)'}`, opacity: off && open !== k ? 0.6 : 1,
                 }}
               >
-                <span aria-hidden style={{ display: 'block', fontSize: '34px', lineHeight: 1, marginBottom: '8px' }}>{m.icon}</span>
+                <span aria-hidden style={{ display: 'block', fontSize: '34px', lineHeight: 1, marginBottom: '8px' }}><Glyph e={m.icon} /></span>
                 <span style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#fff' }}>{m.name}</span>
                 <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{m.blurb}</span>
                 <span style={{ ...pill(g.played ? 'green' : g.locked ? 'grey' : 'gold', true), display: 'inline-block', marginTop: '8px', fontSize: '11px', padding: '3px 9px', borderRadius: '999px' }}>

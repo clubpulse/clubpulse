@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTeamMood } from '@/lib/actions/match-mood';
@@ -88,7 +89,7 @@ export default async function AdminMatchMoodPage() {
               gap: '12px',
               fontFamily: "'Inter', sans-serif",
             }}>
-              <span style={{ fontSize: '22px' }}>🚨</span>
+              <span style={{ fontSize: '22px' }}><Glyph e="🚨" /></span>
               <div>
                 <div style={{ fontSize: '14px', fontWeight: 700, color: '#fca5a5' }}>
                   Injury alert — {injuredCount} player{injuredCount > 1 ? 's' : ''} marked injured

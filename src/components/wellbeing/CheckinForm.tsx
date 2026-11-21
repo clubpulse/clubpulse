@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import { submitCheckin } from '@/lib/actions/wellbeing';
 import { RATING_LABELS } from '@/lib/types/wellbeing';
@@ -40,7 +41,7 @@ export function CheckinForm({ clubId }: Props) {
         textAlign: 'center',
         fontFamily: "'Inter', sans-serif",
       }}>
-        <div style={{ fontSize: '36px', marginBottom: '10px' }}>🧡</div>
+        <div style={{ fontSize: '36px', marginBottom: '10px' }}><Glyph e="🧡" /></div>
         <h2 style={{ color: '#10b981', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', margin: '0 0 6px' }}>
           Checked in — thank you
         </h2>

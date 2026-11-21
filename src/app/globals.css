@@ -151,3 +151,21 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
   .mu-marquee-track, .mu-shimmer-btn::before, .mu-gradient-text, .mu-beam::after, .mu-meteor, .mu-float { animation: none !important; }
   .mu-meteor { display: none; }
 }
+
+/* ── Animated icons (src/components/icons/Glyph.tsx) ── */
+@keyframes gl-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes gl-beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1); } 45% { transform: scale(1.12); } }
+@keyframes gl-twinkle { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.14) rotate(8deg); opacity: .85; } }
+@keyframes gl-ring { 0%, 60%, 100% { transform: rotate(0); } 65% { transform: rotate(14deg); } 75% { transform: rotate(-12deg); } 85% { transform: rotate(8deg); } 92% { transform: rotate(-4deg); } }
+@keyframes gl-flicker { 0%, 100% { transform: scale(1) translateY(0); } 25% { transform: scale(1.06, .96) translateY(-1px); } 50% { transform: scale(.96, 1.06); } 75% { transform: scale(1.04, 1) translateY(-1px); } }
+@keyframes gl-wiggle { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-9deg); } 86% { transform: rotate(8deg); } 94% { transform: rotate(-4deg); } }
+@keyframes gl-spin { to { transform: rotate(360deg); } }
+.gl { transform-origin: 50% 60%; }
+.gl-float { animation: gl-float 3.6s ease-in-out infinite; }
+.gl-beat { animation: gl-beat 2.2s ease-in-out infinite; }
+.gl-twinkle { animation: gl-twinkle 3s ease-in-out infinite; }
+.gl-ring { animation: gl-ring 4s ease-in-out infinite; transform-origin: 50% 10%; }
+.gl-flicker { animation: gl-flicker 1.6s ease-in-out infinite; }
+.gl-wiggle { animation: gl-wiggle 5s ease-in-out infinite; }
+.gl-spin { animation: gl-spin 14s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .gl { animation: none !important; } }

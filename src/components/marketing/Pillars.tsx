@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 // The four pillars of ClubPulse as a bento grid. Each card says plainly what is available now and
 // what is coming, so the page never promises more than the app does today.
 
@@ -67,7 +68,7 @@ export function Pillars() {
             {PILLARS.map((p, idx) => (
               <BentoCard key={p.name} colour={p.colour} col={p.col} row={1} beam={idx === 0}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span className="mu-float" style={{ fontSize: 34, animationDelay: `${idx * 0.6}s` }} aria-hidden>{p.icon}</span>
+                  <span className="mu-float" style={{ fontSize: 34, animationDelay: `${idx * 0.6}s` }} aria-hidden><Glyph e={p.icon} /></span>
                   <div>
                     <h3 style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 26, fontWeight: 800, color: p.colour, lineHeight: 1.05 }}>{p.name}</h3>
                     <p style={{ fontSize: 11.5, fontWeight: 700, color: 'rgba(232,237,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{p.tag}</p>
@@ -88,7 +89,7 @@ export function Pillars() {
               </BentoCard>
             ))}
 
-            <article className="mu-bento-card" style={{ gridColumn: 'span 6', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 28, borderColor: 'rgba(239,200,74,0.35)', background: 'radial-gradient(120% 140% at 0% 50%, rgba(239,200,74,0.14), transparent 60%), rgba(7,16,43,0.85)' }}>
+            <article className="mu-bento-card" style={{ padding: 26, gridColumn: 'span 6', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 28, borderColor: 'rgba(239,200,74,0.35)', background: 'radial-gradient(120% 140% at 0% 50%, rgba(239,200,74,0.14), transparent 60%), rgba(7,16,43,0.85)' }}>
               <div style={{ fontFamily: 'var(--font-syne), Syne, sans-serif', fontSize: 'clamp(54px, 8vw, 88px)', fontWeight: 800, lineHeight: 1, color: '#EFC84A' }}>
                 <NumberTicker value={108} />
               </div>

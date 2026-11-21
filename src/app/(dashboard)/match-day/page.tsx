@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTodaysMatch, getRecentScorecards } from '@/lib/actions/match-day';
@@ -100,7 +101,7 @@ export default async function MatchDayPage() {
               background: 'rgba(255,255,255,0.04)', borderRadius: '16px',
               padding: '40px 24px', textAlign: 'center',
             }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🏏</div>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}><Glyph e="🏏" /></div>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', margin: 0 }}>
                 No match scheduled for today. Check back on match day!
               </p>

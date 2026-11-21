@@ -105,7 +105,7 @@ export function BentoGrid({ children }: { children: ReactNode }) {
 
 export function BentoCard({ colour, col, row = 1, children, beam = false }: { colour: string; col: number; row?: number; children: ReactNode; beam?: boolean }) {
   return (
-    <article className="mu-bento-card" style={{ gridColumn: `span ${col}`, gridRow: `span ${row}`, borderColor: `${colour}44`, background: `radial-gradient(120% 90% at 100% 0%, ${colour}26, transparent 60%), rgba(7,16,43,0.85)` }}>
+    <article className="mu-bento-card" style={{ padding: 26, gridColumn: `span ${col}`, gridRow: `span ${row}`, borderColor: `${colour}44`, background: `radial-gradient(120% 90% at 100% 0%, ${colour}26, transparent 60%), rgba(7,16,43,0.85)` }}>
       {children}
       {beam && <BorderBeam from={colour} to="#60A5FA" />}
     </article>

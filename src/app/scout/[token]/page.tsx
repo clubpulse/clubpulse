@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { createClient as createSupabaseAnon } from '@supabase/supabase-js';
 import type { ScoutSession, AnonymousPlayerStat } from '@/lib/types/scout';
 
@@ -31,7 +32,7 @@ export default async function ScoutSharePage({ params }: Props) {
         background: '#04091A', fontFamily: "'Inter', sans-serif",
       }}>
         <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>
-          <p style={{ fontSize: '32px', margin: '0 0 16px' }}>🔍</p>
+          <p style={{ fontSize: '32px', margin: '0 0 16px' }}><Glyph e="🔍" /></p>
           <p style={{ margin: 0 }}>This Scout Mode report is no longer available.</p>
         </div>
       </main>
@@ -104,7 +105,7 @@ export default async function ScoutSharePage({ params }: Props) {
         {/* Header */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '22px' }}>🔍</span>
+            <span style={{ fontSize: '22px' }}><Glyph e="🔍" /></span>
             <h1 style={{
               fontFamily: "'Syne', sans-serif", fontWeight: 800,
               fontSize: '22px', color: '#fff', margin: 0, letterSpacing: '-0.3px',

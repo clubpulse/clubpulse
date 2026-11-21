@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 
 export default function ScorecardPage() {
@@ -219,7 +220,7 @@ export default function ScorecardPage() {
                 { icon: '🏏', h: 'Full innings history', body: 'Every completed innings is saved. Look back at any match from the season, drill into any over, see how the game unfolded ball by ball.' },
               ].map((c, i) => (
                 <div key={i} className="sc-grid-card">
-                  <div className="sc-grid-icon">{c.icon}</div>
+                  <div className="sc-grid-icon"><Glyph e={c.icon} /></div>
                   <h3 className="sc-grid-h">{c.h}</h3>
                   <p className="sc-grid-body">{c.body}</p>
                 </div>

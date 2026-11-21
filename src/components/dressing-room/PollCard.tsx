@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, useTransition } from 'react';
 import type { DressingRoomPost, PollOption } from '@/lib/types/dressing-room';
 import { castVote } from '@/lib/actions/dressing-room';
@@ -37,7 +38,7 @@ export function PollCard({ post, currentUserId, onUpdate }: PollCardProps) {
       padding: '16px 18px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '16px' }}>📊</span>
+        <span style={{ fontSize: '16px' }}><Glyph e="📊" /></span>
         <span style={{
           fontFamily: "'Syne', sans-serif",
           fontWeight: 700,
@@ -111,7 +112,7 @@ export function PollCard({ post, currentUserId, onUpdate }: PollCardProps) {
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: isMyChoice ? 600 : 400,
               }}>
-                {isMyChoice && <span style={{ marginRight: '6px' }}>✓</span>}
+                {isMyChoice && <span style={{ marginRight: '6px' }}><Glyph e="✓" /></span>}
                 {opt.text}
               </span>
 

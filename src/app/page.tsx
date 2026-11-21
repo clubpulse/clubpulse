@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { Pillars } from '@/components/marketing/Pillars';
 import { AnimatedGradientText, BorderBeam, DotPattern, Marquee, Meteors, ShimmerButton } from '@/components/magic';
@@ -783,7 +784,7 @@ export default function HomePage() {
               <div className="cp-pillars">
                 {([['🎥', 'The Nets', '#FBBF24'], ['🤝', 'Pavilion', '#60A5FA'], ['🧘', 'Warm-Up', '#F472B6'], ['🎓', 'Academy', '#2DD4BF']] as const).map(([icon, name, colour]) => (
                   <Link key={name} href="/#pillars" className="cp-pillar" style={{ borderColor: `${colour}66`, color: colour, background: `${colour}14` }}>
-                    {icon} {name}
+                    <Glyph e={icon} size="1.15em" /> {name}
                   </Link>
                 ))}
               </div>
@@ -833,10 +834,10 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="cp-tiles">
-                        <div className="cp-tile"><div className="cp-tile-icon">📋</div><div className="cp-tile-label">Live scorecard</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon">🎯</div><div className="cp-tile-label">AI Coach</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon">📅</div><div className="cp-tile-label">Availability</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon">💷</div><div className="cp-tile-label">Finance</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📋" /></div><div className="cp-tile-label">Live scorecard</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="🎯" /></div><div className="cp-tile-label">AI Coach</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📅" /></div><div className="cp-tile-label">Availability</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="💷" /></div><div className="cp-tile-label">Finance</div></div>
                       </div>
                       <div className="cp-avail-bar">
                         <span className="cp-avail-label">✓ Available Saturday</span>
@@ -946,21 +947,21 @@ export default function HomePage() {
           <div className="cp-steps">
             <div className="cp-step">
               <p className="cp-step-num">STEP 01</p>
-              <div className="cp-step-icon">🏏</div>
+              <div className="cp-step-icon"><Glyph e="🏏" /></div>
               <h3 className="cp-step-h">Create your club</h3>
               <p className="cp-step-body">Sign up as a club admin. Add your club name, teams, and season dates. Takes under 5 minutes — no card required to start.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 02</p>
-              <div className="cp-step-icon">📱</div>
+              <div className="cp-step-icon"><Glyph e="📱" /></div>
               <h3 className="cp-step-h">Invite your squad</h3>
               <p className="cp-step-body">Share a link or add players by email. Players join free, set up their profile, and immediately see upcoming fixtures and their Scores balance.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 03</p>
-              <div className="cp-step-icon">⚡</div>
+              <div className="cp-step-icon"><Glyph e="⚡" /></div>
               <h3 className="cp-step-h">Run your season</h3>
               <p className="cp-step-body">Players mark availability. Captains pick the XI. Scorers log every ball live. Stats build automatically. Finance tracks itself. Done.</p>
             </div>
@@ -979,7 +980,7 @@ export default function HomePage() {
               <div className="cp-feat-card cp-feat-card-wide" style={{borderBottom:'1px solid var(--border)'}}>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'40px',alignItems:'center'}}>
                   <div>
-                    <div className="cp-feat-card-icon">📅</div>
+                    <div className="cp-feat-card-icon"><Glyph e="📅" /></div>
                     <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                     <h3 className="cp-feat-card-h">Availability<br />management</h3>
                     <p className="cp-feat-card-body">No more Wednesday night WhatsApp chains. Players tap once. Captains see a live count — 9/11, 10/11 — and confirm the XI in one click. Push notifications go out automatically.</p>
@@ -1014,7 +1015,7 @@ export default function HomePage() {
 
               {/* Live Scorecard */}
               <div className="cp-feat-card">
-                <div className="cp-feat-card-icon">📋</div>
+                <div className="cp-feat-card-icon"><Glyph e="📋" /></div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Live scorecard</h3>
                 <p className="cp-feat-card-body">Scorer enters each delivery. Every player, parent and supporter sees the update in under a second. No paper. No spreadsheet. Ball-by-ball history stored forever.</p>
@@ -1028,7 +1029,7 @@ export default function HomePage() {
 
               {/* Scores */}
               <div className="cp-feat-card">
-                <div className="cp-feat-card-icon">⭐</div>
+                <div className="cp-feat-card-icon"><Glyph e="⭐" /></div>
                 <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
                 <h3 className="cp-feat-card-h">Scores rewards</h3>
                 <p className="cp-feat-card-body">Players earn Scores for every contribution — marking available, playing matches, paying fees, coaching sessions. 500 Scores = £1 toward kit, fee offsets and rewards.</p>
@@ -1042,7 +1043,7 @@ export default function HomePage() {
 
               {/* AI Coach */}
               <div className="cp-feat-card">
-                <div className="cp-feat-card-icon">🎯</div>
+                <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
                 <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
                 <h3 className="cp-feat-card-h">AI batting coach</h3>
                 <p className="cp-feat-card-body">Your phone camera analyses your stance, elbow position, head level and follow-through at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
@@ -1056,7 +1057,7 @@ export default function HomePage() {
 
               {/* Finance */}
               <div className="cp-feat-card">
-                <div className="cp-feat-card-icon">💷</div>
+                <div className="cp-feat-card-icon"><Glyph e="💷" /></div>
                 <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
                 <h3 className="cp-feat-card-h">Club finance</h3>
                 <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments, and send Wise payouts — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
@@ -1278,14 +1279,14 @@ function PricingSection() {
               <p className="cp-price-desc">Get started — track your stats, follow the scorecard and earn Bronze Scores.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Live scorecard viewing</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Basic career stats</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Achievement badges</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Scores — Bronze (1×)</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 2/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Video upload — 7 lifetime</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Role-based coaching</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x">✕</span><span>Performance trends</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Live scorecard viewing</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Basic career stats</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Achievement badges</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Scores — Bronze (1×)</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 2/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Video upload — 7 lifetime</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x"><Glyph e="✕" /></span><span>Role-based coaching</span></div>
+                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x"><Glyph e="✕" /></span><span>Performance trends</span></div>
               </div>
               <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
             </div>
@@ -1299,14 +1300,14 @@ function PricingSection() {
               <p className="cp-price-desc">Unlock AI coaching, drill recommendations and Silver tier Scores rewards.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Free</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 8/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Role-based coaching</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — 2/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Post-match self-assessment</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Video upload — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Form index — last 5</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Silver tier</strong> — 2× Scores</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Free</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 8/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Role-based coaching</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — 2/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Post-match self-assessment</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Video upload — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Form index — last 5</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Silver tier</strong> — 2× Scores</span></div>
               </div>
               <Link href={PLAYER_CTA} className="cp-price-cta primary">Get Pro →</Link>
             </div>
@@ -1319,14 +1320,14 @@ function PricingSection() {
               <p className="cp-price-desc">Deep analysis — venue breakdowns, matchup records, detailed video reports and Gold Scores.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — 20/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — 8/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Venue &amp; pitch condition analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Head-to-head matchup records</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Detailed video AI report</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Season report &amp; stat exports</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Gold tier</strong> — 3× Scores</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Pro</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 20/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — 8/month</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Venue &amp; pitch condition analysis</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Head-to-head matchup records</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Detailed video AI report</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Season report &amp; stat exports</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Gold tier</strong> — 3× Scores</span></div>
               </div>
               <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Elite →</Link>
             </div>
@@ -1339,14 +1340,14 @@ function PricingSection() {
               <p className="cp-price-desc">The complete picture. Unlimited everything, full video analysis and Platinum Scores.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Elite</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI coaching — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Drill recommendations — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full frame-by-frame video analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>vs club &amp; regional avg comparison</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full history — all-time records</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Legend badge &amp; early access</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Platinum tier</strong> — 4× Scores</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Elite</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — unlimited</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full frame-by-frame video analysis</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>vs club &amp; regional avg comparison</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full history — all-time records</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Legend badge &amp; early access</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Platinum tier</strong> — 4× Scores</span></div>
               </div>
               <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Legend →</Link>
             </div>
@@ -1364,7 +1365,7 @@ function PricingSection() {
             borderRadius:'12px',padding:'20px 24px',marginBottom:'32px',
             display:'flex',gap:'14px',alignItems:'flex-start',
           }}>
-            <span style={{fontSize:'20px',flexShrink:0}}>💡</span>
+            <span style={{fontSize:'20px',flexShrink:0}}><Glyph e="💡" /></span>
             <div>
               <p style={{fontWeight:700,color:'var(--sky)',fontSize:'14px',marginBottom:'4px'}}>How club pricing works</p>
               <p style={{fontSize:'13px',color:'var(--fg2)',lineHeight:1.7}}>
@@ -1381,14 +1382,14 @@ function PricingSection() {
               <p className="cp-price-desc">The essentials for a smaller club, across all its teams.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Up to 75 members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>20,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Full Scores engine and weekly challenges</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Fixture availability</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club noticeboard</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Coaching marketplace</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Finance tracker</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£2.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Up to 75 members</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>20,000 Scores a month to give out</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full Scores engine and weekly challenges</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Fixture availability</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Club noticeboard</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Coaching marketplace</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Finance tracker</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£2.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta ghost">Talk to us about Pro →</Link>
             </div>
@@ -1400,14 +1401,14 @@ function PricingSection() {
               <p className="cp-price-desc">For a club with several sides and a junior section.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Pro</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Up to 200 members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>75,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>AI Coach video analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Club Bible and documents</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player form guide and Scout Mode</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Community pot and Sponsor a Kid</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£4.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Pro</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Up to 200 members</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>75,000 Scores a month to give out</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI Coach video analysis</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Club Bible and documents</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Player form guide and Scout Mode</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Community pot and Sponsor a Kid</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£4.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta primary">Talk to us about Elite →</Link>
             </div>
@@ -1418,14 +1419,14 @@ function PricingSection() {
               <p className="cp-price-desc">For the largest clubs, and clubs that want their own branding.</p>
               <div className="cp-price-divider" />
               <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span><strong>Everything in Elite</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Unlimited members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>250,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Your club&apos;s own branding</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Multi-club federation</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Player auction and transfer window</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Priority support</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon">✓</span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£6.99 a month</strong> each</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Elite</strong></span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Unlimited members</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>250,000 Scores a month to give out</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Your club&apos;s own branding</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Multi-club federation</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Player auction and transfer window</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Priority support</span></div>
+                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£6.99 a month</strong> each</span></div>
               </div>
               <Link href="/contact" className="cp-price-cta ghost">Talk to us about Legend →</Link>
             </div>
@@ -1516,14 +1517,14 @@ function AudienceSection() {
         <div className="cp-audience-grid">
           {audiences.map(aud => (
             <div key={aud.key} className={`cp-aud-card ${aud.key}`}>
-              <div className="cp-aud-icon">{aud.icon}</div>
+              <div className="cp-aud-icon"><Glyph e={aud.icon} /></div>
               <p className={`cp-aud-label ${aud.key}`}>{aud.label}</p>
               <h3 className="cp-aud-h">{aud.h}</h3>
               <p className="cp-aud-body">{aud.body}</p>
               <div className="cp-aud-checks">
                 {aud.checks.map(c => (
                   <div key={c} className="cp-aud-check">
-                    <span className={`cp-aud-check-icon ${aud.key}`}>✓</span>
+                    <span className={`cp-aud-check-icon ${aud.key}`}><Glyph e="✓" /></span>
                     <span>{c}</span>
                   </div>
                 ))}
@@ -1667,7 +1668,7 @@ function PersonaSection() {
           <div className="cp-persona-checks">
             {p.checks.map(c => (
               <div key={c.label} className="cp-persona-check">
-                <span className="cp-persona-check-icon">✓</span>
+                <span className="cp-persona-check-icon"><Glyph e="✓" /></span>
                 <span><strong>{c.label}</strong> — {c.detail}</span>
               </div>
             ))}
@@ -1684,9 +1685,14 @@ function PersonaSection() {
 function FeatureStrip() {
   const row1 = ['📋 Live scorecard', '🎥 AI shot analysis', '📈 Form guide', '🧘 Mind Nets', '🎓 Two-minute lessons', '🏅 108 badges', '🔨 Auction Room', '📅 Availability'];
   const row2 = ['💷 Club finance', '🤝 Find players nearby', '🧠 Coach AI', '⭐ Run Chase tasks', '🛍️ Reward marketplace', '👥 Team selection', '📣 Club noticeboard', '🏆 Leaderboards'];
-  const chip = (t: string) => (
-    <span key={t} style={{ whiteSpace: 'nowrap', padding: '9px 18px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.03)', fontSize: 14, fontWeight: 600, color: 'rgba(232,237,245,0.75)' }}>{t}</span>
-  );
+  const chip = (t: string) => {
+    const [icon, ...rest] = t.split(' ');
+    return (
+      <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', padding: '9px 18px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.03)', fontSize: 14, fontWeight: 600, color: 'rgba(232,237,245,0.75)' }}>
+        <Glyph e={icon} size="1.2em" /> {rest.join(' ')}
+      </span>
+    );
+  };
   return (
     <section aria-label="What ClubPulse does" style={{ padding: '36px 0', display: 'flex', flexDirection: 'column', gap: 14, background: '#05080f', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
       <Marquee duration={45}>{row1.map(chip)}</Marquee>

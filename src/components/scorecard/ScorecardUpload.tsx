@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -87,7 +88,7 @@ export function ScorecardUpload() {
           <img src={preview} alt="Scorecard preview" style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '8px' }} />
         ) : (
           <>
-            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📸</div>
+            <div style={{ fontSize: '32px', marginBottom: '8px' }}><Glyph e="📸" /></div>
             <p style={{ fontSize: '14px', fontWeight: 500, color: '#fff', margin: '0 0 4px' }}>
               Upload your scorecard
             </p>

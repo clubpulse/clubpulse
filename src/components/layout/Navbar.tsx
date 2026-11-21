@@ -1,4 +1,5 @@
 'use client';
+import { Glyph } from '@/components/icons/Glyph';
 import { useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -56,7 +57,7 @@ function RoleSwitcher({ pages }: { pages: RolePage[] }) {
                 background: page.href === pathname ? `color-mix(in srgb, ${page.from} 20%, transparent)` : 'transparent',
               }}
             >
-              <span aria-hidden style={{ fontSize: '17px' }}>{page.icon}</span>
+              <span aria-hidden style={{ fontSize: '17px' }}><Glyph e={page.icon} /></span>
               {page.title}
               {page.href === pathname && <span aria-hidden style={{ marginLeft: 'auto', color: page.from }}>●</span>}
             </Link>

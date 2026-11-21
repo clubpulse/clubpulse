@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /opposition-intel  —  Opposition Intelligence Briefing
  *
@@ -353,7 +354,7 @@ export default function OppositionIntelPage() {
           {/* Target score */}
           {result.briefing.targetScore && (
             <div style={{ background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: '14px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: '28px', flexShrink: 0 }}>🎯</div>
+              <div style={{ fontSize: '28px', flexShrink: 0 }}><Glyph e="🎯" /></div>
               <div>
                 <p style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Target Score</p>
                 <p style={{ fontSize: '15px', color: '#fff', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>{result.briefing.targetScore}</p>

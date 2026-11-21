@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -101,13 +102,13 @@ export function SignUpForm() {
                 selected ? 'border-brand-gold bg-brand-gold/10' : 'border-neutral-800 hover:border-neutral-700'
               }`}
             >
-              <span className="text-2xl">{r.icon}</span>
+              <span className="text-2xl"><Glyph e={r.icon} /></span>
               <span className="flex-1">
                 <span className="block text-sm font-semibold text-white">{r.label}</span>
                 <span className="block text-xs text-neutral-500">{r.desc}</span>
               </span>
               {selected && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-gold text-xs font-bold text-neutral-950">✓</span>
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-gold text-xs font-bold text-neutral-950"><Glyph e="✓" /></span>
               )}
             </button>
           );

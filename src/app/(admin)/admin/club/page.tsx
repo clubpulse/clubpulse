@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getClubOverview } from '@/lib/admin/service';
@@ -214,7 +215,7 @@ export default async function ClubOverviewPage() {
                       transition: 'opacity 0.15s',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '18px', lineHeight: 1 }}>{feat.icon}</span>
+                        <span style={{ fontSize: '18px', lineHeight: 1 }}><Glyph e={feat.icon} /></span>
                         <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{feat.label}</span>
                       </div>
                       <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: '15px' }}>

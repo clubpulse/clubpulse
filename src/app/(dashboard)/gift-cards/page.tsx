@@ -1,5 +1,6 @@
 'use client';
 
+import { Glyph } from '@/components/icons/Glyph';
 /**
  * /gift-cards
  *
@@ -156,7 +157,7 @@ export default function GiftCardsPage() {
                   background: cardColour(card.title),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span style={{ fontSize: 20 }}>🎁</span>
+                  <span style={{ fontSize: 20 }}><Glyph e="🎁" /></span>
                 </div>
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: '#04091A' }}>{card.title}</p>
@@ -184,7 +185,7 @@ export default function GiftCardsPage() {
             borderRadius: 16, padding: '28px 24px', marginBottom: 20,
             textAlign:    'center', color: '#fff',
           }}>
-            <p style={{ margin: '0 0 8px', fontSize: 36 }}>🎁</p>
+            <p style={{ margin: '0 0 8px', fontSize: 36 }}><Glyph e="🎁" /></p>
             <p style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 800 }}>{selected.title}</p>
             <p style={{ margin: 0, fontSize: 14, opacity: 0.85 }}>£{selected.tango_amount_gbp?.toFixed(2)} gift card</p>
           </div>
@@ -241,7 +242,7 @@ export default function GiftCardsPage() {
       {step === 'voucher' && voucher && (
         <div>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <p style={{ fontSize: 48, margin: '0 0 8px' }}>🎉</p>
+            <p style={{ fontSize: 48, margin: '0 0 8px' }}><Glyph e="🎉" /></p>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#04091A', margin: '0 0 4px' }}>
               {voucher.manual ? 'Gift card ordered!' : 'Gift card issued!'}
             </h2>
@@ -312,7 +313,7 @@ export default function GiftCardsPage() {
       {/* Error */}
       {step === 'error' && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <p style={{ fontSize: 48, margin: '0 0 16px' }}>⚠️</p>
+          <p style={{ fontSize: 48, margin: '0 0 16px' }}><Glyph e="⚠️" /></p>
           <p style={{ color: '#374151', fontSize: 15, marginBottom: 24 }}>{error}</p>
           <button
             onClick={() => { setStep('browse'); setError(''); setSelected(null); }}

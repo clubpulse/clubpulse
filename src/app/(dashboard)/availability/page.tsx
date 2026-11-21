@@ -1,3 +1,4 @@
+import { Glyph } from '@/components/icons/Glyph';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMyFixtures } from '@/lib/actions/availability';
@@ -30,7 +31,7 @@ export default async function AvailabilityPage() {
           textAlign: 'center',
         }}
       >
-        <span style={{ fontSize: '40px' }}>🏏</span>
+        <span style={{ fontSize: '40px' }}><Glyph e="🏏" /></span>
         <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
           No club yet
         </h2>
