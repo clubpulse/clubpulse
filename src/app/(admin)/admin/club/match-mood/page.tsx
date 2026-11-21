@@ -15,7 +15,7 @@ export default async function AdminMatchMoodPage() {
     .from('club_members')
     .select('club_id')
     .eq('user_id', user.id)
-    .in('role', ['admin', 'coach'])
+    .in('role', ['club_admin', 'coach'])
     .limit(1)
     .single();
 

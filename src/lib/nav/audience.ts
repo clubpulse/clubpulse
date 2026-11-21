@@ -14,6 +14,6 @@ export const getAudience = cache(async (userId: string): Promise<Audience> => {
     userRoles: (roles ?? []).map((r) => r.role as string),
     memberRoles: active.map((m) => m.role as string),
     junior: active.length > 0 && active.every((m) => m.is_junior === true),
-    admin: active.some((m) => m.role === 'admin'),
+    admin: active.some((m) => m.role === 'club_admin'),
   });
 });

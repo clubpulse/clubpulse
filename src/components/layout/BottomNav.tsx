@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 const BOTTOM_LINKS = [
   { href: '/dashboard',   label: 'Home',     icon: '🏠' },
   { href: '/analyse',     label: 'Analyse',  icon: '🎯' },
-  { href: '/scorecard',   label: 'Scores',   icon: '📋' },
+  { href: '/match-day',   label: 'Match Day', icon: '🏟️' },
   { href: '/marketplace', label: 'Rewards',  icon: '🛍️' },
   { href: '/profile',     label: 'Profile',  icon: '👤' },
 ];

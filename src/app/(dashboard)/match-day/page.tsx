@@ -1,4 +1,5 @@
 import { Glyph } from '@/components/icons/Glyph';
+import Link from 'next/link';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTodaysMatch, getRecentScorecards } from '@/lib/actions/match-day';
@@ -62,6 +63,9 @@ export default async function MatchDayPage() {
         }}>
           Match Day 🏏
         </h1>
+        <Link href="/scorecard" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', textDecoration: 'underline' }}>
+          Upload a paper scorecard
+        </Link>
         {todaysMatch && (
           <span style={{
             background: todaysMatch.status === 'completed' ? 'rgba(34,197,94,0.2)' : 'rgba(220,38,38,0.3)',

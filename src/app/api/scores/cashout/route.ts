@@ -15,17 +15,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient }         from '@/lib/supabase/admin';
 import { getRequestAuth }            from '@/lib/supabase/request-auth';
+import { isClubAdmin }               from '@/lib/auth/admin';
 import { cashoutPence, MIN_CASHOUT_SCORES } from '@/lib/types/scores';
 
-async function assertClubAdmin(adminClient: ReturnType<typeof createAdminClient>, userId: string, clubId: string) {
-  const { data } = await adminClient
-    .from('club_members')
-    .select('role')
-    .eq('user_id', userId)
-    .eq('club_id', clubId)
-    .eq('is_active', true)
-    .maybeSingle();
-  return data?.role === 'admin';
+async function assertClubAdmin(_adminClient: ReturnType<typeof createAdminClient>, userId: string, clubId: string) {
+  return isClubAdmin(userId, clubId);
 }
 
 export async function GET(req: NextRequest) {

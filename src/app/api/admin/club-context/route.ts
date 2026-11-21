@@ -23,7 +23,7 @@ export async function GET() {
 
     if (!data) return NextResponse.json({ clubId: null, isAdmin: false });
 
-    const isAdmin = ['admin', 'club_admin', 'coach'].includes(data.role);
+    const isAdmin = ['club_admin', 'coach'].includes(data.role);
     return NextResponse.json({ clubId: data.club_id, isAdmin, role: data.role });
   } catch {
     return NextResponse.json({ clubId: null, isAdmin: false });

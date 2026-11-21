@@ -58,7 +58,6 @@ export const NAV_GROUPS: NavGroup[] = [
     links: [
       { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING, section: 'Match day' },
       { href: '/match-day', label: 'Match Day', icon: '🏟️', section: 'Match day' },
-      { href: '/scorecard', label: 'Scorecard', icon: '📝', section: 'Match day' },
       { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡', section: 'Match day' },
       { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING, section: 'Match day' },
       { href: '/noticeboard', label: 'Noticeboard', icon: '📌', section: 'My club' },

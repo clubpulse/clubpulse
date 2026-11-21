@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
   // club_admin is only ever granted through club_members, never self-assigned
   // Everyone is a player unless they run the club: a club admin is a player only when they hold the
   // Player role as well (user_roles), so the club side and the player side stay apart.
-  const isClubAdmin = members.some((m) => m.role === 'club_admin' || m.role === 'admin');
+  const isClubAdmin = members.some((m) => m.role === 'club_admin');
   const held = new Set<AppRole>(isClubAdmin ? [] : ['player']);
   for (const row of userRoles.data ?? []) if (isAppRole(row.role) && row.role !== 'club_admin') held.add(row.role);
   for (const row of members) if (isAppRole(row.role)) held.add(row.role);
