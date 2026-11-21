@@ -78,6 +78,7 @@ function AuthGate() {
       <Stack.Screen name="lesson/[id]" options={screen('Lesson')} />
       <Stack.Screen name="web" options={screen('ClubPulse')} />
       <Stack.Screen name="rewards" options={screen('Rewards')} />
+      <Stack.Screen name="badges" options={screen('Honours Board')} />
       <Stack.Screen name="auction-room" options={screen('Auction Room')} />
       <Stack.Screen name="store" options={screen('Store')} />
       <Stack.Screen name="odds" options={screen('Prize odds')} />

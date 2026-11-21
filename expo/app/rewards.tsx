@@ -228,6 +228,15 @@ export default function RewardsScreen() {
           </View>
         )}
 
+        <Pressable onPress={() => router.push('/badges' as never)} style={[styles.card, styles.headRow]} accessibilityRole="button">
+          <Text style={styles.goalIcon}>🏅</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.goalTitle, { color: colors.white }]}>Honours Board</Text>
+            <Text style={[fonts.small, { marginTop: 2 }]}>Badges for what you have achieved, to share</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.textSubtle} />
+        </Pressable>
+
         {cards !== null && (
           <Pressable onPress={() => router.push('/scratch-cards' as never)} style={[styles.card, styles.headRow, cards > 0 && { borderColor: colors.gold }]}>
             <Text style={styles.goalIcon}>🎟️</Text>

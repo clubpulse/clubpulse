@@ -80,6 +80,7 @@ export const MENU: MenuGroup[] = [
     tint: '#EFC84A',
     links: [
       { key: 'rewards', label: 'Run Chase', detail: 'Earn Scores: daily, weekly and monthly goals', icon: '🎁', route: '/rewards' },
+      { key: 'badges', label: 'Honours Board', detail: 'Badges you have earned, to share', icon: '🏅', route: '/badges' },
       { key: 'cards', label: 'Scratch cards', detail: 'Free cards you have earned', icon: '🎟️', route: '/scratch-cards', adult: true, needs: 'cards' },
       { key: 'wallet', label: 'Scorebook', detail: 'Your wallet: your Scores and what you earned them for', icon: '👛', route: '/wallet' },
       { key: 'market', label: 'Marketplace', detail: 'Swap Scores for rewards', icon: '🛍️', route: '/marketplace' },
