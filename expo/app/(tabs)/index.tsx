@@ -146,7 +146,7 @@ export default function HomeScreen() {
 
   const matchCard = (
     <View style={styles.hero}>
-      <Text style={styles.heroEyebrow}>Next match{when ? ` · ${when.day}` : ''}</Text>
+      <Text style={styles.heroEyebrow}>Next fixture{when ? ` · ${when.day}` : ''}</Text>
       {!home && !homeError ? (
         <ActivityIndicator color={colors.white} style={{ alignSelf: 'flex-start', marginVertical: spacing.md }} />
       ) : fixture ? (
