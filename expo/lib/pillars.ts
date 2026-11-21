@@ -56,9 +56,11 @@ export const PILLARS: Pillar[] = [
   {
     key: 'wellness', tab: 'wellness', title: 'Warm-Up', emoji: '🧡', icon: 'heart', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Wellness: your mindset, getting ready and being mentally prepared to play.',
-    big: 'matchday',
-    top: ['mindfulness', 'meditation', 'mindset', 'awareness'],
+    big: 'training',
+    top: ['mindfulness', 'meditation', 'mindset', 'matchday'],
     extra: [
+      { key: 'training', label: 'Mind Nets', detail: 'Psychological training: six weeks, one skill a week', icon: '🎯', route: '/warmup/training' },
+      { key: 'routine', label: 'My Routine', detail: 'Build what you do before every ball', icon: '🔁', route: '/warmup/routine' },
       { key: 'matchday', label: 'Match Day', detail: 'Game preparation: the night before to walking out', icon: '🏏', route: '/warmup/matchday' },
       { key: 'mindfulness', label: 'Watch the Ball', detail: 'Mindfulness: stay in the moment', icon: '👁️', route: '/warmup/mindfulness' },
       { key: 'meditation', label: 'Still Head', detail: 'Meditation: guided and timed', icon: '🧘', route: '/warmup/meditation' },

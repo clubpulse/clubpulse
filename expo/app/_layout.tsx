@@ -92,6 +92,7 @@ function AuthGate() {
       <Stack.Screen name="warmup/[section]" options={screen('Warm-Up')} />
       <Stack.Screen name="warmup/item/[id]" options={screen('Warm-Up')} />
       <Stack.Screen name="warmup/support" options={screen('Talk to someone')} />
+      <Stack.Screen name="warmup/routine" options={screen('My Routine')} />
       <Stack.Screen name="community/feed" options={screen('Commentary Box')} />
       <Stack.Screen name="community/nearby" options={screen('Partnerships')} />
       <Stack.Screen name="community/connections" options={screen('My Squad')} />
