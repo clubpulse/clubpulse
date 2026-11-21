@@ -2,14 +2,20 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { getScorecardWithPlayers } from '@/lib/actions/match-day';
+import { createClient } from '@/lib/supabase/client';
+import { oversToBalls, type Delivery } from '@/lib/match-day/scoring';
 import { ScorerPanel } from './ScorerPanel';
-import type { MatchScorecard, MatchPlayerScore, MatchCommentary } from '@/lib/types/match-day';
+import { BallPad } from './BallPad';
+import type { MatchScorecard, MatchPlayerScore, MatchCommentary, RosterPlayer } from '@/lib/types/match-day';
 
 interface Props {
   scorecard: MatchScorecard;
   isAdmin: boolean;
   clubId: string;
   currentUserId: string;
+  roster?: RosterPlayer[];
+  /** Public read-only link for this match (admins and coaches only). */
+  shareUrl?: string | null;
 }
 
 function strikeRate(runs: number, balls: number): string {
@@ -18,8 +24,9 @@ function strikeRate(runs: number, balls: number): string {
 }
 
 function economy(runs: number, overs: number): string {
-  if (!overs) return '—';
-  return (runs / overs).toFixed(2);
+  const balls = oversToBalls(overs);
+  if (!balls) return '—';
+  return ((runs / balls) * 6).toFixed(2);
 }
 
 const EVENT_COLOURS: Record<string, string> = {
@@ -31,10 +38,13 @@ const EVENT_COLOURS: Record<string, string> = {
   update: 'rgba(255,255,255,0.55)',
 };
 
-export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUserId }: Props) {
+export function LiveScorecard({ scorecard: initial, isAdmin, roster = [], shareUrl = null }: Props) {
   const [scorecard, setScorecard] = useState<MatchScorecard>(initial);
   const [players, setPlayers] = useState<MatchPlayerScore[]>([]);
   const [commentary, setCommentary] = useState<MatchCommentary[]>([]);
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [copied, setCopied] = useState(false);
+  const nameOf = (id: string) => roster.find((r) => r.user_id === id)?.name ?? 'Player';
   const [tab, setTab] = useState<'batting' | 'bowling'>('batting');
   const [showScorer, setShowScorer] = useState(false);
   const [, startTransition] = useTransition();
@@ -46,16 +56,48 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
         setScorecard(res.data.scorecard);
         setPlayers(res.data.playerScores);
         setCommentary(res.data.commentary);
+        setDeliveries(res.data.deliveries);
       }
     });
   }
 
+  // Live updates: Supabase Realtime pushes every change for this match, and we re-read when one arrives.
+  // A slow poll stays as a fallback in case the socket drops.
   useEffect(() => {
     reload();
-    const interval = setInterval(reload, 15000);
-    return () => clearInterval(interval);
+    const supabase = createClient();
+    const byCard = `scorecard_id=eq.${scorecard.id}`;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const soon = () => {
+      if (timer) return;
+      timer = setTimeout(() => { timer = null; reload(); }, 150); // batch the several tables one ball touches
+    };
+    const channel = supabase
+      .channel(`match:${scorecard.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_scorecards', filter: `id=eq.${scorecard.id}` }, soon)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_deliveries', filter: byCard }, soon)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_player_scores', filter: byCard }, soon)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_commentary', filter: byCard }, soon)
+      .subscribe();
+    const fallback = setInterval(reload, 60000);
+    return () => {
+      if (timer) clearTimeout(timer);
+      clearInterval(fallback);
+      supabase.removeChannel(channel);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scorecard.id]);
+
+  async function copyLink() {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copy this link', shareUrl);
+    }
+  }
 
   const our = scorecard.our_innings;
   const their = scorecard.their_innings;
@@ -166,7 +208,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
                 <tbody>
                   {batters.map(p => (
                     <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 500 }}>{p.user_id.slice(0, 8)}…</td>
+                      <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 500 }}>{nameOf(p.user_id)}</td>
                       <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 700, textAlign: 'center' }}>{p.runs}</td>
                       <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.55)', textAlign: 'center' }}>{p.balls_faced}</td>
                       <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.55)', textAlign: 'center' }}>{p.fours}</td>
@@ -199,7 +241,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
                 <tbody>
                   {bowlers.map(p => (
                     <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 500 }}>{p.user_id.slice(0, 8)}…</td>
+                      <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 500 }}>{nameOf(p.user_id)}</td>
                       <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 700, textAlign: 'center' }}>{p.overs_bowled}</td>
                       <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.55)', textAlign: 'center' }}>{p.maidens}</td>
                       <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.55)', textAlign: 'center' }}>{p.runs_conceded}</td>
@@ -239,7 +281,17 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
         </div>
       )}
 
-      {/* Scorer panel toggle */}
+      {/* Public link */}
+      {isAdmin && shareUrl && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px' }}>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', flex: 1, minWidth: 180 }}>Share a read-only live scorecard. No sign-in needed.</span>
+          <button type="button" onClick={copyLink} style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(96,165,250,0.4)', background: 'rgba(37,99,235,0.15)', color: '#93C5FD', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+            {copied ? 'Copied ✓' : 'Copy public link'}
+          </button>
+        </div>
+      )}
+
+      {/* Scorer: ball pad first, totals form kept as a fallback */}
       {isAdmin && scorecard.status !== 'completed' && (
         <div>
           <button
@@ -251,16 +303,18 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
               fontFamily: "'Inter', sans-serif", transition: 'all 0.15s',
             }}
           >
-            {showScorer ? '▲ Hide Scorer Panel' : '📋 Open Scorer Panel'}
+            {showScorer ? '▲ Hide scorer' : '🏏 Score ball by ball'}
           </button>
 
           {showScorer && (
-            <div style={{ marginTop: '16px' }}>
-              <ScorerPanel
-                scorecard={scorecard}
-                players={players}
-                onUpdate={reload}
-              />
+            <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <BallPad scorecard={scorecard} roster={roster} deliveries={deliveries} onChange={reload} />
+              <details>
+                <summary style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>Manual totals, awards and finishing the match</summary>
+                <div style={{ marginTop: 12 }}>
+                  <ScorerPanel scorecard={scorecard} players={players} onUpdate={reload} />
+                </div>
+              </details>
             </div>
           )}
         </div>

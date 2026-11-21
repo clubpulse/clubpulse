@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTodaysMatch, getRecentScorecards } from '@/lib/actions/match-day';
+import { getMatchRoster } from '@/lib/match-day/roster';
+import { getScorecardShareUrl } from '@/lib/share-urls';
 import { LiveScorecard } from '@/components/match-day/LiveScorecard';
 import { CreateMatchForm } from '@/components/match-day/CreateMatchForm';
 import type { MatchScorecard } from '@/lib/types/match-day';
@@ -53,6 +55,7 @@ export default async function MatchDayPage() {
 
   const todaysMatch = todaysMatchRes.success ? todaysMatchRes.data : null;
   const recent = recentRes.success ? recentRes.data : [];
+  const roster = todaysMatch ? await getMatchRoster(membership.club_id, todaysMatch.fixture_id) : [];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -90,6 +93,8 @@ export default async function MatchDayPage() {
           isAdmin={isAdmin}
           clubId={membership.club_id}
           currentUserId={user.id}
+          roster={roster}
+          shareUrl={isAdmin && todaysMatch.share_token ? getScorecardShareUrl(todaysMatch.share_token) : null}
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

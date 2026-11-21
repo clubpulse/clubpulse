@@ -19,6 +19,9 @@ export interface MatchScorecard {
   status: ScorecardStatus;
   result?: string;
   scorer_user_id?: string;
+  /** Token for the public read-only link at /live/[token]. */
+  share_token?: string;
+  fixture_id?: string | null;
 }
 
 export interface MatchPlayerScore {
@@ -53,4 +56,13 @@ export interface ScorecardWithDetails {
   scorecard: MatchScorecard;
   playerScores: MatchPlayerScore[];
   commentary: MatchCommentary[];
+  /** Latest balls, newest first. Empty until the scorer uses the ball pad. */
+  deliveries: import('@/lib/match-day/scoring').Delivery[];
+}
+
+export interface RosterPlayer {
+  user_id: string;
+  name: string;
+  /** In the confirmed XI for this fixture. */
+  in_xi: boolean;
 }
