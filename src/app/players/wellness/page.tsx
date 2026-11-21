@@ -18,6 +18,7 @@ export default function WellnessPage() {
         {
           status: 'live',
           items: [
+            { h: 'Pre-match readiness and checklist', body: 'A quick private check on sleep, mood, soreness and stress, and a match-day preparation checklist whose ticks are saved for the day.' },
             { h: 'Weekly check-in', body: 'A private weekly check-in on how your body and mind are. Coaches only ever see anonymous club averages.' },
             { h: 'Match mood', body: 'Say how you are feeling going into your next fixture.' },
             { h: 'Injury log', body: 'Keep a private record of knocks and niggles over the season.' },
@@ -34,7 +35,7 @@ export default function WellnessPage() {
         {
           status: 'soon',
           items: [
-            { h: 'Readiness and preparation on the website', body: 'A pre-match readiness check-in, a preparation checklist and trends over time.' },
+            { h: 'Trends and mental-skills library', body: 'Readiness trends over time and the mental-skills routines on the website (in the app today).' },
           ],
         },
       ]}
