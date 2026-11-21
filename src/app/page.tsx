@@ -1060,7 +1060,7 @@ export default function HomePage() {
               <div className="cp-feat-card">
                 <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
                 <span className="cp-feat-card-tag cp-tag-road">Coming soon</span>
-                <h3 className="cp-feat-card-h">AI batting and bowling coach</h3>
+                <h3 className="cp-feat-card-h">AI Coach</h3>
                 <p className="cp-feat-card-body">Your phone camera analyses your batting stance, head position and follow-through, and your bowling action, front knee and foot position, at 30fps — entirely on-device. No uploads. No latency. Real coaching feedback, every session.</p>
                 <div className="cp-feat-card-bullets">
                   <div className="cp-feat-card-bullet"><strong>On-device only</strong> — nothing leaves your phone</div>
