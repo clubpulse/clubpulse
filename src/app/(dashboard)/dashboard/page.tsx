@@ -15,6 +15,7 @@ import { getMyFixtures } from '@/lib/actions/availability';
 import { formatScores } from '@/lib/utils/format';
 import { NextMatchCard } from '@/components/dashboard/NextMatchCard';
 import { getAudience } from '@/lib/nav/audience';
+import { asAdmin, playsCricket } from '@/lib/nav/menu';
 import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { PILLARS, pillarCounts } from '@/lib/nav/pillars';
 import { MagicCard } from '@/components/magic/MagicCard';
@@ -39,13 +40,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   ]);
 
   // A club admin is recognised the same way the menu recognises one
-  const audience = { ...base, admin: base.admin || adminClubs.length > 0 };
+  const audience = adminClubs.length > 0 ? asAdmin(base) : base;
   const pages = rolePagesFor(audience);
   const page = homeRole(audience, asked, jar.get(ROLE_COOKIE)?.value);
   const roleData = page ? await getRoleData(page.role, user.id) : null;
   const counts = pillarCounts(audience);
   // Players, coaches and club admins can say whether they are available for the next match
-  const plays = audience.admin || audience.roles.includes('player') || audience.roles.includes('coach');
+  const plays = audience.roles.includes('player') || audience.roles.includes('coach');
+  // The player side of Home (next match, the pillars, Scores activity). A club admin who is not
+  // also a player gets the club side only.
+  const playerSide = playsCricket(audience);
 
   const name = profile.success
     ? (profile.data.display_name || profile.data.full_name || 'You').split(' ')[0]
@@ -72,9 +76,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </h1>
       )}
 
-      <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} canPlay={plays} />
+      {playerSide && <NextMatchCard fixture={fixtures[0] ?? null} clubName={clubName} canPlay={plays} />}
 
       {/* The four pillars: the way in to everything */}
+      {playerSide && (<>
       <h2 style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', color: '#fff', margin: '8px 0 -4px', letterSpacing: '-0.01em' }}>Explore ClubPulse</h2>
       <section aria-label="The four pillars" className="mg-bento mg-two">
         {PILLARS.map((p, i) => (
@@ -106,6 +111,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </ul>
         )}
       </section>
+      </>)}
     </div>
   );
 }

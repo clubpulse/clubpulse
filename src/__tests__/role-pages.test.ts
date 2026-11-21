@@ -19,8 +19,12 @@ describe('role pages', () => {
     expect(rolePagesFor(aud(['coach'])).map((p) => p.role)).not.toContain('admin');
   });
 
-  it('lets a club admin open every page', () => {
-    expect(holdsRole(aud(['player'], { admin: true }), 'coach')).toBe(true);
+  it('keeps the club side and the player side apart', () => {
+    // A club admin is a player only when they hold the Player role
+    expect(holdsRole(aud([], { admin: true }), 'player')).toBe(false);
+    expect(rolePagesFor(aud([], { admin: true })).map((p) => p.role)).toEqual(['admin']);
+    expect(rolePagesFor(aud(['player'], { admin: true })).map((p) => p.role)).toEqual(['player', 'admin']);
+    expect(holdsRole(aud(['player'], { admin: true }), 'coach')).toBe(false);
     expect(holdsRole(aud(['player']), 'coach')).toBe(false);
   });
 

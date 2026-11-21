@@ -10,6 +10,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { getAudience } from '@/lib/nav/audience';
+import { asAdmin, asStaff } from '@/lib/nav/menu';
 import { rolePagesFor } from '@/lib/nav/role-pages';
 
 // Signed-in app chrome, shared by the (dashboard) layout and public routes that also serve signed-in users.
@@ -57,8 +58,9 @@ export async function DashboardShell({ user, children }: { user: User; children:
     ? profile.data.display_name || profile.data.full_name
     : user.email?.split('@')[0] ?? 'Player';
   const balance = totalBalance(wallet.success ? wallet.data : null);
-  // Club admins and ClubPulse staff see the whole menu
-  const audience = { ...baseAudience, admin: baseAudience.admin || adminCtx.adminClubIds.length > 0 || isPlatformAdmin };
+  // ClubPulse staff see both sides. A club admin sees the club tools, and the player side only if
+  // they also hold the Player role.
+  const audience = isPlatformAdmin ? asStaff(baseAudience) : adminCtx.adminClubIds.length > 0 ? asAdmin(baseAudience) : baseAudience;
 
   return (
     <div className="min-h-screen text-white" style={{ background: 'var(--background)' }}>

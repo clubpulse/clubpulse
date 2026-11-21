@@ -52,11 +52,11 @@ export function homeRole(audience: Audience, asked: string | undefined, remember
   return pages.find((p) => p.role === asked) ?? pages.find((p) => p.role === remembered) ?? pages[0] ?? null;
 }
 
-/** Whether this person may open a page. Anyone may open Volunteering; a club admin may open all. */
+/** Whether this person may open a page. Anyone may open Volunteering; the Admin page is for club admins, and the others for people who hold that role. */
 export function holdsRole(audience: Audience, role: PageRole): boolean {
   if (role === 'volunteer') return true;
   if (role === 'admin') return audience.admin;
-  return audience.admin || audience.roles.includes(role);
+  return audience.roles.includes(role);
 }
 
 /** The tools each page leads with, by address, most useful first. */
@@ -74,20 +74,14 @@ const TINT = new Map(NAV_GROUPS.flatMap((g) => g.links.map((l) => [l.href, g.tin
 export type RoleTool = NavLink & { tint: string };
 
 /** The club admin's tools. These live outside the member menu, so they are listed here. */
-const ADMIN_TOOLS: RoleTool[] = [
-  { href: '/admin/club', label: 'Club admin', icon: '🛡️', tint: '#F87171' },
-  { href: '/admin/club/members', label: 'Members', icon: '👥', tint: '#60A5FA' },
-  { href: '/admin/club/availability', label: 'Availability', icon: '📅', tint: '#22C55E' },
-  { href: '/admin/club/noticeboard', label: 'Noticeboard', icon: '📌', tint: '#60A5FA' },
-  { href: '/admin/club/scores-rules', label: 'Scores rules', icon: '⭐', tint: '#EFC84A' },
-  { href: '/admin/club/scratch-cards', label: 'Scratch cards', icon: '🎟️', tint: '#EFC84A' },
-  { href: '/admin/club/coaches', label: 'Coaches', icon: '🎓', tint: '#F97316' },
-  { href: '/admin/club/safeguarding', label: 'Safeguarding', icon: '🧷', tint: '#A78BFA' },
-  { href: '/admin/club/finance', label: 'Finance', icon: '💷', tint: '#34D399' },
-  { href: '/admin-query', label: 'Club Intelligence', icon: '🤖', tint: '#F87171' },
-  { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍', tint: '#F87171' },
-  { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉', tint: '#F87171' },
-];
+const CLUB_TINT: Record<string, string> = {
+  '/admin/club/members': '#60A5FA', '/admin/club/noticeboard': '#60A5FA', '/admin/club/availability': '#22C55E',
+  '/admin/club/scores-rules': '#EFC84A', '/admin/club/scratch-cards': '#EFC84A', '/admin/club/coaches': '#F97316',
+  '/admin/club/safeguarding': '#A78BFA', '/admin/club/finance': '#34D399',
+};
+const ADMIN_TOOLS: RoleTool[] = NAV_GROUPS.find((g) => g.key === 'club')!.links
+  .filter((l) => l.href !== '/admin/club/gut-feeling')
+  .map((l) => ({ ...l, tint: CLUB_TINT[l.href] ?? '#F87171' }));
 
 /**
  * The tools shown on a role's page, in order. A junior never sees the adults-only ones, and a

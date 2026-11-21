@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { fetchProfile } from '@/lib/profile/service';
 import { getAudience } from '@/lib/nav/audience';
+import { asAdmin } from '@/lib/nav/menu';
 import { ROLE_PAGES, holdsRole, rolePagesFor, roleTools, type PageRole } from '@/lib/nav/role-pages';
 import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { getRoleData } from '@/lib/roles/data';
@@ -13,7 +14,7 @@ export async function renderRolePage(role: PageRole) {
   const user = await requireUser();
   // A club admin is recognised the same way the menu recognises one
   const [base, adminClubs] = await Promise.all([getAudience(user.id), getAdminClubIds(user.id)]);
-  const audience = { ...base, admin: base.admin || adminClubs.length > 0 };
+  const audience = adminClubs.length > 0 ? asAdmin(base) : base;
   const page = ROLE_PAGES[role];
   if (!holdsRole(audience, role)) return <RoleNotHeld page={page} />;
 

@@ -1,4 +1,4 @@
-import { NAV_GROUPS, audienceLabel, buildAudience, menuFor } from '@/lib/nav/menu';
+import { NAV_GROUPS, asAdmin, asStaff, audienceLabel, buildAudience, menuFor } from '@/lib/nav/menu';
 import { PILLARS, pillarCounts, pillarSections } from '@/lib/nav/pillars';
 
 const hrefs = (a: Parameters<typeof menuFor>[0], o = {}) => menuFor(a, o).flatMap((g) => g.links.map((l) => l.href));
@@ -9,7 +9,7 @@ describe('menu by role', () => {
   it('lists every page once', () => {
     const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href));
     expect(new Set(all).size).toBe(all.length);
-    expect(all.length).toBe(47);
+    expect(all.length).toBe(56);
   });
 
   it('treats someone with no role as a player', () => {
@@ -21,10 +21,34 @@ describe('menu by role', () => {
     expect(aud(['parent'], { memberRoles: ['coach', 'member'] }).roles).toEqual(['coach', 'parent']);
   });
 
-  it('shows an admin everything, admin tools included', () => {
-    // Volunteering is parked, so its link is the one thing even an admin does not see
-    const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href)).filter((h) => h !== '/volunteer');
-    expect(hrefs(aud(['parent'], { admin: true }))).toEqual(all);
+  it('gives a club admin the club tools and nothing of the player side', () => {
+    const admin = aud([], { admin: true });
+    expect(admin.roles).toEqual([]);
+    expect(menuFor(admin).map((g) => g.key)).toEqual(['club']);
+    expect(hrefs(admin)).toContain('/admin/club/members');
+    expect(hrefs(admin)).not.toContain('/play');
+    expect(hrefs(admin)).not.toContain('/analyse');
+  });
+
+  it('gives a club admin who also plays both, with the club tools in their own group', () => {
+    const both = aud(['player'], { admin: true });
+    const keys = menuFor(both).map((g) => g.key);
+    expect(keys).toContain('technique');
+    expect(keys[keys.length - 1]).toBe('club');
+    expect(hrefs(both)).toContain('/play');
+    expect(hrefs(both)).toContain('/admin/club/members');
+  });
+
+  it('drops the default player when someone is found to be an admin another way', () => {
+    const base = aud([]);
+    expect(base.roles).toEqual(['player']);
+    expect(asAdmin(base).roles).toEqual([]);
+    expect(asAdmin(aud(['player'])).roles).toEqual(['player']);
+  });
+
+  it('shows ClubPulse staff both sides', () => {
+    const staff = asStaff(aud([]));
+    expect(menuFor(staff).map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'club']);
   });
 
   it('parks volunteering: nobody is shown the link', () => {
@@ -34,7 +58,7 @@ describe('menu by role', () => {
   it('keeps admin tools from everyone else', () => {
     for (const r of ['player', 'coach', 'parent', 'volunteer']) {
       expect(hrefs(aud([r]))).not.toContain('/admin/club/scout-mode');
-      expect(menuFor(aud([r])).map((g) => g.key)).not.toContain('tools');
+      expect(menuFor(aud([r])).map((g) => g.key)).not.toContain('club');
     }
   });
 
@@ -75,12 +99,13 @@ describe('menu by role', () => {
 
   it('labels the audience', () => {
     expect(audienceLabel(aud(['player', 'coach']))).toBe('Player · Coach');
-    expect(audienceLabel(aud(['parent'], { admin: true }))).toBe('Club admin');
+    expect(audienceLabel(aud([], { admin: true }))).toBe('Club admin');
+    expect(audienceLabel(aud(['player'], { admin: true }))).toBe('Club admin · Player');
     expect(audienceLabel(aud([], { junior: true }))).toBe('Junior player');
   });
 
   it('groups the menu by the four pillars, with rewards alongside', () => {
-    expect(NAV_GROUPS.map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'tools']);
+    expect(NAV_GROUPS.map((g) => g.key)).toEqual(['technique', 'community', 'wellness', 'academy', 'scores', 'club']);
     expect(PILLARS.map((p) => p.key)).toEqual(['technique', 'community', 'wellness', 'academy']);
   });
 
