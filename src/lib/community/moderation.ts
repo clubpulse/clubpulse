@@ -5,7 +5,8 @@
 //   2. An AI read of what is left, for what a word list cannot catch: bullying, hate, grooming,
 //      asking someone to move to another app, anything unsafe for under-18s.
 //
-// If the AI cannot be reached the text is held for ClubPulse to look at, not let through.
+// If the AI cannot be reached, or ANTHROPIC_API_KEY is not set, the text is held for ClubPulse to
+// look at, not let through. The Community fails closed.
 
 import { MODEL_FAST, extractText, getAnthropic, parseJsonObject } from '@/lib/ai/client';
 import { screenText, type CheckContext, type Verdict } from './rules';
@@ -31,7 +32,8 @@ Ordinary cricket talk is fine, including competitive banter about a team's perfo
 Reply with JSON only: {"allow": true} or {"allow": false, "reason": "<one short plain sentence to show the writer>"}`;
 
 async function askAi(text: string, context: CheckContext): Promise<Verdict | null> {
-  if (!process.env.ANTHROPIC_API_KEY) return { ok: true };   // not set up: the written rules stand alone
+  // No key means no AI read. That is treated like the AI being down: the text is held, never let through.
+  if (!process.env.ANTHROPIC_API_KEY) return null;
   try {
     const message = await getAnthropic().messages.create({
       model: MODEL_FAST,

@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/admin/users', label: 'Users', icon: '👥' },
   { href: '/admin/sessions', label: 'Sessions & Highlights', icon: '🎬' },
   { href: '/admin/rewards', label: 'Rewards', icon: '🪙' },
+  { href: '/admin/community/reports', label: 'Community reports', icon: '🛡️' },
   { href: '/admin/marketplace', label: 'Marketplace', icon: '🛍️' },
   { href: '/admin/challenges', label: 'Challenges', icon: '🏆' },
 ];

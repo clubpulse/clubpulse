@@ -61,3 +61,41 @@ export async function parentReportAction(childId: string, kind: string, targetId
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await parentReport(u.id, childId, { kind, targetId, reason }), 'Thank you. We will look at this.', '/parent/community');
 }
+
+// ── Feed ──
+import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
+import { requireAdmin } from '@/lib/auth/admin';
+import { resolveItem } from '@/lib/community/review';
+
+export async function postAction(body: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await createPost(u.id, body);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/community/feed');
+  return r.data.status === 'held' ? { success: false, error: r.data.tell ?? 'Not posted.', message: r.data.tell ?? undefined } : { success: true, message: 'Posted.' };
+}
+export async function likeAction(postId: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await toggleLike(u.id, postId), 'Done.', '/community/feed');
+}
+export async function commentAction(postId: string, body: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await addComment(u.id, postId, body);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/community/feed');
+  return r.data.status === 'held' ? { success: false, error: r.data.tell ?? 'Not posted.' } : { success: true, message: 'Replied.' };
+}
+export async function loadCommentsAction(postId: string) {
+  const u = await requireUser(); if (!communityOpen()) return [];
+  const r = await getComments(u.id, postId);
+  return r.success ? r.data : [];
+}
+export async function reportContentAction(kind: string, targetId: string, reason: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await report(u.id, { kind, targetId, reason }), 'Thank you. We will look at this.', '/community/feed');
+}
+export async function moderateAction(action: string, kind: string, targetId: string, reportId: string | null): Promise<R> {
+  const staff = await requireAdmin();
+  const r = await resolveItem(staff.id, { action, kind, targetId, reportId });
+  return done(r, 'Done.', '/admin/community/reports');
+}
