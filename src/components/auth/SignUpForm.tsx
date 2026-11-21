@@ -8,15 +8,19 @@ import { createClient } from '@/lib/supabase/client';
 import { completeSignup } from '@/app/auth/signup/actions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { VOLUNTEERS_ENABLED } from '@/lib/nav/menu';
 
 type Role = 'player' | 'volunteer' | 'parent' | 'coach';
 
-const ROLES: { value: Role; label: string; icon: string; desc: string }[] = [
+const ALL_ROLES: { value: Role; label: string; icon: string; desc: string }[] = [
   { value: 'player',    label: 'Player',    icon: '🏏', desc: 'I play cricket and want to earn Scores' },
   { value: 'volunteer', label: 'Volunteer', icon: '🙌', desc: 'I help run and support the game' },
   { value: 'parent',    label: 'Parent',    icon: '👨‍👧', desc: "I follow my child's progress" },
   { value: 'coach',     label: 'Coach',     icon: '🎯', desc: 'I coach a team or squad' },
 ];
+
+// Volunteering is parked for now (set NEXT_PUBLIC_VOLUNTEERS_ENABLED=true to bring it back)
+const ROLES = ALL_ROLES.filter((r) => r.value !== 'volunteer' || VOLUNTEERS_ENABLED);
 
 export function SignUpForm() {
   const router = useRouter();
