@@ -485,22 +485,88 @@ function OppositionDemo() {
 }
 
 /* ─── Simple list demo ────────────────────────────────── */
-function ListDemo({ items, note }: { items: Array<[string, string, string]>; note?: string }) {
+type ListItem = { icon: string; title: string; text: string; how: string[] };
+
+/** Click a feature to see what it does and how it works. */
+function ListDemo({ items, note }: { items: ListItem[]; note?: string }) {
+  const [open, setOpen] = useState(0);
+  const sel = items[open] ?? items[0];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {items.map(([icon, title, text]) => (
-        <div key={title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.03)' }}>
-          <span style={{ fontSize: 22 }} aria-hidden>{icon}</span>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5' }}>{title}</div>
-            <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'rgba(232,237,245,0.55)', marginTop: 2 }}>{text}</div>
-          </div>
+      {items.map((it, i) => {
+        const on = i === open;
+        return (
+          <div key={it.title} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <button
+            type="button"
+            onClick={() => setOpen(i)}
+            aria-pressed={on}
+            style={{
+              display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 14px', borderRadius: 12, textAlign: 'left',
+              border: `1px solid ${on ? 'rgba(96,165,250,0.5)' : 'rgba(255,255,255,0.07)'}`,
+              background: on ? 'rgba(37,99,235,0.12)' : 'rgba(255,255,255,0.03)',
+              cursor: 'pointer', font: 'inherit', color: 'inherit', width: '100%',
+            }}
+          >
+            <span style={{ fontSize: 22 }} aria-hidden><Glyph e={it.icon} /></span>
+            <span style={{ flex: 1 }}>
+              <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: '#E8EDF5' }}>{it.title}</span>
+              <span style={{ display: 'block', fontSize: 12.5, lineHeight: 1.5, color: 'rgba(232,237,245,0.55)', marginTop: 2 }}>{it.text}</span>
+            </span>
+            <span aria-hidden style={{ fontSize: 11, color: on ? '#60A5FA' : 'rgba(232,237,245,0.3)', marginTop: 4 }}>{on ? '▼' : '▶'}</span>
+          </button>
+          {on && (
+      <div key={sel.title} className="fp-demo-panel" style={{ marginTop: -2, background: '#04091A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 18 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+          How {sel.title} works
         </div>
-      ))}
+        <ol style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {sel.how.map((step, i) => (
+            <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <span style={{ width: 24, height: 24, borderRadius: 12, background: 'rgba(96,165,250,0.15)', color: '#60A5FA', fontSize: 12, fontWeight: 700, display: 'grid', placeItems: 'center', flexShrink: 0 }}>{i + 1}</span>
+              <span style={{ fontSize: 13.5, lineHeight: 1.55, color: '#E8EDF5' }}>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+          )}
+          </div>
+        );
+      })}
       {note && <p style={{ fontSize: 12, lineHeight: 1.5, color: 'rgba(232,237,245,0.45)', marginTop: 4 }}>{note}</p>}
     </div>
   );
 }
+
+const li = (icon: string, title: string, text: string, how: string[]): ListItem => ({ icon, title, text, how });
+
+const COACH_ITEMS = [
+  li('🏏','Batting','Stance, head position and follow-through from a short video',['Record a short clip of yourself batting in the nets.','Upload it in the app and choose batting.','The AI Coach marks your stance, head position and follow-through and tells you what to work on first.']),
+  li('🎳','Bowling','Action, front knee and foot position, with what to work on next',['Film a few deliveries from the side or behind.','Upload the clip and choose bowling.','You get notes on your action, front knee and foot position, plus one thing to practise next.']),
+  li('📋','Player report','A plain-English summary of your season so far',['Play your matches as normal; your scores and wickets are recorded.','Open your report whenever you like.','It sums up your form and strengths in plain English, with what to improve.']),
+  li('🎯','Ball tracking','Line and length from your own practice footage',['Film your bowling from behind the stumps.','Upload the footage.','See where the ball pitched so you can tighten your line and length.']),
+];
+const HUB_ITEMS = [
+  li('📌','Noticeboard','Post news and reminders your members actually see',['An admin writes a post: a fixture change, a working party or a reminder.','It is published to the club noticeboard.','Members see it in the app next time they open it.']),
+  li('📖','Club bible','Rules, contacts and how the club works in one place',['An admin adds the club rules, key contacts and how things run.','Members open the club bible from the app.','New joiners find the answers without asking the committee.']),
+  li('⚙️','Scores rules','Choose what earns Scores and how many',['Open Scores rules in the club admin area.','Choose what earns Scores, such as turning up, helping out or playing, and how many.','Members earn Scores automatically as it happens.']),
+  li('🎟️','Scratch cards','Reward turn-up and effort with a bit of fun',['Set up scratch cards for your club.','Hand them out for turn-up and effort.','Members scratch to reveal what they have earned.']),
+  li('🛡️','Coaches and safeguarding','Qualifications and checks, tracked and in date',['Add each coach with their qualifications and checks.','ClubPulse keeps them in one list with dates.','You can see at a glance what is in date and what needs renewing.']),
+];
+const WELLNESS_ITEMS = [
+  li('🫁','Breathing and focus','Short guided sessions with a breathing circle and a timer',['Choose a short breathing or focus session.','Follow the breathing circle on screen.','The timer ends the session and it counts towards your Run Chase.']),
+  li('🎯','Mind Nets','Six weeks: breathing, focus, routines, self-talk, imagery, pressure',['Start week one: breathing.','Each week adds a new mental skill: focus, routines, self-talk, imagery, then pressure.','By week six you have a toolkit you can use in a match.']),
+  li('✅','Match-day checklists','The night before, the morning, at the ground and between balls',['Open the checklist for where you are in the day.','Tick things off as you go: the night before, the morning, at the ground, between balls.','You walk out calm, with nothing forgotten.']),
+  li('🔁','My routine','Build your own pre-ball routine and keep it on your phone',['Pick the steps you want before each ball.','Put them in your order.','Keep the routine on your phone and practise it until it is automatic.']),
+  li('💬','Thought for the day','One short thought every day',['Open the app.','Read the day\'s thought.','Carry it into training or the match.']),
+];
+const ACADEMY_ITEMS = [
+  li('🎓','Lessons','Skills, the game, fitness and the wider game of cricket',['Pick a topic: skills, the game, fitness or the wider game.','Take a two-minute lesson.','Finish it and it counts towards your learning.']),
+  li('🗒️','Practice plan','A plan built around what you want to work on',['Tell the app what you want to work on.','It builds a plan around that.','Follow it session by session.']),
+  li('☝️','Daily question','One cricket question a day, right answers earn Scores',['Open today\'s question.','Choose your answer.','A right answer earns Scores.']),
+  li('🔨','Auction Room','Bid against the room and see where you finish',['Join the auction and see the player on offer.','Place your bid against the room.','At the end you see where you finished against everyone else.']),
+  li('🏅','Honours Board','108 badges for what you achieve, shareable without your name',['Play, learn and take part as normal.','Badges unlock as you hit milestones.','Share one on social media without your name on it.']),
+];
 
 /* ─── Demo map ─────────────────────────────────────────── */
 const DEMOS: Record<CategoryId, React.ReactNode> = {
@@ -512,10 +578,10 @@ const DEMOS: Record<CategoryId, React.ReactNode> = {
   engagement:  <EngagementDemo />,
   community:   <CommunityDemo />,
   rewards:     <RewardsDemo />,
-  coach:       <ListDemo items={[['🏏','Batting','Stance, head position and follow-through from a short video'],['🎳','Bowling','Action, front knee and foot position, with what to work on next'],['📋','Player report','A plain-English summary of your season so far'],['🎯','Ball tracking','Line and length from your own practice footage']]} />,
-  hub:         <ListDemo items={[['📌','Noticeboard','Post news and reminders your members actually see'],['📖','Club bible','Rules, contacts and how the club works in one place'],['⚙️','Scores rules','Choose what earns Scores and how many'],['🎟️','Scratch cards','Reward turn-up and effort with a bit of fun'],['🛡️','Coaches and safeguarding','Qualifications and checks, tracked and in date']]} />,
-  wellness:    <ListDemo items={[['🫁','Breathing and focus','Short guided sessions with a breathing circle and a timer'],['🎯','Mind Nets','Six weeks: breathing, focus, routines, self-talk, imagery, pressure'],['✅','Match-day checklists','The night before, the morning, at the ground and between balls'],['🔁','My routine','Build your own pre-ball routine and keep it on your phone'],['💬','Thought for the day','One short thought every day']]} note="What you do in Warm-Up stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
-  academy:     <ListDemo items={[['🎓','Lessons','Skills, the game, fitness and the wider game of cricket'],['🗒️','Practice plan','A plan built around what you want to work on'],['☝️','Daily question','One cricket question a day, right answers earn Scores'],['🔨','Auction Room','Bid against the room and see where you finish'],['🏅','Honours Board','108 badges for what you achieve, shareable without your name']]} />,
+  coach: <ListDemo items={COACH_ITEMS} />,
+  hub: <ListDemo items={HUB_ITEMS} />,
+  wellness: <ListDemo items={WELLNESS_ITEMS} note="What you do in Warm-Up stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
+  academy: <ListDemo items={ACADEMY_ITEMS} />,
 };
 
 // Override AI category's demo with opposition intel for a richer second panel
