@@ -10,8 +10,10 @@ export type Audience = {
   roles: Role[];
   /** A junior account: nothing that is for adults only. */
   junior: boolean;
-  /** Runs a club: sees everything, plus the admin tools. */
+  /** Runs a club: sees the club tools. The player side only if they also hold a player role. */
   admin: boolean;
+  /** True when no role was on record and `player` was filled in so nobody has an empty menu. */
+  defaulted?: boolean;
 };
 
 export type NavLink = {
@@ -115,12 +117,22 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    key: 'tools',
-    label: 'Admin tools',
-    icon: '🧰',
+    // The club's own tools, for the club admin only. Kept apart from the player menu above.
+    key: 'club',
+    label: 'Club',
+    icon: '🛡️',
     tint: '#F87171',
     adminOnly: true,
     links: [
+      { href: '/admin/club', label: 'Club admin', icon: '🛡️' },
+      { href: '/admin/club/members', label: 'Members', icon: '👥' },
+      { href: '/admin/club/availability', label: 'Availability', icon: '📅' },
+      { href: '/admin/club/noticeboard', label: 'Noticeboard', icon: '📌' },
+      { href: '/admin/club/scores-rules', label: 'Scores rules', icon: '⭐' },
+      { href: '/admin/club/scratch-cards', label: 'Scratch cards', icon: '🎟️' },
+      { href: '/admin/club/coaches', label: 'Coaches', icon: '🎓' },
+      { href: '/admin/club/safeguarding', label: 'Safeguarding', icon: '🧷' },
+      { href: '/admin/club/finance', label: 'Finance', icon: '💷' },
       { href: '/admin-query', label: 'Club Intelligence', icon: '🤖' },
       { href: '/admin/club/scout-mode', label: 'Scout Mode', icon: '🔍' },
       { href: '/admin/club/form-guide', label: 'Form Guide', icon: '📉' },
@@ -149,12 +161,36 @@ export function buildAudience(input: { userRoles: string[]; memberRoles: string[
     if ((ROLES as string[]).includes(r)) found.add(r as Role);
   }
   if (input.junior) found.add('player');
-  if (found.size === 0) found.add('player');
-  return { roles: ROLES.filter((r) => found.has(r)), junior: input.junior, admin: input.admin };
+  // Nobody gets an empty menu, except a club admin: they run the club, and are a player only if
+  // they hold the Player role as well.
+  const defaulted = found.size === 0 && !input.admin;
+  if (defaulted) found.add('player');
+  return { roles: ROLES.filter((r) => found.has(r)), junior: input.junior, admin: input.admin, ...(defaulted ? { defaulted: true } : {}) };
+}
+
+/**
+ * The same person once they are known to be a club admin by another route (the clubs table).
+ * If their roles were only the default player, that default is dropped: a club admin is a player
+ * only when they hold the Player role.
+ */
+export function asAdmin(audience: Audience): Audience {
+  if (audience.admin && !audience.defaulted) return audience;
+  return { ...audience, admin: true, roles: audience.defaulted ? [] : audience.roles, defaulted: false };
+}
+
+/** ClubPulse staff see both sides, so they can look after everyone. */
+export function asStaff(audience: Audience): Audience {
+  return { ...audience, admin: true, defaulted: false, roles: ROLES };
+}
+
+/** Whether the player side (The Nets, Pavilion, Warm-Up, Academy, Bonus Points) is theirs. */
+export function playsCricket(audience: Audience): boolean {
+  return audience.roles.length > 0;
 }
 
 export function canSee(link: NavLink, audience: Audience): boolean {
-  if (audience.admin) return true;
+  // The player side belongs to people who hold a player-side role, club admins included
+  if (!playsCricket(audience)) return false;
   if (link.adult && audience.junior) return false;
   return !link.for || link.for.some((r) => audience.roles.includes(r));
 }
@@ -170,7 +206,8 @@ export function menuFor(audience: Audience, options: { showSchool?: boolean } = 
         const after = links.map((l) => l.section).lastIndexOf(SCHOOL_LINK.section) + 1;
         links = [...links.slice(0, after), SCHOOL_LINK, ...links.slice(after)];
       }
-      return { ...g, links: links.filter((l) => !PARKED.includes(l.href) && canSee(l, audience)) };
+      // The club group is the admin's own; every other group is the player side
+      return { ...g, links: links.filter((l) => !PARKED.includes(l.href) && (g.adminOnly ? audience.admin : canSee(l, audience))) };
     })
     .filter((g) => g.links.length > 0);
 }
@@ -179,7 +216,8 @@ const ROLE_LABEL: Record<Role, string> = { player: 'Player', coach: 'Coach', par
 
 /** A short line saying who the menu is set up for, e.g. "Player · Coach". */
 export function audienceLabel(audience: Audience): string {
-  if (audience.admin) return 'Club admin';
+  const roles = audience.roles.map((r) => ROLE_LABEL[r]);
+  if (audience.admin) return ['Club admin', ...roles].join(' · ');
   if (audience.junior) return 'Junior player';
-  return audience.roles.map((r) => ROLE_LABEL[r]).join(' · ');
+  return roles.join(' · ');
 }

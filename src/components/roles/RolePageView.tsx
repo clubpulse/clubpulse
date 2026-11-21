@@ -8,6 +8,7 @@ import type { CSSProperties } from 'react';
 import { MagicCard } from '@/components/magic/MagicCard';
 import { NumberTicker } from '@/components/magic/NumberTicker';
 import { RememberRole } from '@/components/roles/RememberRole';
+import { AddPlayerSide } from '@/components/roles/AddPlayerSide';
 import type { RolePage, RoleTool } from '@/lib/nav/role-pages';
 import type { RoleData } from '@/lib/roles/data';
 
@@ -128,6 +129,9 @@ export function RolePageView({ page, pages, name, data, tools, home = false }: P
           )}
         </MagicCard>
       </section>
+
+      {/* A club admin who is not yet a player can add that side */}
+      {page.role === 'admin' && !pages.some((p) => p.role === 'player') && <AddPlayerSide />}
 
       {/* Tools */}
       <section aria-label={`${page.title} tools`}>

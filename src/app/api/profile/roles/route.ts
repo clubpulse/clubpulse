@@ -58,9 +58,13 @@ export async function GET(req: NextRequest) {
   const juniorLinks = links.error ? [] : (links.data ?? []);
 
   // club_admin is only ever granted through club_members, never self-assigned
-  const held = new Set<AppRole>(['player']);
+  // Everyone is a player unless they run the club: a club admin is a player only when they hold the
+  // Player role as well (user_roles), so the club side and the player side stay apart.
+  const isClubAdmin = members.some((m) => m.role === 'club_admin' || m.role === 'admin');
+  const held = new Set<AppRole>(isClubAdmin ? [] : ['player']);
   for (const row of userRoles.data ?? []) if (isAppRole(row.role) && row.role !== 'club_admin') held.add(row.role);
   for (const row of members) if (isAppRole(row.role)) held.add(row.role);
+  if (isClubAdmin) held.add('club_admin');
   if (juniorLinks.length > 0) held.add('parent');
 
   const roles = APP_ROLES.filter((role) => held.has(role)).map((role) => ({
@@ -108,4 +112,22 @@ export async function GET(req: NextRequest) {
   // Unverified parent links and unapproved coaches, for club admins; empty for everyone else
   const approvalQueue = held.has('club_admin') ? await listApprovals(user.id) : [];
   return NextResponse.json({ roles, club, juniors, approvalQueue });
+}
+
+
+// POST /api/profile/roles { role: 'player' } → adds the Player role for the person signed in.
+// A club admin is a player only when they hold this role, so this is how an admin who also plays
+// gets the player side next to the club side. Player is the only role anyone may give themselves.
+export async function POST(req: NextRequest) {
+  const { user } = await getRequestAuth(req);
+  if (!user) return unauthorized();
+  const body = await req.json().catch(() => null) as { role?: unknown } | null;
+  if (body?.role !== 'player') return NextResponse.json({ error: 'Only the Player role can be added here' }, { status: 400 });
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin.from('user_roles').select('role').eq('user_id', user.id);
+  if ((existing ?? []).some((r) => r.role === 'player')) return NextResponse.json({ ok: true });
+  const { error } = await admin.from('user_roles').insert({ user_id: user.id, role: 'player', is_primary: (existing ?? []).length === 0 });
+  if (error) return NextResponse.json({ error: 'Could not add the Player role' }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }

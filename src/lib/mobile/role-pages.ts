@@ -4,6 +4,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getAudience } from '@/lib/nav/audience';
+import { asAdmin } from '@/lib/nav/menu';
 import { ROLE_PAGES, holdsRole, rolePagesFor, type PageRole } from '@/lib/nav/role-pages';
 import { getAdminClubIds, listApprovals, listMemberShifts } from '@/lib/mobile/club-data';
 import { getHomeForUser, type MobileHome } from '@/lib/mobile/home';
@@ -162,7 +163,7 @@ const NOTHING: Body = { stats: [], next: null, listTitle: '', rows: [], empty: '
 
 export async function getRolePageForUser(userId: string, role: PageRole): Promise<MobileRolePage> {
   const [base, adminClubs] = await Promise.all([getAudience(userId), getAdminClubIds(userId)]);
-  const audience = { ...base, admin: base.admin || adminClubs.length > 0 };
+  const audience = adminClubs.length > 0 ? asAdmin(base) : base;
   const pages = rolePagesFor(audience).map((p) => p.role);
   const held = holdsRole(audience, role) && role in LOADERS && !!ROLE_PAGES[role];
   return { role, held, pages, ...(held ? await LOADERS[role](userId) : NOTHING) };
