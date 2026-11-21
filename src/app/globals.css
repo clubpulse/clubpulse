@@ -145,8 +145,8 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
 .mu-beam::after { content: ''; position: absolute; aspect-ratio: 1; width: var(--mu-beam-size, 90px); background: linear-gradient(to left, var(--mu-from, #EFC84A), var(--mu-to, #60A5FA), transparent); offset-anchor: 90% 50%; offset-path: rect(0 auto auto 0 round var(--mu-beam-size, 90px)); animation: mu-beam var(--mu-beam-duration, 8s) linear infinite; }
 .mu-meteor { position: absolute; top: -10%; width: 2px; height: 2px; border-radius: 999px; background: #60A5FA; box-shadow: 0 0 0 1px rgba(255,255,255,0.08); transform: rotate(215deg); animation: mu-meteor linear infinite; pointer-events: none; }
 .mu-meteor::before { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 1px; background: linear-gradient(90deg, #60A5FA, transparent); }
-.mu-bento { display: grid; gap: 16px; grid-template-columns: repeat(6, 1fr); grid-auto-rows: minmax(250px, auto); }
-.mu-bento-card { position: relative; overflow: hidden; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7,16,43,0.8); transition: transform .25s, border-color .25s; }
+.mu-bento { display: grid; gap: 16px; grid-template-columns: repeat(6, 1fr); grid-auto-rows: auto; }
+.mu-bento-card { position: relative; overflow: hidden; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; justify-content: flex-start; gap: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7,16,43,0.8); transition: transform .25s, border-color .25s; }
 .mu-bento-card:hover { transform: translateY(-3px); }
 .mu-float { animation: mu-float 6s ease-in-out infinite; }
 @media (max-width: 900px) { .mu-bento { grid-template-columns: 1fr 1fr; } .mu-bento-card { grid-column: span 2 !important; grid-row: auto !important; } }

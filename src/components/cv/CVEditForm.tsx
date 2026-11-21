@@ -167,7 +167,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
             <Input
               value={profile.display_name ?? ''}
               onChange={(e) => handleProfileChange('display_name', e.target.value)}
-              placeholder="Ishwar Suresh"
+              placeholder="Sam Taylor"
             />
           </Field>
           <Field label="Tagline">

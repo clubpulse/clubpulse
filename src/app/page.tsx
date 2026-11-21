@@ -473,7 +473,9 @@ export default function HomePage() {
           font-size:11px;font-weight:700;letter-spacing:0.1em;
           text-transform:uppercase;color:var(--red);margin-bottom:12px;
         }
+        .cp-feat-wide-grid { display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center; }
         .cp-section-h2 {
+          line-height:1.12;
           font-family:'Bricolage Grotesque',sans-serif;
           font-size:clamp(30px,4vw,46px);font-weight:800;
           letter-spacing:-0.03em;color:var(--fg);margin-bottom:8px;
@@ -502,8 +504,11 @@ export default function HomePage() {
         .cp-feat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:48px; }
         .cp-feat-card {
           background:var(--bg2);padding:36px;text-decoration:none;
-          transition:background 0.15s;position:relative;overflow:hidden;
+          transition:background 0.15s;position:relative;overflow:hidden;display:flex;flex-direction:column;
         }
+        .cp-feat-card > .cp-feat-card-bullets { margin-bottom:18px; }
+        .cp-feat-card > .cp-feat-card-link { margin-top:auto;align-self:flex-start; }
+        .cp-feat-card-tag { align-self:flex-start; }
         .cp-feat-card:hover { background:#07102B; }
         .cp-feat-card-icon { font-size:28px;margin-bottom:16px; }
         .cp-feat-card-tag {
@@ -517,8 +522,8 @@ export default function HomePage() {
         .cp-feat-card-body { font-size:13.5px;color:var(--fg2);line-height:1.65;margin-bottom:18px; }
         .cp-feat-card-link { font-size:13px;font-weight:600;color:var(--red);text-decoration:none;display:inline-flex;align-items:center;gap:6px; }
         .cp-feat-card-bullets { display:flex;flex-direction:column;gap:7px;margin-bottom:18px; }
-        .cp-feat-card-bullet { display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--fg2); }
-        .cp-feat-card-bullet::before { content:'→';color:var(--red);flex-shrink:0;margin-top:1px; }
+        .cp-feat-card-bullet { position:relative;padding-left:22px;font-size:13px;line-height:1.55;color:var(--fg2); }
+        .cp-feat-card-bullet::before { content:'→';color:var(--red);position:absolute;left:0;top:0; }
         .cp-feat-card-bullet strong { color:var(--fg); }
         /* Wide card spans 2 cols */
         .cp-feat-card-wide { grid-column:span 2; }
@@ -577,7 +582,8 @@ export default function HomePage() {
         }
 
         .cp-pricing-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden; }
-        .cp-price-card { background:var(--bg2);padding:36px;position:relative; }
+        .cp-price-card { background:var(--bg2);padding:36px;position:relative;display:flex;flex-direction:column; }
+        .cp-price-card .cp-price-features { flex:1; }
         .cp-price-card.featured {
           background:#07102B;
           outline:1px solid rgba(37,99,235,0.55);
@@ -594,9 +600,9 @@ export default function HomePage() {
         .cp-price-period { font-size:12px;color:var(--fg3);margin-top:4px;margin-bottom:20px; }
         .cp-price-desc { font-size:14px;color:var(--fg2);line-height:1.6;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border); }
         .cp-price-features { display:flex;flex-direction:column;gap:9px;margin-bottom:28px; }
-        .cp-price-feature { display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--fg2); }
-        .cp-price-feature-icon { color:var(--green);flex-shrink:0;margin-top:1px; }
-        .cp-price-feature-x { color:rgba(240,236,228,0.2);flex-shrink:0;margin-top:1px; }
+        .cp-price-feature { position:relative;padding-left:22px;font-size:13px;line-height:1.5;color:var(--fg2); }
+        .cp-price-feature-icon { color:var(--green);position:absolute;left:0;top:0; }
+        .cp-price-feature-x { color:rgba(240,236,228,0.2);position:absolute;left:0;top:0; }
         .cp-price-feature strong { color:var(--fg); }
         .cp-price-feature.dimmed { opacity:0.38; }
         .cp-price-cta {
@@ -676,12 +682,17 @@ export default function HomePage() {
           .cp-feat-grid { grid-template-columns:1fr; }
           .cp-feat-card-wide { grid-column:span 1; }
           .cp-persona-panel { grid-template-columns:1fr; }
-          .cp-pricing-grid { grid-template-columns:1fr; }
+          .cp-pricing-grid { grid-template-columns:repeat(2,1fr) !important; }
+          .cp-feat-wide-grid { grid-template-columns:1fr;gap:28px; }
           .cp-cta-band-inner { flex-direction:column;text-align:center; }
           .cp-pricing-toggle { width:100%; }
           .cp-pricing-toggle-btn { flex:1; }
         }
         @media (max-width:600px) {
+          .cp-pricing-grid { grid-template-columns:1fr !important; }
+          .cp-feat-card { padding:28px 22px; }
+          .cp-hero-stats { display:grid;grid-template-columns:1fr 1fr;border-top:none; }
+          .cp-hero-stat { border-right:none !important;margin-right:0 !important;padding:14px 0 !important;border-top:1px solid var(--border); }
           .cp-nav-inner { padding:0 16px; }
           .cp-hero,.cp-how,.cp-features-inner,.cp-personas,.cp-pricing-inner,
           .cp-quote,.cp-cta-band-inner,.cp-footer-inner {
@@ -982,7 +993,7 @@ export default function HomePage() {
             <div className="cp-feat-grid">
               {/* Availability — wide */}
               <div className="cp-feat-card cp-feat-card-wide" style={{borderBottom:'1px solid var(--border)'}}>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'40px',alignItems:'center'}}>
+                <div className="cp-feat-wide-grid">
                   <div>
                     <div className="cp-feat-card-icon"><Glyph e="📅" /></div>
                     <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>

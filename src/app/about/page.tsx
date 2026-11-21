@@ -22,10 +22,10 @@ export default function AboutPage() {
         .cp-menu { display: flex; align-items: center; gap: 24px }
         .cp-menu a { font-size: 14px; font-weight: 500; color: #fff; text-decoration: none; opacity: 0.55; transition: opacity 0.15s }
         .cp-menu a:hover, .cp-menu a.active { opacity: 1 }
-        @media(max-width: 767px) { .cp-menu { display: none } }
+        @media(max-width: 767px) { .cp-menu { display: none } .cp-signin { padding: 9px 10px } .cp-cta-sm { padding: 9px 14px } }
         .cp-nav-ctas { display: flex; align-items: center; gap: 8px }
-        .cp-signin { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
-        .cp-cta-sm { padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
+        .cp-signin { white-space: nowrap; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(240,236,228,0.5); text-decoration: none }
+        .cp-cta-sm { white-space: nowrap; padding: 9px 20px; border-radius: 8px; background: #1D4ED8; font-size: 14px; font-weight: 600; color: #fff; text-decoration: none }
 
         /* Page */
         .about-hero { max-width: 780px; margin: 0 auto; padding: 80px 32px 64px; text-align: center }
@@ -70,7 +70,7 @@ export default function AboutPage() {
 
         /* CTA */
         .cta-section { background: #07102B; border-top: 1px solid rgba(255,255,255,0.05); padding: 80px 32px; text-align: center }
-        .cta-h { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; color: #f0ece4; letter-spacing: -0.025em; margin-bottom: 14px }
+        .cta-h { line-height: 1.15; font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; color: #f0ece4; letter-spacing: -0.025em; margin-bottom: 14px }
         .cta-sub { font-size: 16px; color: rgba(240,236,228,0.4); max-width: 480px; margin: 0 auto 32px }
         .cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap }
         .btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 14px 28px; background: #1D4ED8; color: #fff; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s }
@@ -108,17 +108,14 @@ export default function AboutPage() {
             <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
           </Link>
           <div className="cp-menu">
-            <Link href="/#availability">Availability</Link>
-            <Link href="/#scorecard">Scorecard</Link>
-            <Link href="/#ai-coach">AI Coach</Link>
-            <Link href="/#scores">Scores</Link>
-            <Link href="/#finance">Finance</Link>
+            <Link href="/features">Features</Link>
+            <Link href="/pricing">Pricing</Link>
             <Link href="/about" className="active">About</Link>
             <Link href="/contact">Contact</Link>
           </div>
           <div className="cp-nav-ctas">
-            <Link href="/login" className="cp-signin">Sign in</Link>
-            <Link href="/contact" className="cp-cta-sm">Get started</Link>
+            <Link href="/auth/sign-in" className="cp-signin">Sign in</Link>
+            <Link href="/auth/sign-up" className="cp-cta-sm">Get started</Link>
           </div>
         </nav>
       </header>
@@ -127,7 +124,8 @@ export default function AboutPage() {
       <section className="about-hero">
         <p className="section-tag">About ClubPulse</p>
         <h1 className="hero-h">Built by cricketers,<br />for every cricket club</h1>
-        <p className="hero-sub">One app for grassroots cricket: technique, community, mindset and learning for players, and the admin taken care of for clubs. <Link href="/our-story" style={{ color: '#EFC84A', textDecoration: 'none', fontWeight: 600 }}>Read our story →</Link></p>
+        <p className="hero-sub">One app for grassroots cricket: technique, community, mindset and learning for players, and the admin taken care of for clubs.</p>
+        <p style={{ marginTop: 14 }}><Link href="/our-story" style={{ color: '#EFC84A', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>Read our story →</Link></p>
       </section>
 
       {/* ── Values ── */}
@@ -172,7 +170,7 @@ export default function AboutPage() {
             <Link href="/about">About</Link>
             <Link href="/our-story">Our story</Link>
             <Link href="/contact">Contact</Link>
-            <Link href="/login">Sign in</Link>
+            <Link href="/auth/sign-in">Sign in</Link>
           </div>
         </div>
       </footer>

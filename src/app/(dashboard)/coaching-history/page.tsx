@@ -97,7 +97,7 @@ function StatBadge({ label, value, unit, color }: { label: string; value: number
 export default async function CoachingHistoryPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user) redirect('/auth/sign-in');
 
   const { data: rows } = await supabase
     .from('analysis_results')
