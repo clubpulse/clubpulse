@@ -90,6 +90,17 @@ export type Facts = {
   lessonPasses: string[];
   /** Days on which a practice plan was made. */
   plansMade: string[];
+  /**
+   * Whether Warm-Up tasks are offered. Off until the app build that has Warm-Up is out, so nobody
+   * on an older build is drawn a task they cannot do.
+   */
+  warmupOn: boolean;
+  /** Days on which a Warm-Up session was finished. Which session is not recorded. */
+  warmups: string[];
+  /** Days on which a week of the Mind Nets programme was finished. */
+  mindWeeks: string[];
+  /** Days on which a technique analysis was saved. */
+  analyses: string[];
   /** Signed up to volunteer, or marked present at training, since Monday. */
   clubActionThisWeek: boolean;
   /** Volunteer shifts actually turned up to this month. */
@@ -218,6 +229,9 @@ export function stepTarget(usual: number | null): number {
 const n = (value: number) => value.toLocaleString('en-GB');
 const count = (dates: readonly string[], test: (d: string) => boolean) => new Set(dates.filter(test)).size;
 
+/** Action Replay opens in the app's web view */
+const ANALYSE = '/web?path=%2Fanalyse&title=Action%20Replay&camera=1';
+
 function goal(key: string, kind: Kind, icon: string, title: string, detail: string, progress: number, target: number, route?: string): Goal {
   return { key, kind, icon, title, detail, progress: Math.max(0, Math.min(progress, target)), target, done: progress >= target, route };
 }
@@ -250,6 +264,8 @@ export function dailyPool(facts: Facts): Goal[] {
     goal('beat-yesterday', 'move', '📈', "Beat yesterday's steps", stepsYesterday >= 2_000 ? `You walked ${n(stepsYesterday)} yesterday. One more than that does it.` : `Yesterday was a quiet one, so ${n(toBeat)} steps does it.`, stepsToday, toBeat),
     // Learn
     goal('lesson', 'learn', '📘', 'Take an Academy lesson check', 'Read a lesson and answer its three questions. Any score counts.', facts.lessonAttempts.includes(today) ? 1 : 0, 1, '/academy'),
+    ...(facts.warmupOn ? [goal('warmup', 'learn', '🧘', 'Do a Warm-Up session', 'Two minutes of breathing, focus or seeing your game in your head.', facts.warmups.includes(today) ? 1 : 0, 1, '/(tabs)/wellness')] : []),
+    goal('replay', 'learn', '🎥', 'Analyse a shot or a delivery', 'Film one in Action Replay and see what changed since last time.', facts.analyses.includes(today) ? 1 : 0, 1, ANALYSE),
     goal('coach', 'learn', '💬', 'Ask Coach AI one thing', 'A drill, a tactic, or how to fix something in your game.', facts.coachAi.includes(today) ? 1 : 0, 1, '/(tabs)/companion'),
     // Play
     goal('auction', 'play', '🔨', "Finish today's auction", 'Any finishing place counts.', auctionToday ? 1 : 0, 1, '/auction-room'),
@@ -280,17 +296,20 @@ export function weeklyPool(facts: Facts): Goal[] {
     goal('quiz', 'learn', '🧩', 'Get 3 cricket questions right', 'From the daily question. Three right answers in the week.', facts.questions.filter((q) => inWeek(q.date) && q.correct).length, 3),
     goal('lessons', 'learn', '📚', 'Pass 2 Academy lessons', 'Two lessons you have not passed before.', facts.lessonPasses.filter(inWeek).length, 2, '/academy'),
     goal('coach-days', 'learn', '💬', 'Ask Coach AI on 3 days', 'Three different days. Bring a real question each time.', count(facts.coachAi, inWeek), 3, '/(tabs)/companion'),
+    ...(facts.warmupOn ? [goal('warmups', 'learn', '🧘', 'Warm up your mind on 3 days', 'Any Warm-Up session, on three different days.', count(facts.warmups, inWeek), 3, '/(tabs)/wellness')] : []),
+    goal('replays', 'learn', '🎥', 'Analyse your technique twice', 'Two saved analyses in Action Replay, to see what is changing.', facts.analyses.filter(inWeek).length, 2, ANALYSE),
     goal('plan', 'learn', '🗒️', 'Make a practice plan', 'Tell Coach AI what you want to improve and get a week of sessions.', facts.plansMade.filter(inWeek).length > 0 ? 1 : 0, 1, '/academy-plan'),
     // Play
     goal('podium', 'play', '🏆', 'Finish top three in an auction', 'One podium in the daily Auction Room.', weekAuctions.some((a) => a.place <= 3) ? 1 : 0, 1, '/auction-room'),
     goal('auctions', 'play', '🔨', 'Finish 4 auctions', 'Four of the week\'s daily auctions, any finishing place.', weekAuctions.length, 4, '/auction-room'),
     goal('auction-strong', 'play', '💪', `Score ${n(STRONG_AUCTION + 20)} team points in an auction`, 'Your best squad of the week.', Math.max(0, ...weekAuctions.map((a) => a.score)), STRONG_AUCTION + 20, '/auction-room'),
     // Club
-    goal('club', 'club', '🤝', 'Do one thing for your club', 'Sign up for a volunteer shift, or be marked present at training.', facts.clubActionThisWeek ? 1 : 0, 1, '/(tabs)/shifts'),
+    goal('club', 'club', '🤝', 'Turn up for your club', 'Be marked present at a training session this week.', facts.clubActionThisWeek ? 1 : 0, 1, '/(tabs)/club'),
     goal('checkins', 'club', '📍', 'Check in on 5 days', 'Showing up is half of it. Two days off allowed.', count(facts.checkins, inWeek), 5),
     // Grow
     goal('earn', 'grow', '⭐', 'Earn 100 Scores', 'From anything: steps, games, lessons, rewards, matches, your club.', facts.earnedThisWeek, 100),
     goal('active', 'grow', '📅', 'Be active on 5 days', 'A check-in, 5,000 steps or a finished auction makes a day active.', activeDays(facts, week), 5),
+    ...(facts.warmupOn ? [goal('mind-week', 'grow', '🎯', 'Finish a week of Mind Nets', 'This week\'s mental skill: the idea, the drill at nets and the daily practice.', facts.mindWeeks.filter(inWeek).length > 0 ? 1 : 0, 1, '/warmup/training')] : []),
     goal('dailies', 'grow', '✅', 'Claim the daily reward on 4 days', 'Any three daily tasks, four times this week.', dailyRewardDays, 4),
   ];
 }
@@ -313,17 +332,20 @@ export function monthlyPool(facts: Facts): Goal[] {
     // Learn
     goal('lessons', 'learn', '🎓', 'Pass 4 Academy lessons', 'Four lessons you have not passed before. One a week.', facts.lessonPasses.filter(inMonth).length, 4, '/academy'),
     goal('quiz', 'learn', '🧩', 'Get 12 cricket questions right', 'From the daily question, across the month.', facts.questions.filter((q) => inMonth(q.date) && q.correct).length, 12),
+    ...(facts.warmupOn ? [goal('warmups', 'learn', '🧘', 'Warm up your mind on 10 days', 'Any Warm-Up session. Little and often is how mental skills are built.', count(facts.warmups, inMonth), 10, '/(tabs)/wellness')] : []),
+    goal('replays', 'learn', '🎥', 'Analyse your technique 6 times', 'Enough saved analyses to see a trend.', facts.analyses.filter(inMonth).length, 6, ANALYSE),
     goal('coach-days', 'learn', '💬', 'Ask Coach AI on 8 days', 'Twice a week. Bring what you are working on.', count(facts.coachAi, inMonth), 8, '/(tabs)/companion'),
     // Play
     goal('win', 'play', '🥇', 'Win an auction', 'Finish first of the six franchises once this month.', monthAuctions.some((a) => a.place === 1) ? 1 : 0, 1, '/auction-room'),
     goal('podiums', 'play', '🏆', 'Finish top three in 4 auctions', 'About one podium a week.', monthAuctions.filter((a) => a.place <= 3).length, 4, '/auction-room'),
     goal('auctions', 'play', '🔨', 'Finish 12 auctions', 'Three a week, any finishing place.', monthAuctions.length, 12, '/auction-room'),
     // Club
-    goal('turnup', 'club', '🧤', 'Turn up for your club', 'Complete a volunteer shift, or attend 2 training sessions.', turnedUp, 2, '/(tabs)/shifts'),
+    goal('turnup', 'club', '🧤', 'Train with your club', 'Be marked present at 2 training sessions.', turnedUp, 2, '/(tabs)/club'),
     goal('redeem', 'club', '🎁', 'Spend Scores on a reward', 'Redeem something in the Marketplace. You earned it.', Math.min(facts.redemptionsThisMonth, 1), 1, '/(tabs)/marketplace'),
     goal('checkins', 'club', '📍', 'Check in on 15 days', 'Every other day gets you there.', count(facts.checkins, inMonth), 15),
     // Grow
     goal('active', 'grow', '🗓️', 'Be active on 18 days', 'Roughly four days a week.', activeDays(facts, month), 18),
+    ...(facts.warmupOn ? [goal('mind-weeks', 'grow', '🎯', 'Finish 2 weeks of Mind Nets', 'Two of the six mental skills, a week each.', facts.mindWeeks.filter(inMonth).length, 2, '/warmup/training')] : []),
     goal('weeklies', 'grow', '✅', 'Complete 10 weekly tasks', 'Claimed weekly tasks count. Two or three a week gets you there.', weeklyTasks, 10),
     goal('earn', 'grow', '⭐', 'Earn 500 Scores', 'From anything across the month.', facts.earnedThisMonth, 500),
   ];

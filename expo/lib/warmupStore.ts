@@ -1,6 +1,7 @@
 // What Warm-Up remembers, kept on this phone only: which weeks of Mind Nets are done, and the
-// player's own pre-ball routine. Neither says anything about how someone feels, and neither is
-// ever sent to ClubPulse.
+// player's own pre-ball routine. Neither says anything about how someone feels. The routine never
+// leaves the phone. When a week is ticked, the app also tells ClubPulse that a week was finished,
+// so it can count towards rewards.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

@@ -1,6 +1,8 @@
 // One Warm-Up item. A guided session plays its steps on a timer with a breathing circle; a read
-// shows its paragraphs and takeaways; a checklist can be ticked; tips are a short list. Nothing
-// here is saved or sent anywhere.
+// shows its paragraphs and takeaways; a checklist can be ticked; tips are a short list.
+//
+// Finishing a guided session, or a week of Mind Nets, counts towards the Run Chase tasks. For
+// that the app tells ClubPulse only that a session was done today, never which one.
 
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -10,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { itemById, type Guided, type Week } from '../../../lib/warmup';
 import { getDoneWeeks, setWeekDone } from '../../../lib/warmupStore';
 import { useReducedMotion } from '../../../components/Magic';
+import { api } from '../../../lib/api';
 import { colors, display, fonts, radius, spacing } from '../../../constants/theme';
 
 const PINK = '#F472B6';
@@ -65,7 +68,12 @@ function WeekView({ item }: { item: Week }) {
   const [done, setDone] = useState(false);
   useEffect(() => { getDoneWeeks().then((list) => setDone(list.includes(item.id))); }, [item.id]);
 
-  const toggle = async () => { const list = await setWeekDone(item.id, !done); setDone(list.includes(item.id)); };
+  const toggle = async () => {
+    const list = await setWeekDone(item.id, !done);
+    setDone(list.includes(item.id));
+    // Counts towards the weekly and monthly Run Chase tasks
+    if (!done) api('/api/rewards/activity', { method: 'POST', body: { kind: 'mind_week', week: item.week } }).catch(() => {});
+  };
   const openDaily = () => {
     if (item.daily.route) router.push(item.daily.route as never);
     else if (item.daily.id) router.push({ pathname: '/warmup/item/[id]', params: { id: item.daily.id } });
@@ -99,6 +107,7 @@ function WeekView({ item }: { item: Week }) {
         <Ionicons name={done ? 'checkmark-circle' : 'ellipse-outline'} size={24} color={done ? PINK : (colors.textMuted as string)} />
         <Text style={[styles.pointText, { color: colors.white, fontWeight: '700' }]}>{done ? `Week ${item.week} done` : `Mark week ${item.week} as done`}</Text>
       </Pressable>
+      <Text style={styles.earn}>⭐ Finishing a week counts towards your Run Chase tasks.</Text>
     </>
   );
 }
@@ -145,6 +154,11 @@ function Player({ item }: { item: Guided }) {
     return () => clearTimeout(timer);
   }, [running, left, index, item.steps]);
 
+  // A finished session counts towards today's Run Chase. Only "a session was done" is sent.
+  useEffect(() => {
+    if (finished) api('/api/rewards/activity', { method: 'POST', body: { kind: 'warmup' } }).catch(() => {});
+  }, [finished]);
+
   // The circle grows on the breath in and shrinks on the breath out, taking the whole step
   useEffect(() => {
     if (!running || reduced || !step.breathe || step.breathe === 'hold') return;
@@ -168,6 +182,7 @@ function Player({ item }: { item: Guided }) {
 
       <View style={styles.track}><View style={[styles.fill, { width: `${Math.min(100, (gone / total) * 100)}%` }]} /></View>
       <Text style={fonts.small}>{finished ? `${item.minutes} min session complete` : `Step ${index + 1} of ${item.steps.length}`}</Text>
+      {finished && <Text style={styles.earn}>⭐ Counted towards today's Run Chase.</Text>}
 
       <View style={styles.controls}>
         {finished ? (
@@ -202,6 +217,7 @@ const styles = StyleSheet.create({
   tip: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.navyLight, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg },
   tipNumber: { fontFamily: display.heavy, fontSize: 18, color: PINK, width: 22 },
   tick: { flexDirection: 'row', gap: spacing.md, alignItems: 'center', minHeight: 56, backgroundColor: colors.navyLight, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  earn: { fontSize: 13, fontWeight: '600', color: colors.gold, textAlign: 'center' },
   note: { fontSize: 12.5, color: colors.textSubtle, textAlign: 'center', marginTop: spacing.md },
   support: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, paddingHorizontal: spacing.lg, borderRadius: radius.lg, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(244,114,182,0.45)' },
   supportText: { fontSize: 14, fontWeight: '600', color: colors.white },

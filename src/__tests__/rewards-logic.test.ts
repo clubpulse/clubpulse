@@ -13,7 +13,7 @@ const VALUES: Values = {
 const TODAY = '2026-11-18';
 const empty = (over: Partial<Facts> = {}): Facts => ({
   today: TODAY, steps: [], checkins: [], auctions: [], coachAi: [], questions: [], lessonAttempts: [], lessonPasses: [],
-  plansMade: [], clubActionThisWeek: false, shiftsDoneThisMonth: 0, trainingsThisMonth: 0, earnedThisWeek: 0,
+  plansMade: [], warmupOn: true, warmups: [], mindWeeks: [], analyses: [], clubActionThisWeek: false, shiftsDoneThisMonth: 0, trainingsThisMonth: 0, earnedThisWeek: 0,
   earnedThisMonth: 0, redemptionsThisMonth: 0, claimed: [], ...over,
 });
 const day = (date: string, count: number, streak = 1) => ({ date, count, streak });
@@ -231,6 +231,7 @@ describe('weekly tasks', () => {
       auctions: ['16', '17', '18', '19'].map((d) => auction(`2026-11-${d}`, 1, 1500)),
       questions: ['16', '17', '18'].map((d) => ({ date: `2026-11-${d}`, correct: true })),
       coachAi: ['2026-11-16', '2026-11-17', '2026-11-18'], lessonPasses: ['2026-11-16', '2026-11-17'], plansMade: ['2026-11-16'],
+      warmups: ['2026-11-16', '2026-11-17', '2026-11-18'], analyses: ['2026-11-16', '2026-11-17'], mindWeeks: ['2026-11-17'],
       clubActionThisWeek: true, earnedThisWeek: 300,
       claimed: ['16', '17', '18', '19'].map((d) => ({ source: SOURCES.daily, reference: `2026-11-${d}`, date: `2026-11-${d}` })),
     });
@@ -295,5 +296,37 @@ describe('daily question', () => {
       expect([0, 1, 2]).toContain(question.answer);
     });
     expect(new Set(QUIZ_BANK.map((question) => question.q)).size).toBe(QUIZ_BANK.length);
+  });
+});
+
+describe('rewards for the pillars', () => {
+  const pool = (list: Goal[], key: string) => list.find((g) => g.key === key)!;
+
+  it('counts a Warm-Up session and an analysis towards today', () => {
+    const none = dailyPool(empty());
+    expect(pool(none, 'warmup').done).toBe(false);
+    expect(pool(none, 'replay').done).toBe(false);
+    const done = dailyPool(empty({ warmups: [TODAY], analyses: [TODAY] }));
+    expect(pool(done, 'warmup')).toMatchObject({ done: true, kind: 'learn', route: '/(tabs)/wellness' });
+    expect(pool(done, 'replay').done).toBe(true);
+  });
+  it('counts Warm-Up days, analyses and a Mind Nets week across the week', () => {
+    const week = weeklyPool(empty({ warmups: ['2026-11-16', '2026-11-17'], analyses: ['2026-11-16', '2026-11-16'], mindWeeks: ['2026-11-17'] }));
+    expect(pool(week, 'warmups')).toMatchObject({ progress: 2, target: 3, done: false });
+    expect(pool(week, 'replays').done).toBe(true);
+    expect(pool(week, 'mind-week')).toMatchObject({ done: true, kind: 'grow' });
+  });
+  it('does not count last week towards this week', () => {
+    const week = weeklyPool(empty({ warmups: ['2026-11-10', '2026-11-11', '2026-11-12'], mindWeeks: ['2026-11-12'] }));
+    expect(pool(week, 'warmups').progress).toBe(0);
+    expect(pool(week, 'mind-week').done).toBe(false);
+  });
+  it('offers no Warm-Up task until Warm-Up rewards are switched on', () => {
+    const keys = [...dailyPool(empty({ warmupOn: false })), ...weeklyPool(empty({ warmupOn: false })), ...monthlyPool(empty({ warmupOn: false }))].map((g) => g.key);
+    for (const k of ['warmup', 'warmups', 'mind-week', 'mind-weeks']) expect(keys).not.toContain(k);
+    expect(keys).toContain('replay');
+  });
+  it('no longer sends anyone to the parked volunteer screens', () => {
+    for (const g of [...weeklyPool(empty()), ...monthlyPool(empty())]) expect(g.route ?? '').not.toContain('shifts');
   });
 });
