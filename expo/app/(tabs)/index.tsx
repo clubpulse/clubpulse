@@ -18,7 +18,6 @@ import { ROLE_CONFIG, pendingRoles } from '../../lib/roles';
 import { menuFor, type MenuGroup } from '../../lib/menu';
 import { isPageRole, rolePagesFor, type PageRole } from '../../lib/rolePages';
 import { RoleDashboard, useRolePage } from '../../components/RoleDashboard';
-import { DailyThought } from '../../components/DailyThought';
 import { UpsellBanner } from '../../components/UpsellBanner';
 import { DEALS_ENABLED, STORE_ENABLED, VOLUNTEERS_ENABLED } from '../../constants/features';
 import { colors, display, fonts, radius, spacing } from '../../constants/theme';
@@ -204,8 +203,6 @@ export default function HomeScreen() {
             <Ionicons name="person" size={17} color={colors.white} />
           </Pressable>
         </View>
-
-        <DailyThought />
 
         {/* ── The dashboard for the role this person is using ── */}
         {rolesLoading && !role ? (
