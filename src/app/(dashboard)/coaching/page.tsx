@@ -7,6 +7,7 @@ import { COACHING_TYPE_CONFIG, type CoachingType } from '@/lib/types/coaching';
 import { CoachingCard } from '@/components/coaching/CoachingCard';
 import { CreateListingForm } from '@/components/coaching/CreateListingForm';
 import { CoachDashboard } from '@/components/coaching/CoachDashboard';
+import { PlayersProgress } from '@/components/coaching/PlayersProgress';
 import { formatScores } from '@/lib/utils/format';
 
 export const dynamic = 'force-dynamic';
@@ -228,7 +229,10 @@ export default async function CoachingPage({
 
       {/* Coach Dashboard tab */}
       {activeTab === 'coach' && (
-        <CoachDashboard bookings={coachingBookings} totalScoresEarned={totalScoresEarned} />
+        <>
+          <CoachDashboard bookings={coachingBookings} totalScoresEarned={totalScoresEarned} />
+          <PlayersProgress />
+        </>
       )}
     </div>
   );

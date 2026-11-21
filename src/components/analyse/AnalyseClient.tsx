@@ -17,7 +17,8 @@ import {
   overallScore, segmentScore,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
-import { compareAnalyses, type Comparison, type SavedAnalysis } from '@/lib/analysis/compare';
+import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
+import { ComparisonPanel } from '@/components/analyse/ComparisonPanel';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
@@ -305,7 +306,7 @@ export function AnalyseClient() {
   const historyRef = useRef(new Map<string, PastAnalysis[]>());
   const groupRef = useRef(0);
   const compareSeq = useRef(0);
-  const [compare, setCompare] = useState<{ state: 'idle' | 'loading' | 'ready'; data?: Comparison | null }>({ state: 'idle' });
+  const [compare, setCompare] = useState<{ state: 'idle' | 'loading' | 'ready'; data?: Comparison | null; trend?: Trend | null }>({ state: 'idle' });
   // Which analysed frame of an uploaded clip is on screen, and how many there are, for stepping through
   const [frameAt, setFrameAt] = useState<{ index: number | null; total: number; key: number } | null>(null);
 
@@ -354,67 +355,82 @@ export function AnalyseClient() {
   ) => {
     const { mode: m, hand: hd, view: vw } = settingsRef.current;
 
-    // Compare with the last analysis of the same kind. A new recording starts a new group, so the
+    // Compare with earlier analyses of the same kind. A new recording starts a new group, so the
     // shots of one session are compared with earlier sessions and never with each other.
     if (save) groupRef.current += 1;
     const recording = groupRef.current;
     const kind = `${m}|${vw}|${m === 'batting' ? shot ?? '' : ''}`;
     const seq = ++compareSeq.current;
-    const showComparison = (list: PastAnalysis[]) => {
-      if (seq !== compareSeq.current) return;
-      const previous = list.find((r) => !r.token.startsWith(`${recording}:`));
-      setCompare({ state: 'ready', data: previous ? compareAnalyses({ overall: overallScore(analysis.metrics), metrics: analysis.metrics }, previous) : null });
-    };
-    const known = historyRef.current.get(kind);
-    if (known) showComparison(known);
-    else {
-      setCompare({ state: 'loading' });
-      fetch(`/api/analysis/history?mode=${m}&view=${vw}&shot=${m === 'batting' ? shot ?? '' : ''}`)
-        .then((r) => (r.ok ? r.json() : { results: [] }))
-        .then((d: { results?: SavedAnalysis[] }) => {
-          const fetched = (d.results ?? []).map((r, i) => ({ ...r, token: `saved:${i}` }));
-          const merged = [...(historyRef.current.get(kind) ?? []), ...fetched];
-          historyRef.current.set(kind, merged);
-          showComparison(merged);
-        })
-        .catch(() => { if (seq === compareSeq.current) setCompare({ state: 'idle' }); });
-    }
-
-    const cached = cacheKey !== null ? coachCache.current.get(cacheKey) : undefined;
-    if (cached) {
-      setCoaching({ state: 'ready', text: cached });
-      return;
-    }
     const overall = overallScore(analysis.metrics);
+    const now = { overall, metrics: analysis.metrics };
     const resultJson = {
       mode: m, hand: hd, view: vw, shotType: shot, frameCount: frames, overall,
       elbowCheck: analysis.elbow ?? null, unique: analysis.unique,
       metrics: analysis.metrics.map((mk) => ({ key: mk.key, label: mk.label, value: mk.value, score: mk.score, excused: mk.excused ?? false })),
       ...extra,
     };
-    setCoaching({ state: 'loading' });
-    fetch('/api/analysis/coaching-read', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ pose: true, mode: m, hand: hd, view: vw, unique: analysis.unique, shotType: shot, metrics: resultJson.metrics.filter((mk) => !mk.excused), overall }),
-    })
-      .then((r) => r.ok ? r.json() : null)
-      .then((coachData: { paragraph?: string } | null) => {
-        if (coachData?.paragraph && cacheKey !== null) coachCache.current.set(cacheKey, coachData.paragraph);
-        setCoaching(coachData?.paragraph ? { state: 'ready', text: coachData.paragraph } : { state: 'idle' });
-        if (!save) return;
-        // Remembered for the rest of this visit, so the next recording is compared with this one
-        historyRef.current.set(kind, [
-          { mode: m, view: vw, shotType: shot ?? null, overall, metrics: resultJson.metrics, createdAt: new Date().toISOString(), token: `${recording}:${cacheKey}` },
-          ...(historyRef.current.get(kind) ?? []),
-        ]);
-        fetch('/api/analysis/save-result', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ analysis_type: 'pose', result_json: resultJson, coaching_paragraph: coachData?.paragraph ?? null }),
-        }).catch(() => {/* silent */});
+
+    // Asks for the written feedback, telling Coach AI what changed since last time
+    const write = (earlier: PastAnalysis[]) => {
+      const cached = cacheKey !== null ? coachCache.current.get(cacheKey) : undefined;
+      if (cached) {
+        setCoaching({ state: 'ready', text: cached });
+        return;
+      }
+      const previous = earlier[0];
+      setCoaching({ state: 'loading' });
+      fetch('/api/analysis/coaching-read', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          pose: true, mode: m, hand: hd, view: vw, unique: analysis.unique, shotType: shot, metrics: resultJson.metrics.filter((mk) => !mk.excused), overall,
+          previous: previous ? { overall: previous.overall, metrics: previous.metrics.filter((p) => !p.excused).map((p) => ({ key: p.key, score: p.score })) } : undefined,
+          trend: earlier.length >= 2 ? [...earlier].reverse().map((p) => p.overall) : undefined,
+        }),
       })
-      .catch(() => setCoaching({ state: 'idle' }));
+        .then((r) => r.ok ? r.json() : null)
+        .then((coachData: { paragraph?: string } | null) => {
+          if (coachData?.paragraph && cacheKey !== null) coachCache.current.set(cacheKey, coachData.paragraph);
+          if (seq === compareSeq.current) setCoaching(coachData?.paragraph ? { state: 'ready', text: coachData.paragraph } : { state: 'idle' });
+          if (!save) return;
+          // Remembered for the rest of this visit, so the next recording is compared with this one
+          historyRef.current.set(kind, [
+            { mode: m, view: vw, shotType: shot ?? null, overall, metrics: resultJson.metrics, createdAt: new Date().toISOString(), token: `${recording}:${cacheKey}` },
+            ...(historyRef.current.get(kind) ?? []),
+          ]);
+          fetch('/api/analysis/save-result', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ analysis_type: 'pose', result_json: resultJson, coaching_paragraph: coachData?.paragraph ?? null }),
+          }).catch(() => {/* silent */});
+        })
+        .catch(() => { if (seq === compareSeq.current) setCoaching({ state: 'idle' }); });
+    };
+
+    const show = (list: PastAnalysis[]) => {
+      // Everything from before this recording, newest first
+      const earlier = list.filter((r) => !r.token.startsWith(`${recording}:`)).slice(0, 4);
+      if (seq === compareSeq.current) {
+        setCompare({ state: 'ready', data: earlier[0] ? compareAnalyses(now, earlier[0]) : null, trend: trendOver(now, earlier) });
+      }
+      write(earlier);
+    };
+
+    const known = historyRef.current.get(kind);
+    if (known) show(known);
+    else {
+      setCompare({ state: 'loading' });
+      setCoaching({ state: 'loading' });
+      fetch(`/api/analysis/history?mode=${m}&view=${vw}&shot=${m === 'batting' ? shot ?? '' : ''}`)
+        .then((r) => (r.ok ? r.json() : { results: [] }))
+        .catch(() => ({ results: [] }))
+        .then((d: { results?: SavedAnalysis[] }) => {
+          const fetched = (d.results ?? []).map((r, i) => ({ ...r, token: `saved:${i}` }));
+          const merged = [...(historyRef.current.get(kind) ?? []), ...fetched];
+          historyRef.current.set(kind, merged);
+          show(merged);
+        });
+    }
   }, []);
 
   // Puts one shot of a session on screen: its marks, its figure, and the clip held on its key position
@@ -1433,41 +1449,7 @@ export function AnalyseClient() {
             </div>
           )}
 
-          {compare.state === 'ready' && (
-            <div className="mt-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(96,165,250,0.35)', background: 'rgba(96,165,250,0.06)' }}>
-              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: '#60A5FA' }}>
-                {compare.data ? `Compared with last time${compare.data.when ? ` · ${new Date(compare.data.when).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}` : 'Your first of this kind'}
-              </p>
-              {!compare.data ? (
-                <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
-                  This is the first one of this kind you have saved. Next time you will see what got better and what did not.
-                </p>
-              ) : (
-                <>
-                  <p className="mt-1.5 text-sm font-semibold text-white">{compare.data.headline}</p>
-                  {([
-                    ['What got better', compare.data.better, '#22C55E'],
-                    ['What did not get better', compare.data.worse, '#FBBF24'],
-                    ['About the same', compare.data.same, '#A3A3A3'],
-                  ] as const).map(([title, list, colour]) => list.length > 0 && (
-                    <div key={title} className="mt-3">
-                      <p className="text-xs font-semibold" style={{ color: colour }}>{title}</p>
-                      <ul className="mt-1 space-y-1.5">
-                        {list.map((c) => (
-                          <li key={c.key} className="text-sm leading-relaxed text-neutral-200">
-                            <span className="font-semibold text-white">{c.label}</span> ({c.before} to {c.now}): {c.text}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                  {compare.data.better.length + compare.data.worse.length + compare.data.same.length === 0 && (
-                    <p className="mt-1.5 text-sm text-neutral-300">The two clips did not share any measures to compare.</p>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          {compare.state === 'ready' && <ComparisonPanel comparison={compare.data ?? null} trend={compare.trend ?? null} />}
 
           <p className="mt-5 text-xs text-neutral-600">
             Scores are estimates from a single camera angle. 100 is only given for the textbook position itself; anything inside the
