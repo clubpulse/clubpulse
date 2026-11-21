@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { ukToday } from '@/lib/utils/uk-date';
 import { adminCreateScorecard } from '@/lib/actions/match-day';
 
 interface Props {
@@ -13,7 +14,7 @@ export function CreateMatchForm({ clubId }: Props) {
   const [isPending, startTransition] = useTransition();
   const [opposition, setOpposition] = useState('');
   const [venue, setVenue] = useState('');
-  const [matchDate, setMatchDate] = useState(new Date().toISOString().split('T')[0]);
+  const [matchDate, setMatchDate] = useState(ukToday());
   const [error, setError] = useState('');
 
   function handleSubmit(e: React.FormEvent) {

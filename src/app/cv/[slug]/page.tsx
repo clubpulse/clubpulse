@@ -1,4 +1,5 @@
 import { Glyph } from '@/components/icons/Glyph';
+import { APP_URL } from '@/lib/share-urls';
 import type { Metadata } from 'next';
 import { getPublicCV } from '@/lib/actions/cricket-cv';
 import { CricketCVCard } from '@/components/cv/CricketCVCard';
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: 'ClubPulse',
       images: [
         {
-          url: profile.avatar_url ?? 'https://clubpulse.app/og-default.png',
+          url: profile.avatar_url ?? `${APP_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: `${name}'s Cricket CV`,
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [profile.avatar_url ?? 'https://clubpulse.app/og-default.png'],
+      images: [profile.avatar_url ?? `${APP_URL}/og-default.png`],
     },
   };
 }
@@ -78,7 +79,7 @@ export default async function PublicCVPage({ params }: Props) {
             This Cricket CV is not public or doesn&apos;t exist. The player may have made it private, or the link may be incorrect.
           </p>
           <a
-            href="https://clubpulse.app"
+            href={APP_URL}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -123,7 +124,7 @@ export default async function PublicCVPage({ params }: Props) {
         }}
       >
         <a
-          href="https://clubpulse.app"
+          href={APP_URL}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -138,7 +139,7 @@ export default async function PublicCVPage({ params }: Props) {
           ClubPulse
         </a>
         <a
-          href="https://clubpulse.app/auth/sign-up"
+          href={`${APP_URL}/auth/sign-up`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',

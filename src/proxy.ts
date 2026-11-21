@@ -13,6 +13,8 @@ const PROTECTED_PATHS = [
 ];
 
 export async function proxy(request: NextRequest) {
+  // Lets requireUser() send logged-out visitors back to where they were headed.
+  request.headers.set("x-pathname", `${request.nextUrl.pathname}${request.nextUrl.search}`);
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
