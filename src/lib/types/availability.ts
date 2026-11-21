@@ -24,6 +24,8 @@ export type FixtureAvailability = {
 export type FixtureWithMyStatus = Fixture & {
   my_status: AvailabilityStatus;
   my_note: string | null;
+  /** Where the player stands in the XI: named, twelfth man, left out, or the team is not yet named. */
+  xi?: 'in' | 'twelfth' | 'out' | 'pending';
 };
 
 /** For the captain grid: fixture with a per-player breakdown */

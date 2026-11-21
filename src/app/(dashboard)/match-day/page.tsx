@@ -63,6 +63,11 @@ export default async function MatchDayPage() {
         }}>
           Match Day 🏏
         </h1>
+        {isAdmin && (
+          <Link href="/team-selection" style={{ fontSize: '13px', color: '#60A5FA', fontWeight: 600, textDecoration: 'none' }}>
+            Select the XI →
+          </Link>
+        )}
         <Link href="/scorecard" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', textDecoration: 'underline' }}>
           Upload a paper scorecard
         </Link>
