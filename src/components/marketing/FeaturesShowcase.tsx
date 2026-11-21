@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { Glyph } from '@/components/icons/Glyph';
-import FeaturesMenu from '@/components/marketing/FeaturesMenu';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { CATEGORIES, type CategoryId } from '@/lib/marketing/feature-categories';
 /**
  * Feature showcase for /features/players and /features/clubs.
@@ -450,7 +452,7 @@ function OppositionDemo() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 14, padding: '16px 20px' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Captain's Headline</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Captain&apos;s Headline</div>
         <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>Maidenhead are strong with the bat but their new-ball attack has leaked runs in 4 of their last 6 games. Put them in.</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -676,7 +678,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
 
         /* Main layout */
         .fp-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 200px); border-top: 1px solid var(--border); }
-        .fp-sidenav { position: sticky; top: 60px; align-self: start; height: calc(100vh - 60px); overflow-y: auto; border-right: 1px solid var(--border); padding: 24px 16px; }
+        .fp-sidenav { position: sticky; top: 64px; align-self: start; height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--border); padding: 24px 16px; }
         .fp-sidenav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; font-family: 'Inter',sans-serif; transition: all 0.12s; margin-bottom: 2px; }
         .fp-sidenav-item:hover { background: rgba(255,255,255,0.04); }
         .fp-sidenav-item.active { background: rgba(37,99,235,0.14); }
@@ -731,17 +733,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
         .fp-footer-btn-g { padding: 14px 24px; border: 1px solid var(--border); color: var(--fg2); font-size: 15px; text-decoration: none; border-radius: 11px; }
       `}</style>
 
-      {/* Top nav */}
-      <nav className="fp-topnav">
-        <a href="/" className="fp-logo"><span className="club">Club</span><span className="pulse">Pulse</span></a>
-        <div className="fp-topnav-links">
-          <FeaturesMenu active />
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/contact">Contact</a>
-        </div>
-        <a href="/auth/sign-up" className="fp-cta">Get started free →</a>
-      </nav>
+      <MarketingNav />
 
       {/* Hero */}
       <div className="fp-hero">
@@ -809,13 +801,14 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
 
       {/* Footer CTA */}
       <div className="fp-footer-cta">
-        <h2>Ready to run a smarter club?</h2>
-        <p>Join clubs across the UK who've replaced 5 different tools with ClubPulse.</p>
+        <h2>{audience === 'clubs' ? 'Want this for your club?' : 'Ready to join in?'}</h2>
+        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Free to join, whether or not your club is on ClubPulse yet.'}</p>
         <div className="fp-footer-btns">
-          <a href="/auth/sign-up" className="fp-footer-btn-p">Get started — it's free</a>
-          <a href="/" className="fp-footer-btn-g">Back to home</a>
+          <a href={audience === 'clubs' ? '/contact' : '/auth/sign-up'} className="fp-footer-btn-p">{audience === 'clubs' ? 'Tell us about your club' : 'Join as a player'}</a>
+          <Link href="/" className="fp-footer-btn-g">Back to home</Link>
         </div>
       </div>
+      <MarketingFooter />
     </div>
   );
 }

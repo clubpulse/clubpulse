@@ -2,6 +2,8 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export default function AICoachPage() {
   return (
@@ -133,27 +135,7 @@ export default function AICoachPage() {
       `}</style>
 
       <div className="ai-root">
-        <nav className="ai-nav">
-          <div className="ai-nav-inner">
-            <Link href="/" className="ai-logo"><span className="ai-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="aiNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#aiNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="ai-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <Link href="/#features" className="ai-nav-back">← All features</Link>
-            <Link href="/contact" className="ai-nav-cta">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
 
         <section className="ai-hero">
           <div>
@@ -163,7 +145,7 @@ export default function AICoachPage() {
             <p className="ai-sub">MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
             <div className="ai-btns">
               <Link href="/auth/sign-up" className="ai-btn-red">Get started free →</Link>
-              <Link href="/#features" className="ai-btn-ghost">See all features</Link>
+              <Link href="/features" className="ai-btn-ghost">See all features</Link>
             </div>
           </div>
 
@@ -323,33 +305,7 @@ export default function AICoachPage() {
           </div>
         </section>
 
-        <footer className="ai-footer">
-          <div className="ai-footer-inner">
-            <Link href="/" className="ai-logo"><span className="ai-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="aiFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#aiFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="ai-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <div className="ai-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
-            </div>
-            <p className="ai-footer-copy">© 2026 ClubPulse</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
   );

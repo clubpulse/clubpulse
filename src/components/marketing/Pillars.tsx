@@ -5,47 +5,49 @@ import { Glyph } from '@/components/icons/Glyph';
 // what is coming, so the page never promises more than the app does today.
 
 import { BentoCard, BentoGrid } from '@/components/magic';
+import { FOR_PLAYERS_HREF as FEATURES_PLAYERS } from '@/lib/marketing/routes';
 
-type Item = { text: string; soon?: boolean };
-type Pillar = { name: string; tag: string; colour: string; icon: string; line: string; items: Item[]; col: number };
+type Status = 'live' | 'app' | 'soon';
+type Item = { text: string; status: Status };
+type Pillar = { name: string; tag: string; colour: string; icon: string; line: string; items: Item[]; col: number; href: string };
 
+const STATUS_LABEL: Record<Status, string> = { live: 'Live now', app: 'In the app', soon: 'Coming soon' };
+const STATUS_COLOUR: Record<Status, string> = { live: '#4ADE80', app: '#60A5FA', soon: '#EFC84A' };
+
+// Every bullet carries a status, so the page never promises more than the product does today.
 const PILLARS: Pillar[] = [
   {
-    name: 'The Nets', tag: 'Technique', colour: '#FBBF24', icon: '🎥', col: 4,
+    name: 'Player Analysis', tag: 'Technique', colour: '#FBBF24', icon: '🎥', col: 4, href: FEATURES_PLAYERS,
     line: 'Film a shot or a delivery and see exactly what to work on.',
     items: [
-      { text: 'AI shot and bowling analysis from your phone video' },
-      { text: 'Compare with your previous attempts: what got better, what did not' },
-      { text: 'Coach AI that knows your progress' },
-      { text: 'Book a coach your club approves, who can follow your progress' },
+      { text: 'Video analysis of your batting and bowling', status: 'live' },
+      { text: 'Coach AI that knows your progress', status: 'live' },
+      { text: 'Your stats and a shareable Cricket CV', status: 'live' },
     ],
   },
   {
-    name: 'Pavilion', tag: 'Community', colour: '#60A5FA', icon: '🤝', col: 2,
-    line: 'A social network for cricketers: find players and clubs near you.',
+    name: 'Community', tag: 'Connection', colour: '#60A5FA', icon: '🤝', col: 2, href: FEATURES_PLAYERS,
+    line: 'A social network for cricketers: find players, clubs and games near you.',
     items: [
-      { text: 'Club feed with photos and video' },
-      { text: 'Find people by miles, club, league or county' },
-      { text: 'Every post checked before it appears' },
+      { text: 'Club noticeboard and dressing room, inside your club', status: 'live' },
+      { text: 'Feeds, connections, and finding players and clubs nearby', status: 'soon' },
     ],
   },
   {
-    name: 'Warm-Up', tag: 'Wellness', colour: '#F472B6', icon: '🧘', col: 2,
-    line: 'Mental preparation: mindset, mindfulness and match-day routines.',
+    name: 'Wellness', tag: 'Preparation', colour: '#F472B6', icon: '🧘', col: 2, href: FEATURES_PLAYERS,
+    line: 'Look after your body and your head, and arrive ready to play.',
     items: [
-      { text: 'Mind Nets: a six-week programme' },
-      { text: 'Guided breathing and meditation' },
-      { text: 'Match-day checklists and a pre-ball routine' },
+      { text: 'Private weekly check-in, match mood and injury log', status: 'live' },
+      { text: 'Mind Nets, guided breathing and match-day routines', status: 'app' },
     ],
   },
   {
-    name: 'Academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4,
+    name: 'Academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4, href: FEATURES_PLAYERS,
     line: 'Short lessons, daily questions and games that make you a better cricketer.',
     items: [
-      { text: 'Two-minute lessons on skills, the game, fitness and the wider game' },
-      { text: 'A practice plan built for you' },
-      { text: 'A daily cricket question, and games such as the Auction Room' },
-      { text: 'Safeguarding-aware by design for junior cricketers' },
+      { text: 'Two-minute lessons and a practice plan', status: 'app' },
+      { text: 'Daily games, and a log for your ECB qualifications', status: 'live' },
+      { text: 'Courses with certificates', status: 'soon' },
     ],
   },
 ];
@@ -54,12 +56,12 @@ export function Pillars() {
   return (
     <section id="pillars" style={{ padding: '96px 24px', background: '#05080f', borderTop: '1px solid rgba(255,255,255,0.06)' }} aria-labelledby="pillars-h">
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#EFC84A', marginBottom: 12 }}>One app, four pillars</p>
+        <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#EFC84A', marginBottom: 12 }}>Four pillars for every player</p>
         <h2 id="pillars-h" style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, lineHeight: 1.08, color: '#E8EDF5', maxWidth: 720 }}>
-          Technique, community, mindset and learning, in one place.
+          Analysis, community, wellness and learning, in one place.
         </h2>
         <p style={{ marginTop: 16, maxWidth: 640, fontSize: 16, lineHeight: 1.6, color: 'rgba(232,237,245,0.6)' }}>
-          Everything you do on ClubPulse earns Scores, and milestones earn badges you can share. Scores are earned by taking part. They are never sold.
+          Scores run across all four pillars. You earn them by taking part, and they are never sold. They are not a fifth pillar.
         </p>
 
         <div style={{ marginTop: 44 }}>
@@ -80,7 +82,7 @@ export function Pillars() {
                       <span style={{ color: p.colour }} aria-hidden>●</span>
                       <span>
                         {i.text}
-                        {i.soon && <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, color: '#EFC84A', border: '1px solid rgba(239,200,74,0.4)', borderRadius: 99, padding: '1px 8px', whiteSpace: 'nowrap' }}>Coming soon</span>}
+                        <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, color: STATUS_COLOUR[i.status], border: `1px solid ${STATUS_COLOUR[i.status]}66`, borderRadius: 99, padding: '1px 8px', whiteSpace: 'nowrap' }}>{STATUS_LABEL[i.status]}</span>
                       </span>
                     </li>
                   ))}

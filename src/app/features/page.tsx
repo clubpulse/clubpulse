@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import FeaturesMenu from '@/components/marketing/FeaturesMenu';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { CATEGORIES } from '@/lib/marketing/feature-categories';
 
 export const metadata: Metadata = {
@@ -62,16 +63,7 @@ export default function FeaturesOverviewPage() {
         }
       `}</style>
 
-      <nav className="fo-nav">
-        <Link href="/" className="fo-logo"><span>Club</span><span>Pulse</span></Link>
-        <div className="fo-links">
-          <FeaturesMenu />
-          <Link href="/pricing" className="fo-hide">Pricing</Link>
-          <Link href="/about" className="fo-hide">About</Link>
-          <Link href="/contact" className="fo-hide">Contact</Link>
-        </div>
-        <Link href="/auth/sign-up" className="fo-cta">Get started free →</Link>
-      </nav>
+        <MarketingNav />
 
       <header className="fo-hero">
         <div className="fo-eyebrow">Features</div>
@@ -98,6 +90,7 @@ export default function FeaturesOverviewPage() {
           </section>
         ))}
       </div>
-    </div>
+    <MarketingFooter />
+</div>
   );
 }

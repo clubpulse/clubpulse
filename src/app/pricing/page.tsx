@@ -3,7 +3,8 @@
 import { Glyph } from '@/components/icons/Glyph';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import FeaturesMenu from '@/components/marketing/FeaturesMenu';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
 const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
@@ -528,21 +529,7 @@ export default function PricingPage() {
       `}</style>
 
       {/* NAV */}
-      <nav className="cp-nav">
-        <div className="cp-nav-inner">
-          <Link href="/" className="cp-nav-logo">
-            <span className="club">Club</span><span className="pulse">Pulse</span>
-          </Link>
-          <div className="cp-nav-links">
-            <FeaturesMenu />
-            <Link href="/pricing" className="active">Pricing</Link>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/auth/sign-in" className="cp-nav-keep">Sign in</Link>
-            <Link href="/auth/sign-up" className="cp-nav-cta">Get started →</Link>
-          </div>
-        </div>
-      </nav>
+        <MarketingNav />
 
       {/* HERO */}
       <div className="cp-pricing-hero">
@@ -663,9 +650,7 @@ export default function PricingPage() {
       )}
 
       {/* FOOTER */}
-      <footer className="cp-footer-simple">
-        <p>© 2026 ClubPulse. Built at Slough CC. · <Link href="/features">Features</Link> · <Link href="/contact">Contact</Link> · <Link href="/auth/sign-in">Sign in</Link></p>
-      </footer>
+        <MarketingFooter />
     </>
   );
 }

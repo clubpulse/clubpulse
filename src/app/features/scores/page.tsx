@@ -1,5 +1,7 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export default function ScoresPage() {
   return (
@@ -120,27 +122,7 @@ export default function ScoresPage() {
       `}</style>
 
       <div className="sr-root">
-        <nav className="sr-nav">
-          <div className="sr-nav-inner">
-            <Link href="/" className="sr-logo"><span className="sr-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="srNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#srNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="sr-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <Link href="/#features" className="sr-nav-back">← All features</Link>
-            <Link href="/contact" className="sr-nav-cta">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
 
         <section className="sr-hero">
           <div>
@@ -149,7 +131,7 @@ export default function ScoresPage() {
             <p className="sr-sub">ClubPulse automatically converts live scorecard data into a seasonal points leaderboard. Every run, wicket, and catch earns points. Players see where they stand — and clubs use it to recognise their contributors.</p>
             <div className="sr-btns">
               <Link href="/contact" className="sr-btn-red">Get started →</Link>
-              <Link href="/#features" className="sr-btn-ghost">See all features</Link>
+              <Link href="/features" className="sr-btn-ghost">See all features</Link>
             </div>
           </div>
 
@@ -281,33 +263,7 @@ export default function ScoresPage() {
           </div>
         </section>
 
-        <footer className="sr-footer">
-          <div className="sr-footer-inner">
-            <Link href="/" className="sr-logo"><span className="sr-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="srFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#srFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="sr-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <div className="sr-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
-            </div>
-            <p className="sr-footer-copy">© 2026 ClubPulse</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
   );

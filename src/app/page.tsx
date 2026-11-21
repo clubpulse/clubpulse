@@ -2,18 +2,17 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
-import FeaturesMenu from '@/components/marketing/FeaturesMenu';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
+import FrontDoors from '@/components/marketing/FrontDoors';
 import { Pillars } from '@/components/marketing/Pillars';
-import { BadgeWall } from '@/components/marketing/BadgeWall';
-import { AnimatedGradientText, BorderBeam, DotPattern, Marquee, Meteors, ShimmerButton } from '@/components/magic';
+import { AnimatedGradientText, BorderBeam, DotPattern, Meteors, ShimmerButton } from '@/components/magic';
 import { useState, useEffect, useRef } from 'react';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
-const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
 
 
 type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
-type NavOpen = boolean;
 
 function useCountUp(target: number, duration = 1800) {
   const [count, setCount] = useState(target);
@@ -43,7 +42,6 @@ function useCountUp(target: number, duration = 1800) {
 
 export default function HomePage() {
   const [phoneTab, setPhoneTab] = useState<PhoneTab>('dash');
-  const [navOpen, setNavOpen] = useState<NavOpen>(false);
   const phoneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -711,65 +709,7 @@ export default function HomePage() {
       <div className="cp-root">
         <div className="cp-grain" aria-hidden="true" />
 
-        {/* ── NAV ── */}
-        <nav className="cp-nav">
-          <div className="cp-nav-inner">
-            <Link href="/" className="cp-logo">
-              <span className="cp-logo-mark">
-                <svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="homeNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#homeNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-              <span className="cp-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
-            </Link>
-            <div className="cp-nav-links">
-              <FeaturesMenu />
-              <Link href="/pricing">Pricing</Link>
-              <Link href="/#compare">Compare</Link>
-              <Link href="/about">About</Link>
-              <Link href="/contact">Contact</Link>
-            </div>
-            <div className="cp-nav-ctas">
-              <Link href="/auth/sign-in" className="cp-btn-ghost">Sign in</Link>
-              <Link href="/contact" className="cp-btn-red">Get started</Link>
-            </div>
-            <button
-              className={`cp-hamburger${navOpen ? ' open' : ''}`}
-              aria-label={navOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={navOpen}
-              onClick={() => setNavOpen(o => !o)}
-            >
-              <span /><span /><span />
-            </button>
-          </div>
-        </nav>
-
-        {/* ── MOBILE NAV ── */}
-        <div className={`cp-mobile-nav${navOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
-          <Link href="/features/players" onClick={() => setNavOpen(false)}>Features for players</Link>
-          <Link href="/features/clubs" onClick={() => setNavOpen(false)}>Features for clubs</Link>
-          <Link href="/pricing" onClick={() => setNavOpen(false)}>Pricing</Link>
-          <Link href="/#compare" onClick={() => setNavOpen(false)}>Compare</Link>
-          <Link href="/about" onClick={() => setNavOpen(false)}>About</Link>
-          <Link href="/contact" onClick={() => setNavOpen(false)}>Contact</Link>
-          <div className="cp-mobile-nav-divider" />
-          <div className="cp-mobile-nav-ctas">
-            <Link href="/auth/sign-in" className="cp-btn-ghost" onClick={() => setNavOpen(false)}>Sign in</Link>
-            <Link href="/contact" className="cp-btn-red" onClick={() => setNavOpen(false)}>Get started free →</Link>
-          </div>
-        </div>
+        <MarketingNav />
 
         {/* ── HERO ── */}
         <div style={{ position: 'relative', overflow: 'hidden' }}>
@@ -786,17 +726,16 @@ export default function HomePage() {
                 Live at Slough CC · 2026 Season
               </div>
               <h1 className="cp-hero-h1">
-                Cricket clubs<br />
-                run on <AnimatedGradientText>ClubPulse</AnimatedGradientText><br />
-                now.
+                Run Saturday.<br />
+                Grow every <AnimatedGradientText>player</AnimatedGradientText>.
               </h1>
               <p className="cp-hero-sub">
-                For players who want to improve and clubs that want to run properly — one platform built for the whole game.
+                ClubPulse runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
               </p>
 
               {/* The four pillars */}
               <div className="cp-pillars">
-                {([['🎥', 'The Nets', '#FBBF24'], ['🤝', 'Pavilion', '#60A5FA'], ['🧘', 'Warm-Up', '#F472B6'], ['🎓', 'Academy', '#2DD4BF']] as const).map(([icon, name, colour]) => (
+                {([['🎥', 'Player Analysis', '#FBBF24'], ['🤝', 'Community', '#60A5FA'], ['🧘', 'Wellness', '#F472B6'], ['🎓', 'Academy', '#2DD4BF']] as const).map(([icon, name, colour]) => (
                   <Link key={name} href="/#pillars" className="cp-pillar" style={{ borderColor: `${colour}66`, color: colour, background: `${colour}14` }}>
                     <Glyph e={icon} size="1.15em" /> {name}
                   </Link>
@@ -804,14 +743,13 @@ export default function HomePage() {
               </div>
 
               <div className="cp-hero-btns">
-                <ShimmerButton href="/contact">Get started free →</ShimmerButton>
-                <Link href="/features" className="cp-btn-hero-ghost">See all features →</Link>
+                <ShimmerButton href="/contact">Register your club →</ShimmerButton>
+                <Link href="/auth/sign-up" className="cp-btn-hero-ghost">Join as a player →</Link>
               </div>
               <div className="cp-hero-stats">
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">&lt;1s</div><div className="cp-stat-l">Scorecard sync</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">5</div><div className="cp-stat-l">Tools in one app</div></div>
+                <div className="cp-hero-stat"><div className="cp-stat-n">4</div><div className="cp-stat-l">Player pillars</div></div>
               </div>
             </div>
 
@@ -879,7 +817,7 @@ export default function HomePage() {
                   {phoneTab === 'coach' && (
                     <div>
                       <div className="cp-coach-cam">
-                        <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active · 30fps</div>
+                        <div className="cp-coach-cam-label"><span className="cp-coach-cam-dot" />Pose tracking active</div>
                         <div className="cp-coach-pose">
                           <svg viewBox="0 0 120 180" fill="none" style={{width:'80px',height:'120px',opacity:0.9}}>
                             <ellipse cx="62" cy="16" rx="10" ry="11" fill="rgba(240,236,228,0.85)"/>
@@ -932,9 +870,6 @@ export default function HomePage() {
         </section>
         </div>
 
-        {/* ── FEATURE STRIP ── */}
-        <FeatureStrip />
-
         {/* SOCIAL PROOF */}
         <div className="cp-social-proof">
           <div className="cp-social-proof-inner">
@@ -949,165 +884,54 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── TWO FRONT DOORS ── */}
+        <FrontDoors />
+
         {/* ── FOUR PILLARS ── */}
         <Pillars />
-
-        {/* ── BADGE WALL ── */}
-        <BadgeWall />
 
         {/* ── HOW IT WORKS ── */}
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
-          <h2 className="cp-section-h2">Up and running in minutes.</h2>
-          <p className="cp-section-sub">No training sessions. No implementation consultants. No 12-month contracts. Just sign up, invite your squad, and start your season.</p>
+          <h2 className="cp-section-h2">From first chat to first Saturday.</h2>
+          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and the squad joins free.</p>
 
           <div className="cp-steps">
             <div className="cp-step">
               <p className="cp-step-num">STEP 01</p>
-              <div className="cp-step-icon"><Glyph e="🏏" /></div>
-              <h3 className="cp-step-h">Create your club</h3>
-              <p className="cp-step-body">Sign up as a club admin. Add your club name, teams, and season dates. Takes under 5 minutes — no card required to start.</p>
+              <div className="cp-step-icon"><Glyph e="💬" /></div>
+              <h3 className="cp-step-h">Talk to us</h3>
+              <p className="cp-step-body">Tell us about your club and we set it up with you: your teams, your season and your committee.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 02</p>
               <div className="cp-step-icon"><Glyph e="📱" /></div>
-              <h3 className="cp-step-h">Invite your squad</h3>
-              <p className="cp-step-body">Share a link or add players by email. Players join free, set up their profile, and immediately see upcoming fixtures and their Scores balance.</p>
+              <h3 className="cp-step-h">Invite the squad</h3>
+              <p className="cp-step-body">Players join free, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 03</p>
-              <div className="cp-step-icon"><Glyph e="⚡" /></div>
-              <h3 className="cp-step-h">Run your season</h3>
-              <p className="cp-step-body">Players mark availability. Captains pick the XI. Scorers log every ball live. Stats build automatically. Finance tracks itself. Done.</p>
+              <div className="cp-step-icon"><Glyph e="🏏" /></div>
+              <h3 className="cp-step-h">Run Saturday</h3>
+              <p className="cp-step-body">Players mark availability, captains pick the XI, scorers record every ball, and stats build up from there.</p>
             </div>
           </div>
         </section>
 
-        {/* ── FEATURES GRID ── */}
-        <section className="cp-features" id="features">
-          <div className="cp-features-inner">
-            <p className="cp-eyebrow">The full platform</p>
-            <h2 className="cp-section-h2">48 features. One platform.</h2>
-            <p className="cp-section-sub">Each feature works standalone. Together they eliminate every spreadsheet, WhatsApp chain, and Sunday-night admin task your club has. Here&apos;s a taste — <Link href="/features" style={{color:'var(--sky)',textDecoration:'none',fontWeight:600}}>explore all 48 →</Link></p>
-
-            <div className="cp-feat-grid">
-              {/* Availability — wide */}
-              <div className="cp-feat-card cp-feat-card-wide" style={{borderBottom:'1px solid var(--border)'}}>
-                <div className="cp-feat-wide-grid">
-                  <div>
-                    <div className="cp-feat-card-icon"><Glyph e="📅" /></div>
-                    <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
-                    <h3 className="cp-feat-card-h">Availability<br />management</h3>
-                    <p className="cp-feat-card-body">No more Wednesday night WhatsApp chains. Players tap once. Captains see a live count — 9/11, 10/11 — and confirm the XI in one click. Push notifications go out automatically.</p>
-                    <div className="cp-feat-card-bullets">
-                      <div className="cp-feat-card-bullet"><strong>One-tap response</strong> for players</div>
-                      <div className="cp-feat-card-bullet"><strong>Live squad count</strong> for captains in real time</div>
-                      <div className="cp-feat-card-bullet"><strong>+5 Scores</strong> awarded automatically for responding</div>
-                    </div>
-                    <Link href="/features/clubs#team" className="cp-feat-card-link">Learn more →</Link>
-                  </div>
-                  <div style={{background:'#04091A',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-                      <div>
-                        <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>Availability</div>
-                        <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · vs Henley CC</div>
-                      </div>
-                      <span style={{fontSize:'11px',padding:'4px 10px',background:'rgba(46,204,113,0.1)',border:'1px solid rgba(46,204,113,0.2)',borderRadius:'6px',color:'var(--green)',fontWeight:600}}>10 / 11 ✓</span>
-                    </div>
-                    {[['I. Suresh','Available','yes'],['R. Patel','Available','yes'],['A. Khan','Available','yes'],['S. Bhatt','Unavailable','no'],['D. Sharma','No response','maybe']].map(([name,status,cls]) => (
-                      <div key={name} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 10px',borderRadius:'8px',background:'#111',border:'1px solid rgba(255,255,255,0.04)',marginBottom:'6px'}}>
-                        <span style={{fontSize:'12px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{name}</span>
-                        <span style={{padding:'3px 8px',borderRadius:'5px',fontSize:'9px',fontWeight:700,textTransform:'uppercase' as const,
-                          background:cls==='yes'?'rgba(46,204,113,0.12)':cls==='no'?'rgba(249,115,22,0.08)':'rgba(255,255,255,0.04)',
-                          color:cls==='yes'?'var(--green)':cls==='no'?'var(--orange)':'rgba(255,255,255,0.35)',
-                          border:`1px solid ${cls==='yes'?'rgba(46,204,113,0.2)':cls==='no'?'rgba(249,115,22,0.2)':'rgba(255,255,255,0.08)'}`
-                        }}>{status}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Live Scorecard */}
-              <div className="cp-feat-card">
-                <div className="cp-feat-card-icon"><Glyph e="📋" /></div>
-                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-card-h">Live scorecard</h3>
-                <p className="cp-feat-card-body">Your scorer enters each delivery. Club members see every ball as it happens, and a public link lets parents and supporters follow along. No paper. No spreadsheet. Ball-by-ball history kept.</p>
-                <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>Live for members</strong> — every ball, as it happens</div>
-                  <div className="cp-feat-card-bullet"><strong>Career stats</strong> built automatically</div>
-                  <div className="cp-feat-card-bullet"><strong>Public link</strong> for anyone outside the club, no sign-in</div>
-                </div>
-                <Link href="/features/players#match" className="cp-feat-card-link">Learn more →</Link>
-              </div>
-
-              {/* Scores */}
-              <div className="cp-feat-card">
-                <div className="cp-feat-card-icon"><Glyph e="⭐" /></div>
-                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-card-h">Scores rewards</h3>
-                <p className="cp-feat-card-body">Players earn Scores for every contribution — marking available, playing matches, paying fees, coaching sessions. 500 Scores = £1 toward kit, fee offsets and rewards.</p>
-                <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>+5</strong> mark available · <strong>+50</strong> match played</div>
-                  <div className="cp-feat-card-bullet"><strong>+200</strong> pay season fee · <strong>+100</strong> referral</div>
-                  <div className="cp-feat-card-bullet"><strong>Bronze / Silver / Gold</strong> tier multipliers</div>
-                </div>
-                <Link href="/features/players#engagement" className="cp-feat-card-link">Learn more →</Link>
-              </div>
-
-              {/* AI Coach */}
-              <div className="cp-feat-card">
-                <div className="cp-feat-card-icon"><Glyph e="🎯" /></div>
-                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-card-h">AI Coach</h3>
-                <p className="cp-feat-card-body">Film your batting stance, head position and follow-through, and your bowling action, front knee and foot position. Pose analysis runs on your own device, and ball tracking and your coaching report are processed on our servers. Real coaching feedback, every session.</p>
-                <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>Pose analysis on your device</strong> — stance and action feedback</div>
-                  <div className="cp-feat-card-bullet"><strong>Ball tracking and reports</strong> — processed on our servers</div>
-                  <div className="cp-feat-card-bullet"><strong>Progress tracked</strong> over the season</div>
-                </div>
-                <Link href="/features/players#coach" className="cp-feat-card-link">Learn more →</Link>
-              </div>
-
-              {/* Finance */}
-              <div className="cp-feat-card">
-                <div className="cp-feat-card-icon"><Glyph e="💷" /></div>
-                <span className="cp-feat-card-tag cp-tag-live">✓ Live</span>
-                <h3 className="cp-feat-card-h">Club finance</h3>
-                <p className="cp-feat-card-body">Track every transaction, chase outstanding fee payments and export for your AGM — all from one admin dashboard. Your treasurer gets their Sunday afternoons back.</p>
-                <div className="cp-feat-card-bullets">
-                  <div className="cp-feat-card-bullet"><strong>Full transaction history</strong> in one place</div>
-                  <div className="cp-feat-card-bullet"><strong>Fee tracking</strong> — see who&apos;s paid, chase in one click</div>
-                  <div className="cp-feat-card-bullet"><strong>One-click export</strong> for AGM or committee</div>
-                </div>
-                <Link href="/features/clubs#finance" className="cp-feat-card-link">Learn more →</Link>
-              </div>
-            </div>
-            {/* See all features CTA */}
-            <div style={{textAlign:'center',marginTop:'40px'}}>
-              <Link href="/features" style={{display:'inline-flex',alignItems:'center',gap:'10px',padding:'14px 32px',background:'rgba(37,99,235,0.1)',border:'1px solid rgba(37,99,235,0.3)',borderRadius:'11px',color:'var(--sky)',fontSize:'15px',fontWeight:700,textDecoration:'none',transition:'all 0.15s'}}>
-                See all 48 features with live demos →
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── COMPARISON TABLE ── */}
-        <ComparisonSection />
-
-        {/* ── AUDIENCE / WHO IT'S FOR ── */}
-        <AudienceSection />
-
-        {/* ── PRICING ── */}
+        {/* ── PRICING TEASER ── */}
         <section className="cp-pricing">
-          <div className="cp-pricing-inner">
+          <div className="cp-pricing-inner" style={{ textAlign: 'center' }}>
             <p className="cp-eyebrow">Pricing</p>
-            <h2 className="cp-section-h2">Pricing that fits your role.</h2>
-            <p className="cp-section-sub">Players subscribe directly. Clubs choose how many player seats to sponsor. Federations and counties — talk to us.</p>
-            <PricingSection />
+            <h2 className="cp-section-h2">Free for players. Simple for clubs.</h2>
+            <p className="cp-section-sub" style={{ margin: '0 auto 28px' }}>
+              Players join free. Club plans start from £29.99 a month and cover the whole club.
+            </p>
+            <Link href="/pricing" className="cp-btn-hero-ghost">See pricing →</Link>
+            <p style={{ marginTop: 28, fontSize: 13, color: 'rgba(240,236,228,0.45)' }}>
+              League and county tools are on the roadmap. <Link href="/contact" style={{ color: '#60A5FA' }}>Get in touch</Link> if you run one.
+            </p>
           </div>
         </section>
 
@@ -1124,592 +948,18 @@ export default function HomePage() {
         <section className="cp-cta-band">
           <div className="cp-cta-band-inner">
             <div>
-              <h2 className="cp-cta-h">The platform your cricket ecosystem has been missing.</h2>
-              <p className="cp-cta-sub">Free for players. Three club plans from £29.99 a month, each covering the whole club.</p>
+              <h2 className="cp-cta-h">Two doors in. One platform.</h2>
+              <p className="cp-cta-sub">Clubs: we set you up. Players: free to join, with or without your club.</p>
             </div>
-            <Link href="/contact" className="cp-cta-btn">Get started — it&apos;s free →</Link>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <Link href="/contact" className="cp-cta-btn">Register your club →</Link>
+              <Link href="/auth/sign-up" className="cp-cta-btn" style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.6)' }}>Join as a player →</Link>
+            </div>
           </div>
         </section>
 
-        {/* ── FOOTER ── */}
-        <footer className="cp-footer">
-          <div className="cp-footer-inner">
-            <Link href="/" className="cp-footer-logo">
-              <span className="cp-footer-logo-mark">
-                <svg width="18" height="18" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="homeFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#homeFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-              <span className="cp-footer-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
-            </Link>
-            <div className="cp-footer-links">
-              <Link href="/features/players#match">Match day</Link>
-              <Link href="/features/players#coach">AI Coach</Link>
-              <Link href="/features/players#performance">Performance</Link>
-              <Link href="/features/clubs#finance">Finance</Link>
-              <Link href="/features/players#rewards">Rewards</Link>
-              <Link href="/about">About</Link>
-              <Link href="/our-story">Our story</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Terms</Link>
-              <Link href="/refunds">Refunds</Link>
-              <Link href="/auth/sign-in">Sign in</Link>
-            </div>
-            <p className="cp-footer-copy">© 2026 ClubPulse. Built at Slough CC.</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
-  );
-}
-
-/* ── COMPARISON SECTION ── */
-function ComparisonSection() {
-  type Platform = 'clubpulse' | 'pitchero' | 'teamapp' | 'playcricket';
-  const platforms: { id: Platform; name: string; short: string }[] = [
-    { id: 'clubpulse', name: 'ClubPulse', short: 'CP' },
-    { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
-    { id: 'teamapp', name: 'TeamApp', short: 'TA' },
-    { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
-  ];
-
-  type Check = '✓' | '~' | '✕';
-  type Row = { label: string; cp: Check; pi: Check; ta: Check; pc: Check; note?: string };
-  const rows: Row[] = [
-    { label: 'Built for cricket only',          cp: '✓', pi: '~', ta: '✕', pc: '✓', note: 'Pitchero covers all sports; TeamApp is generic' },
-    { label: 'Live in-app scorecard',            cp: '✓', pi: '✓', ta: '✕', pc: '~', note: 'Play-Cricket is web-only, no native app' },
-    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse-exclusive: Claude-powered insights' },
-    { label: 'Availability & XI selection',      cp: '✓', pi: '✓', ta: '✓', pc: '✕' },
-    { label: 'Integrated fee & finance tracking', cp: '✓', pi: '~', ta: '~', pc: '✕', note: 'Others require third-party payment tools' },
-    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse Scores: earn, redeem, retain players' },
-    { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
-    { label: 'Free for players',                 cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
-    { label: 'Club plan from £29.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
-    { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
-  ];
-
-  const colStyle = (id: Platform): React.CSSProperties => id === 'clubpulse'
-    ? { background: 'rgba(37,99,235,0.08)', borderLeft: '1px solid rgba(37,99,235,0.3)', borderRight: '1px solid rgba(37,99,235,0.3)' }
-    : {};
-
-  const checkColor = (v: Check) =>
-    v === '✓' ? '#4ade80' : v === '~' ? '#facc15' : '#f87171';
-
-  return (
-    <section id="compare" style={{ padding: '80px 0', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
-        <p style={{ textAlign: 'center', color: 'var(--sky)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px' }}>
-          How we stack up
-        </p>
-        <h2 style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 'clamp(26px,4vw,38px)', fontWeight: 800, color: '#fff', margin: '0 0 12px' }}>
-          A generation ahead of the alternatives
-        </h2>
-        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: '16px', marginBottom: '48px', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
-          ClubPulse was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
-        </p>
-
-        <div style={{ overflowX: 'auto', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                <th style={{ padding: '14px 20px', textAlign: 'left', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.03)' }}>Feature</th>
-                {platforms.map(p => (
-                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'clubpulse' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'clubpulse' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
-                    <span style={{ display: 'none' }} aria-hidden="true">{p.short}</span>
-                    <span>{p.name}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={row.label} style={{ borderBottom: i < rows.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
-                  <td style={{ padding: '13px 20px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>
-                    {row.label}
-                    {row.note && <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>{row.note}</span>}
-                  </td>
-                  {(['cp','pi','ta','pc'] as const).map((k, ci) => {
-                    const val = row[k];
-                    const pid = platforms[ci].id;
-                    return (
-                      <td key={k} style={{ padding: '13px 16px', textAlign: 'center', fontSize: '17px', ...colStyle(pid) }}>
-                        <span style={{ color: checkColor(val), fontWeight: val === '✓' ? 700 : 400 }}>{val}</span>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-          ✓ full support · ~ partial / third-party · ✕ not available
-        </p>
-      </div>
-    </section>
-  );
-}
-
-/* ── PRICING SECTION ── */
-type PricingAudience = 'player' | 'club';
-
-function PricingSection() {
-  const [audience, setAudience] = useState<PricingAudience>('player');
-
-  return (
-    <>
-      {/* Audience toggle */}
-      <div className="cp-pricing-toggle-label">I am a…</div>
-      <div className="cp-pricing-toggle">
-        <button
-          className={`cp-pricing-toggle-btn${audience === 'player' ? ' active' : ''}`}
-          onClick={() => setAudience('player')}
-        >🏏 Player</button>
-        <button
-          className={`cp-pricing-toggle-btn${audience === 'club' ? ' active' : ''}`}
-          onClick={() => setAudience('club')}
-        >🏟️ Club</button>
-      </div>
-
-      {/* ── PLAYER PRICING ── */}
-      {audience === 'player' && (
-        <>
-          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
-            {/* Free */}
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Free</p>
-              <div className="cp-price-n">£0</div>
-              <p className="cp-price-period">Always free · no card needed</p>
-              <p className="cp-price-desc">Get started — track your stats, follow the scorecard and earn Bronze Scores.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Live scorecard viewing</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Basic career stats</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Achievement badges</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Scores — Bronze (1×)</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 2/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Video upload — 7 lifetime</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x"><Glyph e="✕" /></span><span>Role-based coaching</span></div>
-                <div className="cp-price-feature dimmed"><span className="cp-price-feature-x"><Glyph e="✕" /></span><span>Performance trends</span></div>
-              </div>
-              <Link href="/auth/sign-up" className="cp-price-cta ghost">Join free →</Link>
-            </div>
-
-            {/* Pro — featured */}
-            <div className="cp-price-card featured">
-              <span className="cp-price-featured-chip">Most popular</span>
-              <p className="cp-price-plan">Pro</p>
-              <div className="cp-price-n"><span>£</span>9.99</div>
-              <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">Unlock AI coaching, drill recommendations and Silver tier Scores rewards.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Free</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 8/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Role-based coaching</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — 2/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Post-match self-assessment</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Video upload — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Form index — last 5</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Silver tier</strong> — 2× Scores</span></div>
-              </div>
-              <Link href={PLAYER_CTA} className="cp-price-cta primary">Get Pro →</Link>
-            </div>
-
-            {/* Elite */}
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Elite</p>
-              <div className="cp-price-n"><span>£</span>14.99</div>
-              <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">Deep analysis — venue breakdowns, matchup records, detailed video reports and Gold Scores.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Pro</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — 20/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — 8/month</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Venue &amp; pitch condition analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Head-to-head matchup records</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Detailed video AI report</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Season report &amp; stat exports</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Gold tier</strong> — 3× Scores</span></div>
-              </div>
-              <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Elite →</Link>
-            </div>
-
-            {/* Legend */}
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Legend</p>
-              <div className="cp-price-n"><span>£</span>19.99</div>
-              <p className="cp-price-period">per month · cancel anytime</p>
-              <p className="cp-price-desc">The complete picture. Unlimited everything, full video analysis and Platinum Scores.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Elite</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI coaching — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Drill recommendations — unlimited</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full frame-by-frame video analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>vs club &amp; regional avg comparison</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full history — all-time records</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Legend badge &amp; early access</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Platinum tier</strong> — 4× Scores</span></div>
-              </div>
-              <Link href={PLAYER_CTA} className="cp-price-cta ghost">Get Legend →</Link>
-            </div>
-          </div>
-          <p className="cp-price-note">500 Scores = £1 value · Bronze (1×) · Silver (2×) · Gold (3×) · Platinum (4×)</p>
-        </>
-      )}
-
-      {/* ── CLUB PRICING ── */}
-      {audience === 'club' && (
-        <>
-          {/* How it works blurb */}
-          <div style={{
-            background:'rgba(37,99,235,0.07)',border:'1px solid rgba(37,99,235,0.2)',
-            borderRadius:'12px',padding:'20px 24px',marginBottom:'32px',
-            display:'flex',gap:'14px',alignItems:'flex-start',
-          }}>
-            <span style={{fontSize:'20px',flexShrink:0}}><Glyph e="💡" /></span>
-            <div>
-              <p style={{fontWeight:700,color:'var(--sky)',fontSize:'14px',marginBottom:'4px'}}>How club pricing works</p>
-              <p style={{fontSize:'13px',color:'var(--fg2)',lineHeight:1.7}}>
-                Every plan covers your <strong style={{color:'var(--fg)'}}>whole club</strong>, all teams included, and the three plans differ by how many members you have and which tools you want. Club plans are not bought online: <strong style={{color:'var(--fg)'}}>contact us</strong>, we confirm what your club needs, and we sign an agreement for a set period at these prices. We can also shape the platform around how your club works.
-              </p>
-            </div>
-          </div>
-
-          <div className="cp-pricing-grid" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Pro</p>
-              <div className="cp-price-n"><span>£</span>29.99</div>
-              <p className="cp-price-period">per month · whole club, up to 75 members</p>
-              <p className="cp-price-desc">The essentials for a smaller club, across all its teams.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Up to 75 members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>20,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Full Scores engine and weekly challenges</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Fixture availability</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Club noticeboard</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Coaching marketplace</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Finance tracker</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£2.99 a month</strong> each</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Pro →</Link>
-            </div>
-            <div className="cp-price-card featured">
-              <span className="cp-price-featured-chip">Most popular</span>
-              <p className="cp-price-plan">Elite</p>
-              <div className="cp-price-n"><span>£</span>59.99</div>
-              <p className="cp-price-period">per month · whole club, up to 200 members</p>
-              <p className="cp-price-desc">For a club with several sides and a junior section.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Pro</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Up to 200 members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>75,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>AI Coach video analysis</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Club Bible and documents</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Player form guide and Scout Mode</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Community pot and Sponsor a Kid</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£4.99 a month</strong> each</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta primary">Talk to us about Elite →</Link>
-            </div>
-            <div className="cp-price-card">
-              <p className="cp-price-plan">Legend</p>
-              <div className="cp-price-n"><span>£</span>99.99</div>
-              <p className="cp-price-period">per month · whole club, unlimited members</p>
-              <p className="cp-price-desc">For the largest clubs, and clubs that want their own branding.</p>
-              <div className="cp-price-divider" />
-              <div className="cp-price-features">
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span><strong>Everything in Elite</strong></span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Unlimited members</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>250,000 Scores a month to give out</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Your club&apos;s own branding</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Player auction and transfer window</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Priority support</span></div>
-                <div className="cp-price-feature"><span className="cp-price-feature-icon"><Glyph e="✓" /></span><span>Members add analysis on their own phone, coaching and AI analysis sessions for <strong>£6.99 a month</strong> each</span></div>
-              </div>
-              <Link href="/contact" className="cp-price-cta ghost">Talk to us about Legend →</Link>
-            </div>
-          </div>
-          <p className="cp-price-note">Prices are per month under a fixed-term club agreement, with annual terms at ten months&apos; price. A member who wants analysis on their own phone, with coaching and AI analysis sessions, adds it for £2.99, £4.99 or £6.99 a month, depending on the club&apos;s plan. · <Link href="/pricing" style={{color:'var(--sky)',textDecoration:'none'}}>See full feature table →</Link></p>
-        </>
-      )}
-    </>
-  );
-}
-
-/* ── AUDIENCE SECTION ── */
-function AudienceSection() {
-  const audiences = [
-    {
-      key: 'player',
-      icon: '🏏',
-      label: 'Players',
-      h: 'Your career, in your pocket.',
-      body: 'From your first boundary to your 1,000th run — track every innings, get AI coaching on your technique and earn Scores rewards your club actually values.',
-      checks: [
-        'Live scorecard & career stats',
-        'AI coaching tailored to your role',
-        'Video analysis with frame-by-frame breakdown',
-        'Performance trends & form index',
-        'Scores rewards — earn, redeem, retain',
-      ],
-      cta: 'Start free as a player',
-      href: '/auth/sign-up',
-    },
-    {
-      key: 'club',
-      icon: '🏟️',
-      label: 'Cricket Clubs',
-      h: 'Run your club. Not a spreadsheet.',
-      body: 'Availability, XI selection, finance, fee collection, kit tracking, Scores rewards — everything your committee handles on a Sunday, done in minutes. Sponsor player seats so your squad gets the best of ClubPulse included.',
-      checks: [
-        'Sponsor player seats — pay for your squad',
-        'Availability, XI selection & team logistics',
-        'Finance dashboard & fee tracking',
-        'Club-wide stats & season reporting',
-        'Admin dashboard for every committee role',
-      ],
-      cta: 'See club pricing',
-      href: '/pricing',
-    },
-    {
-      key: 'fed',
-      icon: '🏆',
-      label: 'Federations & Leagues · Coming soon',
-      h: 'League tools are on the way.',
-      body: 'We are building tools for leagues and federations with clubs like Slough CC. Tell us what your league needs and help shape them.',
-      checks: [
-        'Planned: standings across member clubs',
-        'Planned: cross-club results reporting',
-        'Planned: governance and compliance tools',
-      ],
-      cta: 'Talk to us',
-      href: '/contact',
-    },
-    {
-      key: 'county',
-      icon: '🗺️',
-      label: 'County Associations · Coming soon',
-      h: 'County tools are on the way.',
-      body: 'County boards are on our roadmap. If you run a county or association, tell us what data and governance you need.',
-      checks: [
-        'Planned: club registration and affiliation',
-        'Planned: county-wide player and match data',
-        'Planned: data exports for reporting',
-      ],
-      cta: 'Talk to us',
-      href: '/contact',
-    },
-  ];
-
-  return (
-    <section className="cp-audience">
-      <div className="cp-audience-inner">
-        <p className="cp-eyebrow">Who it&apos;s for</p>
-        <h2 className="cp-section-h2">Built for the whole cricket ecosystem.</h2>
-        <p className="cp-section-sub">Whether you bat, captain, govern or regulate — ClubPulse was built for how cricket actually works at every level.</p>
-
-        <div className="cp-audience-grid">
-          {audiences.map(aud => (
-            <div key={aud.key} className={`cp-aud-card ${aud.key}`}>
-              <div className="cp-aud-icon"><Glyph e={aud.icon} /></div>
-              <p className={`cp-aud-label ${aud.key}`}>{aud.label}</p>
-              <h3 className="cp-aud-h">{aud.h}</h3>
-              <p className="cp-aud-body">{aud.body}</p>
-              <div className="cp-aud-checks">
-                {aud.checks.map(c => (
-                  <div key={c} className="cp-aud-check">
-                    <span className={`cp-aud-check-icon ${aud.key}`}><Glyph e="✓" /></span>
-                    <span>{c}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href={aud.href} className={`cp-aud-cta ${aud.key}`}>{aud.cta} →</Link>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── PERSONA SECTION (client component for tab state) ── */
-type Persona = 'player' | 'captain' | 'admin';
-
-function PersonaSection() {
-  const [persona, setPersona] = useState<Persona>('player');
-
-  const personas: Record<Persona, {
-    eyebrow: string; h: string; body: string;
-    checks: { label: string; detail: string }[];
-    card: React.ReactNode;
-  }> = {
-    player: {
-      eyebrow: 'For players',
-      h: 'Your cricket life, in one app.',
-      body: 'Mark availability, track your career stats, follow the live scorecard, get AI coaching feedback, and earn Scores rewards — everything you do at the club, reflected back to you.',
-      checks: [
-        { label: 'Availability in one tap', detail: 'No more WhatsApp threads. Respond in seconds.' },
-        { label: 'Career stats, every match', detail: 'Batting, bowling, fielding — built automatically.' },
-        { label: 'Earn as you play', detail: 'Scores rewards for every contribution you make.' },
-        { label: 'AI coaching feedback', detail: 'Live batting analysis from your phone camera.' },
-      ],
-      card: (
-        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{background:'linear-gradient(135deg,rgba(239,200,74,0.12),rgba(239,200,74,0.04))',border:'1px solid rgba(239,200,74,0.2)',borderRadius:'14px',padding:'20px'}}>
-            <div style={{fontSize:'11px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'rgba(239,200,74,0.6)',marginBottom:'4px'}}>Your Scores balance</div>
-            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'40px',fontWeight:800,color:'#EFC84A',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(239,200,74,0.5)'}}>pts</span></div>
-            <div style={{fontSize:'13px',color:'rgba(240,236,228,0.4)',marginTop:'6px'}}>≈ £25.00 cash value</div>
-          </div>
-          <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
-            {[['Match played · vs Henley CC','+50 pts'],['Marked available · Sat','+5 pts'],['Season fee paid','+200 pts'],['AI coaching session','+25 pts']].map(([l,p])=>(
-              <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'12px'}}>
-                <span style={{color:'rgba(255,255,255,0.5)'}}>{l}</span>
-                <span style={{fontWeight:700,color:'#EFC84A'}}>{p}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ),
-    },
-    captain: {
-      eyebrow: 'For captains',
-      h: 'Run your XI without the chaos.',
-      body: 'See availability responses live as they come in. Know exactly who\'s confirmed at any moment. Pick your XI when you\'re ready, send notifications in one click, and let the app handle the chasing.',
-      checks: [
-        { label: 'Live availability dashboard', detail: 'Watch responses come in — 8/11, 9/11, 10/11.' },
-        { label: 'Confirm XI instantly', detail: 'Squad confirmed. Push notification goes to all 11.' },
-        { label: 'No more group chat admin', detail: 'Stop manually counting who replied.' },
-        { label: 'Full squad history', detail: 'Who played when, career records, form guides.' },
-      ],
-      card: (
-        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(37,99,235,0.22)',borderRadius:'12px',padding:'16px'}}>
-            <div>
-              <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
-              <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · 10:30am</div>
-            </div>
-            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'28px',fontWeight:800,color:'var(--green)'}}>10<span style={{fontSize:'14px',fontWeight:500,color:'rgba(240,236,228,0.3)'}}>/11</span></div>
-          </div>
-          {[['I. Suresh','yes'],['R. Patel','yes'],['A. Khan','yes'],['S. Bhatt','no'],['D. Sharma','maybe']].map(([n,s])=>(
-            <div key={n} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',borderRadius:'8px',background:'#111',border:'1px solid rgba(255,255,255,0.04)'}}>
-              <span style={{fontSize:'13px',color:'rgba(255,255,255,0.7)'}}>{n}</span>
-              <span style={{padding:'3px 9px',borderRadius:'5px',fontSize:'10px',fontWeight:700,textTransform:'uppercase' as const,
-                background:s==='yes'?'rgba(46,204,113,0.12)':s==='no'?'rgba(249,115,22,0.08)':'rgba(255,255,255,0.04)',
-                color:s==='yes'?'var(--green)':s==='no'?'var(--orange)':'rgba(255,255,255,0.35)',
-                border:`1px solid ${s==='yes'?'rgba(46,204,113,0.2)':s==='no'?'rgba(249,115,22,0.2)':'rgba(255,255,255,0.08)'}`
-              }}>
-                {s==='yes'?'Available':s==='no'?'Unavailable':'No response'}
-              </span>
-            </div>
-          ))}
-          <button style={{width:'100%',padding:'12px',background:'var(--red)',color:'#fff',border:'none',borderRadius:'9px',fontSize:'13px',fontWeight:700,fontFamily:"'Inter',sans-serif",cursor:'pointer'}}>
-            Confirm XI &amp; notify squad →
-          </button>
-        </div>
-      ),
-    },
-    admin: {
-      eyebrow: 'For club admins',
-      h: 'Run the whole club from one dashboard.',
-      body: 'Availability, scorecards, finance, Scores rewards — all in one place. Stop switching between spreadsheets, banking apps and WhatsApp threads. One platform handles it all.',
-      checks: [
-        { label: 'Full club overview', detail: 'Every team, every match, every player in one view.' },
-        { label: 'Finance & fee tracking', detail: 'Know who\'s paid and chase in one click.' },
-        { label: 'Scores management', detail: 'Award, adjust and redeem points across all players.' },
-        { label: 'Match management', detail: 'Set fixtures, scorers, results — admin made simple.' },
-      ],
-      card: (
-        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          <div style={{background:'linear-gradient(135deg,rgba(46,204,113,0.1),rgba(46,204,113,0.02))',border:'1px solid rgba(46,204,113,0.15)',borderRadius:'14px',padding:'20px'}}>
-            <div style={{fontSize:'10px',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase' as const,color:'rgba(46,204,113,0.6)',marginBottom:'4px'}}>Club balance</div>
-            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'40px',fontWeight:800,color:'var(--green)',letterSpacing:'-0.02em',lineHeight:1}}>£4,280</div>
-            <div style={{fontSize:'12px',color:'var(--fg3)',marginTop:'4px'}}>18 fee payments received this season</div>
-          </div>
-          <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
-            <div style={{padding:'10px 14px',fontSize:'10px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'var(--fg3)',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>Recent transactions</div>
-            {[['Season fee — I. Suresh','+£80.00','cr'],['Season fee — R. Patel','+£80.00','cr'],['Ground hire — Arbour Park','−£120.00','db']].map(([n,a,t])=>(
-              <div key={n} style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'12px'}}>
-                <span style={{color:'rgba(255,255,255,0.55)'}}>{n}</span>
-                <span style={{fontWeight:700,color:t==='cr'?'var(--green)':'rgba(255,255,255,0.4)'}}>{a}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ),
-    },
-  };
-
-  const p = personas[persona];
-
-  return (
-    <>
-      <div className="cp-persona-tabs">
-        {(['player','captain','admin'] as Persona[]).map(id => (
-          <button
-            key={id}
-            className={`cp-persona-tab${persona === id ? ' active' : ''}`}
-            onClick={() => setPersona(id)}
-          >
-            {id === 'player' ? '🏏 Player' : id === 'captain' ? '📋 Captain' : '⚙️ Admin'}
-          </button>
-        ))}
-      </div>
-      <div className="cp-persona-panel">
-        <div>
-          <p className="cp-persona-eyebrow">{p.eyebrow}</p>
-          <h3 className="cp-persona-h">{p.h}</h3>
-          <p className="cp-persona-body">{p.body}</p>
-          <div className="cp-persona-checks">
-            {p.checks.map(c => (
-              <div key={c.label} className="cp-persona-check">
-                <span className="cp-persona-check-icon"><Glyph e="✓" /></span>
-                <span><strong>{c.label}</strong> — {c.detail}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="cp-persona-card">{p.card}</div>
-      </div>
-    </>
-  );
-}
-
-
-// A slow-moving strip of what the platform does, between the hero and the pillars
-function FeatureStrip() {
-  const row1 = ['📋 Live scorecard', '🎥 AI shot analysis', '📈 Form guide', '🧘 Mind Nets', '🎓 Two-minute lessons', '🏅 108 badges', '🔨 Auction Room', '📅 Availability'];
-  const row2 = ['💷 Club finance', '🤝 Find players nearby', '🧠 Coach AI', '⭐ Run Chase tasks', '🛍️ Reward marketplace', '👥 Team selection', '📣 Club noticeboard', '🏆 Leaderboards'];
-  const chip = (t: string) => {
-    const [icon, ...rest] = t.split(' ');
-    return (
-      <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', padding: '9px 18px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.03)', fontSize: 14, fontWeight: 600, color: 'rgba(232,237,245,0.75)' }}>
-        <Glyph e={icon} size="1.2em" /> {rest.join(' ')}
-      </span>
-    );
-  };
-  return (
-    <section aria-label="What ClubPulse does" style={{ padding: '36px 0', display: 'flex', flexDirection: 'column', gap: 14, background: '#05080f', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-      <Marquee duration={45}>{row1.map(chip)}</Marquee>
-      <Marquee duration={55} reverse>{row2.map(chip)}</Marquee>
-    </section>
   );
 }

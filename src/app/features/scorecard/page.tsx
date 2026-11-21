@@ -2,6 +2,8 @@
 
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export default function ScorecardPage() {
   return (
@@ -134,27 +136,7 @@ export default function ScorecardPage() {
       `}</style>
 
       <div className="sc-root">
-        <nav className="sc-nav">
-          <div className="sc-nav-inner">
-            <Link href="/" className="sc-logo"><span className="sc-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="scNavPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#scNavPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="sc-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <Link href="/#features" className="sc-nav-back">← All features</Link>
-            <Link href="/contact" className="sc-nav-cta">Get started</Link>
-          </div>
-        </nav>
+        <MarketingNav />
 
         <section className="sc-hero">
           <div>
@@ -164,7 +146,7 @@ export default function ScorecardPage() {
             <p className="sc-sub">Scorer enters each delivery — club members see the scorecard update live, and anyone with the public link sees it refresh every few seconds. No paper. No spreadsheet.</p>
             <div className="sc-btns">
               <Link href="/contact" className="sc-btn-red">Bring this to my club →</Link>
-              <Link href="/#features" className="sc-btn-ghost">See all features</Link>
+              <Link href="/features" className="sc-btn-ghost">See all features</Link>
             </div>
           </div>
 
@@ -281,33 +263,7 @@ export default function ScorecardPage() {
           </div>
         </section>
 
-        <footer className="sc-footer">
-          <div className="sc-footer-inner">
-            <Link href="/" className="sc-logo"><span className="sc-logo-mark"><svg width="22" height="22" viewBox="0 0 36 36" fill="none">
-                  <defs>
-                    <linearGradient id="scFooterPulse" x1="0" y1="0" x2="36" y2="0" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#7F1D1D"/>
-                      <stop offset="40%" stopColor="#DC2626"/>
-                      <stop offset="100%" stopColor="#1D4ED8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                  <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                  <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                        stroke="url(#scFooterPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg></span><span className="sc-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span></Link>
-            <div className="sc-footer-links">
-              <Link href="/features/availability">Availability</Link>
-              <Link href="/features/scorecard">Scorecard</Link>
-              <Link href="/features/ai-coach">AI Coach</Link>
-              <Link href="/features/scores">Scores</Link>
-              <Link href="/features/finance">Finance</Link>
-            </div>
-            <p className="sc-footer-copy">© 2026 ClubPulse</p>
-          </div>
-        </footer>
+        <MarketingFooter />
       </div>
     </>
   );
