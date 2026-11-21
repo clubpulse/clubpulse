@@ -10,7 +10,7 @@ describe('menu by role', () => {
   it('lists every page once', () => {
     const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href));
     expect(new Set(all).size).toBe(all.length);
-    expect(all.length).toBe(55);
+    expect(all.length).toBe(61);
   });
 
   it('treats someone with no role as a player', () => {
@@ -115,6 +115,14 @@ describe('menu by role', () => {
     expect(by('wellness')).not.toContain('/pulse-score');
     expect(hrefs(aud(['player']))).not.toContain('/pulse-score');
     expect(player.find((g) => g.key === 'scores')!.label).toBe('Rewards');
+  });
+
+  it('gives players the full Wellness pillar and only coaches the team view', () => {
+    const wellness = (r: ReturnType<typeof aud>) => (menuFor(r).find((g) => g.key === 'wellness')?.links ?? []).map((l) => l.href);
+    expect(wellness(aud(['player']))).toEqual(expect.arrayContaining(['/wellness/skills', '/wellness/routine', '/wellness/recovery', '/wellness/settings', '/wellness/support', '/wellbeing', '/match-mood', '/injury-intel']));
+    expect(wellness(aud(['player']))).not.toContain('/wellness/team');
+    expect(wellness(aud(['coach']))).toContain('/wellness/team');
+    expect(wellness(aud(['parent']))).toEqual([]);
   });
 
   it('keeps a parent out of team selection', () => {

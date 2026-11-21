@@ -12,30 +12,25 @@ export default function WellnessPage() {
       eyebrow="Wellness"
       colour="#F472B6"
       title="Arrive ready to play."
-      lead="Look after your body and your head. Start with a private weekly check-in on the website, and use the app for mental-skills routines and match-day preparation."
+      lead="Look after your body and your head. Check in before a match, follow your trend, learn mental skills and keep a private recovery log, all on the website."
       cta={{ href: '/auth/sign-up', label: 'Join as a player' }}
       groups={[
         {
           status: 'live',
           items: [
-            { h: 'Pre-match readiness and checklist', body: 'A quick private check on sleep, mood, soreness and stress, and a match-day preparation checklist whose ticks are saved for the day.' },
-            { h: 'Weekly check-in', body: 'A private weekly check-in on how your body and mind are. Coaches only ever see anonymous club averages.' },
-            { h: 'Match mood', body: 'Say how you are feeling going into your next fixture.' },
-            { h: 'Injury log', body: 'Keep a private record of knocks and niggles over the season.' },
+            { h: 'Pre-match readiness and trend', body: 'A quick private check on sleep, mood, soreness and stress, and a four-week trend of how you have been.' },
+            { h: 'Match-day checklists and your routine', body: 'The night before, the morning, at the ground and between balls, with ticks saved for the day and a routine you build yourself.' },
+            { h: 'Mental skills', body: 'Written guides on breathing, focus, self-talk, imagery and pressure, including a six-week programme.' },
+            { h: 'Recovery log', body: 'A private note of how your body feels and what you did about it. It does not diagnose or suggest treatment.' },
+            { h: 'Weekly check-in, match mood and injury log', body: 'A private weekly check-in (coaches see only anonymous club averages), how you feel going into a fixture, and a record of knocks and niggles.' },
+            { h: 'Your choice on sharing', body: 'Private by default. Adult players can choose to share readiness averages with their club’s coaches, never notes, and can stop at any time.' },
+            { h: 'Where to get support', body: 'Samaritans, Mind and NHS 111, with advice for under-18s.' },
           ],
         },
         {
           status: 'app',
           items: [
-            { h: 'Mind Nets', body: 'A six-week programme: breathing, focus, routines, self-talk, imagery and pressure.' },
-            { h: 'Breathing and focus', body: 'Short guided sessions with a breathing circle and a timer.' },
-            { h: 'Match-day checklists and routines', body: 'The night before, the morning, at the ground and between balls, plus your own pre-ball routine.' },
-          ],
-        },
-        {
-          status: 'soon',
-          items: [
-            { h: 'Trends and mental-skills library', body: 'Readiness trends over time and the mental-skills routines on the website (in the app today).' },
+            { h: 'Breathing circle and timer', body: 'Guided breathing with an animated circle and timer in the ClubPulse app. The website has the same exercises as written steps.' },
           ],
         },
       ]}

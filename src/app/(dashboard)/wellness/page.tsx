@@ -5,7 +5,9 @@ import { getAudience } from '@/lib/nav/audience';
 import { pillarByKey, pillarSections } from '@/lib/nav/pillars';
 import { PillarPageView } from '@/components/pillars/PillarPageView';
 import { WellnessToday } from '@/components/wellness/WellnessToday';
-import { getWellnessToday } from '@/lib/actions/wellness';
+import { getWellnessToday, getReadinessTrend } from '@/lib/actions/wellness';
+import { TrendChart } from '@/components/wellness/TrendChart';
+import { ukToday } from '@/lib/utils/uk-date';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Wellness' };
@@ -20,9 +22,14 @@ export default async function WellnessPage() {
   // Today's tools lead the page, for players. Everyone else keeps the plain pillar page.
   let lead = null;
   if (audience.roles.includes('player')) {
-    const today = await getWellnessToday();
+    const [today, trend] = await Promise.all([getWellnessToday(), getReadinessTrend()]);
     lead = today.success
-      ? <WellnessToday initial={today.data} />
+      ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <WellnessToday initial={today.data} />
+          {trend.success && <TrendChart days={trend.data.days} rows={trend.data.rows} today={ukToday()} />}
+        </div>
+      )
       : <p role="alert" style={{ padding: 16, borderRadius: 12, border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.75)' }}>{today.error}</p>;
   }
   return <PillarPageView pillar={pillar} sections={sections} lead={lead} />;
