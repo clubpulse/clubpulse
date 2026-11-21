@@ -8,3 +8,7 @@ export function getCVShareUrl(slug: string): string {
 export function getScoutShareUrl(shareToken: string): string {
   return `${APP_URL}/scout/${shareToken}`;
 }
+
+export function getScorecardShareUrl(shareToken: string): string {
+  return `${APP_URL}/live/${shareToken}`;
+}
