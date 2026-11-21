@@ -13,9 +13,20 @@ export type Guided = Base & { kind: 'guided'; steps: Step[] };
 export type Read = Base & { kind: 'read'; paragraphs: string[]; points: string[] };
 export type Checklist = Base & { kind: 'checklist'; intro: string; items: string[] };
 export type Tips = Base & { kind: 'tips'; tips: string[] };
-export type Item = Guided | Read | Checklist | Tips;
+/** One week of the mental skills programme: the idea, a drill for the nets, and a daily practice. */
+export type Week = Base & {
+  kind: 'week'; week: number; skill: string;
+  learn: string[];
+  /** What to do at your next net or training session */
+  drill: { title: string; steps: string[] };
+  /** A guided session or tool to use each day this week */
+  daily: { label: string; id?: string; route?: string };
+  /** Asked at the end of the week */
+  check: string;
+};
+export type Item = Guided | Read | Checklist | Tips | Week;
 
-export type SectionKey = 'mindfulness' | 'meditation' | 'mindset' | 'tips' | 'matchday' | 'awareness';
+export type SectionKey = 'training' | 'mindfulness' | 'meditation' | 'mindset' | 'tips' | 'matchday' | 'awareness';
 export type Section = { key: SectionKey; title: string; plain: string; intro: string; icon: string; items: Item[] };
 
 /** `rounds` of breathing: in, an optional hold, out, an optional hold. */
@@ -34,6 +45,78 @@ const minutes = (steps: Step[]) => Math.max(1, Math.round(steps.reduce((sum, s) 
 const guided = (id: string, title: string, summary: string, steps: Step[]): Guided => ({ id, title, summary, kind: 'guided', steps, minutes: minutes(steps) });
 
 export const SECTIONS: Section[] = [
+  {
+    key: 'training', title: 'Mind Nets', plain: 'Psychological training', icon: '🎯',
+    intro: 'Six weeks of mental skills training, one skill a week. Each week has an idea to learn, a drill to do at the nets and a short practice for each day. Mental skills are trained like any other: a little, often.',
+    items: [
+      {
+        id: 'week-1', kind: 'week', week: 1, minutes: 5, skill: 'Staying calm', title: 'Week 1: Control your breathing',
+        summary: 'The fastest way to steady yourself, and the base for everything else.',
+        learn: [
+          'When you are nervous or rushed, your breathing gets short and high in the chest, and your body reads that as danger. Slowing the breath out is the one direct lever you have: it brings your heart rate down within a few breaths.',
+          'This week you are not trying to feel calm all the time. You are learning to bring yourself down a notch on demand, in a few seconds, anywhere.',
+        ],
+        drill: { title: 'One breath, every ball', steps: ['At your next net, breathe out slowly before every single ball, batting or bowling.', 'Count how many balls you remembered. Aim to beat it the next session.', 'Notice whether your first movement feels any different after the breath.'] },
+        daily: { label: 'Box breathing, once a day', id: 'box-breathing' },
+        check: 'Can you slow yourself down in three breaths, without anyone noticing?',
+      },
+      {
+        id: 'week-2', kind: 'week', week: 2, minutes: 5, skill: 'Concentration', title: 'Week 2: Train your focus',
+        summary: 'Attention is a muscle. This week you work it.',
+        learn: [
+          'Concentration is not staying focused for hours. It is noticing when your attention has drifted and bringing it back, quickly and without fuss. Every time you do that, you get better at it.',
+          'Cricket needs a narrow focus for a second or two per ball, then a rest. This week you practise both halves: the narrow moment, and switching off on purpose in between.',
+        ],
+        drill: { title: 'Twelve balls on the seam', steps: ['For twelve balls, watch only one thing: the seam, or the exact spot you are bowling at.', 'Between balls, deliberately look away and relax. Then switch back on with a trigger: a tap of the bat or a tug of the cap.', 'After the twelve, count how many you truly watched. Write the number down.'] },
+        daily: { label: 'Count ten breaths, once a day', id: 'count-breaths' },
+        check: 'How many balls out of twelve did you truly watch? Is the number going up?',
+      },
+      {
+        id: 'week-3', kind: 'week', week: 3, minutes: 5, skill: 'Routines', title: 'Week 3: Build your routine',
+        summary: 'A routine tells your body it is time, whatever the scoreboard says.',
+        learn: [
+          'Watch any good player closely and they do the same small things before every ball. That is not superstition. A routine fills the gap between balls with something useful, so there is no room for the last ball or the scoreboard.',
+          'A good routine has four parts and takes under ten seconds: a breath, somewhere to look, a word, and a trigger movement that means "now". This week you build yours and use it until it runs on its own.',
+        ],
+        drill: { title: 'Every ball, no exceptions', steps: ['Build your routine in My Routine.', 'Use it before every ball of a full net session, including the bad ones.', 'After a poor ball, use it exactly the same. That is when it matters most.'] },
+        daily: { label: 'Build or review My Routine', route: '/warmup/routine' },
+        check: 'Did you run your routine after your worst ball this week?',
+      },
+      {
+        id: 'week-4', kind: 'week', week: 4, minutes: 5, skill: 'Self-talk', title: 'Week 4: Coach yourself',
+        summary: 'Change what the voice in your head says, one line at a time.',
+        learn: [
+          'Your inner voice comments all day. Left alone, it judges: "rubbish", "not again". Judgements tighten you. Instructions free you: "head still", "hit the top of off".',
+          'You cannot silence the voice, but you can give it a script. This week you write three lines: one for before a ball, one for after a mistake, and one for when you are doing well and starting to get ahead of yourself.',
+        ],
+        drill: { title: 'Say it out loud', steps: ['Write your three lines. Keep each to four words or fewer.', 'In the nets, say the "before a ball" line quietly out loud each ball.', 'After any mistake, say the "after a mistake" line before you do anything else.'] },
+        daily: { label: 'Find your cue word', id: 'cue-word' },
+        check: 'What did you say to yourself after your last mistake? Would you say it to a teammate?',
+      },
+      {
+        id: 'week-5', kind: 'week', week: 5, minutes: 5, skill: 'Imagery', title: 'Week 5: See it before you do it',
+        summary: 'Your brain rehearses a movement when you picture it clearly.',
+        learn: [
+          'Picturing a skill in detail uses many of the same pathways as doing it, which is why players in most sports rehearse in their heads. It works best when it is vivid: what you see, hear and feel, at real speed, through your own eyes.',
+          'Imagery is also how you prepare for things going wrong. If you have already pictured a play and miss, and pictured yourself resetting, the real one is less of a shock.',
+        ],
+        drill: { title: 'Five in the head, six in the hand', steps: ['Before each over in the nets, close your eyes and play five balls in your head, in full.', 'Make them real speed, through your own eyes, with the sound of bat on ball.', 'Include one that goes wrong and your reset after it.'] },
+        daily: { label: 'See it first, once a day', id: 'visualise' },
+        check: 'When you picture your best shot or ball, can you hear it and feel it, not just see it?',
+      },
+      {
+        id: 'week-6', kind: 'week', week: 6, minutes: 5, skill: 'Pressure', title: 'Week 6: Practise pressure',
+        summary: 'Put it all together where it counts.',
+        learn: [
+          'Skills that hold up in a quiet net can fall apart in a tight finish, because pressure was never part of the practice. The answer is to add pressure to training in small, safe doses, and to use everything from the first five weeks inside it.',
+          'Pressure practice needs a consequence, even a silly one, and a clear target. The aim is not to make it nasty. It is to feel your heart rate rise and practise your breath, your routine and your plan anyway.',
+        ],
+        drill: { title: 'The last over', steps: ['Set a scenario with a partner: "eight to win off six balls" or "defend seven".', 'Agree a small forfeit for the loser: collecting the balls, or five press-ups.', 'Use your breath, your routine and one plan per ball. Afterwards, name one thing you did well under pressure.'] },
+        daily: { label: 'The pressure over, once a day', id: 'pressure-over' },
+        check: 'Under pressure this week, did you remember your routine? What did you do well?',
+      },
+    ],
+  },
   {
     key: 'mindfulness', title: 'Watch the Ball', plain: 'Mindfulness', icon: '👁️',
     intro: 'Mindfulness is paying attention to what is happening now, on purpose. In cricket that means this ball, not the last one and not the scoreboard.',
@@ -60,6 +143,24 @@ export const SECTIONS: Section[] = [
         { say: 'Tell yourself: this is my body getting ready to play.', seconds: 15 },
         ...breathing(3, 4, 0, 6),
         { say: 'The feeling can stay. You can still play your game with it there.', seconds: 15 },
+      ]),
+      guided('count-breaths', 'Count ten breaths', 'A concentration drill. It sounds easy. Most people lose count by four, and that is the training.', [
+        { say: 'Sit upright. Breathe normally, through your nose.', seconds: 10 },
+        { say: 'Count each breath out, silently: one, two, three, up to ten.', seconds: 40 },
+        { say: 'When you notice you have drifted, start again at one. No telling off. Drifting and coming back is the rep.', seconds: 40 },
+        { say: 'Keep going. One number for each breath out.', seconds: 45 },
+        { say: 'Last few breaths. Just the number and the breath.', seconds: 30 },
+        { say: 'How far did you get before drifting? That number grows with practice.', seconds: 12 },
+      ]),
+      guided('let-it-go', 'Let it go', 'For straight after a dismissal, a dropped catch or a bad decision. Ninety seconds to put it down.', [
+        { say: 'You are annoyed. That is fair. Give it ten seconds.', seconds: 10 },
+        { say: 'Clench both fists as tight as you can.', seconds: 6 },
+        { say: 'Now open your hands and let it drain out with a long breath.', seconds: 8, breathe: 'out' },
+        ...breathing(3, 4, 0, 6),
+        { say: 'Name what happened in five plain words. "I played across the line."', seconds: 12 },
+        { say: 'Name one thing you will do next time. One.', seconds: 12 },
+        { say: 'That is the lesson taken. The rest stays here.', seconds: 8 },
+        { say: 'What does the team need from you right now? Go and do that.', seconds: 10 },
       ]),
       {
         id: 'mindful-nets', kind: 'read', minutes: 2, title: 'A mindful net session',
@@ -108,6 +209,26 @@ export const SECTIONS: Section[] = [
         { say: 'Now your best: the shot or the delivery you love. Feel the timing. Hear the sound.', seconds: 35 },
         { say: 'See one thing go wrong. A play and miss, or a boundary off you. See yourself reset and get the next one right.', seconds: 35 },
         { say: 'Take that calm with you. Open your eyes.', seconds: 12 },
+      ]),
+      guided('pressure-over', 'The pressure over', 'Rehearse a tight finish in your head, so that when it comes you have already been there.', [
+        { say: 'Close your eyes. Two slow breaths.', seconds: 12 },
+        { say: 'Picture it: last over, the game in the balance, and it is on you. Bat in hand, or ball in hand.', seconds: 25 },
+        { say: 'Notice your body: heart quicker, hands tighter. That is normal. Breathe out slowly.', seconds: 20, breathe: 'out' },
+        { say: 'Slow down. See yourself take a few extra seconds. Your full routine.', seconds: 25 },
+        { say: 'Decide one plan for this ball. Say it to yourself in a few words.', seconds: 20 },
+        { say: 'See yourself carry it out fully. The shot played, or the ball landing on the spot.', seconds: 30 },
+        { say: 'Now see it go wrong once. A miss, or a boundary. Watch yourself breathe, reset, and go again with a clear plan.', seconds: 35 },
+        { say: 'See the next ball done well.', seconds: 20 },
+        { say: 'You have been here now. Open your eyes.', seconds: 10 },
+      ]),
+      guided('cue-word', 'Find your cue word', 'Tie one word to a calm, ready feeling, so that saying it on the field brings the feeling back.', [
+        { say: 'Pick a word or short phrase for how you want to feel when you play. "Smooth." "Watch it." "Tall."', seconds: 20 },
+        { say: 'Close your eyes. Remember a time you played well and felt exactly like that.', seconds: 25 },
+        { say: 'Make the memory vivid: where you were, the sound, how your body felt.', seconds: 30 },
+        { say: 'At the strongest moment, say your word to yourself, slowly, on a breath out.', seconds: 12, breathe: 'out' },
+        { say: 'Again. Feel it, then say the word on the breath out.', seconds: 15, breathe: 'out' },
+        { say: 'Once more. The word and the feeling together.', seconds: 15, breathe: 'out' },
+        { say: 'Use this word before every ball this week. It gets stronger each time you pair it.', seconds: 12 },
       ]),
     ],
   },
@@ -168,6 +289,60 @@ export const SECTIONS: Section[] = [
           'Talk to yourself the way you would talk to your best mate at the other end: short, calm, and on your side.',
         ],
         points: ['Swap judgements for instructions', '"Watch the ball", not "don\'t get out"', 'Short, calm, on your side'],
+      },
+      {
+        id: 'goals', kind: 'read', minutes: 3, title: 'Goals that actually help', summary: 'Why "score fifty" is a poor goal, and what to set instead.',
+        paragraphs: [
+          'There are three kinds of goal. An outcome goal is a result: win the league, get picked. A performance goal is a number: average thirty, bowl at four an over. A process goal is something you do: watch the ball out of the hand, land four in six on a length.',
+          'Outcome and performance goals give you direction for a season, but you do not control them. The opposition, the pitch and luck all get a vote. If they are all you think about, every low score feels like failing.',
+          'Process goals are fully yours, and they are what you take onto the field. Set one or two for each game, and judge your day by them first. Do the process often enough and the numbers tend to follow.',
+        ],
+        points: ['Outcome: the result. Performance: a number. Process: what you do', 'Take only process goals onto the field', 'One or two per game', 'Judge the day by the process first'],
+      },
+      {
+        id: 'concentration', kind: 'read', minutes: 3, title: 'Switching on and off', summary: 'Nobody can concentrate for six hours. The skill is turning it on at the right moment.',
+        paragraphs: [
+          'A day of cricket is hundreds of short bursts with gaps between them. Trying to stay fully focused all day wears you out by tea. Good players switch off between balls and switch on for each one.',
+          'Think of three zones. Wide: between overs, chat, look around, relax. Middle: as the bowler walks back, take in the field and your plan. Narrow: as the bowler runs in, nothing but the ball.',
+          'Build a trigger for the narrow zone: a tap of the bat, a tug of the cap, your cue word. Do it every ball. When you notice your mind has wandered, do not fight it. Use the trigger and come back.',
+        ],
+        points: ['Switch off between balls on purpose', 'Wide, middle, narrow', 'One trigger that means "now"', 'Wandering is normal; come back with the trigger'],
+      },
+      {
+        id: 'anger', kind: 'read', minutes: 2, title: 'Anger and frustration', summary: 'A bad decision, a sledge, a dropped catch off your bowling.',
+        paragraphs: [
+          'Anger is energy with nowhere to go. It tightens your muscles and narrows your thinking, which is the opposite of what batting, bowling and catching need.',
+          'You will not stop feeling it, so plan what you do with it. Have a set response: turn away, one long breath out, fix your eyes on something far off, then your cue word. Practise it in the nets so it is there when you need it.',
+          'How you act when it goes against you is seen by your teammates, the juniors and the umpires. Respecting the decision, even a wrong one, is part of the game and part of the Spirit of Cricket.',
+        ],
+        points: ['Anger tightens you up', 'Have a set response and rehearse it', 'Turn away, breathe out, look far, cue word', 'Respect the decision'],
+      },
+      {
+        id: 'not-picked', kind: 'read', minutes: 2, title: 'When you are not picked', summary: 'Being dropped or left out hurts. Here is a way through it.',
+        paragraphs: [
+          'Being left out feels personal, and it is fine to be disappointed. It is a decision about one team for one game, made with limited information. It is not a verdict on you as a player or a person.',
+          'Ask for feedback, calmly, a day or two later: "What would you like to see from me to get back in?" A specific answer gives you something to work on. Most captains and coaches respect being asked.',
+          'Then control what you can: your training, your attitude at the ground, and how you support the people who were picked. Selectors notice who stays positive.',
+        ],
+        points: ['One team, one game: not a verdict on you', 'Ask what they want to see', 'Work on that one thing', 'Support the players who were picked'],
+      },
+      {
+        id: 'fear-of-failure', kind: 'read', minutes: 2, title: 'Playing not to fail', summary: 'When you are so worried about getting out that you stop playing.',
+        paragraphs: [
+          'Fear of failing makes you play to avoid mistakes instead of playing to do something. Batters poke and prod. Bowlers aim the ball instead of bowling it. It feels safe and works badly.',
+          'The fear is usually about what others will think. Notice that the people whose opinion matters, your teammates, your coach, your family, care far more about how you go about it than about the score.',
+          'Give yourself permission to fail while doing the right thing. Getting out to a positive, well-chosen shot is a better day than surviving an hour of fear. Set a process goal that rewards intent: "I will commit to every shot I choose."',
+        ],
+        points: ['Playing not to fail makes you worse', 'People judge how you play, not just the score', 'Permission to fail doing the right thing', 'Commit fully to what you choose'],
+      },
+      {
+        id: 'better-opposition', kind: 'read', minutes: 2, title: 'Against a stronger side', summary: 'Stepping up a level, or facing someone with a reputation.',
+        paragraphs: [
+          'Against a better team or a well-known player, it is easy to play the name instead of the ball. The ball does not know who bowled it.',
+          'Shrink the contest. You are not playing a whole team with a reputation. You are playing one ball, then another. Break the game into small pieces you can win: this over, the next ten runs, the next spell.',
+          'Treat it as information, not a threat. A better opponent shows you exactly what the next level looks like. Whatever the result, come away with one thing you learned about your own game.',
+        ],
+        points: ['Play the ball, not the name', 'Win small pieces: this over, these ten runs', 'It shows you the next level', 'Take one lesson home'],
       },
     ],
   },

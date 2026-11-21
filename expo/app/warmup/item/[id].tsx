@@ -7,7 +7,8 @@ import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { itemById, type Guided } from '../../../lib/warmup';
+import { itemById, type Guided, type Week } from '../../../lib/warmup';
+import { getDoneWeeks, setWeekDone } from '../../../lib/warmupStore';
 import { useReducedMotion } from '../../../components/Magic';
 import { colors, display, fonts, radius, spacing } from '../../../constants/theme';
 
@@ -41,6 +42,8 @@ export default function WarmupItem() {
           </>
         )}
 
+        {item.kind === 'week' && <WeekView item={item} />}
+
         {item.kind === 'checklist' && <Ticks intro={item.intro} items={item.items} />}
 
         {item.kind === 'tips' && item.tips.map((t, i) => (
@@ -54,6 +57,49 @@ export default function WarmupItem() {
         </Pressable>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function WeekView({ item }: { item: Week }) {
+  const router = useRouter();
+  const [done, setDone] = useState(false);
+  useEffect(() => { getDoneWeeks().then((list) => setDone(list.includes(item.id))); }, [item.id]);
+
+  const toggle = async () => { const list = await setWeekDone(item.id, !done); setDone(list.includes(item.id)); };
+  const openDaily = () => {
+    if (item.daily.route) router.push(item.daily.route as never);
+    else if (item.daily.id) router.push({ pathname: '/warmup/item/[id]', params: { id: item.daily.id } });
+  };
+
+  return (
+    <>
+      <Text style={styles.eyebrow}>THIS WEEK'S SKILL · {item.skill.toUpperCase()}</Text>
+      {item.learn.map((p, i) => <Text key={i} style={styles.para}>{p}</Text>)}
+
+      <View style={styles.box}>
+        <Text style={styles.eyebrow}>AT THE NETS</Text>
+        <Text style={styles.drillTitle}>{item.drill.title}</Text>
+        {item.drill.steps.map((step, i) => <View key={step} style={styles.point}><Text style={styles.dot}>{i + 1}.</Text><Text style={styles.pointText}>{step}</Text></View>)}
+      </View>
+
+      <Pressable onPress={openDaily} accessibilityRole="button" style={styles.daily}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.eyebrow}>EVERY DAY THIS WEEK</Text>
+          <Text style={styles.drillTitle}>{item.daily.label}</Text>
+        </View>
+        <Ionicons name="play-circle" size={32} color={PINK} />
+      </Pressable>
+
+      <View style={styles.box}>
+        <Text style={styles.eyebrow}>AT THE END OF THE WEEK, ASK YOURSELF</Text>
+        <Text style={styles.para}>{item.check}</Text>
+      </View>
+
+      <Pressable onPress={toggle} accessibilityRole="checkbox" accessibilityState={{ checked: done }} style={[styles.tick, done && { borderColor: PINK, backgroundColor: 'rgba(244,114,182,0.10)' }]}>
+        <Ionicons name={done ? 'checkmark-circle' : 'ellipse-outline'} size={24} color={done ? PINK : (colors.textMuted as string)} />
+        <Text style={[styles.pointText, { color: colors.white, fontWeight: '700' }]}>{done ? `Week ${item.week} done` : `Mark week ${item.week} as done`}</Text>
+      </Pressable>
+    </>
   );
 }
 
@@ -149,7 +195,9 @@ const styles = StyleSheet.create({
   box: { borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(244,114,182,0.4)', backgroundColor: 'rgba(244,114,182,0.08)', padding: spacing.lg, gap: spacing.sm },
   eyebrow: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: PINK },
   point: { flexDirection: 'row', gap: spacing.sm },
-  dot: { color: PINK, fontSize: 16, lineHeight: 22 },
+  dot: { color: PINK, fontSize: 16, lineHeight: 22, minWidth: 14 },
+  drillTitle: { fontFamily: display.bold, fontSize: 17, color: colors.white },
+  daily: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.navyLight, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(244,114,182,0.45)', padding: spacing.lg },
   pointText: { flex: 1, fontSize: 15, lineHeight: 22, color: colors.text },
   tip: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.navyLight, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg },
   tipNumber: { fontFamily: display.heavy, fontSize: 18, color: PINK, width: 22 },
