@@ -19,7 +19,7 @@ import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { PILLARS, pillarCounts } from '@/lib/nav/pillars';
 import { MagicCard } from '@/components/magic/MagicCard';
 
-const SYNE = "'Syne', sans-serif";
+const SYNE = "'Bricolage Grotesque', sans-serif";
 const hint: CSSProperties = { fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' };
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {

@@ -85,7 +85,7 @@ export function WaitlistAdminTable({ entries: initial }: WaitlistAdminTableProps
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '16px',
             color: 'rgba(255,255,255,0.4)',
@@ -96,7 +96,7 @@ export function WaitlistAdminTable({ entries: initial }: WaitlistAdminTableProps
 
           {/* Info */}
           <div style={{ flex: 1, minWidth: '180px' }}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 2px' }}>
+            <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 2px' }}>
               {entry.full_name}
             </p>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 6px' }}>

@@ -68,7 +68,7 @@ export function InfamyPageClient({
           <h1
             style={{
               margin: 0,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800,
               fontSize: '28px',
               color: '#fff',
@@ -96,7 +96,7 @@ export function InfamyPageClient({
             borderRadius: '10px',
             border: '1px solid rgba(220,38,38,0.4)',
             cursor: 'pointer',
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '14px',
             background: 'rgba(220,38,38,0.12)',
@@ -121,7 +121,7 @@ export function InfamyPageClient({
           <h2
             style={{
               margin: 0,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               fontSize: '18px',
               color: '#fff',
@@ -184,7 +184,7 @@ export function InfamyPageClient({
                     <div>
                       <div
                         style={{
-                          fontFamily: "'Syne', sans-serif",
+                          fontFamily: "'Bricolage Grotesque', sans-serif",
                           fontWeight: 700,
                           fontSize: '16px',
                           color: '#fff',
@@ -246,7 +246,7 @@ export function InfamyPageClient({
           <h2
             style={{
               margin: 0,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               fontSize: '18px',
               color: '#fff',
@@ -260,7 +260,7 @@ export function InfamyPageClient({
               <h3
                 style={{
                   margin: 0,
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 600,
                   fontSize: '14px',
                   color: 'rgba(255,255,255,0.5)',
@@ -299,7 +299,7 @@ export function InfamyPageClient({
                     </div>
                     <div
                       style={{
-                        fontFamily: "'Syne', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700,
                         fontSize: '13px',
                         color: 'rgba(220,38,38,0.8)',

@@ -18,7 +18,7 @@ export default async function AdminScratchCardsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px',
         }}>
           🎰 Scratch Cards

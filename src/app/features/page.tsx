@@ -66,7 +66,7 @@ function MatchDemo() {
         </div>
         <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 42, fontWeight: 800, color: '#EFC84A', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 42, fontWeight: 800, color: '#EFC84A', lineHeight: 1, letterSpacing: '-0.02em' }}>
               {liveScore.runs}/{liveScore.wkts}
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>{liveScore.overs} overs</div>
@@ -97,7 +97,7 @@ function MatchDemo() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: '#04091A', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 14 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>⚡ Gut Feeling</div>
-          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: '#22C55E' }}>68%</div>
+          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#22C55E' }}>68%</div>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Win probability</div>
         </div>
         <div style={{ background: '#04091A', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 14 }}>
@@ -204,11 +204,11 @@ function PerformanceDemo() {
       <div style={{ background: '#04091A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 800, color: '#fff' }}>{p.name}</div>
+            <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 18, fontWeight: 800, color: '#fff' }}>{p.name}</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{p.role}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: '#EFC84A' }}>{p.rating}</div>
+            <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#EFC84A' }}>{p.rating}</div>
             <div style={{ fontSize: 10, color: p.trend === 'rising' ? '#22C55E' : 'rgba(255,255,255,0.35)', fontWeight: 600 }}>
               {p.trend === 'rising' ? '↑ Rising' : '→ Steady'}
             </div>
@@ -241,7 +241,7 @@ function PerformanceDemo() {
             { label: 'Strike Rate', val: '84.2' },
           ].map((s, i) => (
             <div key={i} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 9, padding: '8px 10px', textAlign: 'center' }}>
-              <div style={{ fontSize: 16, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: '#fff' }}>{s.val}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#fff' }}>{s.val}</div>
               <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.label}</div>
             </div>
           ))}
@@ -267,7 +267,7 @@ function TeamDemo() {
       <div style={{ display: 'flex', gap: 10 }}>
         {Object.entries(counts).map(([k,n]) => (
           <div key={k} style={{ flex: 1, background: '#04091A', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 14px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: colMap[k as 'yes'|'no'|'maybe'] }}>{n}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: colMap[k as 'yes'|'no'|'maybe'] }}>{n}</div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2, textTransform: 'capitalize' }}>{k}</div>
           </div>
         ))}
@@ -322,7 +322,7 @@ function FinanceDemo() {
         </div>
         <div style={{ background: 'rgba(239,200,74,0.08)', border: '1px solid rgba(239,200,74,0.2)', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Potential annual saving</span>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 24, fontWeight: 800, color: '#EFC84A' }}>£{offset.toLocaleString()}</span>
+          <span style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 24, fontWeight: 800, color: '#EFC84A' }}>£{offset.toLocaleString()}</span>
         </div>
       </div>
       {/* Ledger */}
@@ -369,23 +369,23 @@ function EngagementDemo() {
         </div>
         {leaders.map((p, i) => (
           <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'all 0.4s' }}>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: i === 0 ? '#EFC84A' : 'rgba(255,255,255,0.3)', width: 20 }}>#{i+1}</span>
+            <span style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 14, fontWeight: 800, color: i === 0 ? '#EFC84A' : 'rgba(255,255,255,0.3)', width: 20 }}>#{i+1}</span>
             <span style={{ fontSize: 18 }}>{p.badge}</span>
             <span style={{ flex: 1, fontSize: 13, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? '#fff' : 'rgba(255,255,255,0.65)' }}>{p.name}</span>
             <span style={{ fontSize: 11, color: p.delta > 0 ? '#22C55E' : '#ef4444', fontWeight: 600 }}>
               {p.delta > 0 ? '↑' : '↓'}{Math.abs(p.delta)}
             </span>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: i === 0 ? '#EFC84A' : '#fff' }}>{p.pts.toLocaleString()}</span>
+            <span style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 14, fontWeight: 800, color: i === 0 ? '#EFC84A' : '#fff' }}>{p.pts.toLocaleString()}</span>
           </div>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: 'rgba(239,200,74,0.06)', border: '1px solid rgba(239,200,74,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: '#EFC84A' }}>2,840</div>
+          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#EFC84A' }}>2,840</div>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Your Pulse Points</div>
         </div>
         <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Syne',sans-serif", color: '#f97316' }}>🔥 #1</div>
+          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#f97316' }}>🔥 #1</div>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Hall of Infamy</div>
         </div>
       </div>
@@ -441,7 +441,7 @@ function RewardsDemo() {
       <div style={{ background: 'rgba(239,200,74,0.07)', border: '1px solid rgba(239,200,74,0.18)', borderRadius: 12, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(239,200,74,0.6)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Your balance</div>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} pts</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} pts</div>
         </div>
         <div style={{ fontSize: 36 }}><Glyph e="⚡" /></div>
       </div>
@@ -564,7 +564,7 @@ export default function FeaturesPage() {
   return (
     <div className="fp-root">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .fp-root {
           --bg: #05080f; --bg2: #07102B; --fg: #E8EDF5; --fg2: rgba(232,237,245,0.55); --fg3: rgba(232,237,245,0.28);
@@ -583,7 +583,7 @@ export default function FeaturesPage() {
           border-bottom: 1px solid var(--border);
           padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between;
         }
-        .fp-logo { font-family: 'Syne',sans-serif; font-size: 17px; font-weight: 800; text-decoration: none; }
+        .fp-logo { font-family: 'Bricolage Grotesque',sans-serif; font-size: 17px; font-weight: 800; text-decoration: none; }
         .fp-logo .club { color: var(--fg); }
         .fp-logo .pulse { color: var(--sky); }
         .fp-topnav-links { display: flex; gap: 4px; }
@@ -594,7 +594,7 @@ export default function FeaturesPage() {
         /* Hero strip */
         .fp-hero { padding: 64px 40px 48px; max-width: 1200px; margin: 0 auto; }
         .fp-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sky); margin-bottom: 14px; }
-        .fp-h1 { font-family: 'Syne',sans-serif; font-size: clamp(36px,5vw,60px); font-weight: 800; letter-spacing: -0.035em; line-height: 0.95; margin-bottom: 16px; }
+        .fp-h1 { font-family: 'Bricolage Grotesque',sans-serif; font-size: clamp(36px,5vw,60px); font-weight: 800; letter-spacing: -0.035em; line-height: 0.95; margin-bottom: 16px; }
         .fp-h1 em { color: var(--sky); font-style: normal; }
         .fp-sub { font-size: 17px; color: var(--fg2); line-height: 1.65; max-width: 560px; }
 
@@ -613,7 +613,7 @@ export default function FeaturesPage() {
         .fp-demo-area { padding: 40px 48px; max-width: 900px; }
         .fp-demo-header { margin-bottom: 32px; }
         .fp-demo-icon { font-size: 36px; margin-bottom: 12px; }
-        .fp-demo-h2 { font-family: 'Syne',sans-serif; font-size: clamp(24px,3vw,36px); font-weight: 800; letter-spacing: -0.025em; color: var(--fg); margin-bottom: 8px; }
+        .fp-demo-h2 { font-family: 'Bricolage Grotesque',sans-serif; font-size: clamp(24px,3vw,36px); font-weight: 800; letter-spacing: -0.025em; color: var(--fg); margin-bottom: 8px; }
         .fp-demo-tagline { font-size: 16px; color: var(--fg2); line-height: 1.6; margin-bottom: 20px; }
         .fp-feat-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 32px; }
         .fp-feat-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--fg2); }
@@ -648,7 +648,7 @@ export default function FeaturesPage() {
 
         /* Footer */
         .fp-footer-cta { background: var(--bg2); border-top: 1px solid var(--border); padding: 64px 40px; text-align: center; }
-        .fp-footer-cta h2 { font-family: 'Syne',sans-serif; font-size: clamp(28px,4vw,44px); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 14px; }
+        .fp-footer-cta h2 { font-family: 'Bricolage Grotesque',sans-serif; font-size: clamp(28px,4vw,44px); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 14px; }
         .fp-footer-cta p { font-size: 16px; color: var(--fg2); margin-bottom: 32px; }
         .fp-footer-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .fp-footer-btn-p { padding: 14px 32px; background: var(--blue); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 11px; box-shadow: 0 0 32px rgba(37,99,235,0.4); }

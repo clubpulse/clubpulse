@@ -76,7 +76,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
             {initials}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff', fontFamily: "'Syne',sans-serif" }}>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff', fontFamily: "'Bricolage Grotesque',sans-serif" }}>
               {name}
             </div>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
@@ -168,7 +168,7 @@ export function MentorCard({ mentor, clubId, alreadyRequested = false }: Props) 
               display: 'flex', flexDirection: 'column', gap: '16px',
             }}
           >
-            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#fff', fontFamily: "'Syne',sans-serif" }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque',sans-serif" }}>
               Request {name} as mentor
             </h3>
             <textarea

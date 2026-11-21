@@ -79,7 +79,7 @@ export function AddEntryForm({ clubId }: Props) {
       padding: '20px',
     }}>
       <h2 style={{
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Bricolage Grotesque', sans-serif",
         fontWeight: 700,
         fontSize: '16px',
         color: '#fff',

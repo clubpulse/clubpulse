@@ -69,7 +69,7 @@ export default async function SchoolPage() {
     margin: '0 0 8px',
   };
   const big: React.CSSProperties = {
-    fontFamily: "'Syne', sans-serif",
+    fontFamily: "'Bricolage Grotesque', sans-serif",
     fontWeight: 800,
     fontSize: '32px',
     color: '#fff',
@@ -80,7 +80,7 @@ export default async function SchoolPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
           🏫 School Cricket
         </h1>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>{program.school_name}</p>
@@ -93,7 +93,7 @@ export default async function SchoolPage() {
             <span style={{
               background: groupCfg.color, color: '#fff',
               borderRadius: '8px', padding: '4px 14px',
-              fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '14px',
+              fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '14px',
             }}>
               {myGroup.age_group}
             </span>

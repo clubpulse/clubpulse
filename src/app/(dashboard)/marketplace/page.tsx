@@ -20,7 +20,7 @@ export default async function MarketplacePage() {
       <section>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
-            <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+            <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
               Marketplace
             </h1>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Redeem your Scores for rewards</p>
@@ -39,7 +39,7 @@ export default async function MarketplacePage() {
 
       {SPORTS_MERCHANTS.length > 0 && (
         <section>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 4px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 4px' }}>
             Shop and earn Scores
           </h2>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: '0 0 14px' }}>

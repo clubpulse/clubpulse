@@ -40,7 +40,7 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ fontSize: '16px' }}><Glyph e="📢" /></span>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '13px',
           color: '#f59e0b',

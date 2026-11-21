@@ -121,7 +121,7 @@ export function AdminDocumentsClient({ clubId, initialDocs, ackMap }: Props) {
 
   const sectionHeader = (text: string) => (
     <h2 style={{
-      fontFamily: "'Syne', sans-serif",
+      fontFamily: "'Bricolage Grotesque', sans-serif",
       fontWeight: 700,
       fontSize: '14px',
       color: 'rgba(255,255,255,0.7)',

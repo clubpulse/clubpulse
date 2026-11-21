@@ -17,7 +17,7 @@ export default async function VolunteersPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
             Pending approvals
           </h1>
           <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -30,7 +30,7 @@ export default async function VolunteersPage() {
       </section>
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
           All sessions
         </h2>
         <VolunteerSessionsTable sessions={result.data} />

@@ -49,7 +49,7 @@ export function ClubHealthScore() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <p style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 700,
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
             fontSize: '13px', color: 'rgba(255,255,255,0.4)',
             textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0,
           }}>Club health score</p>
@@ -99,7 +99,7 @@ export function ClubHealthScore() {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', lineHeight: 1 }}>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '22px', color: '#fff', lineHeight: 1 }}>
                   {data.score}
                 </span>
                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1, marginTop: '2px' }}>/ 100</span>
@@ -108,7 +108,7 @@ export function ClubHealthScore() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px',
+                  fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px',
                   color: gradeColour,
                 }}>{data.grade}</span>
                 <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>grade</span>

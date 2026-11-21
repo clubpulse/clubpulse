@@ -169,7 +169,7 @@ export function HealthTrendChart({ snapshots }: Props) {
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'baseline' }}>
                   <span
                     style={{
-                      fontFamily: "'Syne', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       fontWeight: 700,
                       fontSize: '18px',
                       color: '#fff',

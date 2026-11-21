@@ -98,7 +98,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '24px', color: '#fff', margin: '0 0 4px',
         }}>
           📋 Noticeboard
@@ -118,7 +118,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
         flexDirection: 'column',
         gap: '16px',
       }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
           Post a notice
         </h2>
 
@@ -210,7 +210,7 @@ export function NoticeboardAdminClient({ clubId, notices }: Props) {
       {/* All notices */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 700,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
           fontSize: '16px', color: '#fff', margin: 0,
         }}>
           All notices ({notices.length})

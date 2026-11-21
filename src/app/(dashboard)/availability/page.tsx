@@ -32,7 +32,7 @@ export default async function AvailabilityPage() {
         }}
       >
         <span style={{ fontSize: '40px' }}><Glyph e="🏏" /></span>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
           No club yet
         </h2>
         <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255,255,255,0.45)', maxWidth: '300px' }}>
@@ -50,7 +50,7 @@ export default async function AvailabilityPage() {
       <div>
         <h1
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '26px',
             color: '#fff',

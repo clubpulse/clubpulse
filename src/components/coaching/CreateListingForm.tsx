@@ -83,7 +83,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
               fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column', gap: '16px',
             }}
           >
-            <h3 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
+            <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
               List a Coaching Session
             </h3>
 

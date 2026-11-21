@@ -161,7 +161,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
             borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '380px',
             fontFamily: "'Inter', sans-serif",
           }}>
-            <h3 style={{ margin: '0 0 4px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
+            <h3 style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
               Book Session
             </h3>
             <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>

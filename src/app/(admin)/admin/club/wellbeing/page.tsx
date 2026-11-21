@@ -66,7 +66,7 @@ export default async function AdminWellbeingPage() {
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '22px',
           color: '#fff',
@@ -141,7 +141,7 @@ export default async function AdminWellbeingPage() {
               padding: '18px 20px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h3 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff' }}>
+                <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff' }}>
                   Week of {formatWeek(week.check_week)}
                 </h3>
                 <span style={{

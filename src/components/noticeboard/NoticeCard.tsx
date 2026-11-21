@@ -63,7 +63,7 @@ export function NoticeCard({ notice }: NoticeCardProps) {
 
       <h3 style={{
         margin: 0,
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Bricolage Grotesque', sans-serif",
         fontWeight: 700,
         fontSize: '16px',
         color: '#111827',

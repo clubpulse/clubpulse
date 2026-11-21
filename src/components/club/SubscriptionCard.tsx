@@ -67,7 +67,7 @@ export function SubscriptionCard({ clubId, subscription }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
           <span
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800,
               fontSize: '28px',
               color: '#fff',

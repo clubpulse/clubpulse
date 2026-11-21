@@ -8,11 +8,12 @@
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
-export function Marquee({ children, duration = 40, gap = 16, reverse = false }: { children: ReactNode; duration?: number; gap?: number; reverse?: boolean }) {
+export function Marquee({ children, duration = 40, gap = 16, reverse = false, vertical = false }: { children: ReactNode; duration?: number; gap?: number; reverse?: boolean; vertical?: boolean }) {
   const style = { '--mu-duration': `${duration}s`, '--mu-gap': `${gap}px` } as CSSProperties;
   const track = { animationDirection: reverse ? 'reverse' : 'normal' } as CSSProperties;
+  const fade = vertical ? 'linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent)' : 'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)';
   return (
-    <div className="mu-marquee" style={{ ...style, maskImage: 'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)', WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)' }}>
+    <div className={`mu-marquee${vertical ? ' mu-marquee-y' : ''}`} style={{ ...style, maskImage: fade, WebkitMaskImage: fade }}>
       {[0, 1].map((n) => (
         <div key={n} className="mu-marquee-track" style={track} aria-hidden={n === 1}>{children}</div>
       ))}
@@ -22,7 +23,8 @@ export function Marquee({ children, duration = 40, gap = 16, reverse = false }: 
 
 export function ShimmerButton({ href, children, style }: { href: string; children: ReactNode; style?: CSSProperties }) {
   return (
-    <Link href={href} className="mu-shimmer-btn" style={style}>
+    /* Padding is set inline as well because some pages reset it for every element */
+    <Link href={href} className="mu-shimmer-btn" style={{ padding: '14px 28px', ...style }}>
       <span>{children}</span>
     </Link>
   );

@@ -32,7 +32,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
         }}>
           🔍 Scout Mode
@@ -44,7 +44,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
 
       {/* Create session form */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 16px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 16px' }}>
           Create new session
         </h2>
         <CreateScoutForm clubId={clubId} />
@@ -53,7 +53,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
       {/* Active sessions list */}
       {sessions.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
             Sessions
           </h2>
           {sessions.map((s) => {
@@ -139,7 +139,7 @@ export default async function ScoutModePage({ searchParams }: Props) {
         <div style={cardStyle}>
           {sessionData.success ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
+              <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: 0 }}>
                 Anonymous performance — {sessionData.session.session_name}
               </h2>
               <ScoutDataTable

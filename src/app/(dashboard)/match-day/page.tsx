@@ -28,7 +28,7 @@ export default async function MatchDayPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px',
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px',
           color: '#fff', margin: 0, letterSpacing: '-0.3px',
         }}>
           Match Day 🏏
@@ -57,7 +57,7 @@ export default async function MatchDayPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px',
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px',
           color: '#fff', margin: 0, letterSpacing: '-0.3px',
         }}>
           Match Day 🏏
@@ -89,7 +89,7 @@ export default async function MatchDayPage() {
               background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)',
               borderRadius: '16px', padding: '24px',
             }}>
-              <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>
+              <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>
                 Set up today&apos;s match
               </h2>
               <CreateMatchForm clubId={membership.club_id} />
@@ -110,7 +110,7 @@ export default async function MatchDayPage() {
 
           {recent.length > 0 && (
             <div>
-              <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 12px 0' }}>
+              <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 12px 0' }}>
                 Recent Results
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

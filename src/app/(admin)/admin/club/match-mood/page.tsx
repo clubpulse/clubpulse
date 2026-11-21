@@ -52,7 +52,7 @@ export default async function AdminMatchMoodPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '720px' }}>
       <h1 style={{
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Bricolage Grotesque', sans-serif",
         fontWeight: 800,
         fontSize: '26px',
         color: '#fff',

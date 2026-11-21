@@ -81,7 +81,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
             <span style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '54px',
+              fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '54px',
               color: '#fff', lineHeight: 1, letterSpacing: '-2px',
             }}>
               {our.runs}/{our.wickets}
@@ -106,7 +106,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
             {scorecard.opposition}
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '28px', color: 'rgba(255,255,255,0.7)', lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '28px', color: 'rgba(255,255,255,0.7)', lineHeight: 1 }}>
               {their.runs}/{their.wickets}
             </span>
             <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>
@@ -217,7 +217,7 @@ export function LiveScorecard({ scorecard: initial, isAdmin, clubId, currentUser
       {/* Commentary feed */}
       {commentary.length > 0 && (
         <div>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px 0' }}>
+          <h3 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px 0' }}>
             Live Commentary
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

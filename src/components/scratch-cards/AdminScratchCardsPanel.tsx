@@ -127,7 +127,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
             <p style={{ margin: '0 0 6px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)' }}>
               {s.label}
             </p>
-            <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#fff' }}>
+            <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#fff' }}>
               {s.value}
             </p>
           </div>
@@ -139,7 +139,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
         background: '#07102B', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '14px', padding: '20px',
       }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 16px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 16px' }}>
           Settings
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -179,7 +179,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
 
       {/* Tasks that earn a card */}
       <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '20px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 4px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 4px' }}>
           Tasks that earn a card
         </h2>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', margin: '0 0 16px', lineHeight: 1.5 }}>
@@ -232,7 +232,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
         background: '#07102B', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: '14px', padding: '20px',
       }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 4px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 4px' }}>
           Prize Pool
         </h2>
         <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', margin: '0 0 16px' }}>
@@ -368,7 +368,7 @@ export function AdminScratchCardsPanel({ clubId, config, prizes: initialPrizes, 
           background: '#07102B', border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '14px', padding: '20px',
         }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 16px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '14px', color: '#fff', margin: '0 0 16px' }}>
             Recent Cards (last 200)
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

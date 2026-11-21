@@ -124,7 +124,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '36px', fontFamily: "'Inter', sans-serif" }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px' }}>
           🏏 Auction Management
         </h1>
         <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -138,7 +138,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
 
       {/* Create auction */}
       <section style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '22px' }}>
-        <h2 style={{ margin: '0 0 16px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
+        <h2 style={{ margin: '0 0 16px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
           Create Auction
         </h2>
         <form onSubmit={handleCreateAuction} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -160,7 +160,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
       {/* Add player lot */}
       {auctions.length > 0 && (
         <section style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '22px' }}>
-          <h2 style={{ margin: '0 0 16px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
+          <h2 style={{ margin: '0 0 16px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
             Add Player to Auction
           </h2>
           <form onSubmit={handleAddLot} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -197,7 +197,7 @@ export function AdminAuctionClient({ clubId, auctions, lots, members }: Props) {
       {/* Auction list + controls */}
       {auctions.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h2 style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
+          <h2 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff' }}>
             Auctions
           </h2>
           {auctions.map((auction) => {

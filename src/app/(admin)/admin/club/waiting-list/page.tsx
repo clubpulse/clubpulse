@@ -23,7 +23,7 @@ export default async function WaitingListAdminPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '22px',
           color: '#fff',
@@ -68,7 +68,7 @@ export default async function WaitingListAdminPage() {
       {waiting.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '15px',
             color: '#fff',
@@ -84,7 +84,7 @@ export default async function WaitingListAdminPage() {
       {resolved.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '15px',
             color: 'rgba(255,255,255,0.4)',

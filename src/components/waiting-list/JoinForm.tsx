@@ -52,7 +52,7 @@ export function JoinForm({ clubId, clubName }: JoinFormProps) {
       }}>
         <div style={{ fontSize: '56px', marginBottom: '16px' }}><Glyph e="🎉" /></div>
         <p style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '28px',
           color: '#fff',
@@ -186,7 +186,7 @@ export function JoinForm({ clubId, clubName }: JoinFormProps) {
           padding: '14px',
           fontSize: '15px',
           fontWeight: 700,
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           cursor: loading ? 'not-allowed' : 'pointer',
           transition: 'background 0.15s, opacity 0.15s',
           letterSpacing: '-0.2px',

@@ -11,7 +11,7 @@ import { RememberRole } from '@/components/roles/RememberRole';
 import type { RolePage, RoleTool } from '@/lib/nav/role-pages';
 import type { RoleData } from '@/lib/roles/data';
 
-const SYNE = "'Syne', sans-serif";
+const SYNE = "'Bricolage Grotesque', sans-serif";
 
 // Fixed positions, so the page renders the same on the server and in the browser
 const METEORS = [

@@ -30,7 +30,7 @@ export default async function FinanceAdminPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800, fontSize: '24px',
           color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
         }}>
@@ -47,7 +47,7 @@ export default async function FinanceAdminPage() {
           <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px' }}>
             Total Income
           </p>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#22c55e', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#22c55e', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
             {stats ? formatPence(stats.total_income_pence) : '—'}
           </p>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', margin: '4px 0 0' }}>{stats?.income_count ?? 0} entries</p>
@@ -56,7 +56,7 @@ export default async function FinanceAdminPage() {
           <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px' }}>
             Total Expenses
           </p>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#ef4444', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#ef4444', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
             {stats ? formatPence(stats.total_expense_pence) : '—'}
           </p>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', margin: '4px 0 0' }}>{stats?.expense_count ?? 0} entries</p>
@@ -66,7 +66,7 @@ export default async function FinanceAdminPage() {
             Net Balance
           </p>
           <p style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px',
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px',
             color: netPositive ? '#22c55e' : '#ef4444',
             margin: 0, fontVariantNumeric: 'tabular-nums',
           }}>
@@ -78,7 +78,7 @@ export default async function FinanceAdminPage() {
       {/* Chart + Add form */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '16px', alignItems: 'start' }}>
         <div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
             Monthly Summary
           </h2>
           <FinanceChart summaries={summaries} />
@@ -88,7 +88,7 @@ export default async function FinanceAdminPage() {
 
       {/* Full ledger */}
       <div>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff', margin: '0 0 10px' }}>
           All Entries
         </h2>
         <AdminFinanceTable entries={entries} />

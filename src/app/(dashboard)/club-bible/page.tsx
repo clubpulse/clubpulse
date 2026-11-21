@@ -47,7 +47,7 @@ export default async function ClubBiblePage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '28px',
           color: '#fff',
@@ -85,7 +85,7 @@ export default async function ClubBiblePage() {
           }} />
 
           <p style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '13px',
             textTransform: 'uppercase',
@@ -143,7 +143,7 @@ export default async function ClubBiblePage() {
       {featured.length > 0 && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '16px',
             color: '#fff',
@@ -173,7 +173,7 @@ export default async function ClubBiblePage() {
       {/* Full timeline */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 700,
           fontSize: '16px',
           color: '#fff',

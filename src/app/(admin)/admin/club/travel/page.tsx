@@ -21,7 +21,7 @@ export default async function AdminTravelPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800, fontSize: '24px',
           color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px',
         }}>
@@ -37,7 +37,7 @@ export default async function AdminTravelPage() {
 
       {/* Travel leaderboard */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
           Travel leaderboard
         </h2>
         {leaderboard.length === 0 ? (
@@ -85,7 +85,7 @@ export default async function AdminTravelPage() {
 
       {/* Recent club travel logs */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
           Recent travel logs
         </h2>
         {logs.length === 0 ? (

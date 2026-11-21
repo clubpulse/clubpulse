@@ -3,6 +3,7 @@
 import { Glyph } from '@/components/icons/Glyph';
 import Link from 'next/link';
 import { Pillars } from '@/components/marketing/Pillars';
+import { BadgeWall } from '@/components/marketing/BadgeWall';
 import { AnimatedGradientText, BorderBeam, DotPattern, Marquee, Meteors, ShimmerButton } from '@/components/magic';
 import { useState, useEffect, useRef } from 'react';
 
@@ -59,7 +60,7 @@ export default function HomePage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
         .cp-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .cp-root {
@@ -145,7 +146,7 @@ export default function HomePage() {
           border-radius:9px;display:grid;place-items:center;
           box-shadow:0 0 0 1px rgba(96,165,250,0.3),0 0 20px rgba(37,99,235,0.55);
         }
-        .cp-logo-name { font-family:'Syne',sans-serif;font-weight:800;font-size:17px; }
+        .cp-logo-name { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px; }
         .cp-logo-name .club { color:var(--fg); }
         .cp-logo-name .pulse { color:var(--sky); }
         .cp-nav-links { display:flex;gap:4px;flex:1;justify-content:center; }
@@ -217,7 +218,7 @@ export default function HomePage() {
           text-transform:uppercase;color:var(--green);margin-bottom:24px;
         }
         .cp-hero-h1 {
-          font-family:'Syne',sans-serif;
+          font-family:'Bricolage Grotesque',sans-serif;
           font-size:clamp(48px,6.5vw,82px);font-weight:800;
           line-height:0.94;letter-spacing:-0.04em;color:var(--fg);margin-bottom:24px;
         }
@@ -270,7 +271,7 @@ export default function HomePage() {
         .cp-aud-label.county  { color:#a78bfa; }
 
         .cp-aud-h {
-          font-family:'Syne',sans-serif;font-size:21px;font-weight:800;
+          font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;
           color:var(--fg);margin-bottom:12px;line-height:1.15;
         }
         .cp-aud-body {
@@ -339,7 +340,7 @@ export default function HomePage() {
         }
         .cp-hero-stat:last-child { border-right:none;padding-right:0;margin-right:0; }
         .cp-stat-n {
-          font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+          font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;
           color:var(--gold);letter-spacing:-0.02em;line-height:1;
         }
         .cp-stat-l { font-size:11px;color:var(--fg3);margin-top:3px; }
@@ -368,14 +369,14 @@ export default function HomePage() {
         .cp-phone-content { padding:16px;min-height:360px; }
 
         /* Phone screens */
-        .cp-sc-greeting { font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px; }
+        .cp-sc-greeting { font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px; }
         .cp-sc-sub { font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
         .cp-score-card {
           background:linear-gradient(135deg,rgba(239,200,74,0.12),rgba(239,200,74,0.04));
           border:1px solid rgba(239,200,74,0.2);border-radius:14px;
           padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;
         }
-        .cp-score-n { font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.02em; }
+        .cp-score-n { font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.02em; }
         .cp-score-unit { font-size:10px;color:rgba(239,200,74,0.5); }
         .cp-score-label { font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px; }
         .cp-score-val { font-size:12px;font-weight:600;color:var(--gold); }
@@ -396,7 +397,7 @@ export default function HomePage() {
           border-radius:5px;font-size:8px;font-weight:700;color:var(--green);margin-bottom:8px;
         }
         .cp-live-chip-dot { width:4px;height:4px;border-radius:50%;background:var(--green);animation:cp-blink-dot 1.5s infinite; }
-        .cp-sc-match-title { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;margin-bottom:2px; }
+        .cp-sc-match-title { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:#fff;margin-bottom:2px; }
         .cp-sc-match-meta { font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
         .cp-sc-innings { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px; }
         .cp-sc-head {
@@ -404,7 +405,7 @@ export default function HomePage() {
           background:rgba(37,99,235,0.14);border-bottom:1px solid rgba(255,255,255,0.04);
         }
         .cp-sc-head-name { font-weight:700;color:#fff;font-size:10px; }
-        .cp-sc-head-score { font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
+        .cp-sc-head-score { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
         .cp-sc-bat-row {
           display:flex;justify-content:space-between;align-items:center;
           padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:10px;
@@ -417,7 +418,7 @@ export default function HomePage() {
           background:linear-gradient(135deg,rgba(239,200,74,0.14),rgba(29,78,216,0.06));
           border:1px solid rgba(239,200,74,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
         }
-        .cp-pts-big { font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.03em; }
+        .cp-pts-big { font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-0.03em; }
         .cp-pts-eq { font-size:11px;color:rgba(240,236,228,0.4);margin-top:4px; }
         .cp-earn-list { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden; }
         .cp-earn-row {
@@ -473,7 +474,7 @@ export default function HomePage() {
           text-transform:uppercase;color:var(--red);margin-bottom:12px;
         }
         .cp-section-h2 {
-          font-family:'Syne',sans-serif;
+          font-family:'Bricolage Grotesque',sans-serif;
           font-size:clamp(30px,4vw,46px);font-weight:800;
           letter-spacing:-0.03em;color:var(--fg);margin-bottom:8px;
         }
@@ -482,11 +483,11 @@ export default function HomePage() {
         .cp-steps { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden; }
         .cp-step { background:var(--bg2);padding:40px 36px;position:relative; }
         .cp-step-num {
-          font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
+          font-family:'Bricolage Grotesque',sans-serif;font-size:11px;font-weight:800;
           letter-spacing:0.1em;color:rgba(29,78,216,0.7);margin-bottom:20px;
         }
         .cp-step-icon { font-size:32px;margin-bottom:16px; }
-        .cp-step-h { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px; }
+        .cp-step-h { font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px; }
         .cp-step-body { font-size:14px;color:var(--fg2);line-height:1.7; }
         .cp-step-arrow {
           position:absolute;top:50%;right:-1px;transform:translateY(-50%);
@@ -512,7 +513,7 @@ export default function HomePage() {
         }
         .cp-tag-live { background:rgba(46,204,113,0.1);color:var(--green);border:1px solid rgba(46,204,113,0.2); }
         .cp-tag-road { background:rgba(249,115,22,0.08);color:var(--orange);border:1px solid rgba(249,115,22,0.18); }
-        .cp-feat-card-h { font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px;line-height:1.2; }
+        .cp-feat-card-h { font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--fg);margin-bottom:10px;line-height:1.2; }
         .cp-feat-card-body { font-size:13.5px;color:var(--fg2);line-height:1.65;margin-bottom:18px; }
         .cp-feat-card-link { font-size:13px;font-weight:600;color:var(--red);text-decoration:none;display:inline-flex;align-items:center;gap:6px; }
         .cp-feat-card-bullets { display:flex;flex-direction:column;gap:7px;margin-bottom:18px; }
@@ -537,7 +538,7 @@ export default function HomePage() {
           font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
           color:var(--red);margin-bottom:12px;
         }
-        .cp-persona-h { font-family:'Syne',sans-serif;font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:14px;line-height:1.1; }
+        .cp-persona-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:var(--fg);margin-bottom:14px;line-height:1.1; }
         .cp-persona-body { font-size:15px;color:var(--fg2);line-height:1.75;margin-bottom:24px; }
         .cp-persona-checks { display:flex;flex-direction:column;gap:10px; }
         .cp-persona-check { display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--fg2); }
@@ -587,8 +588,8 @@ export default function HomePage() {
           background:var(--red);color:#fff;font-size:10px;font-weight:700;
           letter-spacing:0.06em;text-transform:uppercase;margin-bottom:20px;
         }
-        .cp-price-plan { font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px; }
-        .cp-price-n { font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--fg);letter-spacing:-0.03em;line-height:1; }
+        .cp-price-plan { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px; }
+        .cp-price-n { font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;color:var(--fg);letter-spacing:-0.03em;line-height:1; }
         .cp-price-n span { font-size:18px;font-weight:600;color:var(--fg2);vertical-align:top;margin-top:6px;display:inline-block; }
         .cp-price-period { font-size:12px;color:var(--fg3);margin-top:4px;margin-bottom:20px; }
         .cp-price-desc { font-size:14px;color:var(--fg2);line-height:1.6;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border); }
@@ -618,11 +619,11 @@ export default function HomePage() {
         }
         .cp-quote-mark {
           position:absolute;top:-20px;left:36px;
-          font-family:'Syne',sans-serif;font-size:180px;font-weight:800;
+          font-family:'Bricolage Grotesque',sans-serif;font-size:180px;font-weight:800;
           color:rgba(37,99,235,0.10);line-height:1;pointer-events:none;user-select:none;
         }
         .cp-quote-text {
-          font-family:'Syne',sans-serif;
+          font-family:'Bricolage Grotesque',sans-serif;
           font-size:clamp(18px,2.5vw,26px);font-weight:700;
           color:var(--fg);line-height:1.45;max-width:760px;position:relative;letter-spacing:-0.01em;
         }
@@ -634,7 +635,7 @@ export default function HomePage() {
           max-width:1200px;margin:0 auto;padding:64px 40px;
           display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
         }
-        .cp-cta-h { font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:#fff;line-height:1.1; }
+        .cp-cta-h { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;color:#fff;line-height:1.1; }
         .cp-cta-sub { font-size:15px;color:rgba(255,255,255,0.65);margin-top:6px; }
         .cp-cta-btn {
           padding:15px 32px;font-size:15px;font-weight:700;background:#fff;color:var(--red);
@@ -655,7 +656,7 @@ export default function HomePage() {
           border-radius:7px;display:grid;place-items:center;
           box-shadow:0 0 0 1px rgba(96,165,250,0.2);
         }
-        .cp-footer-logo-name { font-family:'Syne',sans-serif;font-weight:800;font-size:14px; }
+        .cp-footer-logo-name { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px; }
         .cp-footer-logo-name .club { color:var(--fg); }
         .cp-footer-logo-name .pulse { color:var(--sky); }
         .cp-footer-links { display:flex;gap:20px;flex-wrap:wrap; }
@@ -938,6 +939,9 @@ export default function HomePage() {
         {/* ── FOUR PILLARS ── */}
         <Pillars />
 
+        {/* ── BADGE WALL ── */}
+        <BadgeWall />
+
         {/* ── HOW IT WORKS ── */}
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
@@ -994,7 +998,7 @@ export default function HomePage() {
                   <div style={{background:'#04091A',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
                       <div>
-                        <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>Availability</div>
+                        <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>Availability</div>
                         <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · vs Henley CC</div>
                       </div>
                       <span style={{fontSize:'11px',padding:'4px 10px',background:'rgba(46,204,113,0.1)',border:'1px solid rgba(46,204,113,0.2)',borderRadius:'6px',color:'var(--green)',fontWeight:600}}>10 / 11 ✓</span>
@@ -1196,7 +1200,7 @@ function ComparisonSection() {
         <p style={{ textAlign: 'center', color: 'var(--sky)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '12px' }}>
           How we stack up
         </p>
-        <h2 style={{ textAlign: 'center', fontFamily: "'Syne', sans-serif", fontSize: 'clamp(26px,4vw,38px)', fontWeight: 800, color: '#fff', margin: '0 0 12px' }}>
+        <h2 style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 'clamp(26px,4vw,38px)', fontWeight: 800, color: '#fff', margin: '0 0 12px' }}>
           A generation ahead of the alternatives
         </h2>
         <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: '16px', marginBottom: '48px', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
@@ -1563,7 +1567,7 @@ function PersonaSection() {
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
           <div style={{background:'linear-gradient(135deg,rgba(239,200,74,0.12),rgba(239,200,74,0.04))',border:'1px solid rgba(239,200,74,0.2)',borderRadius:'14px',padding:'20px'}}>
             <div style={{fontSize:'11px',fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase' as const,color:'rgba(239,200,74,0.6)',marginBottom:'4px'}}>Your Scores balance</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'#EFC84A',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(239,200,74,0.5)'}}>pts</span></div>
+            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'40px',fontWeight:800,color:'#EFC84A',letterSpacing:'-0.02em',lineHeight:1}}>1,250 <span style={{fontSize:'16px',color:'rgba(239,200,74,0.5)'}}>pts</span></div>
             <div style={{fontSize:'13px',color:'rgba(240,236,228,0.4)',marginTop:'6px'}}>≈ £25.00 cash value</div>
           </div>
           <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>
@@ -1591,10 +1595,10 @@ function PersonaSection() {
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#111',border:'1px solid rgba(37,99,235,0.22)',borderRadius:'12px',padding:'16px'}}>
             <div>
-              <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
+              <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontWeight:800,fontSize:'15px',color:'#fff'}}>vs Henley CC — Away</div>
               <div style={{fontSize:'11px',color:'var(--fg3)'}}>Sat 26 Oct · 10:30am</div>
             </div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'28px',fontWeight:800,color:'var(--green)'}}>10<span style={{fontSize:'14px',fontWeight:500,color:'rgba(240,236,228,0.3)'}}>/11</span></div>
+            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'28px',fontWeight:800,color:'var(--green)'}}>10<span style={{fontSize:'14px',fontWeight:500,color:'rgba(240,236,228,0.3)'}}>/11</span></div>
           </div>
           {[['I. Suresh','yes'],['R. Patel','yes'],['A. Khan','yes'],['S. Bhatt','no'],['D. Sharma','maybe']].map(([n,s])=>(
             <div key={n} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',borderRadius:'8px',background:'#111',border:'1px solid rgba(255,255,255,0.04)'}}>
@@ -1628,7 +1632,7 @@ function PersonaSection() {
         <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
           <div style={{background:'linear-gradient(135deg,rgba(46,204,113,0.1),rgba(46,204,113,0.02))',border:'1px solid rgba(46,204,113,0.15)',borderRadius:'14px',padding:'20px'}}>
             <div style={{fontSize:'10px',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase' as const,color:'rgba(46,204,113,0.6)',marginBottom:'4px'}}>Club balance</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'40px',fontWeight:800,color:'var(--green)',letterSpacing:'-0.02em',lineHeight:1}}>£4,280</div>
+            <div style={{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'40px',fontWeight:800,color:'var(--green)',letterSpacing:'-0.02em',lineHeight:1}}>£4,280</div>
             <div style={{fontSize:'12px',color:'var(--fg3)',marginTop:'4px'}}>18 fee payments received this season</div>
           </div>
           <div style={{background:'#111',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',overflow:'hidden'}}>

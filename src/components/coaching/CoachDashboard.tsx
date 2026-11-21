@@ -147,7 +147,7 @@ export function CoachDashboard({ bookings, totalScoresEarned }: Props) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 style={{ margin: '0 0 12px', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>{title}</h3>
+      <h3 style={{ margin: '0 0 12px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>{title}</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>{children}</div>
     </section>
   );

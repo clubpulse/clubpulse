@@ -158,7 +158,7 @@ export function FeeSettingsForm({ clubId, initialSettings }: Props) {
           fontWeight: 700,
           color: saved ? '#4ade80' : '#fff',
           cursor: isPending ? 'not-allowed' : 'pointer',
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           opacity: isPending ? 0.6 : 1,
           transition: 'all 0.2s',
         }}

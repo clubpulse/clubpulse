@@ -176,7 +176,7 @@ export function AdminPotPanel({
       {activeProposals.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '17px',
             color: '#fff',

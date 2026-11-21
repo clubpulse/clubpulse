@@ -65,7 +65,7 @@ export function SponsorPackagesClient({
       </div>
 
       <section style={{ marginTop: '32px' }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
           My sponsorships
         </h2>
         <MySponsorships sponsorships={sponsorships} />

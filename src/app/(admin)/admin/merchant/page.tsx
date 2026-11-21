@@ -16,7 +16,7 @@ export default async function MerchantPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: "'Inter', sans-serif" }}>
       <div>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
           Merchant insights
         </h1>
         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
@@ -27,7 +27,7 @@ export default async function MerchantPage() {
       {/* Summary */}
       <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: 0 }}>
             Summary
           </p>
           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{insights.totalRedemptions} redemptions</span>
@@ -38,7 +38,7 @@ export default async function MerchantPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
         {/* Top categories */}
         <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
             Top categories
           </p>
           <SpendPatternChart patterns={insights.topCategories} />
@@ -46,7 +46,7 @@ export default async function MerchantPage() {
 
         {/* By role */}
         <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
             By role
           </p>
           {insights.roleBreakdown.length === 0 ? (
@@ -66,7 +66,7 @@ export default async function MerchantPage() {
 
       {/* Peak times */}
       <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
-        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
+        <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '13px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 14px' }}>
           Peak redemption times
         </p>
         <RedemptionHeatmap windows={insights.peakWindows} />

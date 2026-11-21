@@ -58,7 +58,7 @@ export default async function RafflePage() {
       <div>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '4px' }}>
           <h1 style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 800,
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
             fontSize: '24px', color: '#fff', margin: 0, letterSpacing: '-0.3px',
           }}>
             🎟️ Raffle &amp; Prize Draws
@@ -75,7 +75,7 @@ export default async function RafflePage() {
 
       <section>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 700,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
           fontSize: '16px', color: '#fff', margin: '0 0 14px',
         }}>
           Active draws
@@ -104,7 +104,7 @@ export default async function RafflePage() {
       {pastRaffles.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 700,
+            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
             fontSize: '16px', color: '#fff', margin: '0 0 14px',
           }}>
             Past draws

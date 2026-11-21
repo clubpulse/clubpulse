@@ -32,7 +32,7 @@ export function PredictiveScoresWidget() {
       fontFamily: "'Inter', sans-serif",
     }}>
       <p style={{
-        fontFamily: "'Syne', sans-serif", fontWeight: 700,
+        fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
         fontSize: '13px', color: 'rgba(255,255,255,0.4)',
         textTransform: 'uppercase', letterSpacing: '0.8px',
         margin: '0 0 4px',

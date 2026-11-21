@@ -18,7 +18,7 @@ export function AuthShell({ title, subtitle, children, footer }: {
       fontFamily: "'Inter', sans-serif",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .auth-card { width: 100%; max-width: 400px; }
         .auth-logo-mark {
           width: 36px; height: 36px;
@@ -28,13 +28,13 @@ export function AuthShell({ title, subtitle, children, footer }: {
           box-shadow: 0 0 0 1px rgba(96,165,250,0.3), 0 4px 16px rgba(37,99,235,0.55);
         }
         .auth-logo-name {
-          font-family: 'Syne', sans-serif; font-weight: 800;
+          font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
           font-size: 20px; letter-spacing: -0.3px;
         }
         .auth-logo-name .club { color: #fff; }
         .auth-logo-name .pulse { color: #60A5FA; }
         .auth-title {
-          font-family: 'Syne', sans-serif; font-weight: 700;
+          font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
           font-size: 22px; color: #fff; margin: 0;
         }
         .auth-subtitle { font-size: 14px; color: rgba(255,255,255,0.45); margin: 6px 0 0; }

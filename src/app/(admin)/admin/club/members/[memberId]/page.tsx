@@ -25,7 +25,7 @@ export default async function MemberPage({ params }: { params: Promise<{ memberI
         borderRadius: '20px',
         padding: '24px',
       }}>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.2px' }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.2px' }}>
           {member.full_name ?? member.display_name ?? 'Unnamed member'}
         </h1>
         <p style={{ margin: '0 0 24px', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>

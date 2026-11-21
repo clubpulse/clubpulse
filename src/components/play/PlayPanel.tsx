@@ -63,7 +63,7 @@ export function PlayPanel({ summary }: { summary: PlaySummary }) {
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: weekly.cap === null ? 0 : '12px' }}>
           <div>
             <p style={cardTitle}>Your balance</p>
-            <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '34px', color: '#EFC84A', lineHeight: 1 }}>
+            <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '34px', color: '#EFC84A', lineHeight: 1 }}>
               {formatScores(summary.balance)} <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Scores</span>
             </p>
           </div>

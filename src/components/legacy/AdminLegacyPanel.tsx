@@ -50,7 +50,7 @@ export function AdminLegacyPanel({
   }
 
   const sectionHead: React.CSSProperties = {
-    fontFamily: "'Syne', sans-serif", fontWeight: 800,
+    fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
     fontSize: 22, color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px',
   };
 

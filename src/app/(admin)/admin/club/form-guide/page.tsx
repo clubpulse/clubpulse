@@ -70,7 +70,7 @@ export default async function FormGuidePage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '22px',
           color: '#fff',
@@ -165,7 +165,7 @@ export default async function FormGuidePage() {
                   fontSize: '20px',
                   fontWeight: 800,
                   color: trendColor,
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   letterSpacing: '-0.5px',
                   fontVariantNumeric: 'tabular-nums',
                 }}>

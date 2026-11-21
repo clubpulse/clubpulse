@@ -117,7 +117,7 @@ function FixtureResolveCard({ fixture }: { fixture: PendingFixture }) {
               textAlign: 'center',
             }}>
               <div style={{ fontSize: '18px', lineHeight: 1 }}>{o.emoji}</div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', fontFamily: "'Syne', sans-serif", marginTop: '4px' }}>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif", marginTop: '4px' }}>
                 {count}
               </div>
               <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>

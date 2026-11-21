@@ -219,7 +219,7 @@ function Hilo({ onDone }: { onDone: () => void }) {
   if (final) return <p style={{ ...muted, color: '#fff', textAlign: 'center' }} role="status">{final}</p>;
   if (!view) return <p style={muted}>Setting up…</p>;
   const box = { padding: '14px 8px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', minWidth: 0 } as const;
-  const num = { margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff' } as const;
+  const num = { margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px', color: '#fff' } as const;
 
   return (
     <div style={center}>
@@ -256,7 +256,7 @@ export function GamesPanel({ state }: { state: GamesState }) {
       <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
         <div>
           <p style={cardTitle}>Earned from games today</p>
-          <p style={{ margin: 0, fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#EFC84A', lineHeight: 1 }}>{formatScores(state.earnedToday)}</p>
+          <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#EFC84A', lineHeight: 1 }}>{formatScores(state.earnedToday)}</p>
         </div>
         <p style={{ ...muted, maxWidth: '360px' }}>
           Each game can be played once a day.

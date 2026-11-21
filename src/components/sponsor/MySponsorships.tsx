@@ -82,7 +82,7 @@ export function MySponsorships({ sponsorships }: MySponsorshipsProps) {
                 </div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+                <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
                   {s.scores_paid.toLocaleString()}
                 </p>
                 <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>Scores</p>

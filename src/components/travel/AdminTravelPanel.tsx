@@ -208,7 +208,7 @@ export function AdminTravelPanel({ clubId, tours: initialTours }: Props) {
       {/* Create tour */}
       <section>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: 0 }}>
             Create a tour
           </h2>
           {!showCreate && (
@@ -263,7 +263,7 @@ export function AdminTravelPanel({ clubId, tours: initialTours }: Props) {
 
       {/* Award participation */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '17px', color: '#fff', margin: '0 0 14px' }}>
           Award tour participation
         </h2>
         {tours.length === 0 ? (

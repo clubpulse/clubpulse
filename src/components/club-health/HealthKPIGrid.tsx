@@ -125,7 +125,7 @@ function KPITile({ icon, label, rawValue, displayValue, unit, status }: KPITileP
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
           <span
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800,
               fontSize: '40px',
               color: '#fff',

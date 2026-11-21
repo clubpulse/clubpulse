@@ -33,7 +33,7 @@ export default async function WaitlistStatusPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '24px',
           color: '#fff',
@@ -74,7 +74,7 @@ export default async function WaitlistStatusPage() {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                   <div>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 2px' }}>
+                    <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 2px' }}>
                       {club?.name ?? 'Unknown club'}
                     </p>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
@@ -105,7 +105,7 @@ export default async function WaitlistStatusPage() {
                       textAlign: 'center',
                     }}>
                       <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 4px' }}>Queue position</p>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fbbf24', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+                      <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fbbf24', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                         #{entry.position_in_queue}
                       </p>
                     </div>
@@ -117,7 +117,7 @@ export default async function WaitlistStatusPage() {
                     textAlign: 'center',
                   }}>
                     <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 4px' }}>Scores earned</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+                    <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                       {entry.waiting_creds_awarded}
                     </p>
                   </div>
@@ -130,7 +130,7 @@ export default async function WaitlistStatusPage() {
                       textAlign: 'center',
                     }}>
                       <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 4px' }}>Joining bonus</p>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#4ade80', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+                      <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#4ade80', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                         +{entry.joining_bonus_awarded}
                       </p>
                     </div>
@@ -144,7 +144,7 @@ export default async function WaitlistStatusPage() {
                       textAlign: 'center',
                     }}>
                       <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 4px' }}>Joining bonus</p>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fca5a5', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+                      <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fca5a5', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                         +500
                       </p>
                     </div>

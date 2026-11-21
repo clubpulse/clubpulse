@@ -126,7 +126,7 @@ export default async function ClubOverviewPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '26px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.4px',
         }}>
           {club?.name ?? 'Your club'}
@@ -148,7 +148,7 @@ export default async function ClubOverviewPage() {
               <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.3)', margin: '0 0 8px' }}>
                 {stat.label}
               </p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '32px', color: '#fff', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+              <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '32px', color: '#fff', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                 {stat.value}
               </p>
             </div>
@@ -172,7 +172,7 @@ export default async function ClubOverviewPage() {
       {/* Full feature map */}
       <div id="features">
         <h2 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px',
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px',
           color: '#fff', margin: '0 0 20px', letterSpacing: '-0.2px',
         }}>
           All {totalFeatures} admin features — tap any to explore

@@ -23,7 +23,7 @@ export default async function KitDiscountsPage() {
       <section>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '4px' }}>
           <div>
-            <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
+            <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 2px', letterSpacing: '-0.3px' }}>
               🏏 Kit &amp; Equipment Discounts
             </h1>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
@@ -41,7 +41,7 @@ export default async function KitDiscountsPage() {
 
       {/* Kit deals grid */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 14px' }}>
           Available Deals
         </h2>
 
@@ -66,7 +66,7 @@ export default async function KitDiscountsPage() {
 
       {/* Redemption history */}
       <section>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: '0 0 14px' }}>
           My Redemptions
         </h2>
         <RedemptionHistory redemptions={redemptions} />

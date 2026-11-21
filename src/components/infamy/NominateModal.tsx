@@ -85,7 +85,7 @@ export function NominateModal({
           <h2
             style={{
               margin: 0,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 800,
               fontSize: '20px',
               color: '#fff',
@@ -115,7 +115,7 @@ export function NominateModal({
               textAlign: 'center',
               padding: '24px 0',
               color: 'rgba(220,38,38,0.9)',
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               fontSize: '18px',
             }}
@@ -267,7 +267,7 @@ export function NominateModal({
                 borderRadius: '10px',
                 border: 'none',
                 cursor: isPending ? 'not-allowed' : 'pointer',
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 fontSize: '15px',
                 background: 'rgba(220,38,38,0.85)',

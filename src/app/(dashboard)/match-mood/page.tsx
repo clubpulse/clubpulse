@@ -35,7 +35,7 @@ export default async function MatchMoodPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '720px' }}>
       <h1 style={{
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Bricolage Grotesque', sans-serif",
         fontWeight: 800,
         fontSize: '26px',
         color: '#fff',
@@ -72,7 +72,7 @@ export default async function MatchMoodPage() {
       {correlation.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '18px',
             color: '#fff',
@@ -140,7 +140,7 @@ export default async function MatchMoodPage() {
       {history.length > 0 && (
         <section>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             fontSize: '18px',
             color: '#fff',

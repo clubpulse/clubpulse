@@ -123,6 +123,7 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
    Written to match the Magic UI component set. Every moving effect stops for people who ask
    their device for reduced motion. */
 @keyframes mu-marquee { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--mu-gap, 16px))); } }
+@keyframes mu-marquee-y { from { transform: translateY(0); } to { transform: translateY(calc(-100% - var(--mu-gap, 16px))); } }
 @keyframes mu-shimmer { 0%, 90%, 100% { background-position: calc(-100% - var(--mu-spread, 100px)) 0; } 30%, 60% { background-position: calc(100% + var(--mu-spread, 100px)) 0; } }
 @keyframes mu-gradient { to { background-position: var(--mu-bg-size, 300%) 0; } }
 @keyframes mu-beam { to { offset-distance: 100%; } }
@@ -132,6 +133,8 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
 .mu-marquee { display: flex; overflow: hidden; gap: var(--mu-gap, 16px); }
 .mu-marquee-track { display: flex; flex-shrink: 0; justify-content: space-around; gap: var(--mu-gap, 16px); min-width: 100%; animation: mu-marquee var(--mu-duration, 40s) linear infinite; }
 .mu-marquee:hover .mu-marquee-track { animation-play-state: paused; }
+.mu-marquee-y { flex-direction: column; height: 100%; }
+.mu-marquee-y .mu-marquee-track { flex-direction: column; min-width: 0; min-height: 100%; animation-name: mu-marquee-y; }
 .mu-shimmer-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; overflow: hidden; white-space: nowrap; border-radius: 999px; padding: 14px 28px; font-weight: 700; font-size: 15px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.12); background: #2563EB; transition: transform .2s, box-shadow .2s; box-shadow: 0 8px 30px -8px rgba(37,99,235,0.7); }
 .mu-shimmer-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px -8px rgba(37,99,235,0.9); }
 .mu-shimmer-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%); background-size: 250% 100%; animation: mu-shimmer 4s infinite; }

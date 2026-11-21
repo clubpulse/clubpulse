@@ -10,7 +10,7 @@ export default async function ScorecardPage() {
     <div style={{ maxWidth: '520px', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '24px', color: '#fff', margin: '0 0 6px', letterSpacing: '-0.3px',
         }}>
           Upload scorecard
@@ -36,7 +36,7 @@ export default async function ScorecardPage() {
         borderRadius: '12px',
         padding: '14px 16px',
       }}>
-        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '13px', color: '#fff', margin: '0 0 6px' }}>
+        <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '13px', color: '#fff', margin: '0 0 6px' }}>
           How Scores are calculated
         </p>
         <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '3px' }}>

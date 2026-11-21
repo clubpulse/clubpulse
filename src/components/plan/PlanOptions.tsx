@@ -26,7 +26,7 @@ export function PlanOptions({ offer }: { offer: Offer }) {
       {offer.options.map((o) => (
         <div key={o.plan} style={card}>
           <p style={cardTitle}>{o.label}</p>
-          <p style={{ margin: '4px 0 0', fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '28px', color: '#fff' }}>
+          <p style={{ margin: '4px 0 0', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '28px', color: '#fff' }}>
             {pounds(o.pence)}<span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}> a month</span>
           </p>
           <button type="button" onClick={() => choose(o.plan)} disabled={busy !== null} style={{ ...pill('gold', busy !== null), marginTop: '16px' }}>

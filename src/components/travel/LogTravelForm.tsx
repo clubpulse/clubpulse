@@ -157,7 +157,7 @@ export function LogTravelForm({ clubId, onSuccess, onCancel }: Props) {
       }}>
         <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>You&apos;ll earn</span>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '22px',
           color: '#fff',

@@ -84,13 +84,13 @@ function ApplicationRow({ app }: { app: FeeOffsetApplication }) {
           <div style={{ display: 'flex', gap: '16px' }}>
             <div>
               <p style={{ margin: '0 0 1px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores</p>
-              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Syne', sans-serif" }}>
+              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#EFC84A', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 {app.scores_applied.toLocaleString()}
               </p>
             </div>
             <div>
               <p style={{ margin: '0 0 1px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Discount</p>
-              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#4ade80', fontFamily: "'Syne', sans-serif" }}>
+              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#4ade80', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 £{(app.pence_offset / 100).toFixed(2)}
               </p>
             </div>

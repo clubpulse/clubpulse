@@ -42,7 +42,7 @@ export default async function HallOfInfamyPage() {
         <span style={{ fontSize: '40px' }}><Glyph e="🏆" /></span>
         <h1
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '22px',
             color: '#fff',

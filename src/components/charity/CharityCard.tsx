@@ -38,7 +38,7 @@ export function CharityCard({ charity, settings }: Props) {
     <div style={{ background: '#07102B', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <div>
-          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Syne', sans-serif" }}>{charity.name}</h3>
+          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{charity.name}</h3>
           {charity.charity_number && <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Reg. {charity.charity_number}</p>}
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>

@@ -16,7 +16,7 @@ export default function AvailabilityPage() {
           background: var(--bg); color: var(--fg);
           font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
         /* NAV */
         .av-nav {
@@ -30,7 +30,7 @@ export default function AvailabilityPage() {
         }
         .av-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
         .av-logo-mark {width:30px;height:30px;border-radius:7px;background:linear-gradient(145deg,#0F1F5C 0%,#1D4ED8 50%,#3B82F6 100%);box-shadow:0 0 0 1px rgba(96,165,250,0.25),0 0 16px rgba(29,78,216,0.4);display:grid;place-items:center;}
-        .av-logo-name {font-family:'Syne',sans-serif;font-weight:800;font-size:15px;} .av-logo-name .club {color:#f0ece4;} .av-logo-name .pulse {color:#60A5FA;}
+        .av-logo-name {font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;} .av-logo-name .club {color:#f0ece4;} .av-logo-name .pulse {color:#60A5FA;}
         .av-nav-back {
           font-size: 13px; color: var(--fg3); text-decoration: none;
           display: flex; align-items: center; gap: 6px; transition: color 0.15s;
@@ -53,7 +53,7 @@ export default function AvailabilityPage() {
           text-transform: uppercase; color: var(--red); margin-bottom: 16px;
         }
         .av-h1 {
-          font-family: 'Syne', sans-serif; font-weight: 800;
+          font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
           font-size: clamp(38px, 5.5vw, 68px); letter-spacing: -0.03em;
           line-height: 1.05; color: var(--fg); margin-bottom: 20px;
         }
@@ -93,7 +93,7 @@ export default function AvailabilityPage() {
           display: flex; justify-content: space-between; align-items: flex-start;
           margin-bottom: 20px;
         }
-        .av-mock-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--fg); }
+        .av-mock-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 800; color: var(--fg); }
         .av-mock-meta { font-size: 11px; color: var(--fg3); margin-top: 3px; }
         .av-count-chip {
           background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3);
@@ -105,10 +105,10 @@ export default function AvailabilityPage() {
           border: 1px solid rgba(37,99,235,0.22); border-radius: 14px;
           padding: 18px; margin-bottom: 16px;
         }
-        .av-match-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 4px; }
+        .av-match-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 4px; }
         .av-match-date { font-size: 12px; color: var(--fg3); margin-bottom: 14px; }
         .av-squad-count { display: flex; align-items: baseline; gap: 6px; }
-        .av-squad-n { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--green); line-height: 1; }
+        .av-squad-n { font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; font-weight: 800; color: var(--green); line-height: 1; }
         .av-squad-label { font-size: 12px; color: var(--fg3); }
         .av-progress-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 12px; }
         .av-progress-fill { height: 100%; background: var(--green); border-radius: 2px; width: 91%; }
@@ -137,7 +137,7 @@ export default function AvailabilityPage() {
           text-transform: uppercase; color: var(--red); margin-bottom: 14px;
         }
         .av-section-h2 {
-          font-family: 'Syne', sans-serif; font-size: clamp(26px, 3.5vw, 40px);
+          font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(26px, 3.5vw, 40px);
           font-weight: 800; letter-spacing: -0.025em; color: var(--fg);
           margin-bottom: 12px;
         }
@@ -145,11 +145,11 @@ export default function AvailabilityPage() {
         .av-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
         .av-step { background: var(--bg2); padding: 36px 32px; }
         .av-step-n {
-          font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800;
+          font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-weight: 800;
           letter-spacing: 0.1em; color: rgba(29,78,216,0.4); margin-bottom: 16px;
         }
         .av-step-icon { font-size: 28px; margin-bottom: 14px; }
-        .av-step-h { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
+        .av-step-h { font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
         .av-step-body { font-size: 13.5px; color: var(--fg2); line-height: 1.65; }
 
         /* DETAIL CARDS */
@@ -160,7 +160,7 @@ export default function AvailabilityPage() {
         }
         .av-detail-card:hover { border-color: rgba(37,99,235,0.35); }
         .av-detail-icon { font-size: 24px; margin-bottom: 12px; }
-        .av-detail-h { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
+        .av-detail-h { font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 8px; }
         .av-detail-body { font-size: 13px; color: var(--fg2); line-height: 1.65; }
 
         /* COMPARISON */
@@ -190,7 +190,7 @@ export default function AvailabilityPage() {
         .av-faq-list { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 48px; }
         .av-faq-item { background: var(--bg2); padding: 24px 28px; border-bottom: 1px solid var(--border); }
         .av-faq-item:last-child { border-bottom: none; }
-        .av-faq-q { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 10px; }
+        .av-faq-q { font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 10px; }
         .av-faq-a { font-size: 13.5px; color: var(--fg2); line-height: 1.7; }
 
         /* CTA */
@@ -199,7 +199,7 @@ export default function AvailabilityPage() {
           max-width: 1200px; margin: 0 auto; padding: 72px 40px;
           display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
         }
-        .av-cta-h { font-family: 'Syne', sans-serif; font-size: clamp(22px, 3vw, 36px); font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+        .av-cta-h { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(22px, 3vw, 36px); font-weight: 800; letter-spacing: -0.02em; color: #fff; }
         .av-cta-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin-top: 6px; }
         .av-cta-btn { padding: 14px 30px; font-size: 14px; font-weight: 700; background: #fff; color: var(--red); text-decoration: none; border-radius: 10px; white-space: nowrap; transition: opacity 0.12s; }
         .av-cta-btn:hover { opacity: 0.9; }

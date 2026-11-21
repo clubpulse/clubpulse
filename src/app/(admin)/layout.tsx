@@ -114,7 +114,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               width: '28px', height: '28px', borderRadius: '7px',
               background: '#2563EB', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontSize: '13px', fontWeight: 800, color: '#fff',
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
             }}>C</span>
             <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>Admin</span>
           </Link>

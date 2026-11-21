@@ -56,7 +56,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
         textAlign: 'center',
       }}>
         <div style={{ fontSize: '40px', marginBottom: '12px' }}><Glyph e="✅" /></div>
-        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '20px', color: '#fff', margin: '0 0 6px' }}>
+        <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '20px', color: '#fff', margin: '0 0 6px' }}>
           Offset applied!
         </p>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 4px' }}>
@@ -157,13 +157,13 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
       }}>
         <div>
           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scores to spend</p>
-          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#EFC84A' : 'rgba(255,255,255,0.2)', fontFamily: "'Syne', sans-serif" }}>
+          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#EFC84A' : 'rgba(255,255,255,0.2)', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             {scores.toLocaleString()}
           </p>
         </div>
         <div>
           <p style={{ margin: '0 0 2px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fee discount</p>
-          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#4ade80' : 'rgba(255,255,255,0.2)', fontFamily: "'Syne', sans-serif" }}>
+          <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: scores > 0 ? '#4ade80' : 'rgba(255,255,255,0.2)', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             £{poundsValue}
           </p>
         </div>
@@ -187,7 +187,7 @@ export function FeeOffsetCalculator({ summary, clubId }: Props) {
           fontWeight: 700,
           color: scores > 0 ? '#fff' : 'rgba(255,255,255,0.2)',
           cursor: scores > 0 ? 'pointer' : 'not-allowed',
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           letterSpacing: '-0.2px',
           transition: 'opacity 0.15s',
           opacity: isPending ? 0.6 : 1,

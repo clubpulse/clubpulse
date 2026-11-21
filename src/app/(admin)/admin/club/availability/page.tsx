@@ -30,7 +30,7 @@ export default async function AvailabilityGridPage() {
       <div>
         <h1
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 800,
             fontSize: '22px',
             color: '#fff',
@@ -101,7 +101,7 @@ export default async function AvailabilityGridPage() {
                       fontSize: '15px',
                       fontWeight: 700,
                       color: '#fff',
-                      fontFamily: "'Syne', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                     }}
                   >
                     vs {fixture.opponent}

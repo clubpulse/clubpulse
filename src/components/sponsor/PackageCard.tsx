@@ -62,13 +62,13 @@ export function PackageCard({ pkg, juniorSlots, walletBalance, onSuccess }: Pack
             <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.7px', color: 'rgba(255,255,255,0.35)', margin: '0 0 2px' }}>
               {config.label}
             </p>
-            <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
+            <h3 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '16px', color: '#fff', margin: 0 }}>
               {pkg.title}
             </h3>
           </div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
+          <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
             {pkg.scores_cost.toLocaleString()}
           </p>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Scores</p>

@@ -22,7 +22,7 @@ export function ClubPlanCard({ title, current, children }: {
     <div style={{ ...card, display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
         <p style={label}>{title}</p>
-        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
+        <p style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '20px', color: '#fff', margin: 0 }}>
           {current ?? 'Not set up yet'}
         </p>
       </div>

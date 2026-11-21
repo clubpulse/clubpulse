@@ -107,7 +107,7 @@ export function DressingRoomClient({
       }}>
         <h2 style={{
           margin: '0 0 14px',
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: '18px',
           color: '#fff',

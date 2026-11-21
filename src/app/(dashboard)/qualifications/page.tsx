@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Courses & Qualifications | ClubPulse' };
 
 const heading: React.CSSProperties = {
-  fontFamily: "'Syne', sans-serif",
+  fontFamily: "'Bricolage Grotesque', sans-serif",
   fontWeight: 800,
   fontSize: 22,
   color: '#fff',

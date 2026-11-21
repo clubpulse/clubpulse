@@ -21,7 +21,7 @@ export const cardTitle: CSSProperties = {
 export const muted: CSSProperties = { margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.5)' };
 
 export const h1: CSSProperties = {
-  fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, letterSpacing: '-0.3px',
+  fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0, letterSpacing: '-0.3px',
 };
 
 export const twoCol: CSSProperties = {
@@ -48,7 +48,7 @@ export function pill(tone: 'gold' | 'blue' | 'green' | 'grey', disabled = false)
 }
 
 export const primaryBtn: CSSProperties = {
-  fontFamily: "'Syne', sans-serif", fontSize: '14px', fontWeight: 700, color: '#fff',
+  fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: '14px', fontWeight: 700, color: '#fff',
   background: '#2563EB', border: 'none', borderRadius: '11px', padding: '11px 20px', cursor: 'pointer',
 };
 

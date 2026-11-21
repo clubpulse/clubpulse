@@ -14,7 +14,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 const sectionHeadingStyle: React.CSSProperties = {
-  fontFamily: "'Syne', sans-serif",
+  fontFamily: "'Bricolage Grotesque', sans-serif",
   fontWeight: 700,
   fontSize: '16px',
   color: '#fff',
@@ -77,7 +77,7 @@ export default async function MentorMatchPage() {
       {/* Header */}
       <div>
         <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800,
           fontSize: '26px', color: '#fff', margin: '0 0 4px',
           letterSpacing: '-0.3px',
         }}>
