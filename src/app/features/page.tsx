@@ -9,12 +9,14 @@ export const metadata: Metadata = {
   description: 'ClubPulse features for players and for clubs.',
 };
 
+const PLAYER_PAGES: Partial<Record<string, string>> = { coach: '/players/analysis', community: '/players/community', wellness: '/players/wellness', academy: '/players/academy' };
+
 const SIDES = [
   {
     key: 'players' as const,
     title: 'For players',
     blurb: 'Improve your game, earn rewards and look after your head, all from your phone.',
-    href: '/features/players',
+    href: '/for-players',
     cta: 'See player features →',
   },
   {
@@ -79,7 +81,7 @@ export default function FeaturesOverviewPage() {
             <ul className="fo-cats">
               {CATEGORIES.filter((c) => c.audience === side.key).map((c) => (
                 <li key={c.id}>
-                  <Link href={`${side.href}#${c.id}`}>
+                  <Link href={side.key === 'players' ? PLAYER_PAGES[c.id] ?? side.href : `${side.href}#${c.id}`}>
                     <span className="fo-cat-name">{c.label}</span>
                     <span className="fo-cat-tag">{c.tagline}</span>
                   </Link>

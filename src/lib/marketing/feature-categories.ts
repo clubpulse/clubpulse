@@ -14,15 +14,12 @@ export type Category = {
 
 /* ─── Category metadata ──────────────────────────────── */
 export const CATEGORIES: Category[] = [
-  /* ── Players ── */
-  { id: 'match',       audience: 'players', icon: '🏏', label: 'Match Day',           tagline: 'Everything that happens on matchday, in one place.',        features: ['Live scorecard','Season wrap','Gut feeling predictions','Match mood tracker'] },
-  { id: 'coach',       audience: 'players', icon: '🤖', label: 'AI Coach',            tagline: 'A batting and bowling coach in your pocket.',                features: ['AI player report','AI coaching analysis','Video pose tracking','Ball tracking'] },
-  { id: 'performance', audience: 'players', icon: '📈', label: 'Performance',         tagline: 'Track your arc from debut to your peak.',                    features: ['Development tracker','Coaching history','Rivalry stats','Cricket CV'] },
-  { id: 'engagement',  audience: 'players', icon: '🏅', label: 'Engagement',          tagline: 'Turn participation into pride.',                             features: ['Pulse score','Leaderboard','Hall of Infamy','Raffle','Badges & achievements'] },
-  { id: 'rewards',     audience: 'players', icon: '🛍️', label: 'Rewards',             tagline: 'Points that pay for kit, discounts and more.',              features: ['Reward marketplace','Kit discounts','Injury intel','Documents vault','Travel planner'] },
-  { id: 'wellness',    audience: 'players', icon: '🧘', label: 'Warm-Up',             tagline: 'Mental preparation for the game: mindset, mindfulness and match-day routines.', features: ['Mind Nets: six weeks of mental skills','Guided breathing and meditation','Match-day checklists','Pre-ball routine builder','Thought for the day'] },
-  { id: 'academy',     audience: 'players', icon: '🎓', label: 'Academy',             tagline: 'Short lessons, daily questions and games.',                  features: ['Two-minute lessons','Personal practice plan','Daily cricket question','Auction Room','Honours Board badges'] },
-  { id: 'community',   audience: 'players', icon: '🤝', label: 'Community',           tagline: 'The heartbeat of your club between matchdays.',              features: ['Dressing room feed','Wellbeing check-in','Alumni network'] },
+  /* ── Players: four pillars, plus Scores as a thread ── */
+  { id: 'coach',       audience: 'players', icon: '🎥', label: 'Player Analysis',     tagline: 'Film a shot or a delivery and see what to work on.',         features: ['Video analysis','Coach AI','Stats and player report','Development tracker','Cricket CV'] },
+  { id: 'community',   audience: 'players', icon: '🤝', label: 'Community',           tagline: 'Your club today, cricket\'s network next (coming soon).',    features: ['Noticeboard','Dressing room','Club documents','Nearby players and clubs (coming soon)'] },
+  { id: 'wellness',    audience: 'players', icon: '🧘', label: 'Wellness',            tagline: 'Look after your body and your head.',                         features: ['Weekly check-in','Match mood','Injury log','Mental-skills routines (in the app)'] },
+  { id: 'academy',     audience: 'players', icon: '🎓', label: 'Academy',             tagline: 'Short lessons, daily games and a qualifications log.',        features: ['Two-minute lessons (in the app)','Practice plan (in the app)','Daily games','Qualifications log'] },
+  { id: 'rewards',     audience: 'players', icon: '⭐', label: 'Scores',              tagline: 'Earned across every pillar, never sold.',                     features: ['Scores for taking part','Badges and achievements','Leaderboard'] },
   /* ── Clubs ── */
   { id: 'team',        audience: 'clubs',   icon: '👥', label: 'Team Management',     tagline: 'Selection, availability and logistics without the chaos.',  features: ['Availability planner','Pick the XI','Ball-by-ball scoring','School sessions','Qualifications log'] },
   { id: 'finance',     audience: 'clubs',   icon: '💰', label: 'Finance & Fees',      tagline: 'Club finances that actually make sense.',                   features: ['Finance ledger','Match fee tracking','Fee offset calculator','Finance dashboard','Online fee payments (coming soon)'] },
