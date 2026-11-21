@@ -118,3 +118,36 @@ a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-c
   .mg-in { animation: none; opacity: 1; }
   .mg-meteor { display: none; }
 }
+
+/* ── Magic-style effects (src/components/magic) ──
+   Written to match the Magic UI component set. Every moving effect stops for people who ask
+   their device for reduced motion. */
+@keyframes mu-marquee { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--mu-gap, 16px))); } }
+@keyframes mu-shimmer { 0%, 90%, 100% { background-position: calc(-100% - var(--mu-spread, 100px)) 0; } 30%, 60% { background-position: calc(100% + var(--mu-spread, 100px)) 0; } }
+@keyframes mu-gradient { to { background-position: var(--mu-bg-size, 300%) 0; } }
+@keyframes mu-beam { to { offset-distance: 100%; } }
+@keyframes mu-meteor { 0% { transform: rotate(215deg) translateX(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: rotate(215deg) translateX(-500px); opacity: 0; } }
+@keyframes mu-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.mu-marquee { display: flex; overflow: hidden; gap: var(--mu-gap, 16px); }
+.mu-marquee-track { display: flex; flex-shrink: 0; justify-content: space-around; gap: var(--mu-gap, 16px); min-width: 100%; animation: mu-marquee var(--mu-duration, 40s) linear infinite; }
+.mu-marquee:hover .mu-marquee-track { animation-play-state: paused; }
+.mu-shimmer-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; overflow: hidden; white-space: nowrap; border-radius: 999px; padding: 14px 28px; font-weight: 700; font-size: 15px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.12); background: #2563EB; transition: transform .2s, box-shadow .2s; box-shadow: 0 8px 30px -8px rgba(37,99,235,0.7); }
+.mu-shimmer-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px -8px rgba(37,99,235,0.9); }
+.mu-shimmer-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%); background-size: 250% 100%; animation: mu-shimmer 4s infinite; }
+.mu-shimmer-btn > span { position: relative; }
+.mu-gradient-text { background-image: linear-gradient(90deg, #60A5FA, #EFC84A, #F472B6, #2DD4BF, #60A5FA); background-size: var(--mu-bg-size, 300%) 100%; background-clip: text; -webkit-background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: mu-gradient 8s linear infinite; }
+.mu-pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: rgba(232,237,245,0.85); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 -8px 10px rgba(96,165,250,0.08); backdrop-filter: blur(8px); }
+.mu-beam { pointer-events: none; position: absolute; inset: 0; border-radius: inherit; border: 1.5px solid transparent; mask-clip: padding-box, border-box; mask-composite: intersect; mask-image: linear-gradient(transparent, transparent), linear-gradient(#000, #000); -webkit-mask-clip: padding-box, border-box; -webkit-mask-composite: source-in; -webkit-mask-image: linear-gradient(transparent, transparent), linear-gradient(#000, #000); }
+.mu-beam::after { content: ''; position: absolute; aspect-ratio: 1; width: var(--mu-beam-size, 90px); background: linear-gradient(to left, var(--mu-from, #EFC84A), var(--mu-to, #60A5FA), transparent); offset-anchor: 90% 50%; offset-path: rect(0 auto auto 0 round var(--mu-beam-size, 90px)); animation: mu-beam var(--mu-beam-duration, 8s) linear infinite; }
+.mu-meteor { position: absolute; top: -10%; width: 2px; height: 2px; border-radius: 999px; background: #60A5FA; box-shadow: 0 0 0 1px rgba(255,255,255,0.08); transform: rotate(215deg); animation: mu-meteor linear infinite; pointer-events: none; }
+.mu-meteor::before { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 1px; background: linear-gradient(90deg, #60A5FA, transparent); }
+.mu-bento { display: grid; gap: 16px; grid-template-columns: repeat(6, 1fr); grid-auto-rows: minmax(250px, auto); }
+.mu-bento-card { position: relative; overflow: hidden; border-radius: 22px; padding: 26px; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7,16,43,0.8); transition: transform .25s, border-color .25s; }
+.mu-bento-card:hover { transform: translateY(-3px); }
+.mu-float { animation: mu-float 6s ease-in-out infinite; }
+@media (max-width: 900px) { .mu-bento { grid-template-columns: 1fr 1fr; } .mu-bento-card { grid-column: span 2 !important; grid-row: auto !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .mu-marquee-track, .mu-shimmer-btn::before, .mu-gradient-text, .mu-beam::after, .mu-meteor, .mu-float { animation: none !important; }
+  .mu-meteor { display: none; }
+}

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Pillars } from '@/components/marketing/Pillars';
+import { AnimatedGradientText, BorderBeam, DotPattern, Marquee, Meteors, ShimmerButton } from '@/components/magic';
 import { useState, useEffect, useRef } from 'react';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
@@ -756,7 +757,10 @@ export default function HomePage() {
         </div>
 
         {/* ── HERO ── */}
-        <section className="cp-hero">
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          <DotPattern />
+          <Meteors />
+        <section className="cp-hero" style={{ position: 'relative' }}>
           <div className="cp-hero-orb" aria-hidden="true" />
           <div className="cp-hero-grid">
             <div>
@@ -768,37 +772,24 @@ export default function HomePage() {
               </div>
               <h1 className="cp-hero-h1">
                 Cricket clubs<br />
-                run on <span className="red">ClubPulse</span><br />
+                run on <AnimatedGradientText>ClubPulse</AnimatedGradientText><br />
                 now.
               </h1>
               <p className="cp-hero-sub">
                 For players who want to improve, clubs that want to run properly, federations that need visibility across their leagues, and county associations that need data compliance — one platform built for the whole game.
               </p>
 
-              {/* 8 feature pillars */}
+              {/* The four pillars */}
               <div className="cp-pillars">
-                <Link href="/features#match" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />🏏 Match Intel
-                </Link>
-                <Link href="/features#ai" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />🤖 AI Tools
-                </Link>
-                <Link href="/features#performance" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />📈 Performance
-                </Link>
-                <Link href="/features#team" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />👥 Team Mgmt
-                </Link>
-                <Link href="/features#finance" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />💰 Finance
-                </Link>
-                <Link href="/features#engagement" className="cp-pillar">
-                  <span className="cp-pillar-dot live" />🏅 Engagement
-                </Link>
+                {([['🎥', 'The Nets', '#FBBF24'], ['🤝', 'Pavilion', '#60A5FA'], ['🧘', 'Warm-Up', '#F472B6'], ['🎓', 'Academy', '#2DD4BF']] as const).map(([icon, name, colour]) => (
+                  <Link key={name} href="/#pillars" className="cp-pillar" style={{ borderColor: `${colour}66`, color: colour, background: `${colour}14` }}>
+                    {icon} {name}
+                  </Link>
+                ))}
               </div>
 
               <div className="cp-hero-btns">
-                <Link href="/contact" className="cp-btn-hero">Get started free →</Link>
+                <ShimmerButton href="/contact">Get started free →</ShimmerButton>
                 <Link href="/features" className="cp-btn-hero-ghost">See all features →</Link>
               </div>
               <div className="cp-hero-stats">
@@ -811,6 +802,7 @@ export default function HomePage() {
 
             {/* PHONE MOCKUP */}
             <div className="cp-phone" ref={phoneRef} style={{willChange:'transform',transition:'transform 0.05s linear'}}>
+              <BorderBeam size={120} duration={7} />
               <div className="cp-phone-screen">
                 <div className="cp-tab-bar">
                   {(['dash','card','coach','pts'] as PhoneTab[]).map((t, i) => (
@@ -923,6 +915,10 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        </div>
+
+        {/* ── FEATURE STRIP ── */}
+        <FeatureStrip />
 
         {/* SOCIAL PROOF */}
         <div className="cp-social-proof">
@@ -935,22 +931,6 @@ export default function HomePage() {
                 <span>Your club next →</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* MARQUEE */}
-        <div className="cp-marquee-wrap" aria-hidden="true">
-          <div className="cp-marquee-track">
-            {[
-              '📅 Availability','📋 Live Scorecard','🎯 AI Coaching','⭐ Scores Rewards','💷 Club Finance',
-              '🏏 Real-time scoring','📱 Mobile-first','🔒 On-device AI','⚡ Under 1s sync','🇬🇧 Built in the UK',
-              '📅 Availability','📋 Live Scorecard','🎯 AI Coaching','⭐ Scores Rewards','💷 Club Finance',
-              '🏏 Real-time scoring','📱 Mobile-first','🔒 On-device AI','⚡ Under 1s sync','🇬🇧 Built in the UK',
-            ].map((item, i) => (
-              <span key={i} className="cp-marquee-item">
-                <span className="dot">·</span><strong>{item}</strong>
-              </span>
-            ))}
           </div>
         </div>
 
@@ -1696,5 +1676,21 @@ function PersonaSection() {
         <div className="cp-persona-card">{p.card}</div>
       </div>
     </>
+  );
+}
+
+
+// A slow-moving strip of what the platform does, between the hero and the pillars
+function FeatureStrip() {
+  const row1 = ['📋 Live scorecard', '🎥 AI shot analysis', '📈 Form guide', '🧘 Mind Nets', '🎓 Two-minute lessons', '🏅 108 badges', '🔨 Auction Room', '📅 Availability'];
+  const row2 = ['💷 Club finance', '🤝 Find players nearby', '🧠 Coach AI', '⭐ Run Chase tasks', '🛍️ Reward marketplace', '👥 Team selection', '📣 Club noticeboard', '🏆 Leaderboards'];
+  const chip = (t: string) => (
+    <span key={t} style={{ whiteSpace: 'nowrap', padding: '9px 18px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.03)', fontSize: 14, fontWeight: 600, color: 'rgba(232,237,245,0.75)' }}>{t}</span>
+  );
+  return (
+    <section aria-label="What ClubPulse does" style={{ padding: '36px 0', display: 'flex', flexDirection: 'column', gap: 14, background: '#05080f', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <Marquee duration={45}>{row1.map(chip)}</Marquee>
+      <Marquee duration={55} reverse>{row2.map(chip)}</Marquee>
+    </section>
   );
 }
