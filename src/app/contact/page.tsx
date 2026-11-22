@@ -170,9 +170,9 @@ export default function ContactPage() {
           <div className="contact-method">
             <div className="method-icon"><Glyph e="🏏" /></div>
             <div>
-              <p className="method-label">In production</p>
-              <p className="method-val">Live for the 2026 season</p>
-              <p className="method-note">clubpulse.co — see it running</p>
+              <p className="method-label">Status</p>
+              <p className="method-val">In development</p>
+              <p className="method-note">Now starting to contact clubs</p>
             </div>
           </div>
 

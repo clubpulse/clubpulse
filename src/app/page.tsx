@@ -723,7 +723,7 @@ export default function HomePage() {
                 <span className="cp-live-dot-wrap" aria-hidden="true">
                   <span className="cp-sonar-ring" /><span className="cp-sonar-ring2" /><span className="cp-live-dot" />
                 </span>
-                Live for the 2026 season
+                In development · contacting clubs
               </div>
               <h1 className="cp-hero-h1">
                 Run Saturday.<br />
@@ -800,17 +800,17 @@ export default function HomePage() {
                   {phoneTab === 'card' && (
                     <div>
                       <div className="cp-live-chip"><span className="cp-live-chip-dot" />LIVE</div>
-                      <p className="cp-sc-match-title">Your Club vs Henley CC</p>
+                      <p className="cp-sc-match-title">Your Club vs Fairwick CC</p>
                       <p className="cp-sc-match-meta">Sun 20 Oct · Home ground · 2nd innings</p>
                       <div className="cp-sc-innings">
                         <div className="cp-sc-head"><span className="cp-sc-head-name">Your Club batting</span><span className="cp-sc-head-score">142–3</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">I. Suresh*</span><span className="cp-sc-bat-runs">67*</span></div>
+                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">A. Patel*</span><span className="cp-sc-bat-runs">67*</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">R. Patel*</span><span className="cp-sc-bat-runs">24*</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">A. Khan (out)</span><span className="cp-sc-bat-runs">34</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">S. Bhatt (out)</span><span className="cp-sc-bat-runs">12</span></div>
                       </div>
                       <div className="cp-sc-innings">
-                        <div className="cp-sc-head"><span className="cp-sc-head-name">Henley CC</span><span className="cp-sc-head-score">178 all out</span></div>
+                        <div className="cp-sc-head"><span className="cp-sc-head-name">Fairwick CC</span><span className="cp-sc-head-score">178 all out</span></div>
                       </div>
                     </div>
                   )}
@@ -873,12 +873,12 @@ export default function HomePage() {
         {/* SOCIAL PROOF */}
         <div className="cp-social-proof">
           <div className="cp-social-proof-inner">
-            <span className="cp-social-proof-label">Live for</span>
+            <span className="cp-social-proof-label">In development</span>
             <div className="cp-social-proof-clubs">
-              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot" /><span>2026 season</span></div>
+              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot" /><span>Contacting clubs</span></div>
               <div className="cp-social-proof-club" style={{color:'rgba(240,236,228,0.3)'}}>
                 <span className="cp-social-proof-club-dot" style={{background:'rgba(240,236,228,0.15)'}} />
-                <span>Your club next →</span>
+                <span>Talk to us →</span>
               </div>
             </div>
           </div>

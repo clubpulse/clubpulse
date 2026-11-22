@@ -241,7 +241,7 @@ export default function AvailabilityPage() {
         <section className="av-hero">
           <div>
             <p className="av-eyebrow">📅 Availability</p>
-            <div className="av-tag"><span className="av-tag-dot" />Live for the 2026 season</div>
+            <div className="av-tag"><span className="av-tag-dot" />In development</div>
             <h1 className="av-h1">No more <span className="red">Wednesday night</span> WhatsApp chains.</h1>
             <p className="av-sub">Players mark availability in one tap. Captains get a live squad count. The XI is confirmed and notified in seconds — not days of back-and-forth in a 30-person group chat.</p>
             <div className="av-hero-btns">
@@ -255,13 +255,13 @@ export default function AvailabilityPage() {
             <div className="av-mock-header">
               <div>
                 <div className="av-mock-title">Availability</div>
-                <div className="av-mock-meta">Sat 26 Oct · Your Club vs Henley CC</div>
+                <div className="av-mock-meta">Sat 26 Oct · Your Club vs Fairwick CC</div>
               </div>
               <span className="av-count-chip">10 / 11 ✓</span>
             </div>
             <div className="av-match-card">
-              <div className="av-match-name">vs Henley CC — Away</div>
-              <div className="av-match-date">Saturday 26 Oct · 10:30am · Henley-on-Thames CC</div>
+              <div className="av-match-name">vs Fairwick CC — Away</div>
+              <div className="av-match-date">Saturday 26 Oct · 10:30am · Fairwick Ground</div>
               <div className="av-squad-count">
                 <span className="av-squad-n">10</span>
                 <span className="av-squad-label">confirmed · 1 awaiting</span>
@@ -270,7 +270,7 @@ export default function AvailabilityPage() {
             </div>
             <div className="av-players">
               {[
-                { name: 'I. Suresh', role: 'Batter · Captain', status: 'yes', label: 'Available' },
+                { name: 'A. Patel', role: 'Batter · Captain', status: 'yes', label: 'Available' },
                 { name: 'R. Patel', role: 'All-rounder', status: 'yes', label: 'Available' },
                 { name: 'A. Khan', role: 'Pace bowler', status: 'yes', label: 'Available' },
                 { name: 'S. Bhatt', role: 'Wicketkeeper', status: 'no', label: 'Unavailable' },

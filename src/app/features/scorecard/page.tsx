@@ -141,7 +141,7 @@ export default function ScorecardPage() {
         <section className="sc-hero">
           <div>
             <p className="sc-eyebrow">📋 Live Scorecard</p>
-            <div className="sc-live-tag"><span className="sc-live-dot" />Live for the 2026 season</div>
+            <div className="sc-live-tag"><span className="sc-live-dot" />In development</div>
             <h1 className="sc-h1">Real-time. Every ball. For <span className="gold">everyone.</span></h1>
             <p className="sc-sub">Scorer enters each delivery — club members see the scorecard update live, and anyone with the public link sees it refresh every few seconds. No paper. No spreadsheet.</p>
             <div className="sc-btns">
@@ -160,19 +160,19 @@ export default function ScorecardPage() {
                 <span className="sc-inn-name">Your Club (batting)</span>
                 <span className="sc-inn-total">142–3 (28.4)</span>
               </div>
-              <div className="sc-bat-row"><span className="sc-bat-name bat">I. Suresh*</span><span className="sc-bat-runs">67*</span><span className="sc-bat-balls">(52)</span></div>
+              <div className="sc-bat-row"><span className="sc-bat-name bat">A. Patel*</span><span className="sc-bat-runs">67*</span><span className="sc-bat-balls">(52)</span></div>
               <div className="sc-bat-row"><span className="sc-bat-name bat">R. Patel*</span><span className="sc-bat-runs">24*</span><span className="sc-bat-balls">(19)</span></div>
               <div className="sc-bat-row"><span className="sc-bat-name">A. Khan — b Simms</span><span className="sc-bat-runs">34</span><span className="sc-bat-balls">(41)</span></div>
               <div className="sc-bat-row"><span className="sc-bat-name">S. Bhatt — c&amp;b Raj</span><span className="sc-bat-runs">12</span><span className="sc-bat-balls">(18)</span></div>
             </div>
             <div className="sc-innings">
               <div className="sc-inn-head">
-                <span className="sc-inn-name">Henley CC</span>
+                <span className="sc-inn-name">Fairwick CC</span>
                 <span className="sc-inn-total" style={{color:'rgba(240,236,228,0.5)'}}>178 all out</span>
               </div>
             </div>
             <div className="sc-bbb">
-              <p className="sc-bbb-label">Over 28 — Suresh facing</p>
+              <p className="sc-bbb-label">Over 28 — A. Patel facing</p>
               <div className="sc-balls">
                 <div className="sc-ball dot">·</div>
                 <div className="sc-ball run">1</div>

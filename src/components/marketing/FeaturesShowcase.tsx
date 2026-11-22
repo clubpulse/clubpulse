@@ -44,7 +44,7 @@ function MatchDemo() {
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'cp-blink-dot 1.5s infinite' }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Live</span>
           </div>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Your Club vs Maidenhead CC</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Your Club vs Redwillow CC</span>
         </div>
         <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div>
@@ -379,7 +379,7 @@ function CommunityDemo() {
   const [liked, setLiked] = useState<number[]>([]);
   const posts = [
     { author: 'Captain Sharma', avatar: '👨‍✈️', time: '2h ago', text: 'Great win today lads. 7 wicket haul from Kumar was simply unreal. Drinks on me Saturday 🍺', likes: 14, comments: 6 },
-    { author: 'Club Noticeboard', avatar: '📌', time: '5h ago', text: '⚠️ Ground will be closed for maintenance Mon–Tue next week. All net sessions moved to Farnham Road.', likes: 8, comments: 2 },
+    { author: 'Club Noticeboard', avatar: '📌', time: '5h ago', text: '⚠️ Ground will be closed for maintenance Mon–Tue next week. All net sessions moved to Fairwick Ground.', likes: 8, comments: 2 },
     { author: 'Wellbeing Check-in', avatar: '🧡', time: '1d ago', text: 'How are you feeling this week? 8 players checked in. Average score: 7.2/10.', likes: 5, comments: 0 },
   ];
 
@@ -453,7 +453,7 @@ function OppositionDemo() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 14, padding: '16px 20px' }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Captain&apos;s Headline</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>Maidenhead are strong with the bat but their new-ball attack has leaked runs in 4 of their last 6 games. Put them in.</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>Redwillow are strong with the bat but their new-ball attack has leaked runs in 4 of their last 6 games. Put them in.</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)', borderRadius: 12, padding: 14 }}>

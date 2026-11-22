@@ -130,15 +130,14 @@ export default function OurStoryPage() {
       <section className="origin-section">
         <div className="origin-grid">
           <div className="origin-text">
-            <p className="section-tag" style={{ marginBottom: '12px' }}>Live for the 2026 season</p>
-            <h2>Running in production every weekend</h2>
-            <p>ClubPulse isn&apos;t a demo. It runs live every Saturday and Sunday during the season — real players, real matches, real data.</p>
-            <p>That means every bug gets found fast, and every feature gets stress-tested in the most unforgiving environment: a cricket club where people actually care about the result.</p>
+            <p className="section-tag" style={{ marginBottom: '12px' }}>In development</p>
+            <h2>Starting to contact clubs</h2>
+            <p>ClubPulse is in development and is now starting to contact clubs.</p>
           </div>
           <div className="stat-cluster">
             {[
-              { val: '2026', desc: 'Season running live on ClubPulse' },
-              { val: 'Live', desc: 'Ball-by-ball scoring, updated as it happens' },
+              { val: 'Now', desc: 'In development, and starting to contact clubs' },
+              { val: 'Score', desc: 'Ball-by-ball scoring, updated as it happens' },
               { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
               { val: '£0', desc: 'Admin overhead for tracking availability' },
             ].map(s => (
