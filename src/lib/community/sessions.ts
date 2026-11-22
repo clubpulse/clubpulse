@@ -98,7 +98,7 @@ export async function createSession(userId: string, input: NewSession): Promise<
   const text = [title, note, input.place].filter(Boolean).join('\n');
   const check = await checkContent(text, { place: 'public', authorJunior: false, readerJunior: true }, 600);
   // A plain rule refusal (a phone number, a private address) is not stored. If the AI check is busy, unavailable or
-  // unsure, the session is saved as held and goes to ClubPulse staff, who allow or remove it. Nobody can see it until
+  // unsure, the session is saved as held and goes to SHIFTUP staff, who allow or remove it. Nobody can see it until
   // then, apart from the host, who is told.
   if (check.status === 'held' && !check.held) return ok({ id: null, held: true, tell: check.tell });
   const queued = check.status === 'held';
@@ -108,7 +108,7 @@ export async function createSession(userId: string, input: NewSession): Promise<
     status: queued ? 'held' : 'open', held_reason: queued ? check.tell : null,
   }).select('id').single();
   if (error || !data) return no('Could not save the session.');
-  return ok({ id: data.id as string, held: queued, tell: queued ? 'Thanks. ClubPulse will check this and it will go live once approved.' : null });
+  return ok({ id: data.id as string, held: queued, tell: queued ? 'Thanks. SHIFTUP will check this and it will go live once approved.' : null });
 }
 
 export async function joinSession(userId: string, sessionId: unknown, on: boolean): Promise<Result<{ joined: boolean }>> {

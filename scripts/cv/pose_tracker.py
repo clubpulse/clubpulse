@@ -1,5 +1,5 @@
 """
-ClubPulse Pose Analysis Pipeline
+SHIFTUP Pose Analysis Pipeline
 ---------------------------------
 Analyses batting/bowling technique from a video clip using MediaPipe Pose.
 
@@ -283,7 +283,7 @@ def analyse_video(video_path: str, sample_rate: int = 5) -> dict:
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ClubPulse Pose Tracker")
+    parser = argparse.ArgumentParser(description="SHIFTUP Pose Tracker")
     parser.add_argument("--video", required=True, help="Path to input video file")
     parser.add_argument("--sample_rate", type=int, default=5,
                         help="Analyse every Nth frame (default 5)")

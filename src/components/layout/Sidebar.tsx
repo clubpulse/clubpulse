@@ -22,7 +22,7 @@ export const NAV_LINKS: NavLink[] = [
 // `open` only counts on the page it was chosen on (`at`): move to another page and the menu goes
 // back to showing just the group that page lives in.
 type SidebarState = { open: string | null; at: string | null; folded: boolean };
-const STATE_KEY = 'clubpulse.sidebar';
+const STATE_KEY = 'shiftup.sidebar';
 const DEFAULT_STATE: SidebarState = { open: null, at: null, folded: false };
 const listeners = new Set<() => void>();
 let lastState: string | null = null;
@@ -67,7 +67,7 @@ function parseState(raw: string): SidebarState {
   }
 }
 
-// showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
+// showAdmin: club admin (club_members). isPlatformAdmin: SHIFTUP staff (profiles.role = 'admin').
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,

@@ -36,7 +36,7 @@ export function PlanOptions({ offer }: { offer: Offer }) {
       ))}
       <p style={{ ...muted, gridColumn: '1 / -1' }}>
         Paid monthly by card and renews each month until you cancel. You can cancel at any time from this page.
-        Payment is taken securely by Stripe; ClubPulse never sees your card number.
+        Payment is taken securely by Stripe; SHIFTUP never sees your card number.
       </p>
     </div>
   );

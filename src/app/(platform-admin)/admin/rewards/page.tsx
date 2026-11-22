@@ -6,7 +6,7 @@ import type { ScoresWallet } from '@/lib/types/scores';
 import { totalBalance } from '@/lib/types/scores';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, StatCard, Table } from '@/components/platform-admin/ui';
 
-export const metadata: Metadata = { title: 'Rewards | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Rewards | Admin | SHIFTUP' };
 
 export default async function AdminRewardsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   await requireAdmin();

@@ -8,8 +8,8 @@ import { isTangoApiConfigured } from '@/lib/tango/client';
 import type { ActionResult } from '@/lib/types/action';
 import type { GiftCardOrder, GiftCardOrderKind } from '@/lib/types/gift-card-orders';
 
-// Gift cards waiting to be ordered by hand in the Tango portal. ClubPulse staff only: the Tango
-// account belongs to ClubPulse, not to a club. Everything here runs on the server.
+// Gift cards waiting to be ordered by hand in the Tango portal. SHIFTUP staff only: the Tango
+// account belongs to SHIFTUP, not to a club. Everything here runs on the server.
 
 async function requirePlatformAdmin() {
   const user = await requireUser();

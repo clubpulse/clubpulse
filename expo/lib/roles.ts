@@ -1,6 +1,6 @@
 // ── Role system types and helpers ─────────────────────────────────────────────
 
-/** The five user roles in ClubPulse */
+/** The five user roles in SHIFTUP */
 export type UserRole = 'player' | 'coach' | 'parent' | 'volunteer' | 'club_admin';
 
 /** Every role request goes through admin approval (except player, the default) */

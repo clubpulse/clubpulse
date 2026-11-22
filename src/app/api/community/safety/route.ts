@@ -1,4 +1,4 @@
-// POST /api/community/safety { action: 'report', kind, targetId, reason? } → report to ClubPulse
+// POST /api/community/safety { action: 'report', kind, targetId, reason? } → report to SHIFTUP
 // POST /api/community/safety { action: 'block', userId }                  → block someone
 
 import { NextRequest, NextResponse } from 'next/server';

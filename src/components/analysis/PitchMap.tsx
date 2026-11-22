@@ -49,7 +49,7 @@ const POPPING_BOT   = 0.85;
 const GOOD_LENGTH_TOP = 0.35;
 const GOOD_LENGTH_BOT = 0.50;
 
-// ── Colour tokens (dark-first to match ClubPulse palette) ────────────────────
+// ── Colour tokens (dark-first to match SHIFTUP palette) ────────────────────
 
 const C = {
   pitch:       '#c8a96e',

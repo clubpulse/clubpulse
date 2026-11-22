@@ -5,7 +5,7 @@ import { ModerationRow } from '@/components/community/ModerationRow';
 import { PageHeader, EmptyState } from '@/components/platform-admin/ui';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Community reports | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Community reports | Admin | SHIFTUP' };
 
 export default async function CommunityReportsPage() {
   await requireAdmin();

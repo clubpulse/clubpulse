@@ -729,8 +729,9 @@ export default function HomePage() {
                 Run Saturday.<br />
                 Grow every <AnimatedGradientText>player</AnimatedGradientText>.
               </h1>
+              <p className="cp-eyebrow" style={{ marginBottom: 12 }}>From Grassroots to Greatness</p>
               <p className="cp-hero-sub">
-                ClubPulse runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
+                SHIFTUP runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
               </p>
 
               {/* The four pillars */}
@@ -940,7 +941,7 @@ export default function HomePage() {
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
             <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Co-Founder, ClubPulse</p>
+            <p className="cp-quote-attr">— Co-Founder, SHIFTUP</p>
           </div>
         </section>
 

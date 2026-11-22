@@ -49,7 +49,7 @@ export function Feed({ posts, scope, canFilter }: { posts: FeedPost[]; scope: st
         <div key={p.id} style={{ ...cardStyle, marginBottom: 12 }}>
           <p style={{ margin: 0 }}><Link href={`/community/people/${p.author.id}`}><strong>{p.author.name}</strong></Link>{p.author.club ? ` · ${p.author.club}` : ''}</p>
           <p>{p.body}</p>
-          {p.held && <p style={{ fontSize: 13, opacity: 0.8 }}>Only you can see this while ClubPulse checks it.</p>}
+          {p.held && <p style={{ fontSize: 13, opacity: 0.8 }}>Only you can see this while SHIFTUP checks it.</p>}
           {!p.held && (
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               <ActionButton quiet label={`${p.liked ? 'Unlike' : 'Like'} (${p.likes})`} run={() => likeAction(p.id)} />

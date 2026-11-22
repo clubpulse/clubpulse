@@ -1,4 +1,4 @@
-// Club admins link a child record to the child's own ClubPulse account, which is what lets the Community treat the
+// Club admins link a child record to the child's own SHIFTUP account, which is what lets the Community treat the
 // account as a junior and tell the child's parents about new connections. Service role; callers must already have
 // resolved the caller's admin clubs (getAdminContext).
 

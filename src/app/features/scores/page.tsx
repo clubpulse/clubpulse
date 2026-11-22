@@ -128,7 +128,7 @@ export default function ScoresPage() {
           <div>
             <p className="sr-eyebrow">🏆 Scores & Rewards</p>
             <h1 className="sr-h1">Points that make <span className="gold">every run count.</span></h1>
-            <p className="sr-sub">ClubPulse automatically converts live scorecard data into a seasonal points leaderboard. Every run, wicket, and catch earns points. Players see where they stand — and clubs use it to recognise their contributors.</p>
+            <p className="sr-sub">SHIFTUP automatically converts live scorecard data into a seasonal points leaderboard. Every run, wicket, and catch earns points. Players see where they stand — and clubs use it to recognise their contributors.</p>
             <div className="sr-btns">
               <Link href="/contact" className="sr-btn-red">Get started →</Link>
               <Link href="/features" className="sr-btn-ghost">See all features</Link>
@@ -238,7 +238,7 @@ export default function ScoresPage() {
           <h2 className="sr-section-h2">Common questions about Scores & Rewards.</h2>
           <div className="sr-faq-list">
             {[
-              ['Do I have to enter points manually?', 'No — points are calculated automatically from the live scorecard. Once a match is scored in ClubPulse, the leaderboard updates itself. There is nothing for admins to fill in.'],
+              ['Do I have to enter points manually?', 'No — points are calculated automatically from the live scorecard. Once a match is scored in SHIFTUP, the leaderboard updates itself. There is nothing for admins to fill in.'],
               ['Can we customise the points system?', 'Not yet, but it\'s on the roadmap. Currently all clubs use the same standard point values. In future, club admins will be able to adjust weights — for example, giving extra weight to bowling if your club is bowling-heavy.'],
               ['What happens at the end of the season?', 'The leaderboard resets for the new season. Historical data is retained — players can see their past season totals in their profile. Top 3 from each season are recorded in the club\'s permanent history.'],
               ['Can players see their own points breakdown?', 'Yes — each player has a profile page showing exactly where their points came from: runs scored, wickets taken, catches, POTM awards, and availability points, game by game.'],
@@ -257,7 +257,7 @@ export default function ScoresPage() {
           <div className="sr-cta-inner">
             <div>
               <h2 className="sr-cta-h">Give your players something to compete for.</h2>
-              <p className="sr-cta-sub">Get ClubPulse set up for your club in under an hour.</p>
+              <p className="sr-cta-sub">Get SHIFTUP set up for your club in under an hour.</p>
             </div>
             <Link href="/contact" className="sr-cta-btn">Get started →</Link>
           </div>

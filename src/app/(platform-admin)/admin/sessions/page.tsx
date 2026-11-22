@@ -5,7 +5,7 @@ import { formatDate, pageFromParam, pageRange, profilesById } from '@/lib/platfo
 import type { Highlight } from '@/lib/highlights';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 
-export const metadata: Metadata = { title: 'Sessions & Highlights | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Sessions & Highlights | Admin | SHIFTUP' };
 
 type Row = Highlight & { user_id: string };
 

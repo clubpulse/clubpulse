@@ -1,5 +1,5 @@
 // Shapes returned by the Wellness API (see src/lib/wellness on the server). The check-in, recovery
-// log and sharing choices are saved to your ClubPulse account, so they follow you between phone and
+// log and sharing choices are saved to your SHIFTUP account, so they follow you between phone and
 // website. They are private to you; a coach sees averages only, and only if you choose to share.
 
 export const READINESS_FIELDS = [

@@ -58,7 +58,7 @@ export default function ProfileScreen() {
           text: 'Continue',
           style: 'destructive',
           onPress: () =>
-            Alert.alert('This cannot be undone', 'Delete your ClubPulse account permanently?', [
+            Alert.alert('This cannot be undone', 'Delete your SHIFTUP account permanently?', [
               { text: 'Cancel', style: 'cancel' },
               { text: 'Delete account', style: 'destructive', onPress: deleteAccount },
             ]),

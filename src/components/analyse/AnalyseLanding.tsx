@@ -51,7 +51,7 @@ export function AnalyseLanding() {
         <Link href="/" className="flex items-center gap-2.5 no-underline">
           <span className="grid h-9 w-9 place-items-center rounded-lg text-base font-extrabold text-white"
             style={{ background: CRIMSON }}>C</span>
-          <span className="text-lg font-bold text-white">ClubPulse</span>
+          <span className="text-lg font-bold text-white">SHIFTUP</span>
         </Link>
         <Link href="/auth/sign-in?redirectTo=/analyse" className="text-sm font-medium text-neutral-400 hover:text-white">
           Sign in
@@ -63,7 +63,7 @@ export function AnalyseLanding() {
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider"
             style={{ borderColor: 'rgba(37,99,235,0.40)', background: 'rgba(37,99,235,0.14)', color: GOLD }}>
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: CRIMSON }} aria-hidden />
-            New · ClubPulse Analyse
+            New · SHIFTUP Analyse
           </span>
 
           <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">

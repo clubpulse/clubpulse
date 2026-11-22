@@ -80,7 +80,7 @@ export default function MarketingNav() {
         }
       `}</style>
       <div className="mk-inner">
-        <Link href="/" className="mk-logo" aria-label="ClubPulse home">
+        <Link href="/" className="mk-logo" aria-label="SHIFTUP home">
           <span className="mk-logo-mark">
             <svg width="21" height="21" viewBox="0 0 36 36" fill="none" aria-hidden="true">
               <defs>

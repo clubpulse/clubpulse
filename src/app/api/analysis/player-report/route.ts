@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     };
 
     // ── Build Claude prompt ──────────────────────────────────────────────────
-    const prompt = `You are ClubPulse's AI coaching analyst. Based on a grassroots cricket player's last ${performances.length} matches, generate a structured player performance report.
+    const prompt = `You are SHIFTUP's AI coaching analyst. Based on a grassroots cricket player's last ${performances.length} matches, generate a structured player performance report.
 
 Player statistics:
 ${JSON.stringify(stats, null, 2)}

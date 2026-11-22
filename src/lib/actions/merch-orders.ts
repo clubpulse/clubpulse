@@ -8,7 +8,7 @@ import type { ActionResult } from '@/lib/types/action';
 import type { Delivery, MerchState } from '@/lib/merch/logic';
 import type { MerchOrder } from '@/lib/types/merch-orders';
 
-// Merchandise orders waiting to be placed with the print supplier by hand. ClubPulse staff only:
+// Merchandise orders waiting to be placed with the print supplier by hand. SHIFTUP staff only:
 // the orders hold members' home addresses. Everything here runs on the server.
 
 async function requirePlatformAdmin() {

@@ -6,7 +6,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Cell, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 import { promoteToAdmin } from './actions';
 
-export const metadata: Metadata = { title: 'Users | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Users | Admin | SHIFTUP' };
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const me = await requireAdmin();
@@ -22,7 +22,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
 
   return (
     <>
-      <PageHeader title="Users" description="Everyone with a ClubPulse account." />
+      <PageHeader title="Users" description="Everyone with a SHIFTUP account." />
       {error && <ErrorNote message={`Couldn't load users: ${error.message}`} />}
 
       <Table headers={['User', 'Email', 'Role', 'Joined', 'Last sign-in', '']}>

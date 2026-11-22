@@ -1,5 +1,5 @@
 """
-ClubPulse Camera Calibration
+SHIFTUP Camera Calibration
 ------------------------------
 Converts pixel measurements to real-world distances so speed estimates
 are accurate regardless of where the phone is placed.

@@ -3,7 +3,7 @@ import { requireClubAdminPage } from '@/lib/auth/admin-page';
 import { getWellbeingAggregate } from '@/lib/actions/wellbeing';
 import type { WellbeingAggregate } from '@/lib/types/wellbeing';
 
-export const metadata = { title: 'Squad Wellbeing · ClubPulse Admin' };
+export const metadata = { title: 'Squad Wellbeing · SHIFTUP Admin' };
 
 function formatWeek(dateStr: string): string {
   const d = new Date(dateStr);

@@ -1,7 +1,7 @@
 // Pure. The safety checks for scripts/seed-demo-club.ts, kept here so they are tested.
 
 export const DEMO_EMAIL_DOMAIN = '@example.com';
-export const DEMO_CLUB_NAMES = ['ClubPulse Demo CC', 'ClubPulse Demo Rovers CC'] as const;
+export const DEMO_CLUB_NAMES = ['SHIFTUP Demo CC', 'SHIFTUP Demo Rovers CC'] as const;
 
 export type GuardInput = {
   env: Record<string, string | undefined>;

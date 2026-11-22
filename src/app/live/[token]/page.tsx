@@ -4,7 +4,7 @@ import { AutoRefresh } from '@/components/match-day/AutoRefresh';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
-  title: 'Live scorecard | ClubPulse',
+  title: 'Live scorecard | SHIFTUP',
   robots: { index: false, follow: false },
 };
 
@@ -116,7 +116,7 @@ export default async function LiveScorecardPage({ params }: { params: Promise<{ 
         )}
 
         <p style={{ margin: 0, textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
-          {live ? 'Updates every few seconds. ' : ''}Scored with ClubPulse
+          {live ? 'Updates every few seconds. ' : ''}Scored with SHIFTUP
         </p>
       </div>
     </main>

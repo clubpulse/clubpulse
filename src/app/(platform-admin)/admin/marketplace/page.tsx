@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { displayName, formatDateTime, pageFromParam, pageRange, profilesById } from '@/lib/platform-admin';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 
-export const metadata: Metadata = { title: 'Marketplace | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Marketplace | Admin | SHIFTUP' };
 
 type Click = { id: string; user_id: string | null; product_name: string | null; retailer: string | null; url: string | null; clicked_at: string };
 

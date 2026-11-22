@@ -90,9 +90,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           : []),
       ];
 
-  // ClubPulse staff: gift cards waiting to be ordered by hand while Tango API access is off
+  // SHIFTUP staff: gift cards waiting to be ordered by hand while Tango API access is off
   if (ctx.isPlatformAdmin) {
-    sections.push({ label: 'ClubPulse staff', links: [{ href: '/admin/gift-cards', label: 'Gift card orders 🎁' }, { href: '/admin/merchandise', label: 'Merchandise orders 🧢' }] });
+    sections.push({ label: 'SHIFTUP staff', links: [{ href: '/admin/gift-cards', label: 'Gift card orders 🎁' }, { href: '/admin/merchandise', label: 'Merchandise orders 🧢' }] });
   }
 
   return (

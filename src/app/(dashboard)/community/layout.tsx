@@ -14,7 +14,7 @@ export default async function CommunityLayout({ children }: { children: ReactNod
     <>
       {children}
       <p style={{ maxWidth: 680, margin: '0 auto', padding: '0 16px 24px', fontSize: 13, opacity: 0.7 }}>
-        Worried about something? Use “Report a concern” on any post, profile or message, and the ClubPulse team will look at it. If a child is in immediate danger, call 999.
+        Worried about something? Use “Report a concern” on any post, profile or message, and the SHIFTUP team will look at it. If a child is in immediate danger, call 999.
       </p>
     </>
   );

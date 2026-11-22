@@ -1,12 +1,12 @@
 // What Warm-Up remembers, kept on this phone only: which weeks of Mind Nets are done, and the
 // player's own pre-ball routine. Neither says anything about how someone feels. The routine never
-// leaves the phone. When a week is ticked, the app also tells ClubPulse that a week was finished,
+// leaves the phone. When a week is ticked, the app also tells SHIFTUP that a week was finished,
 // so it can count towards rewards.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WEEKS = 'clubpulse.warmup.weeks';
-const ROUTINE = 'clubpulse.warmup.routine';
+const WEEKS = 'shiftup.warmup.weeks';
+const ROUTINE = 'shiftup.warmup.routine';
 
 export type Routine = { breath: string; look: string; word: string; trigger: string };
 export const EMPTY_ROUTINE: Routine = { breath: '', look: '', word: '', trigger: '' };

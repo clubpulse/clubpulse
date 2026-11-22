@@ -138,7 +138,7 @@ export default async function PulseScorePage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: "'Inter', sans-serif" }}>
         <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: 0 }}>
-          💓 Club Pulse Score
+          💓 SHIFTUP Score
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.45)', margin: 0 }}>You are not a member of any club yet.</p>
       </div>
@@ -166,7 +166,7 @@ export default async function PulseScorePage() {
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '24px', color: '#fff', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
-            💓 Club Pulse Score
+            💓 SHIFTUP Score
           </h1>
           <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
             How active and engaged your club is this week

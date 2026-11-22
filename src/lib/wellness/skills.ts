@@ -1,5 +1,5 @@
 // Mental skills for the website, ported from the app's Warm-Up library (expo/lib/warmup.ts).
-// Written for ClubPulse. General sport-preparation practice (breathing, attention, routines,
+// Written for SHIFTUP. General sport-preparation practice (breathing, attention, routines,
 // self-talk and visualisation). It is not medical or psychological treatment, and every page says
 // so and links to real support (/wellness/support). The match-day checklists live in content.ts.
 
