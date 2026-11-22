@@ -329,8 +329,8 @@ export default function AvailabilityPage() {
               </div>
               <div className="av-detail-card">
                 <div className="av-detail-icon"><Glyph e="⭐" /></div>
-                <h3 className="av-detail-h">+5 Scores for every response</h3>
-                <p className="av-detail-body">Every player who responds — available or not — earns 5 Scores automatically. This alone drives response rates up dramatically. Players are rewarded just for communicating with the club.</p>
+                <h3 className="av-detail-h">Scores for every response</h3>
+                <p className="av-detail-body">Every player who responds — available or not — is rewarded for communicating with the club.</p>
               </div>
               <div className="av-detail-card">
                 <div className="av-detail-icon"><Glyph e="📊" /></div>

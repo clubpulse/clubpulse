@@ -127,8 +127,8 @@ export default function ScoresPage() {
         <section className="sr-hero">
           <div>
             <p className="sr-eyebrow">🏆 Scores & Rewards</p>
-            <h1 className="sr-h1">Points that make <span className="gold">every run count.</span></h1>
-            <p className="sr-sub">ClubPulse automatically converts live scorecard data into a seasonal points leaderboard. Every run, wicket, and catch earns points. Players see where they stand — and clubs use it to recognise their contributors.</p>
+            <h1 className="sr-h1">Scores you can <span className="gold">actually spend.</span></h1>
+            <p className="sr-sub">Players earn Scores for taking part. 500 Scores equal £1. A tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-btns">
               <Link href="/contact" className="sr-btn-red">Get started →</Link>
               <Link href="/features" className="sr-btn-ghost">See all features</Link>
@@ -137,41 +137,41 @@ export default function ScoresPage() {
 
           <div className="sr-board">
             <div className="sr-board-header">
-              <div className="sr-board-title">Season Leaderboard</div>
-              <div className="sr-board-season">2025 Season · All XI</div>
+              <div className="sr-board-title">Scores you can earn</div>
+              <div className="sr-board-season">500 Scores = £1</div>
             </div>
             <div className="sr-rows">
               <div className="sr-row" style={{gridTemplateColumns:'26px 1fr 48px 48px',padding:'6px 10px',background:'transparent',border:'none'}}>
                 <div />
                 <div />
-                <div className="sr-pts-header">PTS</div>
-                <div className="sr-pts-header">RANK</div>
+                <div className="sr-pts-header">EACH</div>
+                <div />
               </div>
               {[
-                { rank:1, name:'A. Rahman', role:'Batter · Right-arm off-spin', pts:248, rankLabel:'🥇' },
-                { rank:2, name:'J. Singh', role:'All-rounder', pts:201, rankLabel:'🥈' },
-                { rank:3, name:'T. Okafor', role:'Wicket-keeper', pts:187, rankLabel:'🥉' },
-                { rank:4, name:'S. Patel', role:'Batter', pts:164, rankLabel:'4th' },
-                { rank:5, name:'D. Clarke', role:'Bowler · Left-arm pace', pts:142, rankLabel:'5th' },
+                { name:'Daily check-in', role:'Base value for the day', pts:'+5' },
+                { name:'Academy lesson', role:'The first time you pass', pts:'+10' },
+                { name:'Training attendance', role:'Marked present by the club', pts:'+10' },
+                { name:'Match fee on time', role:'Paid on or before the due date', pts:'+10' },
+                { name:'Community post', role:'The first live post of the day', pts:'+3' },
               ].map((p, i) => (
                 <div key={i} className={`sr-row${i === 0 ? ' top' : ''}`}>
-                  <div className={`sr-rank${i===0?' gold-rank':i===1?' silver':i===2?' bronze':''}`}>{p.rank}</div>
+                  <div className="sr-rank">·</div>
                   <div className="sr-player-info">
                     <div className="sr-player-name">{p.name}</div>
                     <div className="sr-player-role">{p.role}</div>
                   </div>
                   <div className="sr-pts-badge">{p.pts}</div>
-                  <div className="sr-pts-label">{p.rankLabel}</div>
+                  <div />
                 </div>
               ))}
             </div>
             <div className="sr-milestone-row">
-              <div className="sr-milestone-label">A. Rahman · Next milestone: 250 pts</div>
+              <div className="sr-milestone-label">Bronze 1× · Silver 2× · Gold 3× · Platinum 4×</div>
               <div style={{display:'flex',alignItems:'center',gap:10,marginTop:4}}>
                 <div className="sr-milestone-bar" style={{flex:1}}>
-                  <div className="sr-milestone-fill" style={{width:'99%',background:'linear-gradient(90deg,#EFC84A,#e8c86a)'}} />
+                  <div className="sr-milestone-fill" style={{width:'50%',background:'linear-gradient(90deg,#EFC84A,#e8c86a)'}} />
                 </div>
-                <span style={{fontSize:'10px',color:'var(--gold)',fontWeight:700}}>248/250</span>
+                <span style={{fontSize:'10px',color:'var(--gold)',fontWeight:700}}>250/500 · £0.50</span>
               </div>
             </div>
           </div>
@@ -180,17 +180,17 @@ export default function ScoresPage() {
         {/* HOW POINTS WORK */}
         <div style={{borderTop:'1px solid rgba(255,255,255,0.07)'}}>
           <div className="sr-section">
-            <p className="sr-section-eyebrow">How points work</p>
-            <h2 className="sr-section-h2">Automatic. Fair. Transparent.</h2>
-            <p className="sr-section-sub">Points are calculated automatically from live scorecard data. There is nothing to configure — every completed match updates the leaderboard.</p>
+            <p className="sr-section-eyebrow">How Scores work</p>
+            <h2 className="sr-section-h2">Earn them. They have a value.</h2>
+            <p className="sr-section-sub">Scores are a reward for taking part, not a runs-and-wickets leaderboard. 500 Scores equal £1. Your tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-pts-grid">
               {[
-                { icon:'🏏', h:'Batting runs', body:'Each run scored earns 1 point. A fifty earns a 10-point bonus. A century earns 25 extra points on top.', val:'+1 per run' },
-                { icon:'🎯', h:'Wickets taken', body:'Each wicket earns 20 points. A 3-wicket haul earns an extra 15. Five wickets earns an extra 40.', val:'+20 per wicket' },
-                { icon:'🧤', h:'Catches & stumpings', body:'Each catch in the field earns 10 points. A stumping earns 15. Run-outs credited to the thrower earn 8.', val:'+10 per catch' },
-                { icon:'🏃', h:'Availability bonus', body:'Players who turn up reliably earn 5 points per confirmed match. It rewards the players who make the club work, not just the star performers.', val:'+5 per match' },
-                { icon:'⭐', h:'Player of the match', body:'The club admin can award Player of the Match after every game. That earns 30 points and shows up in the player\'s profile history.', val:'+30 POTM' },
-                { icon:'📅', h:'End-of-season honours', body:'Top 3 players at season end earn bonus points in their profile history. The leaderboard resets each season so new players can compete.', val:'Season reset' },
+                { icon:'📅', h:'Daily check-in', body:'The base is 5 Scores. The first two days pay that, days 3 and 4 pay double, days 5 and 6 pay triple, and day 7 is a scratch card.', val:'Base 5' },
+                { icon:'🎓', h:'Academy', body:'Passing a lesson pays 10 Scores the first time. Finishing a whole track pays a 30 Score bonus.', val:'+10 / +30' },
+                { icon:'🏏', h:'Training and match fees', body:'A player marked present at training earns 10 Scores. A match fee paid on or before its due date earns 10 Scores.', val:'+10' },
+                { icon:'🤝', h:'Community and wellness', body:'The first live Community post of the day earns 3 Scores. A readiness check-in earns 3. Joining a nets or pick-up session earns 5.', val:'+3 / +5' },
+                { icon:'🎮', h:'Games and tasks', body:'Daily games, the quiz and the weekly and monthly tasks each have their own amount. Nothing is staked.', val:'Per task' },
+                { icon:'✖️', h:'Tiers', body:'Bronze multiplies by 1, Silver by 2, Gold by 3 and Platinum by 4. Free is Bronze. Pro is Silver, Elite is Gold and Legend is Platinum.', val:'1× to 4×' },
               ].map((c, i) => (
                 <div key={i} className="sr-pts-cell">
                   <div className="sr-pts-cell-icon"><Glyph e={c.icon} /></div>
@@ -207,26 +207,26 @@ export default function ScoresPage() {
         <div className="sr-rewards">
           <div className="sr-rewards-inner">
             <p className="sr-section-eyebrow">Rewards</p>
-            <h2 className="sr-section-h2">Recognition that actually means something.</h2>
-            <p className="sr-section-sub">Scores and Rewards is about more than a number. It gives clubs a structured way to recognise their best contributors — beyond just the top run-scorer.</p>
+            <h2 className="sr-section-h2">A balance with a cash value.</h2>
+            <p className="sr-section-sub">Scores are worth money at a fixed rate, and a higher tier makes the same action worth more. The amounts below are the defaults.</p>
             <div className="sr-reward-cards">
               <div className="sr-reward-card featured">
-                <div className="sr-reward-icon">👑</div>
-                <div className="sr-reward-pts">250 pts milestone</div>
-                <div className="sr-reward-h">Club Legend badge</div>
-                <div className="sr-reward-body">Players who reach 250 points in a season earn a permanent Club Legend badge on their profile. It shows in their record across future seasons.</div>
+                <div className="sr-reward-icon">💷</div>
+                <div className="sr-reward-pts">The rate</div>
+                <div className="sr-reward-h">500 Scores = £1</div>
+                <div className="sr-reward-body">1,250 Scores are £2.50. The rate is the same everywhere in ClubPulse.</div>
               </div>
               <div className="sr-reward-card">
-                <div className="sr-reward-icon"><Glyph e="🏆" /></div>
-                <div className="sr-reward-pts">Season end</div>
-                <div className="sr-reward-h">Top 3 recognition</div>
-                <div className="sr-reward-body">End-of-season leaderboard top 3 are permanently recorded in the club history. Exported to PDF for end-of-season presentation nights.</div>
+                <div className="sr-reward-icon"><Glyph e="✖️" /></div>
+                <div className="sr-reward-pts">The tiers</div>
+                <div className="sr-reward-h">1×, 2×, 3×, 4×</div>
+                <div className="sr-reward-body">Bronze is 1×, Silver is 2×, Gold is 3× and Platinum is 4×. Free includes Bronze. Pro includes Silver, Elite includes Gold and Legend includes Platinum.</div>
               </div>
               <div className="sr-reward-card">
-                <div className="sr-reward-icon"><Glyph e="⭐" /></div>
-                <div className="sr-reward-pts">Per match</div>
-                <div className="sr-reward-h">Player of the Match</div>
-                <div className="sr-reward-body">Admin can award POTM after any match. It earns 30 points, shows in the player&apos;s profile, and is visible to the whole club.</div>
+                <div className="sr-reward-icon"><Glyph e="⚙️" /></div>
+                <div className="sr-reward-pts">Per club</div>
+                <div className="sr-reward-h">Amounts can be set</div>
+                <div className="sr-reward-body">Each earning rule has a default. A club can change an amount or turn a rule off. The weekly cap starts at 300 Scores.</div>
               </div>
             </div>
           </div>
@@ -238,12 +238,12 @@ export default function ScoresPage() {
           <h2 className="sr-section-h2">Common questions about Scores & Rewards.</h2>
           <div className="sr-faq-list">
             {[
-              ['Do I have to enter points manually?', 'No — points are calculated automatically from the live scorecard. Once a match is scored in ClubPulse, the leaderboard updates itself. There is nothing for admins to fill in.'],
-              ['Can we customise the points system?', 'Not yet, but it\'s on the roadmap. Currently all clubs use the same standard point values. In future, club admins will be able to adjust weights — for example, giving extra weight to bowling if your club is bowling-heavy.'],
-              ['What happens at the end of the season?', 'The leaderboard resets for the new season. Historical data is retained — players can see their past season totals in their profile. Top 3 from each season are recorded in the club\'s permanent history.'],
-              ['Can players see their own points breakdown?', 'Yes — each player has a profile page showing exactly where their points came from: runs scored, wickets taken, catches, POTM awards, and availability points, game by game.'],
-              ['What if we don\'t use the live scorecard?', 'Scores & Rewards requires live scorecard data to work. If you enter match results manually after the fact rather than scoring live, points can still be awarded — but POTM must be manually assigned and some in-match stats may not be available.'],
-              ['Is there a mobile view of the leaderboard?', 'Yes. The leaderboard is fully responsive and looks good on phones. Players can bookmark it directly.'],
+              ['What is a Score worth?', '500 Scores equal £1. That rate is the same across the app.'],
+              ['What do the tiers do?', 'They multiply what you earn. Bronze is 1×, Silver is 2×, Gold is 3× and Platinum is 4×. Free is Bronze, Pro is Silver, Elite is Gold and Legend is Platinum.'],
+              ['How do players earn them?', 'By taking part: a daily check-in, training, a match fee paid on time, an Academy lesson, a Community post, a wellness check-in, and the daily games and tasks. Each rule has its own default amount.'],
+              ['Are Scores a performance leaderboard?', 'No. They are not calculated from runs, wickets or catches on the scorecard.'],
+              ['Can a club change the amounts?', 'Yes. A club can override an amount or switch a rule off. The defaults are the starting point, and the weekly cap starts at 300 Scores.'],
+              ['Do the games cost Scores?', 'No. The games pay Scores. Nothing is staked and nothing is lost.'],
             ].map(([q, a], i) => (
               <div key={i} className="sr-faq-item">
                 <div className="sr-faq-q">{q}</div>
@@ -256,8 +256,8 @@ export default function ScoresPage() {
         <section className="sr-cta">
           <div className="sr-cta-inner">
             <div>
-              <h2 className="sr-cta-h">Give your players something to compete for.</h2>
-              <p className="sr-cta-sub">Get ClubPulse set up for your club in under an hour.</p>
+              <h2 className="sr-cta-h">Scores players can earn.</h2>
+              <p className="sr-cta-sub">500 Scores equal £1, with tiers from Bronze 1× to Platinum 4×.</p>
             </div>
             <Link href="/contact" className="sr-cta-btn">Get started →</Link>
           </div>

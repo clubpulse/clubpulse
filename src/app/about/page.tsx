@@ -109,7 +109,7 @@ export default function AboutPage() {
             {[
               { icon: '🏏', title: 'Cricket first', desc: 'Every decision starts with one question: does this make playing and managing cricket better? Engagement metrics are secondary.' },
               { icon: '🌱', title: 'Grassroots, not glamour', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
-              { icon: '🤝', title: 'Community owned', desc: 'Clubs shaped ClubPulse and they continue to shape it. The roadmap is driven by real requests from real clubs, not investor decks.' },
+              { icon: '🤝', title: 'Built with cricketers', desc: 'Built with input from cricketers. The roadmap follows the game, not investor decks.' },
               { icon: '⚡', title: 'Actually useful', desc: 'No bloat. No feature graveyards. If a feature doesn\'t save time or add real value, it doesn\'t ship. Simple as that.' },
               { icon: '🔒', title: 'Privacy by default', desc: 'Your club data belongs to your club. We never sell it, never train on it without consent, and we make it easy to export.' },
               { icon: '💷', title: 'Fair pricing', desc: 'ClubPulse should cost less than the prize fund your club puts up for the end-of-season awards. We mean that literally.' },

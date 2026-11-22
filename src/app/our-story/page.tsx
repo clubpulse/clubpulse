@@ -138,7 +138,7 @@ export default function OurStoryPage() {
             {[
               { val: 'Now', desc: 'In development, and starting to contact clubs' },
               { val: 'Score', desc: 'Ball-by-ball scoring, updated as it happens' },
-              { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
+              { val: '500', desc: 'Scores equal £1' },
               { val: '£0', desc: 'Admin overhead for tracking availability' },
             ].map(s => (
               <div key={s.val} className="stat-row">

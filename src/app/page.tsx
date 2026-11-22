@@ -781,7 +781,7 @@ export default function HomePage() {
                           <div className="cp-score-label">Your Scores balance</div>
                         </div>
                         <div style={{textAlign:'right'}}>
-                          <div className="cp-score-val">≈ £25.00</div>
+                          <div className="cp-score-val">≈ £2.50</div>
                           <div className="cp-score-label">Cash value</div>
                         </div>
                       </div>
@@ -852,14 +852,14 @@ export default function HomePage() {
                     <div>
                       <div className="cp-pts-hero">
                         <div className="cp-pts-big">1,250</div>
-                        <div className="cp-pts-eq">⭐ Scores · ≈ £25.00 value</div>
+                        <div className="cp-pts-eq">⭐ Scores · ≈ £2.50 value</div>
                       </div>
                       <div className="cp-earn-list">
-                        <div className="cp-earn-row"><span className="cp-earn-label">✅ Marked available</span><span className="cp-earn-pts">+5</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🏏 Match played</span><span className="cp-earn-pts">+50</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🎯 AI session</span><span className="cp-earn-pts">+25</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">💷 Fee payment</span><span className="cp-earn-pts">+200</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🤝 Referral bonus</span><span className="cp-earn-pts">+100</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">✅ Daily check-in</span><span className="cp-earn-pts">+5</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🎓 Academy lesson</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🏏 Training attendance</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">💷 Match fee on time</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🤝 Community post</span><span className="cp-earn-pts">+3</span></div>
                       </div>
                     </div>
                   )}
