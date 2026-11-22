@@ -16,9 +16,9 @@ export type Category = {
 export const CATEGORIES: Category[] = [
   /* ── Players: four pillars, plus Scores as a thread ── */
   { id: 'coach',       audience: 'players', icon: '🎥', label: 'Player Analysis',     tagline: 'Film a shot or a delivery and see what to work on.',         features: ['Video analysis','Coach AI','Stats and player report','Development tracker','Cricket CV'] },
-  { id: 'community',   audience: 'players', icon: '🤝', label: 'Community',           tagline: 'Your club today, cricket\'s network next (coming soon).',    features: ['Noticeboard','Dressing room','Club documents','Nearby players and clubs (coming soon)'] },
-  { id: 'wellness',    audience: 'players', icon: '🧘', label: 'Wellness',            tagline: 'Look after your body and your head.',                         features: ['Weekly check-in','Match mood','Injury log','Mental-skills routines (in the app)'] },
-  { id: 'academy',     audience: 'players', icon: '🎓', label: 'Academy',             tagline: 'Short lessons, daily games and a qualifications log.',        features: ['Two-minute lessons (in the app)','Practice plan (in the app)','Daily games','Qualifications log'] },
+  { id: 'community',   audience: 'players', icon: '🤝', label: 'Community',           tagline: 'Your club today, cricket\'s network opening soon.',    features: ['Noticeboard','Dressing room','Club documents','Feed, connections and nets near you (opening soon)'] },
+  { id: 'wellness',    audience: 'players', icon: '🧘', label: 'Wellness',            tagline: 'Look after your body and your head.',                         features: ['Readiness check-in and trend','Mental-skills guides','Recovery log','Weekly check-in, match mood and injury log'] },
+  { id: 'academy',     audience: 'players', icon: '🎓', label: 'Academy',             tagline: 'Short lessons, certificates, daily games and a qualifications log.',        features: ['Two-minute lessons','Practice plan','ClubPulse certificates','Daily games','Qualifications log'] },
   { id: 'rewards',     audience: 'players', icon: '⭐', label: 'Scores',              tagline: 'Earned across every pillar, never sold.',                     features: ['Scores for taking part','Badges and achievements','Leaderboard'] },
   /* ── Clubs ── */
   { id: 'team',        audience: 'clubs',   icon: '👥', label: 'Team Management',     tagline: 'Selection, availability and logistics without the chaos.',  features: ['Availability planner','Pick the XI','Ball-by-ball scoring','School sessions','Qualifications log'] },

@@ -8,6 +8,7 @@ import { validateReadiness, type ReadinessInput } from '@/lib/wellness/readiness
 import { ALL_CHECKLIST_ITEM_IDS } from '@/lib/wellness/content';
 import type { ActionResult } from '@/lib/types/action';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { awardScores, getPrimaryClubId } from '@/lib/scores/context';
 import { cleanRoutine, lastDays, TREND_DAYS, validateRecovery, type ReadinessDay, type RecoveryInput } from '@/lib/wellness/trend';
 
 export type WellnessToday = {
@@ -47,6 +48,9 @@ export async function saveReadiness(input: unknown): Promise<ActionResult<null>>
     { onConflict: 'user_id,check_date' },
   );
   if (error) return { success: false, error: friendly(error) };
+  // Scores for the day's first check-in; the reference makes a second save the same day pay nothing
+  const clubId = await getPrimaryClubId(user.id);
+  if (clubId) await awardScores(user.id, clubId, 'wellness_readiness', `day:${ukToday()}`).catch(() => undefined);
   revalidatePath('/wellness');
   return { success: true, data: null };
 }

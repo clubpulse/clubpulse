@@ -2,6 +2,7 @@
 // never only in the screens.
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { awardScores } from '@/lib/scores/context';
 import { checkContent } from './moderation';
 import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result } from './service';
 import { checkCapacity, checkPlace, checkWhen, mayHost, maySeeSession, maySignUp, roughDistance, SESSION_KINDS, type AgeBand, type Scope, type SessionContext, type SessionKind } from './rules';
@@ -122,6 +123,7 @@ export async function joinSession(userId: string, sessionId: unknown, on: boolea
   if ((count ?? 0) >= (s.capacity as number)) return no('This session is full.');
   const { error } = await admin.from('community_session_signups').upsert({ session_id: sessionId, user_id: userId });
   if (error) return no('Could not join.');
+  await awardScores(userId, s.club_id as string, 'community_session', sessionId).catch(() => undefined);
   return ok({ joined: true });
 }
 

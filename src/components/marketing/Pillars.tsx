@@ -30,24 +30,25 @@ const PILLARS: Pillar[] = [
     line: 'A social network for cricketers: find players, clubs and games near you.',
     items: [
       { text: 'Club noticeboard and dressing room, inside your club', status: 'live' },
-      { text: 'Feeds, connections, and finding players and clubs nearby', status: 'soon' },
+      { text: 'Feed, connections, follows, and nets and games near you, built with safeguarding and moderation. Opening to clubs once final safety checks are complete', status: 'soon' },
     ],
   },
   {
     name: 'Wellness', href: '/players/wellness', tag: 'Preparation', colour: '#F472B6', icon: '🧘', col: 2,
     line: 'Look after your body and your head, and arrive ready to play.',
     items: [
-      { text: 'Pre-match readiness check-in, match-day checklist, weekly check-in, match mood and injury log', status: 'live' },
-      { text: 'Mind Nets, guided breathing and match-day routines', status: 'app' },
+      { text: 'Pre-match readiness check-in and trend, match-day checklist and your own routine, weekly check-in, match mood and injury log', status: 'live' },
+      { text: 'Mental-skills guides and a private recovery log, with where to get support', status: 'live' },
+      { text: 'Animated breathing circle and timer', status: 'app' },
     ],
   },
   {
     name: 'Academy', href: '/players/academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4,
     line: 'Short lessons, daily questions and games that make you a better cricketer.',
     items: [
-      { text: 'Two-minute lessons and a practice plan', status: 'app' },
+      { text: 'Two-minute lessons, a practice plan and ClubPulse certificates for finishing a track', status: 'live' },
       { text: 'Daily games, and a log for your ECB qualifications', status: 'live' },
-      { text: 'Courses with certificates', status: 'soon' },
+      { text: 'Courses written by your coach', status: 'soon' },
     ],
   },
 ];
