@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    openGraph: { title, description, url: `https://clubpulse.co/badge/${def.key}`, siteName: 'SHIFTUP', type: 'website' },
+    openGraph: { title, description, url: `https://shift.club/badge/${def.key}`, siteName: 'SHIFTUP', type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
   };
 }

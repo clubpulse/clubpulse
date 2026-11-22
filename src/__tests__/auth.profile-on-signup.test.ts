@@ -90,7 +90,7 @@ describe('ensureProfile (the sign-in safety net)', () => {
 });
 
 describe('/auth/callback', () => {
-  const call = (qs: string) => GET(new Request(`https://clubpulse.co/auth/callback?${qs}`));
+  const call = (qs: string) => GET(new Request(`https://shift.club/auth/callback?${qs}`));
   it('recognises the missing-verifier error', () => {
     expect(isMissingVerifier('PKCE code verifier not found in storage')).toBe(true);
     expect(isMissingVerifier('code verifier not found in storage')).toBe(true);
@@ -99,7 +99,7 @@ describe('/auth/callback', () => {
   it('sends a different-browser confirmation to a calm sign-in page, not an error', async () => {
     exchangeCodeForSession.mockResolvedValue({ error: { message: 'PKCE code verifier not found in storage. This can happen if the auth flow was initiated in a different browser.' } });
     const res = await call('code=abc');
-    expect(res.headers.get('location')).toBe('https://clubpulse.co/auth/sign-in?confirmed=1');
+    expect(res.headers.get('location')).toBe('https://shift.club/auth/sign-in?confirmed=1');
   });
   it('still reports a genuinely bad link as an error', async () => {
     verifyOtp.mockResolvedValue({ error: { message: 'Email link is invalid or has expired' } });
@@ -112,7 +112,7 @@ describe('/auth/callback', () => {
     const res = await call('token_hash=x&type=signup&next=/dashboard');
     expect(verifyOtp).toHaveBeenCalledWith({ type: 'signup', token_hash: 'x' });
     expect(upserts[0]).toMatchObject({ full_name: 'Ada Lovelace' });
-    expect(res.headers.get('location')).toBe('https://clubpulse.co/dashboard');
+    expect(res.headers.get('location')).toBe('https://shift.club/dashboard');
   });
   it('still signs the person in if creating the profile fails', async () => {
     verifyOtp.mockResolvedValue({ error: null });

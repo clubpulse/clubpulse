@@ -1,7 +1,7 @@
 // Server-only. Sends a plain-text email through Resend. Never throws: an email that fails to
 // send must not break the thing that triggered it. Does nothing if no key is configured.
 
-const FROM = process.env.EMAIL_FROM ?? 'SHIFTUP <hello@clubpulse.co>';
+const FROM = process.env.EMAIL_FROM ?? 'SHIFTUP <hello@shift.club>';
 
 /** Header values must be one line, or a crafted club name could add its own headers. */
 const oneLine = (s: string, max: number) => s.replace(/[\r\n]+/g, ' ').trim().slice(0, max);

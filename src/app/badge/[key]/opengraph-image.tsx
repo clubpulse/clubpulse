@@ -26,7 +26,7 @@ export default async function Image({ params }: { params: Promise<{ key: string 
           <div style={{ fontSize: 30, letterSpacing: 6, color: GOLD, fontWeight: 700 }}>SHIFTUP BADGE</div>
           <div style={{ fontSize: title.length > 18 ? 76 : 96, fontWeight: 800, lineHeight: 1.05, marginTop: 20 }}>{title}</div>
           <div style={{ fontSize: 34, color: 'rgba(255,255,255,0.75)', marginTop: 24 }}>{def?.how ?? ''}</div>
-          <div style={{ fontSize: 28, color: 'rgba(255,255,255,0.5)', marginTop: 44 }}>clubpulse.co</div>
+          <div style={{ fontSize: 28, color: 'rgba(255,255,255,0.5)', marginTop: 44 }}>shift.club</div>
         </div>
       </div>
     ),
