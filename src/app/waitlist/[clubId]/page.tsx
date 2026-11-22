@@ -93,7 +93,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
             marginBottom: '20px',
           }}>
             <span><Glyph e="🏏" /></span>
-            <span>SHIFTUP</span>
+            <span>ShiftUp</span>
           </div>
 
           <h1 style={{
@@ -181,7 +181,7 @@ export default async function WaitlistJoinPage({ params }: PageProps) {
           color: 'rgba(255,255,255,0.2)',
           marginTop: '24px',
         }}>
-          Powered by SHIFTUP — the cricket club platform
+          Powered by ShiftUp — the cricket club platform
         </p>
       </div>
     </main>

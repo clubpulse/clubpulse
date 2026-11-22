@@ -15,7 +15,7 @@ export function PlanNeeded({ feature, inApp }: { feature: string; inApp: boolean
           tools stay free.
         </p>
         {inApp ? (
-          <p style={{ ...muted, fontSize: '14px', marginTop: '12px' }}>You can manage your plan from your account on the SHIFTUP website.</p>
+          <p style={{ ...muted, fontSize: '14px', marginTop: '12px' }}>You can manage your plan from your account on the ShiftUp website.</p>
         ) : (
           <Link href="/plan" style={{ display: 'inline-block', marginTop: '16px', background: '#EFC84A', color: '#04091A', fontWeight: 800, fontSize: '14px', padding: '10px 20px', borderRadius: '10px', textDecoration: 'none' }}>
             See plans

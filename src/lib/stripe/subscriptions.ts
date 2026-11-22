@@ -46,7 +46,7 @@ export async function createSubscriptionCheckout(
 
     const customer = await stripe.customers.create({
       email: adminEmail,
-      name: club?.name ?? 'SHIFTUP Club',
+      name: club?.name ?? 'ShiftUp Club',
       metadata: { club_id: clubId, platform: 'clubpulse' },
     });
     customerId = customer.id;
@@ -77,7 +77,7 @@ export async function createSubscriptionCheckout(
   } else {
     // Create product + price
     const product = await stripe.products.create({
-      name: `SHIFTUP ${config.label} (${billingCycle})`,
+      name: `ShiftUp ${config.label} (${billingCycle})`,
       metadata: { tier, billing_cycle: billingCycle, platform: 'clubpulse' },
     });
 

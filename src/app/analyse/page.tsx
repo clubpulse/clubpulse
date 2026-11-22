@@ -8,7 +8,7 @@ import { PlanNeeded } from '@/components/plan/PlanNeeded';
 import { getPaidAccess } from '@/lib/billing/access';
 import { APP_VIEW_COOKIE } from '@/lib/auth/app-view';
 
-export const metadata: Metadata = { title: 'Analyse | SHIFTUP', description: 'AI-powered cricket motion analysis' };
+export const metadata: Metadata = { title: 'Analyse | ShiftUp', description: 'AI-powered cricket motion analysis' };
 
 // Lives outside (dashboard) because that layout redirects signed-out visitors, who get a public landing page here.
 export default async function AnalysePage() {

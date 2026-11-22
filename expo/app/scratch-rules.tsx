@@ -18,7 +18,7 @@ const RULES: { heading: string; lines: string[] }[] = [
     heading: 'Who can take part',
     lines: [
       'You must be aged 18 or over and live in the United Kingdom.',
-      'You need a SHIFTUP account that belongs to a club which has scratch cards switched on.',
+      'You need a ShiftUp account that belongs to a club which has scratch cards switched on.',
       'Junior accounts cannot receive or open scratch cards.',
       'One account per person.',
     ],

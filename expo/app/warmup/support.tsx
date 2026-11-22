@@ -47,7 +47,7 @@ export default function SupportScreen() {
           <Text style={styles.para}>A parent or carer, a friend, a teacher, your GP, or someone at your club. Most cricket clubs have a Safeguarding Officer whose job is to listen and help; ask a committee member who yours is.</Text>
         </View>
 
-        <Text style={fonts.small}>SHIFTUP does not see who opens this page or who you contact.</Text>
+        <Text style={fonts.small}>ShiftUp does not see who opens this page or who you contact.</Text>
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// SHIFTUP: Sporting Soul — Claude API Integration
+// ShiftUp: Sporting Soul — Claude API Integration
 // ─────────────────────────────────────────────
 
 import { getAnthropic } from '@/lib/ai/client';
@@ -15,7 +15,7 @@ export type SportingSoulResult = {
 
 function buildSeasonContext(performances: PerformanceWithSport[], athleteName: string): string {
   if (performances.length === 0) {
-    return 'This athlete is new to SHIFTUP — no season data yet.';
+    return 'This athlete is new to ShiftUp — no season data yet.';
   }
 
   const bySport = performances.reduce((acc, p) => {
@@ -68,7 +68,7 @@ export async function generateSportingSoul(
   const message = await getAnthropic().messages.create({
     model:      'claude-opus-4-5',
     max_tokens:  1024,
-    system: `You are the SHIFTUP Sporting Soul engine. You read grassroots athletes' season data and write heartfelt, personal sports narratives that make ordinary club players feel like heroes.
+    system: `You are the ShiftUp Sporting Soul engine. You read grassroots athletes' season data and write heartfelt, personal sports narratives that make ordinary club players feel like heroes.
 
 Your tone is warm, human, and specific — not generic. You find the story in the numbers. A scorer who turned up for 14 matches isn't just a statistic; they're the backbone of their club.
 

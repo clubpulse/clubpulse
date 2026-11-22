@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { CVTabs } from '@/components/cv/CVTabs';
 
 export const metadata = {
-  title: 'My Cricket CV | SHIFTUP',
+  title: 'My Cricket CV | ShiftUp',
   description: 'Your shareable cricket profile — stats, badges, qualifications and career history.',
 };
 

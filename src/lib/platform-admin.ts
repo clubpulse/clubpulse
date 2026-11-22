@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Shared helpers for the /admin (SHIFTUP staff) pages. Server-only: callers pass the service-role client.
+// Shared helpers for the /admin (ShiftUp staff) pages. Server-only: callers pass the service-role client.
 
 export const PAGE_SIZE = 25;
 

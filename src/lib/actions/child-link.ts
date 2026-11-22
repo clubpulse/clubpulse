@@ -17,7 +17,7 @@ export async function linkChildAccountAction(childId: string, email: string): Pr
   if (adminOf.length === 0) return { success: false, error: 'Only a club admin can do this.' };
   // Linking makes an account a junior, so only an admin with a current enhanced DBS check recorded at the club may do it
   const clubs = await clubsWithCurrentDbs(userId, adminOf);
-  if (clubs.length === 0) return { success: false, error: 'Linking a child to an account needs a current enhanced DBS check recorded for you at this club. Ask SHIFTUP to record yours.' };
+  if (clubs.length === 0) return { success: false, error: 'Linking a child to an account needs a current enhanced DBS check recorded for you at this club. Ask ShiftUp to record yours.' };
   const r = await linkChildToAccount(clubs, childId, email);
   if (!r.success) return { success: false, error: r.error };
   revalidatePath('/admin/club/safeguarding');

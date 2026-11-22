@@ -17,7 +17,7 @@ export async function sendEmail(input: { to: string; subject: string; text: stri
         from: FROM,
         to: [input.to],
         subject: oneLine(input.subject, 150),
-        text: `${input.text}\n\n--\nSHIFTUP: From Grassroots to Greatness`,
+        text: `${input.text}\n\n--\nShiftUp: From Grassroots to Greatness`,
         ...(input.replyTo ? { reply_to: oneLine(input.replyTo, 200) } : {}),
       }),
       signal: AbortSignal.timeout(8000),

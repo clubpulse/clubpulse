@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// SHIFTUP: Awin Affiliate Integration
+// ShiftUp: Awin Affiliate Integration
 // Publisher ID: 3107853
 // ─────────────────────────────────────────────
 

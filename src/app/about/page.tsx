@@ -5,8 +5,8 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About — SHIFTUP',
-  description: 'SHIFTUP is one app for grassroots cricketers and clubs: technique, community, mindset and learning.',
+  title: 'About — ShiftUp',
+  description: 'ShiftUp is one app for grassroots cricketers and clubs: technique, community, mindset and learning.',
 };
 
 export default function AboutPage() {
@@ -95,7 +95,7 @@ export default function AboutPage() {
 
       {/* ── Hero ── */}
       <section className="about-hero">
-        <p className="section-tag">About SHIFTUP</p>
+        <p className="section-tag">About ShiftUp</p>
         <h1 className="hero-h">Built by cricketers,<br />for every cricket club</h1>
         <p className="hero-sub">One app for grassroots cricket: technique, community, mindset and learning for players, and the admin taken care of for clubs.</p>
         <p style={{ marginTop: 14 }}><Link href="/our-story" style={{ color: '#EFC84A', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>Read our story →</Link></p>
@@ -109,10 +109,10 @@ export default function AboutPage() {
             {[
               { icon: '🏏', title: 'Cricket first', desc: 'Every decision starts with one question: does this make playing and managing cricket better? Engagement metrics are secondary.' },
               { icon: '🌱', title: 'Grassroots, not glamour', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
-              { icon: '🤝', title: 'Community owned', desc: 'Clubs shaped SHIFTUP and they continue to shape it. The roadmap is driven by real requests from real clubs, not investor decks.' },
+              { icon: '🤝', title: 'Community owned', desc: 'Clubs shaped ShiftUp and they continue to shape it. The roadmap is driven by real requests from real clubs, not investor decks.' },
               { icon: '⚡', title: 'Actually useful', desc: 'No bloat. No feature graveyards. If a feature doesn\'t save time or add real value, it doesn\'t ship. Simple as that.' },
               { icon: '🔒', title: 'Privacy by default', desc: 'Your club data belongs to your club. We never sell it, never train on it without consent, and we make it easy to export.' },
-              { icon: '💷', title: 'Fair pricing', desc: 'SHIFTUP should cost less than the prize fund your club puts up for the end-of-season awards. We mean that literally.' },
+              { icon: '💷', title: 'Fair pricing', desc: 'ShiftUp should cost less than the prize fund your club puts up for the end-of-season awards. We mean that literally.' },
             ].map(v => (
               <div key={v.title} className="value-card">
                 <div className="value-icon"><Glyph e={v.icon} /></div>
@@ -126,7 +126,7 @@ export default function AboutPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring SHIFTUP<br />to your club?</h2>
+        <h2 className="cta-h">Ready to bring ShiftUp<br />to your club?</h2>
         <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>

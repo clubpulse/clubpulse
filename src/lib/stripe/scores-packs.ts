@@ -9,11 +9,11 @@
  *
  * Destination charges:
  *   - Total goes to the platform account
- *   - 5% application_fee is retained by SHIFTUP
+ *   - 5% application_fee is retained by ShiftUp
  *   - Net (95%) is transferred to the club's connected Stripe account
  *
  * But wait — the club is BUYING Scores from the platform, so the money
- * stays with SHIFTUP. No transfer to the club's Connect account.
+ * stays with ShiftUp. No transfer to the club's Connect account.
  * The Connect account is for when the club's own customers pay the club.
  */
 
@@ -25,7 +25,7 @@ const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
 /**
  * Create a Stripe Checkout session for purchasing a Scores pack.
- * Payment goes entirely to the platform (SHIFTUP).
+ * Payment goes entirely to the platform (ShiftUp).
  */
 export async function createScoresPackCheckout(
   clubId: string,
