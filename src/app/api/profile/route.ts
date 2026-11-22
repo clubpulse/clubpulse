@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
   let profile = await fetchProfile(supabase, user.id);
   // Mobile sign-ups have no web callback to create the profile, so create it on first load
   if (!profile.success && profile.error === 'Profile not found') {
-    await ensureProfileAndRoles(user);
+    try { await ensureProfileAndRoles(user); }
+    catch (e) { return fail(e instanceof Error ? e.message : 'Could not create your profile.'); }
     profile = await fetchProfile(supabase, user.id);
   }
   if (!profile.success) return fail(profile.error);
