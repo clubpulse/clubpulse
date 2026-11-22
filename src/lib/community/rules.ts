@@ -274,3 +274,25 @@ export const GUARDIAN_NOTE_MAX = 300;
 export const GUARDIAN_PENDING_MAX = 5;
 /** After a parent says no, the same adult cannot ask again for this long. */
 export const GUARDIAN_COOLDOWN_DAYS = 90;
+
+// ── Short for Saturday ──────────────────────────────────────────────────────────────────────────
+
+export const SHORTAGE_FORMATS = ['league', 'friendly', 't20', 'indoor'] as const;
+export type ShortageFormat = (typeof SHORTAGE_FORMATS)[number];
+export const SHORTAGE_NEED_MAX = 6;
+export const SHORTAGE_MAX_DAYS = 21;
+export const isShortageFormat = (v: unknown): v is ShortageFormat => typeof v === 'string' && (SHORTAGE_FORMATS as readonly string[]).includes(v);
+
+/** Only an adult who coaches or runs the club posts for it. */
+export function mayPostShortage(viewerJunior: boolean, staffAtClub: boolean): boolean {
+  return !viewerJunior && staffAtClub;
+}
+/** Under-18s never see or answer a shortage: adult games only. */
+export function maySeeShortage(viewerJunior: boolean): boolean {
+  return !viewerJunior;
+}
+export function checkShortageWhen(playAt: Date, now: Date = new Date()): Verdict {
+  if (!(playAt.getTime() > now.getTime())) return { ok: false, reason: 'Pick a time in the future.' };
+  if (playAt.getTime() > now.getTime() + SHORTAGE_MAX_DAYS * 86_400_000) return { ok: false, reason: `Post a game up to ${SHORTAGE_MAX_DAYS} days ahead.` };
+  return { ok: true };
+}
