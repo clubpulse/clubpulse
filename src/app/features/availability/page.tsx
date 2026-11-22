@@ -241,7 +241,7 @@ export default function AvailabilityPage() {
         <section className="av-hero">
           <div>
             <p className="av-eyebrow">📅 Availability</p>
-            <div className="av-tag"><span className="av-tag-dot" />Live at Slough CC</div>
+            <div className="av-tag"><span className="av-tag-dot" />Live for the 2026 season</div>
             <h1 className="av-h1">No more <span className="red">Wednesday night</span> WhatsApp chains.</h1>
             <p className="av-sub">Players mark availability in one tap. Captains get a live squad count. The XI is confirmed and notified in seconds — not days of back-and-forth in a 30-person group chat.</p>
             <div className="av-hero-btns">
@@ -255,7 +255,7 @@ export default function AvailabilityPage() {
             <div className="av-mock-header">
               <div>
                 <div className="av-mock-title">Availability</div>
-                <div className="av-mock-meta">Sat 26 Oct · Slough CC vs Henley CC</div>
+                <div className="av-mock-meta">Sat 26 Oct · Your Club vs Henley CC</div>
               </div>
               <span className="av-count-chip">10 / 11 ✓</span>
             </div>

@@ -153,7 +153,7 @@ export default function FinancePage() {
           <div className="fn-card">
             <div className="fn-card-header">
               <div className="fn-card-title">Club Finance · July 2025</div>
-              <div className="fn-period">Slough CC</div>
+              <div className="fn-period">Your Club</div>
             </div>
             <div className="fn-balance-row">
               <div className="fn-balance">
@@ -171,7 +171,7 @@ export default function FinancePage() {
               {[
                 { icon:'💷', bg:'rgba(46,204,113,0.1)', name:'J. Singh — Match fee', date:'Sat 19 Jul', amt:'+£20', type:'credit' },
                 { icon:'💷', bg:'rgba(46,204,113,0.1)', name:'A. Rahman — Match fee', date:'Sat 19 Jul', amt:'+£20', type:'credit' },
-                { icon:'🏟️', bg:'rgba(249,115,22,0.1)', name:'Ground hire — Upton Court', date:'Sun 20 Jul', amt:'−£180', type:'debit' },
+                { icon:'🏟️', bg:'rgba(249,115,22,0.1)', name:'Ground hire — Home ground', date:'Sun 20 Jul', amt:'−£180', type:'debit' },
                 { icon:'💷', bg:'rgba(46,204,113,0.1)', name:'T. Okafor — Match fee', date:'Sat 12 Jul', amt:'+£20', type:'credit' },
                 { icon:'🧢', bg:'rgba(249,115,22,0.1)', name:'Kit order — Gray-Nicolls', date:'Mon 7 Jul', amt:'−£320', type:'debit' },
               ].map((t, i) => (

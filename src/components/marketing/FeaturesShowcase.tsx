@@ -44,7 +44,7 @@ function MatchDemo() {
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'cp-blink-dot 1.5s infinite' }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Live</span>
           </div>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Slough CC vs Maidenhead CC</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Your Club vs Maidenhead CC</span>
         </div>
         <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div>

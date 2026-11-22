@@ -141,7 +141,7 @@ export default function ScorecardPage() {
         <section className="sc-hero">
           <div>
             <p className="sc-eyebrow">📋 Live Scorecard</p>
-            <div className="sc-live-tag"><span className="sc-live-dot" />Live at Slough CC</div>
+            <div className="sc-live-tag"><span className="sc-live-dot" />Live for the 2026 season</div>
             <h1 className="sc-h1">Real-time. Every ball. For <span className="gold">everyone.</span></h1>
             <p className="sc-sub">Scorer enters each delivery — club members see the scorecard update live, and anyone with the public link sees it refresh every few seconds. No paper. No spreadsheet.</p>
             <div className="sc-btns">
@@ -157,7 +157,7 @@ export default function ScorecardPage() {
             </div>
             <div className="sc-innings">
               <div className="sc-inn-head">
-                <span className="sc-inn-name">Slough CC (batting)</span>
+                <span className="sc-inn-name">Your Club (batting)</span>
                 <span className="sc-inn-total">142–3 (28.4)</span>
               </div>
               <div className="sc-bat-row"><span className="sc-bat-name bat">I. Suresh*</span><span className="sc-bat-runs">67*</span><span className="sc-bat-balls">(52)</span></div>

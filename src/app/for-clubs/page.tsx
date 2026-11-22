@@ -75,7 +75,7 @@ export default function ForClubsPage() {
         <section className="fc-sec">
           <p className="fc-eyebrow">Match Day</p>
           <h2 className="fc-h2">The Saturday flow.</h2>
-          <p className="fc-sub">Four steps, each one built and in use at Slough CC.</p>
+          <p className="fc-sub">Four steps, each one built and already in use.</p>
           <div className="fc-grid fc-grid-4">
             {SATURDAY.map((s) => (
               <div key={s.n} className="fc-card">
