@@ -22,6 +22,13 @@ export const no = (error: string): Result<never> => ({ success: false, error });
 /** The Community is switched on with COMMUNITY_ENABLED=true, once its tables exist. */
 export const communityOpen = () => process.env.COMMUNITY_ENABLED === 'true';
 
+/**
+ * Private messages involving anyone under 18 are off until messages are checked as they are sent. They are switched on
+ * only with COMMUNITY_JUNIOR_DMS=true, which should not be set until that moderation exists and the safeguarding lead agrees.
+ */
+export const juniorMessagingOpen = () => communityOpen() && process.env.COMMUNITY_JUNIOR_DMS === 'true';
+export const JUNIOR_DMS_OFF = 'Private messages are not available for under-18s yet.';
+
 type ClubRow = { id: string; name: string; county: string | null; league: string | null; ground_lat: number | null; ground_lng: number | null };
 
 export type Viewer = {
@@ -547,6 +554,8 @@ async function openThread(admin: Admin, userId: string, connectionId: string) {
   const me = who.get(userId); const them = who.get(other);
   // Checked again on every read and send: someone's age band can change after they connected
   if (!me || !them || blocked.has(other) || !me.cleared || !them.cleared) return null;
+  // Nothing private is sent to or from an under-18 while this is off, whatever the connection or contact says
+  if ((me.junior || them.junior) && !juniorMessagingOpen()) return 'junior_off' as const;
   // An adult and a junior can talk only through a parent-approved contact that is still active
   if (!mayMessage(me.junior, them.junior) && !(await (await import('./guardian')).guardianContactActive(admin, userId, other))) return null;
   return { me, them };
@@ -557,6 +566,7 @@ export type Message = { id: string; body: string; createdAt: string; mine: boole
 export async function getMessages(userId: string, connectionId: string): Promise<Result<{ person: { id: string; name: string; club: string | null }; messages: Message[] }>> {
   const admin = createAdminClient();
   const thread = await openThread(admin, userId, connectionId);
+  if (thread === 'junior_off') return no(JUNIOR_DMS_OFF);
   if (!thread) return no('Conversation not found.');
   const { data } = await admin.from('community_messages').select('id, sender_id, body, created_at').eq('connection_id', connectionId).eq('status', 'live').order('created_at', { ascending: false }).limit(100);
   return ok({
@@ -569,6 +579,7 @@ export async function sendMessage(userId: string, connectionId: string, body: un
   if (typeof body !== 'string') return no('Write something first.');
   const admin = createAdminClient();
   const thread = await openThread(admin, userId, connectionId);
+  if (thread === 'junior_off') return no(JUNIOR_DMS_OFF);
   if (!thread) return no('Conversation not found.');
   const check = await checkContent(body, { place: 'private', authorJunior: thread.me.junior, readerJunior: thread.them.junior }, MAX_MESSAGE);
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });

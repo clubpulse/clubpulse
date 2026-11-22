@@ -3,6 +3,8 @@
 // resolved the caller's admin clubs (getAdminContext).
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { dbsIsCurrent, type DbsRow } from '@/lib/community/rules';
+import { ukToday } from '@/lib/utils/uk-date';
 
 export type LinkResult = { success: true; name: string } | { success: false; error: string };
 
@@ -18,6 +20,17 @@ async function ownChild(adminClubIds: string[], childId: unknown) {
   const { data } = await createAdminClient().from('child_profiles').select('id, club_id, first_name, date_of_birth, linked_user_id').eq('id', childId).maybeSingle();
   // An admin can only act on children of a club they administer
   return data && adminClubIds.includes(data.club_id as string) ? data : null;
+}
+
+/**
+ * Of the clubs this person administers, the ones where they hold a current enhanced DBS check. Linking a child's
+ * record to an account is what makes the account a junior, so it is limited to admins who are checked.
+ */
+export async function clubsWithCurrentDbs(userId: string, adminClubIds: string[]): Promise<string[]> {
+  if (adminClubIds.length === 0) return [];
+  const { data } = await createAdminClient().from('dbs_checks').select('club_id, check_type, status, expiry_date').eq('user_id', userId).in('club_id', adminClubIds);
+  const today = ukToday();
+  return adminClubIds.filter((c) => dbsIsCurrent((data ?? []).filter((d) => d.club_id === c) as DbsRow[], today));
 }
 
 export async function linkChildToAccount(adminClubIds: string[], childId: unknown, email: unknown): Promise<LinkResult> {

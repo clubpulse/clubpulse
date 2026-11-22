@@ -24,7 +24,7 @@ export function ActionButton({ label, run, quiet, confirm }: { label: string; ru
 }
 
 export function ReportButton({ run }: { run: (reason: string) => Promise<R> }) {
-  return <ActionButton label="Report" quiet run={() => { const reason = window.prompt('What is wrong? A few words is fine.') ?? ''; return reason ? run(reason) : Promise.resolve({ success: false, error: 'Cancelled.' }); }} />;
+  return <ActionButton label="Report a concern" quiet run={() => { const reason = window.prompt('What is the concern? A few words is fine. If a child is in immediate danger, stop and call 999.') ?? ''; return reason ? run(reason) : Promise.resolve({ success: false, error: 'Cancelled.' }); }} />;
 }
 
 export function ClosedNotice({ children }: { children?: ReactNode }) {

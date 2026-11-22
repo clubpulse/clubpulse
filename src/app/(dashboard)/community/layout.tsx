@@ -10,7 +10,14 @@ export default async function CommunityLayout({ children }: { children: ReactNod
   if (!communityOpen()) return <>{children}</>;
   const user = await requireUser();
   const viewer = await getViewer(createAdminClient(), user.id);
-  if (!viewer.hold) return <>{children}</>;
+  if (!viewer.hold) return (
+    <>
+      {children}
+      <p style={{ maxWidth: 680, margin: '0 auto', padding: '0 16px 24px', fontSize: 13, opacity: 0.7 }}>
+        Worried about something? Use “Report a concern” on any post, profile or message, and the ClubPulse team will look at it. If a child is in immediate danger, call 999.
+      </p>
+    </>
+  );
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: 16, display: 'grid', gap: 12 }}>
