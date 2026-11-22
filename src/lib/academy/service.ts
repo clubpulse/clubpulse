@@ -144,7 +144,7 @@ export async function submitLesson(userId: string, lessonId: string, answers: nu
 
 // ── Personal plan ────────────────────────────────────────────────────────────
 
-const PLAN_SYSTEM = `You are the ClubPulse Coach, writing a one-week cricket practice plan for a grassroots player in Britain. The player could be any age from 10 upwards.
+const PLAN_SYSTEM = `You are the ShiftUp Coach, writing a one-week cricket practice plan for a grassroots player in Britain. The player could be any age from 10 upwards.
 
 Rules:
 - Use plain, friendly British English a 12-year-old can follow. No jargon without a quick explanation.
@@ -230,7 +230,7 @@ export async function getCertificate(userId: string, key: CertificateKey): Promi
   const junior = (member ?? []).length > 0 && (member ?? []).every((m) => m.is_junior === true);
   return {
     name: shownName((profile?.display_name as string | null) || (profile?.full_name as string | null), junior),
-    title: key === GRADUATE ? 'ClubPulse Academy Graduate' : TRACKS.find((t) => t.key === key)!.title,
+    title: key === GRADUATE ? 'ShiftUp Academy Graduate' : TRACKS.find((t) => t.key === key)!.title,
     completedOn: dates[dates.length - 1] ?? new Date().toISOString(),
     graduate: key === GRADUATE,
   };

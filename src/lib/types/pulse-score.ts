@@ -7,7 +7,7 @@ export interface PulseScoreComponents {
   fixture: number           // max 10
 }
 
-export interface ClubPulseScore {
+export interface ShiftupScore {
   id: string
   club_id: string
   score: number

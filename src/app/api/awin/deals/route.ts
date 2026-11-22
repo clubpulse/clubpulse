@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// ClubPulse: Awin Deals API
+// ShiftUp: Awin Deals API
 // GET /api/awin/deals?category=sports_apparel&userId=xxx
 // Returns tracked affiliate deals for the mobile app Store & Scratch Card screens.
 // ─────────────────────────────────────────────

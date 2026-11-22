@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
 export const metadata: Metadata = {
-  title: 'For clubs | ClubPulse',
+  title: 'For clubs | ShiftUp',
   description: 'Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
 };
 
@@ -115,7 +115,7 @@ export default function ForClubsPage() {
 
         <div className="fc-cta">
           <h2>Tell us about your club.</h2>
-          <p>We set ClubPulse up with you. Club plans start from £29.99 a month and cover the whole club.</p>
+          <p>We set ShiftUp up with you. Club plans start from £29.99 a month and cover the whole club.</p>
           <Link href="/contact">Get in touch →</Link>
         </div>
       </main>

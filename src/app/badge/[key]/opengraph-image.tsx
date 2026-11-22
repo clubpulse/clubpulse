@@ -6,13 +6,13 @@ import { badgeDef } from '@/lib/mobile/badges-logic';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'A ClubPulse badge';
+export const alt = 'A ShiftUp badge';
 
 const GOLD = '#EFC84A';
 
 export default async function Image({ params }: { params: Promise<{ key: string }> }) {
   const def = badgeDef((await params).key);
-  const title = def?.title ?? 'ClubPulse badge';
+  const title = def?.title ?? 'ShiftUp badge';
 
   return new ImageResponse(
     (
@@ -23,7 +23,7 @@ export default async function Image({ params }: { params: Promise<{ key: string 
           </svg>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 70, flex: 1 }}>
-          <div style={{ fontSize: 30, letterSpacing: 6, color: GOLD, fontWeight: 700 }}>CLUBPULSE BADGE</div>
+          <div style={{ fontSize: 30, letterSpacing: 6, color: GOLD, fontWeight: 700 }}>ShiftUp Badge</div>
           <div style={{ fontSize: title.length > 18 ? 76 : 96, fontWeight: 800, lineHeight: 1.05, marginTop: 20 }}>{title}</div>
           <div style={{ fontSize: 34, color: 'rgba(255,255,255,0.75)', marginTop: 24 }}>{def?.how ?? ''}</div>
           <div style={{ fontSize: 28, color: 'rgba(255,255,255,0.5)', marginTop: 44 }}>clubpulse.co</div>

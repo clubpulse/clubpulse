@@ -47,7 +47,7 @@ describe('menu by role', () => {
     expect(asAdmin(aud(['player'])).roles).toEqual(['player']);
   });
 
-  it('shows ClubPulse staff both sides', () => {
+  it('shows ShiftUp staff both sides', () => {
     const staff = asStaff(aud([]));
     expect(menuFor(staff).map((g) => g.key)).toEqual(['matchday', 'technique', 'community', 'wellness', 'academy', 'scores', 'club']);
   });

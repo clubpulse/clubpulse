@@ -33,7 +33,7 @@ type Home = {
   recent: Array<{ id: string; title: string; amount: number }>;
 };
 
-const ROLE_KEY = 'clubpulse.home.role';
+const ROLE_KEY = 'shiftup.home.role';
 const FORMAT: Record<string, string> = { league: 'League match', cup: 'Cup match', friendly: 'Friendly', tour: 'Tour match' };
 const num = (n: number) => n.toLocaleString('en-GB');
 

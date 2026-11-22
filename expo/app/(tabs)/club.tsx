@@ -371,7 +371,7 @@ function InviteSheet({ open, onClose }: { open: boolean; onClose: () => void }) 
   const share = () => {
     if (!invite) return;
     Share.share({
-      message: `Join ${invite.clubName} on ClubPulse.\n\n1. Get the ClubPulse app and create an account.\n2. Open the Club tab and enter this code: ${invite.code}\n\nA club admin will then approve you.`,
+      message: `Join ${invite.clubName} on ShiftUp.\n\n1. Get the ShiftUp app and create an account.\n2. Open the Club tab and enter this code: ${invite.code}\n\nA club admin will then approve you.`,
     }).catch(() => null);
   };
 

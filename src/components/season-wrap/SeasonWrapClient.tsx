@@ -8,7 +8,7 @@ export interface SeasonStats {
   runs: number;
   wickets: number;
   matches: number;
-  clubPulseScore: number;
+  shiftupScore: number;
   year: number;
 }
 
@@ -81,17 +81,17 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
   useEffect(() => {
     if (slide !== 5) return;
     let start = 0;
-    const step = Math.max(1, Math.floor(stats.clubPulseScore / 40));
+    const step = Math.max(1, Math.floor(stats.shiftupScore / 40));
     const id = setInterval(() => {
       start += step;
-      if (start >= stats.clubPulseScore) { setScoreDisplay(stats.clubPulseScore); clearInterval(id); }
+      if (start >= stats.shiftupScore) { setScoreDisplay(stats.shiftupScore); clearInterval(id); }
       else setScoreDisplay(start);
     }, 25);
     return () => clearInterval(id);
-  }, [slide, stats.clubPulseScore]);
+  }, [slide, stats.shiftupScore]);
 
   async function handleShare() {
-    const text = `My ${stats.year} cricket season on ClubPulse: ${stats.runs} runs, ${stats.wickets} wickets in ${stats.matches} matches. ClubPulse Score: ${stats.clubPulseScore}. "${superlative.title}" 🏏`;
+    const text = `My ${stats.year} cricket season on ShiftUp: ${stats.runs} runs, ${stats.wickets} wickets in ${stats.matches} matches. ShiftUp Score: ${stats.shiftupScore}. "${superlative.title}" 🏏`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -154,7 +154,7 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
 
     /* 5 — score + share */
     <div key="score" className="sw-slide">
-      <p style={{ fontSize: '13px', letterSpacing: '4px', color: '#6ee7b7', textTransform: 'uppercase', marginBottom: '16px' }}>Your ClubPulse score</p>
+      <p style={{ fontSize: '13px', letterSpacing: '4px', color: '#6ee7b7', textTransform: 'uppercase', marginBottom: '16px' }}>Your ShiftUp score</p>
       <div className="sw-gold-pulse" style={{ ...BIG, color: '#f59e0b', fontSize: 'clamp(80px, 20vw, 130px)' }}>{scoreDisplay}</div>
       <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginTop: '24px', maxWidth: '280px', lineHeight: 1.5 }}>Every match played, every contribution made — it all counts.</p>
       <button

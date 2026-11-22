@@ -50,7 +50,7 @@ describe('badges', () => {
   });
   it('gives an earned badge a message and a link that say nothing about the member', () => {
     const b = find({ checkins: 6 }, 'maiden-over');
-    expect(b.share).toEqual({ message: 'I checked in on 6 days and earned the Maiden Over badge on ClubPulse 🏏', url: `${SHARE_BASE}/maiden-over` });
+    expect(b.share).toEqual({ message: 'I checked in on 6 days and earned the Maiden Over badge on ShiftUp 🏏', url: `${SHARE_BASE}/maiden-over` });
     BADGE_DEFS.forEach((d) => expect(shareMessage(d)).toMatch(/^I [a-z]/));
   });
   it('leaves Warm-Up badges out until Warm-Up rewards are on', () => {

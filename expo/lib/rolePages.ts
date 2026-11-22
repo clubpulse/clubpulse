@@ -7,7 +7,7 @@ import { VOLUNTEERS_ENABLED } from '../constants/features';
 
 export type PageRole = 'player' | 'coach' | 'parent' | 'admin';
 
-/** Where a button goes: a screen in the app, or a ClubPulse web page shown inside it. */
+/** Where a button goes: a screen in the app, or a ShiftUp web page shown inside it. */
 export type Target = { screen: string } | { web: string; title: string; camera?: boolean };
 
 export type RoleTool = { label: string; detail: string; icon: string; tint: string; to: Target };

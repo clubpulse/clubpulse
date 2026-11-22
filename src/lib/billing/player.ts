@@ -94,7 +94,7 @@ export async function createPlayerCheckout(userId: string, email: string | null,
   let priceId = found.data[0]?.id;
   if (!priceId) {
     const product = await stripe.products.create({
-      name: `ClubPulse ${option.label}`,
+      name: `ShiftUp ${option.label}`,
       metadata: { platform: 'clubpulse', type: 'player', kind: offer.kind, plan: option.plan },
     });
     const price = await stripe.prices.create({

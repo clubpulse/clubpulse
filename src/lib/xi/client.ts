@@ -89,8 +89,8 @@ function xiHeaders(): HeadersInit {
 }
 
 /**
- * Called once during ClubPulse sign-up to provision a matching XI account.
- * Returns the xi_user_id which is then stored on the ClubPulse profile.
+ * Called once during ShiftUp sign-up to provision a matching XI account.
+ * Returns the xi_user_id which is then stored on the ShiftUp profile.
  * Silently swallows errors — a failed XI provisioning must never block sign-up.
  */
 export async function xiCreateUser(
@@ -116,7 +116,7 @@ export async function xiCreateUser(
 }
 
 /**
- * Fired when a scorecard is closed on ClubPulse.
+ * Fired when a scorecard is closed on ShiftUp.
  * Sends the player's match performance to The XI; receives fantasy + rewards points.
  */
 export async function xiSyncPerformance(
@@ -143,7 +143,7 @@ export async function xiSyncPerformance(
 
 /**
  * Fetches the player's current XI wallet — balance, tier and multiplier.
- * Used to display live rewards balance on the ClubPulse dashboard.
+ * Used to display live rewards balance on the ShiftUp dashboard.
  */
 export async function xiGetWallet(
   xiUserId: string

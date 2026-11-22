@@ -8,7 +8,7 @@ import {
 import { CATEGORY_CONFIG, type DocumentCategory } from '@/lib/types/documents';
 import { AdminDocumentsClient } from '@/components/documents/AdminDocumentsClient';
 
-export const metadata = { title: 'Documents · Admin · ClubPulse' };
+export const metadata = { title: 'Documents · Admin · ShiftUp' };
 
 export default async function AdminDocumentsPage() {
   const { clubId } = await requireClubAdminPage();

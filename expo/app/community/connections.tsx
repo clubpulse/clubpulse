@@ -41,7 +41,7 @@ export default function ConnectionsScreen() {
           <View key={r.id} style={styles.card}>
             <Pressable onPress={() => router.push({ pathname: '/community/profile', params: { id: r.person.id } })} style={styles.row} accessibilityRole="button">
               <Avatar name={r.person.name} />
-              <View style={{ flex: 1 }}><Text style={styles.name}>{r.person.name}</Text><Text style={fonts.small}>{r.person.club ?? 'ClubPulse member'}</Text></View>
+              <View style={{ flex: 1 }}><Text style={styles.name}>{r.person.name}</Text><Text style={fonts.small}>{r.person.club ?? 'ShiftUp member'}</Text></View>
             </Pressable>
             <View style={styles.row}>
               <Pressable onPress={() => answer(r.person.id, false)} style={[styles.btn, styles.btnGhost]} accessibilityRole="button"><Text style={styles.btnGhostText}>Not now</Text></Pressable>
@@ -67,7 +67,7 @@ export default function ConnectionsScreen() {
         {group('requested').map((r) => (
           <View key={r.id} style={[styles.card, styles.row]}>
             <Avatar name={r.person.name} tint="#93C5FD" />
-            <View style={{ flex: 1 }}><Text style={styles.name}>{r.person.name}</Text><Text style={fonts.small}>{r.person.club ?? 'ClubPulse member'}</Text></View>
+            <View style={{ flex: 1 }}><Text style={styles.name}>{r.person.name}</Text><Text style={fonts.small}>{r.person.club ?? 'ShiftUp member'}</Text></View>
           </View>
         ))}
       </ScrollView>

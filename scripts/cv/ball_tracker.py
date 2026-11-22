@@ -1,5 +1,5 @@
 """
-ClubPulse Ball Tracking Pipeline
+ShiftUp Ball Tracking Pipeline
 ---------------------------------
 Detects and tracks a cricket ball through a video clip.
 
@@ -406,7 +406,7 @@ def run_pipeline(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ClubPulse ball tracker")
+    parser = argparse.ArgumentParser(description="ShiftUp ball tracker")
     parser.add_argument("--video",         required=True,  help="Path to video file")
     parser.add_argument("--fps",           type=float,     help="Override FPS detection")
     parser.add_argument("--pitch_length_m",type=float, default=20.12)

@@ -5,7 +5,7 @@ import VolunteerRoster from '@/components/club/VolunteerRoster';
 import { h1, card, muted } from '@/components/play/ui';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Volunteer Shifts · ClubPulse' };
+export const metadata: Metadata = { title: 'Volunteer Shifts · ShiftUp' };
 
 export default async function VolunteerShiftsPage() {
   const { clubId } = await requireClubAdminPage();

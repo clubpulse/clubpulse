@@ -76,7 +76,7 @@ export async function postShortage(userId: string, input: NewShortage): Promise<
   const viewer = await getViewer(admin, userId);
   if (!mayPostShortage(viewer.junior, await isStaffAt(admin, userId, input.clubId))) return no('Only a coach or club admin can post a game for their club.');
   const check = await checkContent([note, input.place].filter(Boolean).join('\n'), { place: 'public', authorJunior: false, readerJunior: true }, 500);
-  // A plain rule refusal is not stored. If the AI check is busy or unsure the game is saved as held for ClubPulse staff.
+  // A plain rule refusal is not stored. If the AI check is busy or unsure the game is saved as held for ShiftUp staff.
   if (check.status === 'held' && !check.held) return no(check.tell ?? 'That was not posted.');
   const queued = check.status === 'held';
   const { data, error } = await admin.from('community_shortages').insert({
