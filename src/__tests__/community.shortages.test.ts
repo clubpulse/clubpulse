@@ -83,6 +83,21 @@ describe('posting', () => {
     expect((await postShortage('me', input({ playAt: '2020-01-01T10:00:00Z' }))).success).toBe(false);
     expect(writes.filter((w) => w.op === 'insert')).toHaveLength(0);
   });
+  it('queues a game for staff, saved as held, when the AI check is unavailable', async () => {
+    world(); mockCheck.mockResolvedValueOnce({ status: 'held' as never, tell: 'The safety check is busy.', held: true } as never);
+    const r = await postShortage('me', input({ note: 'Bring whites' }));
+    expect(r.success).toBe(true);
+    expect(r.success && r.data.held).toBe(true);
+    const insert = writes.find((w) => w.op === 'insert');
+    expect(insert?.args[0]).toMatchObject({ status: 'held', held_reason: 'The safety check is busy.' });
+  });
+  it('posts a cleared game straight away', async () => {
+    world();
+    const r = await postShortage('me', input({ note: 'Bring whites' }));
+    expect(r.success).toBe(true);
+    expect(r.success && r.data.held).toBe(false);
+    expect(writes.find((w) => w.op === 'insert')?.args[0]).toMatchObject({ status: 'open', held_reason: null });
+  });
   it('stores nothing when the safety check stops it', async () => {
     world(); mockCheck.mockResolvedValueOnce({ status: 'held' as never, tell: 'No contact details', held: false } as never);
     expect((await postShortage('me', input({ note: 'ring 07700 900123' }))).success).toBe(false);

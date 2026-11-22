@@ -93,14 +93,18 @@ export async function createSession(userId: string, input: NewSession): Promise<
   // Everything written is checked like a post, and a junior session is read as if children will see it
   const text = [title, note, input.place].filter(Boolean).join('\n');
   const check = await checkContent(text, { place: 'public', authorJunior: false, readerJunior: true }, 600);
-  // Not stored if the check stops it, or cannot run: a session has no review queue, so it is simply not created
-  if (check.status === 'held') return ok({ id: null, held: true, tell: check.held ? 'The safety check is busy or stopped this. Please try again, or change the wording.' : check.tell });
+  // A plain rule refusal (a phone number, a private address) is not stored. If the AI check is busy, unavailable or
+  // unsure, the session is saved as held and goes to ClubPulse staff, who allow or remove it. Nobody can see it until
+  // then, apart from the host, who is told.
+  if (check.status === 'held' && !check.held) return ok({ id: null, held: true, tell: check.tell });
+  const queued = check.status === 'held';
   const { data, error } = await admin.from('community_sessions').insert({
     host_id: userId, club_id: input.clubId, kind: input.kind, age_band: input.band, title, note: note || null,
-    place: input.place.trim(), starts_at: when.toISOString(), capacity: input.capacity, status: 'open',
+    place: input.place.trim(), starts_at: when.toISOString(), capacity: input.capacity,
+    status: queued ? 'held' : 'open', held_reason: queued ? check.tell : null,
   }).select('id').single();
   if (error || !data) return no('Could not save the session.');
-  return ok({ id: data.id as string, held: false, tell: null });
+  return ok({ id: data.id as string, held: queued, tell: queued ? 'Thanks. ClubPulse will check this and it will go live once approved.' : null });
 }
 
 export async function joinSession(userId: string, sessionId: unknown, on: boolean): Promise<Result<{ joined: boolean }>> {

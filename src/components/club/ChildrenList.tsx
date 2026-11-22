@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { ChildWithConsents, ConsentType } from '@/lib/types/parent';
 import { CONSENT_LABELS, computeAge } from '@/lib/types/parent';
 import { card, cardTitle, muted, primaryBtn } from '@/components/play/ui';
+import { linkChildAccountAction, unlinkChildAccountAction } from '@/lib/actions/child-link';
 
 interface Props {
   initialChildren: ChildWithConsents[];
@@ -18,6 +19,18 @@ export default function ChildrenList({ initialChildren }: Props) {
   const [children] = useState(initialChildren);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [verifying, setVerifying] = useState<string | null>(null);
+  const [emails, setEmails] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Record<string, string>>({});
+
+  const runLink = async (childId: string, run: () => Promise<{ success: boolean; error?: string; message?: string }>) => {
+    setBusy(childId);
+    try {
+      const r = await run();
+      setNotice((n) => ({ ...n, [childId]: r.success ? (r.message ?? 'Done.') : (r.error ?? 'Could not do that.') }));
+      if (r.success) window.location.reload();
+    } finally { setBusy(null); }
+  };
 
   const handleVerifyLink = async (linkId: string) => {
     setVerifying(linkId);
@@ -90,6 +103,27 @@ export default function ChildrenList({ initialChildren }: Props) {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* The child's own account, which makes them a junior in the Community */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ ...muted, fontWeight: 600, marginBottom: '0.25rem' }}>Community account</div>
+                  {child.linked_account ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ color: '#fff' }}>{child.linked_account.name}<span style={muted}> · {child.linked_account.email}</span></span>
+                      <button style={{ ...smallBtn, background: 'rgba(255,82,82,0.15)', color: '#ff5252' }} disabled={busy === child.id}
+                        onClick={(e) => { e.stopPropagation(); if (window.confirm('Unlink this account? Their parents will no longer be told about new connections.')) runLink(child.id, () => unlinkChildAccountAction(child.id)); }}>Unlink</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <input type="email" placeholder="Email the child signed up with" value={emails[child.id] ?? ''}
+                        onChange={(e) => setEmails((m) => ({ ...m, [child.id]: e.target.value }))} onClick={(e) => e.stopPropagation()}
+                        style={{ flex: 1, minWidth: 220, padding: '6px 10px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: '#fff' }} />
+                      <button style={{ ...smallBtn, background: 'rgba(0,200,83,0.15)', color: '#00C853' }} disabled={busy === child.id || !(emails[child.id] ?? '').includes('@')}
+                        onClick={(e) => { e.stopPropagation(); runLink(child.id, () => linkChildAccountAction(child.id, emails[child.id] ?? '')); }}>Link account</button>
+                    </div>
+                  )}
+                  {notice[child.id] && <div style={{ ...muted, marginTop: '0.25rem' }}>{notice[child.id]}</div>}
                 </div>
 
                 {/* Consent status */}

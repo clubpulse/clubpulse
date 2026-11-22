@@ -58,7 +58,7 @@ export async function listShortages(userId: string, scope: Scope, within?: numbe
 
 export type NewShortage = { clubId: unknown; playAt: unknown; format: unknown; need: unknown; place: unknown; note: unknown };
 
-export async function postShortage(userId: string, input: NewShortage): Promise<Result<{ id: string }>> {
+export async function postShortage(userId: string, input: NewShortage): Promise<Result<{ id: string; held: boolean }>> {
   if (typeof input.clubId !== 'string' || typeof input.place !== 'string' || typeof input.playAt !== 'string') return no('Fill in the club, place and time.');
   if (!isShortageFormat(input.format)) return no('Choose the kind of game.');
   if (typeof input.need !== 'number' || !Number.isInteger(input.need) || input.need < 1 || input.need > SHORTAGE_NEED_MAX) return no(`Say how many players you need, 1 to ${SHORTAGE_NEED_MAX}.`);
@@ -72,13 +72,15 @@ export async function postShortage(userId: string, input: NewShortage): Promise<
   const viewer = await getViewer(admin, userId);
   if (!mayPostShortage(viewer.junior, await isStaffAt(admin, userId, input.clubId))) return no('Only a coach or club admin can post a game for their club.');
   const check = await checkContent([note, input.place].filter(Boolean).join('\n'), { place: 'public', authorJunior: false, readerJunior: true }, 500);
-  // Nothing is stored if the check stops it or cannot run: there is no review queue for these
-  if (check.status === 'held') return no(check.held ? 'The safety check is busy or stopped this. Please try again, or change the wording.' : (check.tell ?? 'That was not posted.'));
+  // A plain rule refusal is not stored. If the AI check is busy or unsure the game is saved as held for ClubPulse staff.
+  if (check.status === 'held' && !check.held) return no(check.tell ?? 'That was not posted.');
+  const queued = check.status === 'held';
   const { data, error } = await admin.from('community_shortages').insert({
     club_id: input.clubId, posted_by: userId, play_at: when.toISOString(), format: input.format, need: input.need, place: input.place.trim(), note: note || null,
+    status: queued ? 'held' : 'open', held_reason: queued ? check.tell : null,
   }).select('id').maybeSingle();
   if (error || !data) return no('Could not post this.');
-  return ok({ id: data.id as string });
+  return ok({ id: data.id as string, held: queued });
 }
 
 /** "I can play". Tells the poster who you are, and nothing else about you. */

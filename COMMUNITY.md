@@ -39,8 +39,14 @@ If any step fails, stop and switch it off.
 ## Known limits
 
 - The phone app has its own flag and is not covered by this checklist.
-- Linking a child record to the junior's own account (`child_profiles.linked_user_id`) has no admin screen yet.
+- A club admin links a child record to the junior's own account in Safeguarding → Registered children → Community account. The child's club membership is then marked junior. Until it is linked, the account is not treated as a junior in the Community.
 - Community links are not in the main menu yet. Add them only when the flag is on.
+
+## Junior-to-junior connections
+Two juniors can connect without a verified parent link. When a connection is accepted, each junior's club-verified parents are notified (and the notice is logged in `community_connection_events` as `parent_notified`). A junior with no verified parent has nobody to tell, and that is logged as `no_parent_to_notify` so staff can see where a parent link is missing. This replaces the earlier rule that both juniors needed a verified parent first.
+
+## When the AI safety check is unavailable
+Posts, comments and messages are held for staff. Nets/pick-up sessions and Short for Saturday games are now held the same way: saved with status `held`, hidden from everyone but staff, and shown in `/admin/community/reports` (Allow releases them, Remove takes them down). A plain rule refusal, such as a phone number or a private address, is still refused and not stored.
 
 ## Adult-to-junior contact (parent first)
 
