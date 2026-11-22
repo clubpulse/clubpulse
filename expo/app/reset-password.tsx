@@ -11,7 +11,7 @@ const MIN_LENGTH = 8;
 type Stage = 'checking' | 'ready' | 'invalid' | 'done';
 
 // Supabase puts the recovery session (or an error) after the # in the emailed link, e.g.
-// clubpulse://reset-password#access_token=…&refresh_token=…&type=recovery
+// shiftup://reset-password#access_token=…&refresh_token=…&type=recovery
 function linkParams(url: string): URLSearchParams {
   const hash = url.includes('#') ? url.slice(url.indexOf('#') + 1) : '';
   const query = url.includes('?') ? url.slice(url.indexOf('?') + 1).split('#')[0] : '';

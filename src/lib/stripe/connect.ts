@@ -44,7 +44,7 @@ export async function createConnectAccount(
       metadata: {
         club_id: clubId,
         club_name: clubName,
-        platform: 'clubpulse',
+        platform: 'shiftup',
       },
       business_profile: {
         name: clubName,

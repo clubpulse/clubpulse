@@ -42,6 +42,6 @@ export const isLive = (status: string | null | undefined): boolean =>
 
 /** One Stripe price per kind, plan and amount, so a price change makes a new price, not a silent edit. */
 export const lookupKey = (kind: PlanKind, plan: PlayerPlan, pence: number): string =>
-  `clubpulse_player_${kind}_${plan}_${pence}_monthly`;
+  `shiftup_player_${kind}_${plan}_${pence}_monthly`;
 
 export const pounds = (pence: number): string => `£${(pence / 100).toFixed(2)}`;

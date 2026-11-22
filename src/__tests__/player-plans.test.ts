@@ -28,7 +28,7 @@ describe('helpers', () => {
   });
 
   it('gives each kind, plan and price its own Stripe key', () => {
-    expect(lookupKey('individual', 'pro', 999)).toBe('clubpulse_player_individual_pro_999_monthly');
+    expect(lookupKey('individual', 'pro', 999)).toBe('shiftup_player_individual_pro_999_monthly');
     expect(lookupKey('club_addon', 'pro', 299)).not.toBe(lookupKey('individual', 'pro', 299));
     expect(lookupKey('individual', 'pro', 999)).not.toBe(lookupKey('individual', 'pro', 1099));
   });

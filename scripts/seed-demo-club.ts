@@ -96,8 +96,8 @@ async function main() {
   const password = process.env.DEMO_PASSWORD || DEFAULT_PASSWORD;
 
   console.log('Seeding fictional demo data…');
-  const main = await ensureClub(db, DEMO_CLUB_NAMES[0], 'clubpulse-demo-cc', 51.3811, -2.3590);
-  const rovers = await ensureClub(db, DEMO_CLUB_NAMES[1], 'clubpulse-demo-rovers-cc', 51.4016, -2.3105);
+  const main = await ensureClub(db, DEMO_CLUB_NAMES[0], 'shiftup-demo-cc', 51.3811, -2.3590);
+  const rovers = await ensureClub(db, DEMO_CLUB_NAMES[1], 'shiftup-demo-rovers-cc', 51.4016, -2.3105);
   const club = { main, rovers };
 
   const id: Record<string, string> = {};

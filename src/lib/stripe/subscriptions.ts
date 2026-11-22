@@ -47,7 +47,7 @@ export async function createSubscriptionCheckout(
     const customer = await stripe.customers.create({
       email: adminEmail,
       name: club?.name ?? 'SHIFTUP Club',
-      metadata: { club_id: clubId, platform: 'clubpulse' },
+      metadata: { club_id: clubId, platform: 'shiftup' },
     });
     customerId = customer.id;
 
@@ -63,7 +63,7 @@ export async function createSubscriptionCheckout(
   const interval = billingCycle === 'annual' ? 'year' : 'month';
 
   // Use a product lookup key so we don't create duplicate products
-  const lookupKey = `clubpulse_${tier}_${billingCycle}`;
+  const lookupKey = `shiftup_${tier}_${billingCycle}`;
 
   // Search for existing price
   const existingPrices = await stripe.prices.search({
@@ -78,7 +78,7 @@ export async function createSubscriptionCheckout(
     // Create product + price
     const product = await stripe.products.create({
       name: `SHIFTUP ${config.label} (${billingCycle})`,
-      metadata: { tier, billing_cycle: billingCycle, platform: 'clubpulse' },
+      metadata: { tier, billing_cycle: billingCycle, platform: 'shiftup' },
     });
 
     const price = await stripe.prices.create({
@@ -101,7 +101,7 @@ export async function createSubscriptionCheckout(
     success_url: `${PLATFORM_URL}/admin/club/settings?subscription=success&tier=${tier}`,
     cancel_url: `${PLATFORM_URL}/admin/club/settings?subscription=canceled`,
     subscription_data: {
-      metadata: { club_id: clubId, tier, platform: 'clubpulse' },
+      metadata: { club_id: clubId, tier, platform: 'shiftup' },
       trial_period_days: 30,
     },
     metadata: { club_id: clubId, tier },
