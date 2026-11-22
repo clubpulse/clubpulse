@@ -44,7 +44,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.49,
     type: 'consumable',
     icon: '🏏',
-    appleProductId: 'com.shiftup.app.net_session_card',
+    appleProductId: 'com.clubpulse.app.net_session_card',
   },
   match_day_card: {
     id: 'match_day_card',
@@ -53,7 +53,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.99,
     type: 'consumable',
     icon: '🏟️',
-    appleProductId: 'com.shiftup.app.match_day_card',
+    appleProductId: 'com.clubpulse.app.match_day_card',
   },
   streak_shield: {
     id: 'streak_shield',
@@ -62,7 +62,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.49,
     type: 'consumable',
     icon: '🛡️',
-    appleProductId: 'com.shiftup.app.streak_shield',
+    appleProductId: 'com.clubpulse.app.streak_shield',
   },
   streak_shield_3pack: {
     id: 'streak_shield_3pack',
@@ -71,7 +71,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.99,
     type: 'consumable',
     icon: '🛡️',
-    appleProductId: 'com.shiftup.app.streak_shield_3pack',
+    appleProductId: 'com.clubpulse.app.streak_shield_3pack',
   },
   coach_ai_session: {
     id: 'coach_ai_session',
@@ -80,7 +80,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.49,
     type: 'consumable',
     icon: '🤖',
-    appleProductId: 'com.shiftup.app.coach_ai_session',
+    appleProductId: 'com.clubpulse.app.coach_ai_session',
   },
   coach_ai_3pack: {
     id: 'coach_ai_3pack',
@@ -89,7 +89,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.99,
     type: 'consumable',
     icon: '🤖',
-    appleProductId: 'com.shiftup.app.coach_ai_3pack',
+    appleProductId: 'com.clubpulse.app.coach_ai_3pack',
   },
   profile_badge: {
     id: 'profile_badge',
@@ -98,7 +98,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.49,
     type: 'non_consumable',
     icon: '🏅',
-    appleProductId: 'com.shiftup.app.profile_badge',
+    appleProductId: 'com.clubpulse.app.profile_badge',
   },
   sporting_soul_theme: {
     id: 'sporting_soul_theme',
@@ -107,7 +107,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.99,
     type: 'non_consumable',
     icon: '🎨',
-    appleProductId: 'com.shiftup.app.sporting_soul_theme',
+    appleProductId: 'com.clubpulse.app.sporting_soul_theme',
   },
   profile_frame: {
     id: 'profile_frame',
@@ -116,7 +116,7 @@ export const IAP_PRODUCTS: Record<IAPProductId, IAPProduct> = {
     priceGBP: 0.99,
     type: 'non_consumable',
     icon: '✨',
-    appleProductId: 'com.shiftup.app.profile_frame',
+    appleProductId: 'com.clubpulse.app.profile_frame',
   },
 };
 

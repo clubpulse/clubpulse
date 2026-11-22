@@ -63,7 +63,7 @@ export async function createSubscriptionCheckout(
   const interval = billingCycle === 'annual' ? 'year' : 'month';
 
   // Use a product lookup key so we don't create duplicate products
-  const lookupKey = `shiftup_${tier}_${billingCycle}`;
+  const lookupKey = `clubpulse_${tier}_${billingCycle}`;
 
   // Search for existing price
   const existingPrices = await stripe.prices.search({

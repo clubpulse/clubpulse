@@ -18,7 +18,7 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     setError(null);
     // The link in the email opens the app on the reset-password screen.
-    // shiftup://reset-password must be listed under Redirect URLs in Supabase Auth settings.
+    // clubpulse://reset-password must be listed under Redirect URLs in Supabase Auth settings.
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(address, {
       redirectTo: Linking.createURL('/reset-password'),
     });

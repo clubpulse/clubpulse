@@ -3,7 +3,7 @@
     "name": "ShiftUp",
     "description": "ShiftUp: From Grassroots to Greatness",
     "slug": "clubpulse",
-    "scheme": "shiftup",
+    "scheme": "clubpulse",
     "version": "1.0.0",
     "orientation": "default",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.shiftup.app",
+      "bundleIdentifier": "com.clubpulse.app",
       "buildNumber": "1",
       "infoPlist": {
         "NSMotionUsageDescription": "ShiftUp uses your phone's motion sensors to count your daily steps and reward you with Scores.",
@@ -36,7 +36,7 @@
       }
     },
     "android": {
-      "package": "com.shiftup.app",
+      "package": "com.clubpulse.app",
       "versionCode": 1,
       "permissions": [
         "ACTIVITY_RECOGNITION",
