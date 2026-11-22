@@ -7,7 +7,7 @@ import { awardScores } from '@/lib/scores/context';
 import { ukToday } from '@/lib/utils/uk-date';
 import { checkContent } from './moderation';
 import {
-  LOOKING_FOR, MAX_COMMENT, MAX_MESSAGE, MAX_POST, NEAR_MILES, mayConnectJuniors, mayMessage, matchesFilters, milesBetween, roughDistance, shownName,
+  LOOKING_FOR, MAX_COMMENT, MAX_MESSAGE, MAX_POST, NEAR_MILES, mayMessage, matchesFilters, milesBetween, roughDistance, shownName,
   isAvailability, isStandard,
   type Availability, type ConnectFilters, type LookingFor, type Scope, type Standard,
 } from './rules';
@@ -307,24 +307,10 @@ export async function saveProfile(userId: string, input: unknown): Promise<Resul
 
 export type NearbyPerson = { id: string; name: string; club: string | null; roles: string[]; distance: string | null; headline: string; lookingFor: LookingFor[]; openToClub: boolean; standard: Standard | null; availability: Availability[] };
 
-/**
- * Under-18s with a linked account whose parent link the club has verified. Anyone else under 18 is
- * not shown in Cricket Connect and cannot send a request, because there would be no parent to tell.
- */
-export async function clearedJuniors(admin: Admin, ids: string[]): Promise<Set<string>> {
-  if (ids.length === 0) return new Set();
-  const { data } = await admin.from('child_profiles').select('linked_user_id, parent_child_links!inner ( verified_at )')
-    .in('linked_user_id', ids).not('parent_child_links.verified_at', 'is', null);
-  return new Set((data ?? []).map((r) => r.linked_user_id as string));
-}
-
 export async function getNearby(userId: string, scope: Scope, want: LookingFor | null, filters: ConnectFilters = {}): Promise<Result<{ scope: Scope; people: NearbyPerson[]; notice: string | null }>> {
   const admin = createAdminClient();
   const viewer = await getViewer(admin, userId);
   if (viewer.clubIds.length === 0) return ok({ scope, people: [], notice: null });
-  if (viewer.junior && !(await clearedJuniors(admin, [userId])).has(userId)) {
-    return ok({ scope, people: [], notice: 'Ask your parent to link your account in ClubPulse first. Then you can meet other young players.' });
-  }
   const clubs = await clubsInScope(admin, viewer, scope);
 
   let members = admin.from('club_members').select('user_id, club_id, is_junior').eq('is_active', true).neq('user_id', userId).limit(400);
@@ -344,9 +330,7 @@ export async function getNearby(userId: string, scope: Scope, want: LookingFor |
   const ids = [...new Set((rows ?? []).map((r) => r.user_id as string))].filter((id) => !skip.has(id));
   const who = await people(admin, ids);
   // Juniors meet juniors and adults meet adults: nobody under 18 is shown to an adult here
-  let shown = ids.map((id) => who.get(id)!).filter((p) => p && p.junior === viewer.junior);
-  // A junior is shown only once a parent is linked and verified
-  if (viewer.junior) { const cleared = await clearedJuniors(admin, shown.map((p) => p.id)); shown = shown.filter((p) => cleared.has(p.id)); }
+  const shown = ids.map((id) => who.get(id)!).filter((p) => p && p.junior === viewer.junior);
   const { data: profiles } = shown.length ? await admin.from('community_profiles').select('user_id, headline, looking_for, open_to_club, standard, availability').in('user_id', shown.map((p) => p.id)) : { data: [] as Array<Record<string, unknown>> };
 
   const list = shown.map((p) => {
@@ -371,7 +355,7 @@ export async function getNearby(userId: string, scope: Scope, want: LookingFor |
   return ok({ scope, people: list.slice(0, 30), notice: null });
 }
 
-type ConnectionEvent = 'requested' | 'accepted' | 'declined' | 'passed' | 'parent_notified';
+type ConnectionEvent = 'requested' | 'accepted' | 'declined' | 'passed' | 'parent_notified' | 'no_parent_to_notify';
 
 async function logEvent(admin: Admin, e: { connectionId: string | null; actor: string; other: string; event: ConnectionEvent; bothJunior: boolean }) {
   // The audit trail is best effort; it never blocks the connection itself
@@ -413,11 +397,6 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
     }
     return no('Adults and under-18s cannot connect privately. Follow their posts on the feed instead.');
   }
-  if (bothJunior) {
-    const cleared = await clearedJuniors(admin, [userId, otherId]);
-    if (!mayConnectJuniors(cleared.has(userId), cleared.has(otherId))) return no('A parent needs to be linked and verified for both of you before you can connect.');
-  }
-
   if (existing?.status === 'accepted') return ok({ link: 'connected', connectionId: existing.id });
   if (existing && existing.status === 'pending' && existing.addressee_id === userId) {
     await admin.from('community_connections').update({ status: 'accepted', responded_at: new Date().toISOString() }).eq('id', existing.id);
@@ -426,7 +405,10 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
     if (bothJunior) {
       // Each young person's parents are told, so nobody's first message is a surprise
       for (const [junior, friend] of [[userId, them], [otherId, me]] as const) {
-        for (const parent of await parentsOf(admin, junior)) {
+        const parents = await parentsOf(admin, junior);
+        // Allowed either way. When nobody is linked there is nobody to tell, and that is recorded so staff can see it.
+        if (parents.length === 0) await logEvent(admin, { connectionId: existing.id, actor: userId, other: junior, event: 'no_parent_to_notify', bothJunior });
+        for (const parent of parents) {
           await notify(admin, parent, { kind: 'parent_connection', title: 'Your child has a new connection', body: `${junior === userId ? me.name : them.name} is now connected with ${friend.name}${friend.clubName ? ` from ${friend.clubName}` : ''}. You can see this in Parent Community.`, data: { connectionId: existing.id } });
           await logEvent(admin, { connectionId: existing.id, actor: userId, other: parent, event: 'parent_notified', bothJunior });
         }

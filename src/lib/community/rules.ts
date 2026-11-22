@@ -232,14 +232,6 @@ export function matchesFilters(c: Card, f: ConnectFilters): boolean {
   return true;
 }
 
-/**
- * Two people under 18 may connect only when each has a linked account with a parent link the club has
- * verified, so a parent is always there to be told. Adults need nothing extra.
- */
-export function mayConnectJuniors(aCleared: boolean, bCleared: boolean): boolean {
-  return aCleared && bCleared;
-}
-
 // ── Adult-to-junior contact, parent first ───────────────────────────────────────────────────────
 
 export type DbsRow = { check_type: string; status: string; expiry_date: string | null };

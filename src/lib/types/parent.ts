@@ -12,6 +12,8 @@ export interface ChildProfile {
   emergency_contact_phone: string | null;
   photo_consent: boolean;
   data_consent: boolean;
+  /** The child's own ClubPulse account, once a club admin has linked it */
+  linked_user_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -156,6 +158,7 @@ export interface DbsCheck {
 export interface ChildWithConsents extends ChildProfile {
   consents: ActiveConsent[];
   links: (ParentChildLink & { parent_name: string; parent_email: string })[];
+  linked_account?: { name: string; email: string } | null;
 }
 
 export interface SafeguardingDashboard {

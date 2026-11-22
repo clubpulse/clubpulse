@@ -72,7 +72,9 @@ export async function endContactAction(requestId: string): Promise<R> {
 
 export async function postShortageAction(input: Record<string, unknown>): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
-  return done(await postShortage(u.id, input as never), 'Posted. People nearby can now say they can play.', '/community/shortages');
+  const r = await postShortage(u.id, input as never);
+  if (r.success && r.data.held) return { success: true, message: 'Thanks. ClubPulse will check this and it will go live once approved.' };
+  return done(r, 'Posted. People nearby can now say they can play.', '/community/shortages');
 }
 export async function replyShortageAction(shortageId: string, on: boolean): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
@@ -174,9 +176,10 @@ export async function createSessionAction(input: Record<string, unknown>): Promi
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   const r = await createSession(u.id, input as never);
   if (!r.success) return { success: false, error: r.error };
-  if (r.data.held) return { success: false, error: r.data.tell ?? 'Not created.' };
+  // held with no id: refused by a plain rule. held with an id: saved and waiting for ClubPulse staff.
+  if (r.data.held && !r.data.id) return { success: false, error: r.data.tell ?? 'Not created.' };
   revalidatePath('/community/near');
-  return { success: true, message: 'Session created.' };
+  return { success: true, message: r.data.held ? (r.data.tell ?? 'Sent for checking.') : 'Session created.' };
 }
 export async function joinSessionAction(sessionId: string, on: boolean): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
