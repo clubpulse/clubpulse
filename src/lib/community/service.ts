@@ -379,7 +379,7 @@ async function logEvent(admin: Admin, e: { connectionId: string | null; actor: s
 }
 
 /** The verified parents of a junior's linked account. */
-async function parentsOf(admin: Admin, juniorUserId: string): Promise<string[]> {
+export async function parentsOf(admin: Admin, juniorUserId: string): Promise<string[]> {
   const { data } = await admin.from('child_profiles').select('parent_child_links!inner ( parent_id, verified_at )').eq('linked_user_id', juniorUserId).not('parent_child_links.verified_at', 'is', null);
   const links = (data ?? []).flatMap((r) => (Array.isArray(r.parent_child_links) ? r.parent_child_links : [r.parent_child_links]));
   return [...new Set(links.map((l) => (l as { parent_id: string }).parent_id))];
@@ -394,6 +394,10 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
   if (!me || !them || blocked.has(otherId)) return no('Person not found.');
   const bothJunior = me.junior && them.junior;
 
+  if (!yes && me.junior !== them.junior && me.junior) {
+    const g = await (await import('./guardian')).answerAsJunior(admin, userId, otherId, false);
+    if (g) return g;
+  }
   if (!yes) {
     await admin.from('community_passes').upsert({ user_id: userId, other_id: otherId });
     const declining = !!existing && existing.status === 'pending' && existing.addressee_id === userId;
@@ -401,8 +405,14 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
     await logEvent(admin, { connectionId: declining ? existing.id : null, actor: userId, other: otherId, event: declining ? 'declined' : 'passed', bothJunior });
     return ok({ link: 'passed', connectionId: null });
   }
-  // An adult and someone under 18 are never connected for messaging
-  if (!mayMessage(me.junior, them.junior)) return no('Adults and under-18s cannot connect privately. Follow their posts on the feed instead.');
+  // An adult and someone under 18 connect only through a parent-approved contact, answered by the junior here
+  if (!mayMessage(me.junior, them.junior)) {
+    if (me.junior) {
+      const g = await (await import('./guardian')).answerAsJunior(admin, userId, otherId, true);
+      if (g) return g;
+    }
+    return no('Adults and under-18s cannot connect privately. Follow their posts on the feed instead.');
+  }
   if (bothJunior) {
     const cleared = await clearedJuniors(admin, [userId, otherId]);
     if (!mayConnectJuniors(cleared.has(userId), cleared.has(otherId))) return no('A parent needs to be linked and verified for both of you before you can connect.');
@@ -502,7 +512,9 @@ async function openThread(admin: Admin, userId: string, connectionId: string) {
   const [who, blocked] = await Promise.all([people(admin, [userId, other]), blockedIds(admin, userId)]);
   const me = who.get(userId); const them = who.get(other);
   // Checked again on every read and send: someone's age band can change after they connected
-  if (!me || !them || blocked.has(other) || !mayMessage(me.junior, them.junior)) return null;
+  if (!me || !them || blocked.has(other)) return null;
+  // An adult and a junior can talk only through a parent-approved contact that is still active
+  if (!mayMessage(me.junior, them.junior) && !(await (await import('./guardian')).guardianContactActive(admin, userId, other))) return null;
   return { me, them };
 }
 

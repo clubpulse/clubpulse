@@ -9,6 +9,7 @@ import { requireAdmin } from '@/lib/auth/admin';
 import { resolveItem } from '@/lib/community/review';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { markRead } from '@/lib/community/notify';
+import { requestJunior, decideAsParent, endContact } from '@/lib/community/guardian';
 import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 type R = { success: boolean; error?: string; message?: string };
@@ -51,6 +52,21 @@ export async function markNotificationsReadAction(): Promise<R> {
   await markRead(createAdminClient(), u.id);
   revalidatePath('/community/notifications');
   return { success: true };
+}
+
+export async function askParentAction(juniorId: string, note: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await requestJunior(u.id, juniorId, note), 'Sent to their parent. Nothing happens unless they approve.', `/community/people/${juniorId}`);
+}
+
+export async function decideRequestAction(requestId: string, approve: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await decideAsParent(u.id, requestId, approve), approve ? 'Approved. Your child will be asked next.' : 'Declined.', '/parent/community');
+}
+
+export async function endContactAction(requestId: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await endContact(u.id, requestId), 'Ended.', '/parent/community');
 }
 
 export async function reportProfileAction(userId: string, reason: string): Promise<R> {
