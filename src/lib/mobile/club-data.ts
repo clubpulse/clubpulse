@@ -231,7 +231,7 @@ export async function signUpForShift(userId: string, shiftId: string): Promise<A
   const clubIds = await getMemberClubIds(userId);
   const sb = createAdminClient();
   const { data: shift } = await sb.from('volunteer_shifts').select('id, club_id, shift_date, max_volunteers').eq('id', shiftId).maybeSingle();
-  if (!shift || !clubIds.includes(shiftup.club_id as string)) return { success: false, error: 'Shift not found' };
+  if (!shift || !clubIds.includes(shift.club_id as string)) return { success: false, error: 'Shift not found' };
   if ((shift.shift_date as string) < today()) return { success: false, error: 'This shift has already happened' };
 
   const { data: signups } = await sb.from('volunteer_shift_signups').select('id, user_id, status').eq('shift_id', shiftId);
