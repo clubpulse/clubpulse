@@ -1,6 +1,6 @@
 # Website and app: what matches, and what does not
 
-Written 22 November 2026, after the four-pillar website work. It says what is on the website, what the
+Written 22 November 2026, updated the same day when the app caught up (build 11). It says what is on the website, what the
 app has, and what is behind a flag. Nothing in this file turns a flag on.
 
 ## The Expo flag
@@ -13,12 +13,16 @@ here needs build 11. Do not set this flag until the website's Community has pass
 
 ## Pillar by pillar
 
-| Pillar | On the website now | In the app | Gap |
+| Pillar | On the website | In the app (build 11) | Still different |
 | --- | --- | --- | --- |
 | Analysis | Video analysis, progress, Coach AI, Cricket CV | Same, plus recording | None to note |
-| Community | Club noticeboard and dressing room (live). Profiles, feed, connections, follows, nets and pick-up games, reports and a staff moderation inbox are built behind `COMMUNITY_ENABLED` (off) | Screens exist behind `EXPO_PUBLIC_COMMUNITY_ENABLED` (off) | Both flags are off. The app has no follow or club profile screens, and no nets and games sessions |
-| Wellness | Readiness check-in and four-week trend, match-day checklists and your own routine, mental-skills guides, recovery log, consented coach averages, support page, weekly check-in, match mood, injury log | Warm-Up library with guided breathing circle and timer, Mind Nets, match-day checklists, My Routine | The app does not have the readiness check-in, trend, recovery log or sharing. The website has no animated breathing circle (written steps only). Website data is saved to the account; the app's Warm-Up stays on the phone |
-| Academy | Catalogue, lessons with a server-marked check, progress, practice plan, track and graduate certificates, badges, daily games, qualifications log | Lesson player and practice plan (`expo/app/academy.tsx`) | The app does not show certificates yet. Coach-authored courses are not built anywhere |
+| Community | Club noticeboard and dressing room (live). Profiles, feed, connections, follows, nets and pick-up games, reports and a moderation inbox are built behind `COMMUNITY_ENABLED` (off) | Feed, Partnerships, My Squad, Scorecard and now **Nets and Games**, all behind `EXPO_PUBLIC_COMMUNITY_ENABLED` (off) | The app has no follow button, club profile pages or session hosting. The website has them behind its own flag |
+| Wellness | Readiness check-in and trend, match-day checklists and routine, mental-skills guides, recovery log, consented coach averages, support page | Warm-Up with guided breathing circle, Mind Nets, match-day checklists, My Routine, Talk to Someone, plus now **Readiness check-in with a four-week trend, Recovery Log and Sharing** (saved to your account) | The app's My Routine is the pre-ball routine and stays on the phone; the website's routine is the match-day checklist. The coach's team-averages page is website only. The website has no animated breathing circle |
+| Academy | Catalogue, lessons marked on the server, progress, practice plan, track and graduate certificates, badges, daily games | Lesson player, practice plan, daily games, and now **certificates** for each finished track and for graduating | Coach-authored courses are not built anywhere |
+
+## API routes added for the app
+
+`/api/wellness/readiness`, `/api/wellness/recovery`, `/api/wellness/share`, `/api/academy/certificate/[track]`. Each acts only as the signed-in person (taken from the token, never from the request).
 
 ## Scores
 
@@ -26,8 +30,6 @@ New sources (migration `20261122000007_pillar_scores_rules.sql`): `community_pos
 `wellness_readiness`. They are paid only for successful, live actions and once per reference. The app's
 own lesson and daily-check-in earning is unchanged.
 
-## Before a new Expo build
+## Building and submitting
 
-1. Decide whether to set `EXPO_PUBLIC_COMMUNITY_ENABLED` for that build. Default: leave it off.
-2. If the app should show certificates or the readiness check-in, those screens still need building.
-3. Test the lesson player against the website's `/academy/lessons/[id]`: both mark answers on the server through the same service.
+See `expo/RELEASE.md`. No Expo flag is on in `eas.json`; Community stays off in this build.
