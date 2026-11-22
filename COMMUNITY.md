@@ -41,3 +41,14 @@ If any step fails, stop and switch it off.
 - The phone app has its own flag and is not covered by this checklist.
 - Linking a child record to the junior's own account (`child_profiles.linked_user_id`) has no admin screen yet.
 - Community links are not in the main menu yet. Add them only when the flag is on.
+
+## Adult-to-junior contact (parent first)
+
+Off by default and separate from `COMMUNITY_ENABLED`. It needs `COMMUNITY_CROSSBAND_ENABLED` to be exactly `true` as well, and migration `20261122000009`. Leave it off until the club's safeguarding lead has agreed it.
+
+- Only a coach or club admin of a club the young person belongs to can ask, and only with a current enhanced DBS check recorded at that club (Admin → Safeguarding → DBS, status valid, not expired).
+- The request goes to the young person's club-verified parent first. The young person is asked only after a parent approves.
+- An approved contact is the only way an adult and someone under 18 can message. The parent can read the conversation (read only, each visit is logged) and end it at any time. If the adult's DBS lapses, the thread stops working.
+- A parent's "no" blocks the same adult from asking again for 90 days. An adult can have at most 5 requests waiting on a parent.
+- Every step is recorded in `community_guardian_events`.
+- To switch it off: remove the variable and redeploy. Existing contacts stop working at once.

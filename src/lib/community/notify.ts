@@ -3,7 +3,7 @@
 
 import type { Admin } from './service';
 
-export type NotificationKind = 'connect_request' | 'connect_accepted' | 'parent_connection' | 'message';
+export type NotificationKind = 'connect_request' | 'connect_accepted' | 'parent_connection' | 'message' | 'guardian_request' | 'guardian_decision';
 export type Notice = { kind: NotificationKind; title: string; body?: string; data?: Record<string, string> };
 export type NotificationRow = { id: string; kind: NotificationKind; title: string; body: string | null; data: Record<string, string>; read: boolean; createdAt: string };
 

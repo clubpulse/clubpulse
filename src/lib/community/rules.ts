@@ -239,3 +239,38 @@ export function matchesFilters(c: Card, f: ConnectFilters): boolean {
 export function mayConnectJuniors(aCleared: boolean, bCleared: boolean): boolean {
   return aCleared && bCleared;
 }
+
+// ── Adult-to-junior contact, parent first ───────────────────────────────────────────────────────
+
+export type DbsRow = { check_type: string; status: string; expiry_date: string | null };
+
+/** A current enhanced DBS check: verified valid, enhanced (with or without the barred list), not past its expiry. */
+export function dbsIsCurrent(rows: DbsRow[], today: string): boolean {
+  return rows.some((r) => r.status === 'valid' && (r.check_type === 'enhanced' || r.check_type === 'enhanced_barred') && (!r.expiry_date || r.expiry_date >= today));
+}
+
+export type GuardianContext = {
+  adultJunior: boolean;
+  subjectJunior: boolean;
+  /** The adult is a coach or club admin of a club the junior belongs to */
+  staffOfSharedClub: boolean;
+  /** The adult holds a current enhanced DBS check at one of those shared clubs */
+  currentDbs: boolean;
+  /** The junior has a linked account and at least one club-verified parent */
+  juniorHasParent: boolean;
+};
+
+/** Why an adult may not ask to connect with a junior, or null if they may. */
+export function guardianBlock(c: GuardianContext): string | null {
+  if (c.adultJunior || !c.subjectJunior) return 'This is only for an adult asking to connect with someone under 18.';
+  if (!c.staffOfSharedClub) return 'You can only ask a young person from a club where you are a coach or club admin.';
+  if (!c.currentDbs) return 'You need a current enhanced DBS check recorded at that club first.';
+  if (!c.juniorHasParent) return 'This young person has no verified parent linked yet.';
+  return null;
+}
+
+export const GUARDIAN_NOTE_MAX = 300;
+/** An adult may have this many requests waiting on a parent at once, so it cannot be used to contact many children. */
+export const GUARDIAN_PENDING_MAX = 5;
+/** After a parent says no, the same adult cannot ask again for this long. */
+export const GUARDIAN_COOLDOWN_DAYS = 90;
