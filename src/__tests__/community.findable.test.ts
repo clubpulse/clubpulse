@@ -17,7 +17,14 @@ describe('Community links across clubs', () => {
 
   it('appear at the top of the Community group once it is open', () => {
     const community = menuFor(aud(['player']), { community: true }).find((g) => g.key === 'community')!;
-    expect(community.links.slice(0, NETWORK_LINKS.length).map((l) => l.href)).toEqual(NETWORK_LINKS.map((l) => l.href));
+    const mine = NETWORK_LINKS.filter((l) => !l.for || l.for.includes('player')).map((l) => l.href);
+    expect(community.links.slice(0, mine.length).map((l) => l.href)).toEqual(mine);
+    expect(mine).not.toContain('/parent/community');
+  });
+
+  it('give a parent their notifications and the page about their child, and nothing else across clubs', () => {
+    const parent = hrefs(aud(['parent']), true).filter((h) => NETWORK_LINKS.some((l) => l.href === h));
+    expect(parent).toEqual(['/community/notifications', '/parent/community']);
   });
 
   it('are not duplicates of anything already in the menu', () => {

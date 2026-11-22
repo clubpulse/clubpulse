@@ -212,6 +212,8 @@ export const NETWORK_LINKS: NavLink[] = [
   { href: '/community/match', label: 'Find a Teammate', icon: '🤝', for: PLAYING, section: 'Across clubs' },
   { href: '/community/near', label: 'Nets and Games', icon: '🏏', for: PLAYING, section: 'Across clubs' },
   { href: '/community/connections', label: 'Connections', icon: '🧢', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/notifications', label: 'Notifications', icon: '🔔', for: ['player', 'coach', 'parent'], section: 'Across clubs' },
+  { href: '/parent/community', label: 'My Child in Community', icon: '👪', for: ['parent'], section: 'Across clubs' },
   { href: '/community/profile', label: 'My Community Profile', icon: '📋', for: PLAYING, section: 'Across clubs' },
 ];
 

@@ -43,7 +43,12 @@ export const LOOKING_OPTIONS = [
   { key: 'teammates', label: 'Teammates' },
 ] as const;
 
-type ProfileValues = { headline: string; about: string; openToClub: boolean; lookingFor: string[] };
+export const STANDARD_OPTIONS = [
+  { key: 'social', label: 'Social' }, { key: 'club', label: 'Club' }, { key: 'league', label: 'League' }, { key: 'county', label: 'County' },
+] as const;
+export const AVAILABILITY_OPTIONS = [{ key: 'weekday_evenings', label: 'Weekday evenings' }, { key: 'weekends', label: 'Weekends' }] as const;
+
+type ProfileValues = { headline: string; about: string; openToClub: boolean; lookingFor: string[]; standard: string; availability: string[] };
 
 export function ProfileForm({ initial, onSave }: { initial: ProfileValues; onSave: (v: ProfileValues) => Promise<R> }) {
   const [v, setV] = useState(initial);
@@ -59,6 +64,20 @@ export function ProfileForm({ initial, onSave }: { initial: ProfileValues; onSav
         {LOOKING_OPTIONS.map((o) => (
           <label key={o.key} style={{ display: 'inline-block', marginRight: 16 }}>
             <input type="checkbox" checked={v.lookingFor.includes(o.key)} onChange={(e) => setV({ ...v, lookingFor: e.target.checked ? [...v.lookingFor, o.key] : v.lookingFor.filter((k) => k !== o.key) })} /> {o.label}
+          </label>
+        ))}
+      </fieldset>
+      <label style={{ display: 'block', marginBottom: 12 }}>Standard
+        <select value={v.standard} onChange={(e) => setV({ ...v, standard: e.target.value })} style={{ marginLeft: 8, padding: 6, borderRadius: 8, background: 'rgba(255,255,255,0.06)', color: 'inherit', border: '1px solid rgba(255,255,255,0.2)' }}>
+          <option value="">Not saying</option>
+          {STANDARD_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+        </select>
+      </label>
+      <fieldset style={{ border: 0, padding: 0, margin: '0 0 12px' }}>
+        <legend style={{ marginBottom: 6 }}>When I can play</legend>
+        {AVAILABILITY_OPTIONS.map((o) => (
+          <label key={o.key} style={{ display: 'inline-block', marginRight: 16 }}>
+            <input type="checkbox" checked={v.availability.includes(o.key)} onChange={(e) => setV({ ...v, availability: e.target.checked ? [...v.availability, o.key] : v.availability.filter((k) => k !== o.key) })} /> {o.label}
           </label>
         ))}
       </fieldset>

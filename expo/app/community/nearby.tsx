@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '../../lib/api';
-import { BLUE, LOOKING_FOR, SCOPES, lookingLabel, type LookingFor, type NearbyPerson, type Scope } from '../../lib/community';
+import { AVAILABILITY, BLUE, LOOKING_FOR, ROLES, SCOPES, STANDARDS, WITHIN, availabilityLabel, lookingLabel, standardLabel, type Availability, type LookingFor, type NearbyPerson, type RoleFilter, type Scope, type Standard } from '../../lib/community';
 import { Avatar, Chips } from '../../components/CommunityBits';
 import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
@@ -16,6 +16,11 @@ export default function NearbyScreen() {
   const router = useRouter();
   const [scope, setScope] = useState<Scope>('miles');
   const [want, setWant] = useState<LookingFor | null>(null);
+  const [role, setRole] = useState<RoleFilter | null>(null);
+  const [standard, setStandard] = useState<Standard | null>(null);
+  const [free, setFree] = useState<Availability | null>(null);
+  const [within, setWithin] = useState<'5' | '10' | '25' | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [people, setPeople] = useState<NearbyPerson[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -24,10 +29,11 @@ export default function NearbyScreen() {
   const load = useCallback(async () => {
     setPeople(null);
     try {
-      const r = await api<{ people: NearbyPerson[] }>(`/api/community/nearby?scope=${scope}${want ? `&want=${want}` : ''}`);
-      setPeople(r.people); setError(null);
+      const q = [`scope=${scope}`, want && `want=${want}`, role && `role=${role}`, standard && `standard=${standard}`, free && `availability=${free}`, within && `within=${within}`].filter(Boolean).join('&');
+      const r = await api<{ people: NearbyPerson[]; notice: string | null }>(`/api/community/nearby?${q}`);
+      setPeople(r.people); setNotice(r.notice); setError(null);
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not load people.'); setPeople([]); }
-  }, [scope, want]);
+  }, [scope, want, role, standard, free, within]);
   useEffect(() => { load(); }, [load]);
 
   const person = people?.[0];
@@ -51,6 +57,16 @@ export default function NearbyScreen() {
         <Chips value={want} onChange={(k) => setWant(want === k ? null : k)} options={LOOKING_FOR} />
         <Text style={fonts.small}>Where</Text>
         <Chips value={scope} onChange={setScope} options={SCOPES} />
+        <Text style={fonts.small}>Who</Text>
+        <Chips value={role} onChange={(k) => setRole(role === k ? null : k)} options={ROLES} />
+        <Text style={fonts.small}>Standard</Text>
+        <Chips value={standard} onChange={(k) => setStandard(standard === k ? null : k)} options={STANDARDS} />
+        <Text style={fonts.small}>Free</Text>
+        <Chips value={free} onChange={(k) => setFree(free === k ? null : k)} options={AVAILABILITY} />
+        <Text style={fonts.small}>Within</Text>
+        <Chips value={within} onChange={(k) => setWithin(within === k ? null : k)} options={WITHIN} />
+        {notice && <Text style={styles.note}>{notice}</Text>}
+        <Pressable onPress={() => router.push('/community/clubs-nearby')} accessibilityRole="button"><Text style={styles.link}>See clubs near you</Text></Pressable>
 
         {note && <Text style={styles.note} accessibilityRole="alert">{note}</Text>}
         {error && <Text style={[fonts.small, { color: colors.danger }]}>{error}</Text>}
@@ -74,7 +90,9 @@ export default function NearbyScreen() {
               {!!person.headline && <Text style={styles.headline}>{person.headline}</Text>}
               <View style={styles.tags}>
                 {person.openToClub && <View style={[styles.tag, { backgroundColor: BLUE }]}><Text style={[styles.tagText, { color: '#04091A' }]}>Open to a new club</Text></View>}
+                {person.standard && <View style={styles.tag}><Text style={styles.tagText}>{standardLabel(person.standard)}</Text></View>}
                 {person.lookingFor.map((k) => <View key={k} style={styles.tag}><Text style={styles.tagText}>{lookingLabel(k)}</Text></View>)}
+                {person.availability.map((k) => <View key={k} style={styles.tag}><Text style={styles.tagText}>{availabilityLabel(k)}</Text></View>)}
               </View>
               <Pressable onPress={() => router.push({ pathname: '/community/profile', params: { id: person.id } })} accessibilityRole="button"><Text style={styles.link}>See full profile</Text></Pressable>
             </View>

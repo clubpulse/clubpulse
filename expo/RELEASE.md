@@ -19,7 +19,7 @@ Everything below is in the code; the 19 November build has none of it.
 
 ## Before you build
 
-1. Run every Supabase migration up to `20261122000007`. The Readiness, Recovery and Sharing screens need `20261122000001` and `20261122000005`; certificate badges need `20261122000006`.
+1. Run every Supabase migration up to `20261122000008` (`20261122000008` adds the Cricket Connect filters, notifications and connection audit log; it does not switch the Community on). The Readiness, Recovery and Sharing screens need `20261122000001` and `20261122000005`; certificate badges need `20261122000006`.
 2. The website must be deployed from `main` (it holds the API routes the new screens call: `/api/wellness/*` and `/api/academy/certificate/[track]`).
 3. Leave every `EXPO_PUBLIC_*_ENABLED` flag unset. `eas.json` sets none, so Community, Store, Deals and Volunteers stay off.
 
