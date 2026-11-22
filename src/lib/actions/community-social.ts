@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth/server';
-import { communityOpen, saveProfile, answerPerson, report, block } from '@/lib/community/service';
+import { communityOpen, saveProfile, answerPerson, report, block, sendMessage } from '@/lib/community/service';
 import { setFollow, saveClubProfile, parentCancelRequest, parentBlock, parentReport } from '@/lib/community/social';
 import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
 import { requireAdmin } from '@/lib/auth/admin';
@@ -38,6 +38,20 @@ export async function connectAction(userId: string, yes: boolean): Promise<R> {
 export async function reportProfileAction(userId: string, reason: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await report(u.id, { kind: 'profile', targetId: userId, reason }), 'Thank you. We will look at this.', '/community/connections');
+}
+
+/** Send a private message. Delivered at once if the safety check passes; otherwise the sender is told why it was not. */
+export async function sendMessageAction(connectionId: string, body: string): Promise<R & { delivered?: boolean }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await sendMessage(u.id, connectionId, body);
+  if (!r.success) return { success: false, error: r.error };
+  if (r.data.status === 'live') { revalidatePath(`/community/messages/${connectionId}`); return { success: true, delivered: true }; }
+  return { success: true, delivered: false, message: r.data.tell ?? 'This was not delivered.' };
+}
+
+export async function reportMessageAction(messageId: string, reason: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await report(u.id, { kind: 'message', targetId: messageId, reason }), 'Thank you. We will look at this.', '/community/connections');
 }
 
 export async function blockAction(userId: string): Promise<R> {

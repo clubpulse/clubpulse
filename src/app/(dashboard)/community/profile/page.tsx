@@ -17,7 +17,7 @@ export default async function MyCommunityProfile() {
       <h1>My Community profile</h1>
       <p>Other people see your first name and club, a rough distance, and what you write here. Never your address or your exact location.</p>
       <div style={cardStyle}>
-        <ProfileForm initial={{ headline: p?.headline ?? '', about: p?.about ?? '', openToClub: p?.openToClub ?? false }}
+        <ProfileForm initial={{ headline: p?.headline ?? '', about: p?.about ?? '', openToClub: p?.openToClub ?? false, lookingFor: p?.lookingFor ?? [] }}
           onSave={saveMyProfileAction} />
       </div>
     </div>

@@ -27,10 +27,11 @@ async function describe(kind: ReviewKind, targetId: string): Promise<{ text: str
 /** Open reports first, then content the safety check held. Oldest first, so nothing waits behind newer items. */
 export async function getReviewQueue(): Promise<ReviewItem[]> {
   const admin = createAdminClient();
-  const [{ data: reports }, { data: heldPosts }, { data: heldComments }] = await Promise.all([
+  const [{ data: reports }, { data: heldPosts }, { data: heldComments }, { data: heldMessages }] = await Promise.all([
     admin.from('community_reports').select('id, kind, target_id, reason, created_at').eq('handled', false).order('created_at').limit(100),
     admin.from('community_posts').select('id, author_id, body, held_reason, created_at').eq('status', 'held').order('created_at').limit(100),
     admin.from('community_comments').select('id, author_id, body, held_reason, created_at').eq('status', 'held').order('created_at').limit(100),
+    admin.from('community_messages').select('id, sender_id, body, held_reason, created_at').eq('status', 'held').order('created_at').limit(100),
   ]);
   const items: ReviewItem[] = [];
   for (const r of reports ?? []) {
@@ -39,6 +40,7 @@ export async function getReviewQueue(): Promise<ReviewItem[]> {
   }
   for (const p of heldPosts ?? []) items.push({ reportId: null, kind: 'post', targetId: p.id as string, text: p.body as string, reason: (p.held_reason as string | null) ?? 'Held by the safety check', authorName: p.author_id as string, createdAt: p.created_at as string, status: 'held' });
   for (const c of heldComments ?? []) items.push({ reportId: null, kind: 'comment', targetId: c.id as string, text: c.body as string, reason: (c.held_reason as string | null) ?? 'Held by the safety check', authorName: c.author_id as string, createdAt: c.created_at as string, status: 'held' });
+  for (const m of heldMessages ?? []) items.push({ reportId: null, kind: 'message', targetId: m.id as string, text: m.body as string, reason: (m.held_reason as string | null) ?? 'Held by the safety check', authorName: m.sender_id as string, createdAt: m.created_at as string, status: 'held' });
   const who = await people(admin, [...new Set(items.map((i) => i.authorName).filter(Boolean))]);
   return items.map((i) => ({ ...i, authorName: who.get(i.authorName)?.name ?? 'Member' })).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }

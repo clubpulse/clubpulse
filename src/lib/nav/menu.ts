@@ -202,6 +202,19 @@ export function playsCricket(audience: Audience): boolean {
   return audience.roles.length > 0;
 }
 
+/**
+ * The links across clubs: the feed, finding a teammate, nets and games, connections and your own
+ * profile. They are not in NAV_GROUPS because they exist only while the Community is open
+ * (COMMUNITY_ENABLED), so a person is never sent to a page that says it is closed.
+ */
+export const NETWORK_LINKS: NavLink[] = [
+  { href: '/community/feed', label: 'Commentary Box', icon: '🎙️', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/match', label: 'Find a Teammate', icon: '🤝', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/near', label: 'Nets and Games', icon: '🏏', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/connections', label: 'Connections', icon: '🧢', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/profile', label: 'My Community Profile', icon: '📋', for: PLAYING, section: 'Across clubs' },
+];
+
 export function canSee(link: NavLink, audience: Audience): boolean {
   // The player side belongs to people who hold a player-side role, club admins included
   if (!playsCricket(audience)) return false;
@@ -210,11 +223,12 @@ export function canSee(link: NavLink, audience: Audience): boolean {
 }
 
 /** The groups this person sees, each with only their links. Empty groups are dropped. */
-export function menuFor(audience: Audience, options: { showSchool?: boolean } = {}): NavGroup[] {
+export function menuFor(audience: Audience, options: { showSchool?: boolean; community?: boolean } = {}): NavGroup[] {
   return NAV_GROUPS
     .filter((g) => !g.adminOnly || audience.admin)
     .map((g) => {
       let links = g.links;
+      if (g.key === 'community' && options.community) links = [...NETWORK_LINKS, ...links];
       if (g.key === 'community' && options.showSchool) {
         // School sits at the end of its own section, not at the end of the group
         const after = links.map((l) => l.section).lastIndexOf(SCHOOL_LINK.section) + 1;

@@ -122,13 +122,14 @@ function NavItem({ link, pathname, folded = false, small = false }: { link: NavL
 
 // audience: who is signed in, which decides the links they see (lib/nav/menu).
 // showSchool: the club has an active school_programs row (looked up in DashboardShell)
-export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { audience: Audience; isPlatformAdmin: boolean; showSchool?: boolean }) {
+// community: the Community is open (COMMUNITY_ENABLED), so the links across clubs are shown
+export function Sidebar({ audience, isPlatformAdmin, showSchool = false, community = false }: { audience: Audience; isPlatformAdmin: boolean; showSchool?: boolean; community?: boolean }) {
   const pathname = usePathname();
   const state = parseState(useSyncExternalStore(subscribe, readState, () => ''));
   const folded = state.folded;
   const showAdmin = audience.admin;
 
-  const groups = menuFor(audience, { showSchool });
+  const groups = menuFor(audience, { showSchool, community });
   const bottom: NavLink[] = [
     { href: '/profile', label: 'Profile', icon: '👤' },
     ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),
