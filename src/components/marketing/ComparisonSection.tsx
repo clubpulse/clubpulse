@@ -1,7 +1,7 @@
 export default function ComparisonSection() {
   type Platform = 'shiftup' | 'pitchero' | 'teamapp' | 'playcricket';
   const platforms: { id: Platform; name: string; short: string }[] = [
-    { id: 'clubpulse', name: 'ShiftUp', short: 'SU' },
+    { id: 'shiftup', name: 'ShiftUp', short: 'SU' },
     { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
     { id: 'teamapp', name: 'TeamApp', short: 'TA' },
     { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
