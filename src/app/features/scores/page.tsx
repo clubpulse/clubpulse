@@ -128,7 +128,7 @@ export default function ScoresPage() {
           <div>
             <p className="sr-eyebrow">🏆 Scores & Rewards</p>
             <h1 className="sr-h1">Scores you can <span className="gold">actually spend.</span></h1>
-            <p className="sr-sub">Players earn Scores for taking part. 500 Scores equal £1. A tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
+            <p className="sr-sub">Players earn Scores for taking part. Scores are never sold and are not a fifth pillar. 500 Scores equal £1. A tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-btns">
               <Link href="/contact" className="sr-btn-red">Get started →</Link>
               <Link href="/features" className="sr-btn-ghost">See all features</Link>
@@ -182,7 +182,7 @@ export default function ScoresPage() {
           <div className="sr-section">
             <p className="sr-section-eyebrow">How Scores work</p>
             <h2 className="sr-section-h2">Earn them. They have a value.</h2>
-            <p className="sr-section-sub">Scores are a reward for taking part, not a runs-and-wickets leaderboard. 500 Scores equal £1. Your tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
+            <p className="sr-section-sub">Scores are a reward for taking part, not a runs-and-wickets leaderboard. Scores are never sold and are not a fifth pillar. 500 Scores equal £1. Your tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-pts-grid">
               {[
                 { icon:'📅', h:'Daily check-in', body:'The base is 5 Scores. The first two days pay that, days 3 and 4 pay double, days 5 and 6 pay triple, and day 7 is a scratch card.', val:'Base 5' },
@@ -244,6 +244,7 @@ export default function ScoresPage() {
               ['Are Scores a performance leaderboard?', 'No. They are not calculated from runs, wickets or catches on the scorecard.'],
               ['Can a club change the amounts?', 'Yes. A club can override an amount or switch a rule off. The defaults are the starting point, and the weekly cap starts at 300 Scores.'],
               ['Do the games cost Scores?', 'No. The games pay Scores. Nothing is staked and nothing is lost.'],
+              ['Are Scores sold, or a fifth pillar?', 'No. You earn them by taking part. They are never sold, and they are not a fifth pillar.'],
             ].map(([q, a], i) => (
               <div key={i} className="sr-faq-item">
                 <div className="sr-faq-q">{q}</div>

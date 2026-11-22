@@ -364,7 +364,7 @@ function EngagementDemo() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: 'rgba(239,200,74,0.06)', border: '1px solid rgba(239,200,74,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#EFC84A' }}>2,840</div>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Your Pulse Points</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Your Scores</div>
         </div>
         <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#f97316' }}>🔥 #1</div>
@@ -423,7 +423,7 @@ function RewardsDemo() {
       <div style={{ background: 'rgba(239,200,74,0.07)', border: '1px solid rgba(239,200,74,0.18)', borderRadius: 12, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(239,200,74,0.6)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Your balance</div>
-          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} pts</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} Scores</div>
         </div>
         <div style={{ fontSize: 36 }}><Glyph e="⚡" /></div>
       </div>
@@ -439,7 +439,7 @@ function RewardsDemo() {
               onClick={() => { if (!redeemed.includes(i) && pts >= r.pts) { setPts(p => p - r.pts); setRedeemed(rd => [...rd, i]); }}}
               disabled={redeemed.includes(i) || pts < r.pts}
               style={{ padding: '7px 14px', background: redeemed.includes(i) ? 'rgba(34,197,94,0.15)' : pts >= r.pts ? '#2563EB' : 'rgba(255,255,255,0.05)', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, color: redeemed.includes(i) ? '#22C55E' : pts >= r.pts ? '#fff' : 'rgba(255,255,255,0.25)', cursor: redeemed.includes(i) || pts < r.pts ? 'default' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {redeemed.includes(i) ? '✓ Done' : `${r.pts.toLocaleString()} pts`}
+              {redeemed.includes(i) ? '✓ Done' : `${r.pts.toLocaleString()} Scores`}
             </button>
           </div>
         ))}

@@ -777,7 +777,7 @@ export default function HomePage() {
                       </div>
                       <div className="cp-score-card">
                         <div>
-                          <div className="cp-score-n">1,250<span className="cp-score-unit"> pts</span></div>
+                          <div className="cp-score-n">1,250<span className="cp-score-unit"> Scores</span></div>
                           <div className="cp-score-label">Your Scores balance</div>
                         </div>
                         <div style={{textAlign:'right'}}>
