@@ -102,6 +102,8 @@ const SOCIAL: MenuLink[] = [
   { key: 'sessions', label: 'Nets and Games', detail: 'Nets sessions and pick-up games near you', icon: '🏏', route: '/community/sessions' },
   { key: 'connections', label: 'My Squad', detail: 'Your connections and messages', icon: '🧢', route: '/community/connections' },
   { key: 'cv', label: 'My Scorecard', detail: 'Your profile and cricket CV', icon: '📋', route: '/community/profile' },
+  // Only for a parent: yes or no to their child's connection with another young person
+  { key: 'approvals', label: 'Approvals', detail: 'Say yes or no to your child’s new connections', icon: '✅', route: '/community/approvals', for: ['parent'], strict: true },
 ];
 
 export const pillarByKey = (key: PillarKey): Pillar => {

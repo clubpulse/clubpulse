@@ -22,7 +22,8 @@ export default function NotificationsScreen() {
 
   const open = async (n: Notice) => {
     if (!n.read) { try { await api('/api/community/notifications', { method: 'POST', body: { id: n.id } }); } catch { /* best effort */ } }
-    router.push('/community/connections');
+    // A parent is taken to the answer they need to give; everyone else to My Squad
+    router.push(n.kind === 'parent_approval_needed' ? '/community/approvals' : '/community/connections');
   };
   const readAll = async () => { try { await api('/api/community/notifications', { method: 'POST', body: {} }); } catch { /* best effort */ } load(); };
 

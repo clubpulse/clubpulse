@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.clubpulse.app",
-      "buildNumber": "1",
+      "buildNumber": "12",
       "infoPlist": {
         "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
         "ITSAppUsesNonExemptEncryption": false,
@@ -36,7 +36,7 @@
     },
     "android": {
       "package": "com.clubpulse.app",
-      "versionCode": 1,
+      "versionCode": 12,
       "permissions": [
         "ACTIVITY_RECOGNITION",
         "android.permission.health.READ_STEPS",
