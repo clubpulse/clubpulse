@@ -7,6 +7,8 @@ import { setFollow, saveClubProfile, parentCancelRequest, parentBlock, parentRep
 import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
 import { requireAdmin } from '@/lib/auth/admin';
 import { resolveItem } from '@/lib/community/review';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { markRead } from '@/lib/community/notify';
 import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 type R = { success: boolean; error?: string; message?: string };
@@ -33,6 +35,22 @@ export async function followAction(subject: string, subjectId: string, on: boole
 export async function connectAction(userId: string, yes: boolean): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await answerPerson(u.id, userId, yes), yes ? 'Done.' : 'Not now.', '/community/connections');
+}
+
+/** Yes or "not now" on a card, returning whether it became a connection. */
+export async function connectAnswerAction(userId: string, yes: boolean): Promise<R & { link?: 'requested' | 'connected' | 'passed' }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await answerPerson(u.id, userId, yes);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/community/connections');
+  return { success: true, link: r.data.link };
+}
+
+export async function markNotificationsReadAction(): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  await markRead(createAdminClient(), u.id);
+  revalidatePath('/community/notifications');
+  return { success: true };
 }
 
 export async function reportProfileAction(userId: string, reason: string): Promise<R> {

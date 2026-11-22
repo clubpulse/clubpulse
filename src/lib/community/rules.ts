@@ -203,3 +203,39 @@ export function checkWhen(startsAt: Date, now: Date = new Date()): Verdict {
 }
 
 export const checkCapacity = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 2 && n <= 30;
+
+// ── Cricket Connect ─────────────────────────────────────────────────────────────────────────────
+
+export const STANDARDS = ['social', 'club', 'league', 'county'] as const;
+export type Standard = (typeof STANDARDS)[number];
+export const AVAILABILITY = ['weekday_evenings', 'weekends'] as const;
+export type Availability = (typeof AVAILABILITY)[number];
+/** How far away, in miles, a card may be. Rough on purpose. */
+export const WITHIN_MILES = [5, 10, 25] as const;
+export const ROLE_FILTERS = ['player', 'coach'] as const;
+export type RoleFilter = (typeof ROLE_FILTERS)[number];
+
+export type ConnectFilters = { role?: RoleFilter; standard?: Standard; availability?: Availability; within?: number };
+
+export const isStandard = (v: unknown): v is Standard => typeof v === 'string' && (STANDARDS as readonly string[]).includes(v);
+export const isAvailability = (v: unknown): v is Availability => typeof v === 'string' && (AVAILABILITY as readonly string[]).includes(v);
+export const isRole = (v: unknown): v is RoleFilter => typeof v === 'string' && (ROLE_FILTERS as readonly string[]).includes(v);
+
+export type Card = { roles: string[]; standard: Standard | null; availability: Availability[]; miles: number | null };
+
+/** Whether a card passes the filters. A card with nothing filled in for a filter does not match it. */
+export function matchesFilters(c: Card, f: ConnectFilters): boolean {
+  if (f.role && !c.roles.includes(f.role)) return false;
+  if (f.standard && c.standard !== f.standard) return false;
+  if (f.availability && !c.availability.includes(f.availability)) return false;
+  if (f.within !== undefined && (c.miles === null || c.miles > f.within)) return false;
+  return true;
+}
+
+/**
+ * Two people under 18 may connect only when each has a linked account with a parent link the club has
+ * verified, so a parent is always there to be told. Adults need nothing extra.
+ */
+export function mayConnectJuniors(aCleared: boolean, bCleared: boolean): boolean {
+  return aCleared && bCleared;
+}

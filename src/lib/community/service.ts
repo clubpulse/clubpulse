@@ -7,9 +7,11 @@ import { awardScores } from '@/lib/scores/context';
 import { ukToday } from '@/lib/utils/uk-date';
 import { checkContent } from './moderation';
 import {
-  LOOKING_FOR, MAX_COMMENT, MAX_MESSAGE, MAX_POST, NEAR_MILES, mayMessage, milesBetween, roughDistance, shownName,
-  type LookingFor, type Scope,
+  LOOKING_FOR, MAX_COMMENT, MAX_MESSAGE, MAX_POST, NEAR_MILES, mayConnectJuniors, mayMessage, matchesFilters, milesBetween, roughDistance, shownName,
+  isAvailability, isStandard,
+  type Availability, type ConnectFilters, type LookingFor, type Scope, type Standard,
 } from './rules';
+import { notify } from './notify';
 
 export type Admin = ReturnType<typeof createAdminClient>;
 export type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -241,7 +243,7 @@ export async function addComment(userId: string, postId: string, body: unknown):
 
 export type CommunityProfile = {
   id: string; name: string; junior: boolean; club: string | null; roles: string[];
-  headline: string; about: string; lookingFor: LookingFor[]; openToClub: boolean;
+  headline: string; about: string; lookingFor: LookingFor[]; openToClub: boolean; standard: Standard | null; availability: Availability[];
   connections: number; mine: boolean;
   /** How this person relates to the viewer */
   link: 'self' | 'none' | 'requested' | 'incoming' | 'connected';
@@ -258,7 +260,7 @@ export async function getProfile(userId: string, targetId: string): Promise<Resu
   const admin = createAdminClient();
   const [who, { data: row }, { count }, link, blocked] = await Promise.all([
     people(admin, [targetId]),
-    admin.from('community_profiles').select('headline, about, looking_for, open_to_club').eq('user_id', targetId).maybeSingle(),
+    admin.from('community_profiles').select('headline, about, looking_for, open_to_club, standard, availability').eq('user_id', targetId).maybeSingle(),
     admin.from('community_connections').select('id', { count: 'exact', head: true }).eq('status', 'accepted').or(`requester_id.eq.${targetId},addressee_id.eq.${targetId}`),
     targetId === userId ? Promise.resolve(undefined) : connectionBetween(admin, userId, targetId),
     blockedIds(admin, userId),
@@ -271,6 +273,8 @@ export async function getProfile(userId: string, targetId: string): Promise<Resu
     headline: (row?.headline as string | null) ?? '', about: (row?.about as string | null) ?? '',
     lookingFor: ((row?.looking_for as string[] | null) ?? []).filter((v): v is LookingFor => (LOOKING_FOR as readonly string[]).includes(v)),
     openToClub: row?.open_to_club === true,
+    standard: isStandard(row?.standard) ? row.standard : null,
+    availability: ((row?.availability as string[] | null) ?? []).filter(isAvailability),
     connections: count ?? 0, mine,
     link: mine ? 'self' : !link || link.status === 'declined' ? 'none' : link.status === 'accepted' ? 'connected' : link.requester_id === userId ? 'requested' : 'incoming',
     connectionId: link?.status === 'accepted' ? link.id : null,
@@ -282,6 +286,8 @@ export async function saveProfile(userId: string, input: unknown): Promise<Resul
   const headline = typeof v.headline === 'string' ? v.headline.trim().slice(0, 80) : '';
   const about = typeof v.about === 'string' ? v.about.trim().slice(0, 400) : '';
   const lookingFor = Array.isArray(v.lookingFor) ? v.lookingFor.filter((x): x is LookingFor => (LOOKING_FOR as readonly string[]).includes(x as string)) : [];
+  const standard = isStandard(v.standard) ? v.standard : null;
+  const availability = Array.isArray(v.availability) ? v.availability.filter(isAvailability) : [];
   const admin = createAdminClient();
   const viewer = await getViewer(admin, userId);
   // A profile is public, so its words are checked the same way a post is
@@ -291,7 +297,7 @@ export async function saveProfile(userId: string, input: unknown): Promise<Resul
     if (check.status === 'held') return ok({ status: 'held', tell: check.tell });
   }
   const { error } = await admin.from('community_profiles').upsert({
-    user_id: userId, headline: headline || null, about: about || null, looking_for: lookingFor, open_to_club: v.openToClub === true, updated_at: new Date().toISOString(),
+    user_id: userId, headline: headline || null, about: about || null, looking_for: lookingFor, open_to_club: v.openToClub === true, standard, availability, updated_at: new Date().toISOString(),
   });
   if (error) return no('Could not save your profile.');
   return ok({ status: 'live', tell: null });
@@ -299,12 +305,26 @@ export async function saveProfile(userId: string, input: unknown): Promise<Resul
 
 // ── Nearby and connecting ───────────────────────────────────────────────────────────────────────
 
-export type NearbyPerson = { id: string; name: string; club: string | null; roles: string[]; distance: string | null; headline: string; lookingFor: LookingFor[]; openToClub: boolean };
+export type NearbyPerson = { id: string; name: string; club: string | null; roles: string[]; distance: string | null; headline: string; lookingFor: LookingFor[]; openToClub: boolean; standard: Standard | null; availability: Availability[] };
 
-export async function getNearby(userId: string, scope: Scope, want: LookingFor | null): Promise<Result<{ scope: Scope; people: NearbyPerson[] }>> {
+/**
+ * Under-18s with a linked account whose parent link the club has verified. Anyone else under 18 is
+ * not shown in Cricket Connect and cannot send a request, because there would be no parent to tell.
+ */
+export async function clearedJuniors(admin: Admin, ids: string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const { data } = await admin.from('child_profiles').select('linked_user_id, parent_child_links!inner ( verified_at )')
+    .in('linked_user_id', ids).not('parent_child_links.verified_at', 'is', null);
+  return new Set((data ?? []).map((r) => r.linked_user_id as string));
+}
+
+export async function getNearby(userId: string, scope: Scope, want: LookingFor | null, filters: ConnectFilters = {}): Promise<Result<{ scope: Scope; people: NearbyPerson[]; notice: string | null }>> {
   const admin = createAdminClient();
   const viewer = await getViewer(admin, userId);
-  if (viewer.clubIds.length === 0) return ok({ scope, people: [] });
+  if (viewer.clubIds.length === 0) return ok({ scope, people: [], notice: null });
+  if (viewer.junior && !(await clearedJuniors(admin, [userId])).has(userId)) {
+    return ok({ scope, people: [], notice: 'Ask your parent to link your account in ClubPulse first. Then you can meet other young players.' });
+  }
   const clubs = await clubsInScope(admin, viewer, scope);
 
   let members = admin.from('club_members').select('user_id, club_id, is_junior').eq('is_active', true).neq('user_id', userId).limit(400);
@@ -324,8 +344,10 @@ export async function getNearby(userId: string, scope: Scope, want: LookingFor |
   const ids = [...new Set((rows ?? []).map((r) => r.user_id as string))].filter((id) => !skip.has(id));
   const who = await people(admin, ids);
   // Juniors meet juniors and adults meet adults: nobody under 18 is shown to an adult here
-  const shown = ids.map((id) => who.get(id)!).filter((p) => p && p.junior === viewer.junior);
-  const { data: profiles } = shown.length ? await admin.from('community_profiles').select('user_id, headline, looking_for, open_to_club').in('user_id', shown.map((p) => p.id)) : { data: [] as Array<Record<string, unknown>> };
+  let shown = ids.map((id) => who.get(id)!).filter((p) => p && p.junior === viewer.junior);
+  // A junior is shown only once a parent is linked and verified
+  if (viewer.junior) { const cleared = await clearedJuniors(admin, shown.map((p) => p.id)); shown = shown.filter((p) => cleared.has(p.id)); }
+  const { data: profiles } = shown.length ? await admin.from('community_profiles').select('user_id, headline, looking_for, open_to_club, standard, availability').in('user_id', shown.map((p) => p.id)) : { data: [] as Array<Record<string, unknown>> };
 
   const list = shown.map((p) => {
     const profile = (profiles ?? []).find((r) => r.user_id === p.id);
@@ -337,11 +359,30 @@ export async function getNearby(userId: string, scope: Scope, want: LookingFor |
       headline: (profile?.headline as string | null) ?? '',
       lookingFor: ((profile?.looking_for as string[] | null) ?? []).filter((x): x is LookingFor => (LOOKING_FOR as readonly string[]).includes(x)),
       openToClub: profile?.open_to_club === true,
+      standard: isStandard(profile?.standard) ? profile.standard : null,
+      availability: ((profile?.availability as string[] | null) ?? []).filter(isAvailability),
+      miles,
     };
-  }).filter((p) => !want || p.lookingFor.includes(want));
+  }).filter((p) => !want || p.lookingFor.includes(want))
+    .filter((p) => matchesFilters({ roles: p.roles, standard: p.standard, availability: p.availability, miles: p.miles }, filters))
+    .map((p) => { const person: Partial<typeof p> = { ...p }; delete person.miles; return person as NearbyPerson; });
   // People who have filled in their profile come first
   list.sort((a, b) => Number(!!b.headline) - Number(!!a.headline));
-  return ok({ scope, people: list.slice(0, 30) });
+  return ok({ scope, people: list.slice(0, 30), notice: null });
+}
+
+type ConnectionEvent = 'requested' | 'accepted' | 'declined' | 'passed' | 'parent_notified';
+
+async function logEvent(admin: Admin, e: { connectionId: string | null; actor: string; other: string; event: ConnectionEvent; bothJunior: boolean }) {
+  // The audit trail is best effort; it never blocks the connection itself
+  try { await admin.from('community_connection_events').insert({ connection_id: e.connectionId, actor_id: e.actor, other_id: e.other, event: e.event, both_junior: e.bothJunior }); } catch { /* ignore */ }
+}
+
+/** The verified parents of a junior's linked account. */
+async function parentsOf(admin: Admin, juniorUserId: string): Promise<string[]> {
+  const { data } = await admin.from('child_profiles').select('parent_child_links!inner ( parent_id, verified_at )').eq('linked_user_id', juniorUserId).not('parent_child_links.verified_at', 'is', null);
+  const links = (data ?? []).flatMap((r) => (Array.isArray(r.parent_child_links) ? r.parent_child_links : [r.parent_child_links]));
+  return [...new Set(links.map((l) => (l as { parent_id: string }).parent_id))];
 }
 
 /** Say yes or "not now" to someone. Two yeses make a connection. */
@@ -351,30 +392,84 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
   const [who, blocked, existing] = await Promise.all([people(admin, [userId, otherId]), blockedIds(admin, userId), connectionBetween(admin, userId, otherId)]);
   const me = who.get(userId); const them = who.get(otherId);
   if (!me || !them || blocked.has(otherId)) return no('Person not found.');
+  const bothJunior = me.junior && them.junior;
 
   if (!yes) {
     await admin.from('community_passes').upsert({ user_id: userId, other_id: otherId });
-    if (existing && existing.status === 'pending' && existing.addressee_id === userId) {
-      await admin.from('community_connections').update({ status: 'declined', responded_at: new Date().toISOString() }).eq('id', existing.id);
-    }
+    const declining = !!existing && existing.status === 'pending' && existing.addressee_id === userId;
+    if (declining) await admin.from('community_connections').update({ status: 'declined', responded_at: new Date().toISOString() }).eq('id', existing.id);
+    await logEvent(admin, { connectionId: declining ? existing.id : null, actor: userId, other: otherId, event: declining ? 'declined' : 'passed', bothJunior });
     return ok({ link: 'passed', connectionId: null });
   }
   // An adult and someone under 18 are never connected for messaging
   if (!mayMessage(me.junior, them.junior)) return no('Adults and under-18s cannot connect privately. Follow their posts on the feed instead.');
+  if (bothJunior) {
+    const cleared = await clearedJuniors(admin, [userId, otherId]);
+    if (!mayConnectJuniors(cleared.has(userId), cleared.has(otherId))) return no('A parent needs to be linked and verified for both of you before you can connect.');
+  }
 
   if (existing?.status === 'accepted') return ok({ link: 'connected', connectionId: existing.id });
   if (existing && existing.status === 'pending' && existing.addressee_id === userId) {
     await admin.from('community_connections').update({ status: 'accepted', responded_at: new Date().toISOString() }).eq('id', existing.id);
+    await logEvent(admin, { connectionId: existing.id, actor: userId, other: otherId, event: 'accepted', bothJunior });
+    await notify(admin, otherId, { kind: 'connect_accepted', title: `${me.name} accepted`, body: 'You are connected. Say hello.', data: { connectionId: existing.id } });
+    if (bothJunior) {
+      // Each young person's parents are told, so nobody's first message is a surprise
+      for (const [junior, friend] of [[userId, them], [otherId, me]] as const) {
+        for (const parent of await parentsOf(admin, junior)) {
+          await notify(admin, parent, { kind: 'parent_connection', title: 'Your child has a new connection', body: `${junior === userId ? me.name : them.name} is now connected with ${friend.name}${friend.clubName ? ` from ${friend.clubName}` : ''}. You can see this in Parent Community.`, data: { connectionId: existing.id } });
+          await logEvent(admin, { connectionId: existing.id, actor: userId, other: parent, event: 'parent_notified', bothJunior });
+        }
+      }
+    }
     return ok({ link: 'connected', connectionId: existing.id });
   }
   if (existing && existing.requester_id === userId) return ok({ link: 'requested', connectionId: null });
+  let connectionId: string | null = existing?.id ?? null;
   if (existing) {   // they asked before and were declined: a fresh yes from this side reopens it
     await admin.from('community_connections').update({ requester_id: userId, addressee_id: otherId, status: 'pending', responded_at: null }).eq('id', existing.id);
-    return ok({ link: 'requested', connectionId: null });
+  } else {
+    const { data, error } = await admin.from('community_connections').insert({ requester_id: userId, addressee_id: otherId }).select('id').maybeSingle();
+    if (error) return no('Could not send your request.');
+    connectionId = (data?.id as string | undefined) ?? null;
   }
-  const { error } = await admin.from('community_connections').insert({ requester_id: userId, addressee_id: otherId });
-  if (error) return no('Could not send your request.');
+  await logEvent(admin, { connectionId, actor: userId, other: otherId, event: 'requested', bothJunior });
+  await notify(admin, otherId, { kind: 'connect_request', title: `${me.name} wants to connect`, body: me.clubName ?? undefined, data: connectionId ? { connectionId } : {} });
   return ok({ link: 'requested', connectionId: null });
+}
+
+// ── Clubs near you ──────────────────────────────────────────────────────────────────────────────
+
+export type ClubCard = { id: string; name: string; county: string | null; league: string | null; distance: string | null; headline: string; netsNotes: string; following: boolean };
+
+/** Clubs in range other than your own, for the club cards. Public club information only. */
+export async function getNearbyClubs(userId: string, scope: Scope, within?: number): Promise<Result<{ clubs: ClubCard[] }>> {
+  const admin = createAdminClient();
+  const viewer = await getViewer(admin, userId);
+  if (viewer.clubIds.length === 0) return ok({ clubs: [] });
+  const inScope = await clubsInScope(admin, viewer, scope);
+  const { data: rows } = await admin.from('clubs').select('id, name, county, league');
+  const own = new Set(viewer.clubIds);
+  const candidates = (rows ?? []).filter((c) => !own.has(c.id as string) && (inScope === 'all' || inScope.has(c.id as string)))
+    .map((c) => ({ c, miles: inScope === 'all' ? null : inScope.get(c.id as string)?.miles ?? null }))
+    .filter((x) => within === undefined || (x.miles !== null && x.miles <= within))
+    .sort((a, b) => (a.miles ?? 1e9) - (b.miles ?? 1e9)).slice(0, 30);
+  const ids = candidates.map((x) => x.c.id as string);
+  const [{ data: profiles }, { data: follows }] = ids.length
+    ? await Promise.all([
+        admin.from('community_club_profiles').select('club_id, headline, nets_notes').in('club_id', ids),
+        admin.from('community_follows').select('subject_id').eq('follower_id', userId).eq('subject_type', 'club').in('subject_id', ids),
+      ])
+    : [{ data: [] as Array<Record<string, unknown>> }, { data: [] as Array<Record<string, unknown>> }];
+  const followed = new Set((follows ?? []).map((f) => f.subject_id as string));
+  return ok({ clubs: candidates.map(({ c, miles }) => {
+    const p = (profiles ?? []).find((r) => r.club_id === c.id);
+    return {
+      id: c.id as string, name: c.name as string, county: (c.county as string | null) ?? null, league: (c.league as string | null) ?? null,
+      distance: miles !== null && miles > 0 ? roughDistance(miles) : null,
+      headline: (p?.headline as string | null) ?? '', netsNotes: (p?.nets_notes as string | null) ?? '', following: followed.has(c.id as string),
+    };
+  }) });
 }
 
 export type ConnectionRow = { id: string; person: { id: string; name: string; club: string | null }; state: 'connected' | 'incoming' | 'requested'; last: string | null };
