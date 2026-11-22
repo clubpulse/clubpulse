@@ -24,7 +24,7 @@ export function CardStack({ people }: { people: CardPerson[] }) {
     start(async () => {
       const r = await connectAnswerAction(p.id, yes);
       if (!r.success) { setNote(r.error ?? 'That did not work.'); return; }
-      setNote(yes ? (r.link === 'connected' ? `You and ${p.name} are connected.` : `Sent. You will be connected if ${p.name} says yes too.`) : null);
+      setNote(yes ? (r.link === 'connected' ? `You and ${p.name} are connected.` : r.link === 'awaiting_parents' ? `You both said yes. Your parents need to say yes before you can message ${p.name}.` : `Sent. You will be connected if ${p.name} says yes too.`) : null);
       setIndex((i) => i + 1);
     });
   };

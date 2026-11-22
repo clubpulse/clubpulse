@@ -10,6 +10,7 @@ import { resolveItem } from '@/lib/community/review';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { markRead } from '@/lib/community/notify';
 import { requestJunior, decideAsParent, endContact } from '@/lib/community/guardian';
+import { decideJuniorConnection } from '@/lib/community/junior-approval';
 import { postShortage, replyToShortage, closeShortage, getReplies, type ShortageReply } from '@/lib/community/shortages';
 import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
@@ -40,7 +41,7 @@ export async function connectAction(userId: string, yes: boolean): Promise<R> {
 }
 
 /** Yes or "not now" on a card, returning whether it became a connection. */
-export async function connectAnswerAction(userId: string, yes: boolean): Promise<R & { link?: 'requested' | 'connected' | 'passed' }> {
+export async function connectAnswerAction(userId: string, yes: boolean): Promise<R & { link?: 'requested' | 'connected' | 'passed' | 'awaiting_parents' }> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   const r = await answerPerson(u.id, userId, yes);
   if (!r.success) return { success: false, error: r.error };
@@ -188,4 +189,13 @@ export async function joinSessionAction(sessionId: string, on: boolean): Promise
 export async function cancelSessionAction(sessionId: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await cancelSession(u.id, sessionId), 'Cancelled.', '/community/near');
+}
+
+/** A verified parent approves or declines a connection between their child and another young person. */
+export async function decideJuniorConnectionAction(connectionId: string, childId: string, approve: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await decideJuniorConnection(u.id, connectionId, childId, approve);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/parent/community');
+  return { success: true, message: !approve ? 'Declined.' : r.data.state === 'opened' ? 'Approved. They are now connected.' : 'Approved. It opens once the other child’s parent approves too.' };
 }

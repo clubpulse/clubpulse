@@ -288,7 +288,7 @@ export type CommunityProfile = {
   headline: string; about: string; lookingFor: LookingFor[]; openToClub: boolean; standard: Standard | null; availability: Availability[];
   connections: number; mine: boolean;
   /** How this person relates to the viewer */
-  link: 'self' | 'none' | 'requested' | 'incoming' | 'connected';
+  link: 'self' | 'none' | 'requested' | 'incoming' | 'connected' | 'awaiting_parents';
   connectionId: string | null;
 };
 
@@ -321,7 +321,7 @@ export async function getProfile(userId: string, targetId: string): Promise<Resu
     standard: isStandard(row?.standard) ? row.standard : null,
     availability: ((row?.availability as string[] | null) ?? []).filter(isAvailability),
     connections: count ?? 0, mine,
-    link: mine ? 'self' : !link || link.status === 'declined' ? 'none' : link.status === 'accepted' ? 'connected' : link.requester_id === userId ? 'requested' : 'incoming',
+    link: mine ? 'self' : !link || link.status === 'declined' ? 'none' : link.status === 'accepted' ? 'connected' : link.status === 'awaiting_parents' ? 'awaiting_parents' : link.requester_id === userId ? 'requested' : 'incoming',
     connectionId: link?.status === 'accepted' ? link.id : null,
   });
 }
@@ -419,7 +419,7 @@ export async function parentsOf(admin: Admin, juniorUserId: string): Promise<str
 }
 
 /** Say yes or "not now" to someone. Two yeses make a connection. */
-export async function answerPerson(userId: string, otherId: string, yes: boolean): Promise<Result<{ link: 'requested' | 'connected' | 'passed'; connectionId: string | null }>> {
+export async function answerPerson(userId: string, otherId: string, yes: boolean): Promise<Result<{ link: 'requested' | 'connected' | 'passed' | 'awaiting_parents'; connectionId: string | null }>> {
   if (otherId === userId) return no('That is you.');
   const admin = createAdminClient();
   const hold = await holdFor(admin, userId);
@@ -450,22 +450,18 @@ export async function answerPerson(userId: string, otherId: string, yes: boolean
     return no('Adults and under-18s cannot connect privately. Follow their posts on the feed instead.');
   }
   if (existing?.status === 'accepted') return ok({ link: 'connected', connectionId: existing.id });
+  if (existing?.status === 'awaiting_parents') return ok({ link: 'awaiting_parents', connectionId: existing.id });
   if (existing && existing.status === 'pending' && existing.addressee_id === userId) {
+    // Two juniors do not connect until a verified parent of each has approved. Both have now said yes, so the
+    // connection waits and the parents are asked. Adults connect straight away.
+    if (bothJunior) {
+      const held = await (await import('./junior-approval')).startParentApproval(admin, existing.id, userId, userId, otherId);
+      if (!held.success) return no(held.error);
+      return ok({ link: 'awaiting_parents', connectionId: existing.id });
+    }
     await admin.from('community_connections').update({ status: 'accepted', responded_at: new Date().toISOString() }).eq('id', existing.id);
     await logEvent(admin, { connectionId: existing.id, actor: userId, other: otherId, event: 'accepted', bothJunior });
     await notify(admin, otherId, { kind: 'connect_accepted', title: `${me.name} accepted`, body: 'You are connected. Say hello.', data: { connectionId: existing.id } });
-    if (bothJunior) {
-      // Each young person's parents are told, so nobody's first message is a surprise
-      for (const [junior, friend] of [[userId, them], [otherId, me]] as const) {
-        const parents = await parentsOf(admin, junior);
-        // Allowed either way. When nobody is linked there is nobody to tell, and that is recorded so staff can see it.
-        if (parents.length === 0) await logEvent(admin, { connectionId: existing.id, actor: userId, other: junior, event: 'no_parent_to_notify', bothJunior });
-        for (const parent of parents) {
-          await notify(admin, parent, { kind: 'parent_connection', title: 'Your child has a new connection', body: `${junior === userId ? me.name : them.name} is now connected with ${friend.name}${friend.clubName ? ` from ${friend.clubName}` : ''}. You can see this in Parent Community.`, data: { connectionId: existing.id } });
-          await logEvent(admin, { connectionId: existing.id, actor: userId, other: parent, event: 'parent_notified', bothJunior });
-        }
-      }
-    }
     return ok({ link: 'connected', connectionId: existing.id });
   }
   if (existing && existing.requester_id === userId) return ok({ link: 'requested', connectionId: null });
@@ -518,14 +514,14 @@ export async function getNearbyClubs(userId: string, scope: Scope, within?: numb
   }) });
 }
 
-export type ConnectionRow = { id: string; person: { id: string; name: string; club: string | null }; state: 'connected' | 'incoming' | 'requested'; last: string | null };
+export type ConnectionRow = { id: string; person: { id: string; name: string; club: string | null }; state: 'connected' | 'incoming' | 'requested' | 'awaiting_parents'; last: string | null };
 
 export async function getConnections(userId: string): Promise<Result<ConnectionRow[]>> {
   const admin = createAdminClient();
   const hold = await holdFor(admin, userId);
   if (hold) return no(hold);
   const { data } = await admin.from('community_connections').select('id, requester_id, addressee_id, status, created_at')
-    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).in('status', ['pending', 'accepted']).order('created_at', { ascending: false }).limit(200);
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).in('status', ['pending', 'awaiting_parents', 'accepted']).order('created_at', { ascending: false }).limit(200);
   const blocked = await blockedIds(admin, userId);
   const rows = (data ?? []).map((c) => ({ c, other: (c.requester_id === userId ? c.addressee_id : c.requester_id) as string })).filter((r) => !blocked.has(r.other));
   const who = await people(admin, rows.map((r) => r.other));
@@ -536,7 +532,7 @@ export async function getConnections(userId: string): Promise<Result<ConnectionR
   return ok(rows.map(({ c, other }) => ({
     id: c.id as string,
     person: { id: other, name: who.get(other)?.name ?? 'Member', club: who.get(other)?.clubName ?? null },
-    state: c.status === 'accepted' ? 'connected' as const : c.addressee_id === userId ? 'incoming' as const : 'requested' as const,
+    state: c.status === 'accepted' ? 'connected' as const : c.status === 'awaiting_parents' ? 'awaiting_parents' as const : c.addressee_id === userId ? 'incoming' as const : 'requested' as const,
     last: (messages ?? []).find((m) => m.connection_id === c.id)?.body ?? null,
   })));
 }

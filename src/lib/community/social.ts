@@ -147,7 +147,7 @@ export async function getChildrenOversight(parentId: string): Promise<Result<Chi
     if (!uid) { out.push({ childId: k.id, name: k.first_name, linkedUserId: null, profile: null, connections: [], following: [], posts: [] }); continue; }
     const [{ data: prof }, { data: conns }, { data: follows }] = await Promise.all([
       admin.from('community_profiles').select('headline, about, looking_for').eq('user_id', uid).maybeSingle(),
-      admin.from('community_connections').select('id, requester_id, addressee_id, status').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`).in('status', ['pending', 'accepted']),
+      admin.from('community_connections').select('id, requester_id, addressee_id, status').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`).in('status', ['pending', 'awaiting_parents', 'accepted']),
       admin.from('community_follows').select('subject_type, subject_id').eq('follower_id', uid),
     ]);
     const otherIds = (conns ?? []).map((c) => (c.requester_id === uid ? c.addressee_id : c.requester_id) as string);
@@ -189,7 +189,7 @@ export async function parentCancelRequest(parentId: string, childId: string, con
   const uid = await childAccount(admin, parentId, childId);
   if (!uid) return no('Child not found.');
   const c = await admin.from('community_connections').select('id, requester_id, addressee_id, status').eq('id', connectionId).maybeSingle();
-  if (!c.data || c.data.status !== 'pending' || (c.data.requester_id !== uid && c.data.addressee_id !== uid)) return no('Request not found.');
+  if (!c.data || (c.data.status !== 'pending' && c.data.status !== 'awaiting_parents') || (c.data.requester_id !== uid && c.data.addressee_id !== uid)) return no('Request not found.');
   await admin.from('community_connections').update({ status: 'declined', responded_at: new Date().toISOString() }).eq('id', connectionId);
   return ok({ cancelled: true });
 }
