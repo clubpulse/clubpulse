@@ -32,7 +32,7 @@ export default async function ParentCommunity() {
             {k.connections.map((c) => (
               <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
                 <span>{c.name} · {c.state === 'connected' ? 'connected' : c.state === 'requested' ? 'request sent' : 'request received'}</span>
-                {c.state !== 'connected' && <ActionButton quiet label="Cancel" run={() => parentCancelAction(k.childId, c.id)} />}
+                {c.state !== 'connected' && <ActionButton quiet label="Cancel" run={parentCancelAction.bind(null, k.childId, c.id)} />}
               </div>
             ))}
             <h3>Following</h3>
@@ -40,7 +40,7 @@ export default async function ParentCommunity() {
             {k.following.map((f) => (
               <div key={f.type + f.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
                 <span>{f.name} · {f.type}</span>
-                {f.type === 'player' && <ActionButton quiet label="Block" confirm={`Block ${f.name} for ${k.name}?`} run={() => parentBlockAction(k.childId, f.id)} />}
+                {f.type === 'player' && <ActionButton quiet label="Block" confirm={`Block ${f.name} for ${k.name}?`} run={parentBlockAction.bind(null, k.childId, f.id)} />}
               </div>
             ))}
           </>)}
