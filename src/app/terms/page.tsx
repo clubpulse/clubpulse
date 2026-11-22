@@ -139,7 +139,7 @@ export default function TermsPage() {
     <LegalPage
       title="Terms of use"
       updated="18 November 2026"
-      intro={<p>These are the terms for using the SHIFTUP app and the website at shiftup.club. Please read them with our <Link href="/privacy">privacy policy</Link>.</p>}
+      intro={<p>These are the terms for using the ShiftUp app and the website at shiftup.club. Please read them with our <Link href="/privacy">privacy policy</Link>.</p>}
       sections={SECTIONS}
     />
   );

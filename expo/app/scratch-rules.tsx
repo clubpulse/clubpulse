@@ -10,7 +10,7 @@ const RULES: { heading: string; lines: string[] }[] = [
   {
     heading: 'Who runs it',
     lines: [
-      'SHIFTUP scratch cards are a free prize draw run by SHIFTUP. You can reach us at hello@shiftup.club.',
+      'ShiftUp scratch cards are a free prize draw run by ShiftUp. You can reach us at hello@shiftup.club.',
       'Apple is not a sponsor of this prize draw and is not involved in it in any way. No prize is an Apple product.',
     ],
   },
