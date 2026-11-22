@@ -9,6 +9,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ActionResult } from '@/lib/types/action';
 import { decideJoinRequest, listJoinRequests } from './club-admin';
+import { VERIFY_NEEDS_DBS, hasCurrentDbsAt } from '@/lib/admin/child-link';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_RE.test(value);
@@ -463,6 +464,8 @@ export async function approveRequest(userId: string, approvalId: string): Promis
     const { data: link } = await sb.from('parent_child_links').select('id, child_profiles ( club_id )').eq('id', id).maybeSingle();
     const child = one(link?.child_profiles);
     if (!link || !child || !clubIds.includes(child.club_id as string)) return { success: false, error: 'Request not found' };
+    // A verified parent can approve their child's Community connections, so only a DBS-checked admin may verify one
+    if (!(await hasCurrentDbsAt(userId, child.club_id as string))) return { success: false, error: VERIFY_NEEDS_DBS };
     const { error } = await sb.from('parent_child_links').update({ verified_at: now, verified_by: userId }).eq('id', id);
     if (error) return { success: false, error: 'Could not approve this link' };
     return { success: true, data: null };
