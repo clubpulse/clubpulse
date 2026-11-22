@@ -37,5 +37,6 @@ export async function POST(req: NextRequest, { params }: Context) {
     amount: result.amount,
     trackBonus: result.trackBonus,
     trackDone: result.trackDone,
+    badges: result.badges,
   });
 }
