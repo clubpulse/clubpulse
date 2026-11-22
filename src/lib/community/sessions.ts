@@ -4,7 +4,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { awardScores } from '@/lib/scores/context';
 import { checkContent } from './moderation';
-import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result } from './service';
+import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor } from './service';
 import { checkCapacity, checkPlace, checkWhen, mayHost, maySeeSession, maySignUp, roughDistance, SESSION_KINDS, type AgeBand, type Scope, type SessionContext, type SessionKind } from './rules';
 
 async function context(admin: Admin, userId: string): Promise<SessionContext & { clubNames: Map<string, string> }> {
@@ -30,6 +30,8 @@ export type SessionCard = {
 
 export async function listSessions(userId: string, scope: Scope, kind: SessionKind | null): Promise<Result<SessionCard[]>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   const base = await context(admin, userId);
   const clubs = await clubsInScope(admin, viewer, scope);
@@ -85,6 +87,8 @@ export async function createSession(userId: string, input: NewSession): Promise<
   const p = checkPlace(input.place); if (!p.ok) return no(p.reason);
 
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const base = await context(admin, userId);
   const staffHere = await isStaffAt(admin, userId, input.clubId);
   if (!mayHost(input.band, { ...base, viewerIsClubStaff: staffHere }, input.clubId)) {
@@ -110,6 +114,8 @@ export async function createSession(userId: string, input: NewSession): Promise<
 export async function joinSession(userId: string, sessionId: unknown, on: boolean): Promise<Result<{ joined: boolean }>> {
   if (typeof sessionId !== 'string') return no('Session not found.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   if (!on) {
     await admin.from('community_session_signups').delete().eq('session_id', sessionId).eq('user_id', userId);
     return ok({ joined: false });

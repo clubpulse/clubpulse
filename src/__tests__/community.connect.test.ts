@@ -23,16 +23,18 @@ const member = (user_id: string, junior: boolean, role = 'member') => ({ user_id
 const setup = (o: { juniors: boolean; pending?: boolean; parents?: Record<string, string[]> }) => {
   calls.length = 0;
   tables = {
-    profiles: () => [{ id: 'a', full_name: 'Amy Ng', display_name: null, push_token: 'ExponentPushToken[abc]' }, { id: 'b', full_name: 'Ben Ode', display_name: null, push_token: null }],
+    profiles: () => [{ id: 'a', full_name: 'Amy Ng', display_name: null, push_token: 'ExponentPushToken[abc]', date_of_birth: '1990-01-01' }, { id: 'b', full_name: 'Ben Ode', display_name: null, push_token: null, date_of_birth: '1990-01-01' }],
     club_members: () => [member('a', o.juniors), member('b', o.juniors)],
     clubs: () => [{ id: 'c1', name: 'Slough CC', county: 'Berks', league: 'L', ground_lat: null, ground_lng: null }],
     community_blocks: () => [],
     community_connections: () => (o.pending ? [{ id: 'x1', requester_id: 'b', addressee_id: 'a', status: 'pending' }] : []),
-    // parentsOf asks for one junior's linked child record, by linked_user_id
+    // parentsOf asks for one junior's linked child record (eq), people() for several at once (in)
     child_profiles: (chain) => {
-      const who = (chain.join(' ').match(/eq:linked_user_id:(\w+)/) ?? [])[1] ?? 'a';
-      const parents = o.parents?.[who] ?? [];
-      return parents.length ? [{ parent_child_links: parents.map((p) => ({ parent_id: p, verified_at: 'now' })) }] : [];
+      const j = chain.join(' ');
+      const one = (j.match(/eq:linked_user_id:(\w+)/) ?? [])[1];
+      const many = (j.match(/in:linked_user_id:([\w,]+)/) ?? [])[1];
+      const ids = one ? [one] : many ? many.split(',') : [];
+      return ids.filter((id) => (o.parents?.[id] ?? []).length).map((id) => ({ linked_user_id: id, parent_child_links: o.parents![id].map((p) => ({ parent_id: p, verified_at: 'now' })) }));
     },
   };
 };
@@ -61,15 +63,22 @@ describe('rules', () => {
 });
 
 describe('answerPerson between two juniors', () => {
-  it('lets two juniors connect even when neither has a linked parent', async () => {
-    setup({ juniors: true });
+  it('refuses a junior with no verified parent, and stores nothing', async () => {
+    setup({ juniors: true, parents: { b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
-    expect(r.success && r.data.link).toBe('requested');
-    expect(calls.filter((c) => c.table === 'community_connections').length).toBeGreaterThan(0);
+    expect(r.success).toBe(false);
+    expect(calls.filter((c) => c.table === 'community_connections' && c.op === 'insert')).toHaveLength(0);
+  });
+
+  it('does not let anyone connect with a junior who has no verified parent', async () => {
+    setup({ juniors: true, parents: { a: ['pa'] } });
+    const r = await answerPerson('a', 'b', true);
+    expect(r.success).toBe(false);
+    expect(calls.filter((c) => c.table === 'community_connections' && c.op === 'insert')).toHaveLength(0);
   });
 
   it('sends a request, logs it and tells the other person', async () => {
-    setup({ juniors: true });
+    setup({ juniors: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
     expect(r.success && r.data.link).toBe('requested');
     expect(events()).toEqual(['requested']);
@@ -77,21 +86,13 @@ describe('answerPerson between two juniors', () => {
   });
 
   it('on accept, logs it, tells the requester and tells each junior\'s parents', async () => {
-    setup({ juniors: true, pending: true, parents: { a: ['pa'] } });
+    setup({ juniors: true, pending: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
     expect(r.success && r.data.link).toBe('connected');
     expect(events()).toContain('accepted');
     expect(events()).toContain('parent_notified');
     expect(notices().map((n) => n.kind)).toEqual(expect.arrayContaining(['connect_accepted', 'parent_connection']));
-    expect(notices().filter((n) => n.kind === 'parent_connection').every((n) => n.user_id === 'pa')).toBe(true);
-  });
-
-  it('on accept, tells every parent it can, and records who had nobody to tell', async () => {
-    setup({ juniors: true, pending: true, parents: { a: ['pa'] } });
-    await answerPerson('a', 'b', true);
-    // a has a parent (told); b has none, which is logged rather than blocking the connection
-    expect(events().filter((e) => e === 'parent_notified')).toHaveLength(1);
-    expect(events()).toContain('no_parent_to_notify');
+    expect(notices().filter((n) => n.kind === 'parent_connection').map((n) => n.user_id).sort()).toEqual(['pa', 'pb']);
   });
 
   it('with parents on both sides, each set is told', async () => {
@@ -103,7 +104,7 @@ describe('answerPerson between two juniors', () => {
 
   it('a failed push never fails the connection', async () => {
     fetchMock.mockRejectedValue(new Error('offline'));
-    setup({ juniors: true });
+    setup({ juniors: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
     expect(r.success).toBe(true);
   });
@@ -124,11 +125,24 @@ describe('answerPerson between two adults', () => {
 });
 
 describe('getNearby for a junior', () => {
-  it('shows other juniors without needing a linked parent, and no notice', async () => {
-    setup({ juniors: true });
+  it('shows other juniors who have a verified parent, and no notice', async () => {
+    setup({ juniors: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await getNearby('a', 'club', null);
     expect(r.success && r.data.notice).toBeNull();
     expect(r.success && r.data.people.map((p) => p.id)).toContain('b');
+  });
+});
+
+describe('getNearby when the age rule shuts someone out', () => {
+  it('shows nothing to a junior with no verified parent', async () => {
+    setup({ juniors: true, parents: { b: ['pb'] } });
+    const r = await getNearby('a', 'club', null);
+    expect(r.success).toBe(false);
+  });
+  it('does not show a junior with no verified parent to another junior', async () => {
+    setup({ juniors: true, parents: { a: ['pa'] } });
+    const r = await getNearby('a', 'club', null);
+    expect(r.success && r.data.people.map((p) => p.id)).not.toContain('b');
   });
 });
 

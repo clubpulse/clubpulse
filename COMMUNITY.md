@@ -39,7 +39,9 @@ If any step fails, stop and switch it off.
 ## Known limits
 
 - The phone app has its own flag and is not covered by this checklist.
-- A club admin links a child record to the junior's own account in Safeguarding → Registered children → Community account. The child's club membership is then marked junior. Until it is linked, the account is not treated as a junior in the Community.
+- Date of birth is collected at sign-up (and asked for once from existing accounts). Under 18 by date of birth, or marked junior by a club admin, makes someone a junior. The date is declared by the person, not proven, so a false date cannot be ruled out; a club admin's junior mark always wins over a date that says 18 or over.
+- The Community is closed to anyone with no date of birth, and to any junior with no verified parent linked to their account (shown as "pending"). They see nobody and nobody sees them. The services refuse them as well as the screens (`src/lib/community/age.ts`, `getViewer`, `people`).
+- A club admin links a child record to the junior's own account in Safeguarding → Registered children → Community account, and a parent verifies the link.
 - Community links are not in the main menu yet. Add them only when the flag is on.
 
 ## Junior-to-junior connections

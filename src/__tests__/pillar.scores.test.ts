@@ -11,10 +11,10 @@ jest.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => ({
     from: (table: string) => {
       const q: Record<string, unknown> = {};
-      q.select = () => q; q.eq = () => q; q.order = () => q; q.limit = () => q;
+      q.select = () => q; q.eq = () => q; q.in = () => q; q.not = () => q; q.order = () => q; q.limit = () => q;
       q.maybeSingle = async () => ({ data: table === 'clubs' ? { id: 'club-1', name: 'Demo', county: null, league: null, ground_lat: null, ground_lng: null } : null });
       q.insert = async (row: unknown) => { inserted.push([table, row]); return { error: null }; };
-      q.then = (res: (v: unknown) => unknown) => res({ data: table === 'club_members' ? [{ club_id: 'club-1', is_junior: false, is_active: true, joined_at: '2026-01-01' }] : [], error: null });
+      q.then = (res: (v: unknown) => unknown) => res({ data: table === 'club_members' ? [{ club_id: 'club-1', is_junior: false, is_active: true, joined_at: '2026-01-01' }] : table === 'profiles' ? [{ id: 'u', date_of_birth: '1990-01-01' }] : [], error: null });
       return q;
     },
   }),

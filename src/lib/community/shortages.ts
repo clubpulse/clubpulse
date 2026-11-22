@@ -4,7 +4,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
 import { notify } from './notify';
-import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result } from './service';
+import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor } from './service';
 import {
   SHORTAGE_NEED_MAX, checkPlace, checkShortageWhen, isShortageFormat, maySeeShortage, mayPostShortage, roughDistance,
   type Scope, type ShortageFormat,
@@ -22,6 +22,8 @@ export type ShortageCard = {
 
 export async function listShortages(userId: string, scope: Scope, within?: number): Promise<Result<{ shortages: ShortageCard[] }>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   if (!maySeeShortage(viewer.junior)) return ok({ shortages: [] });
   const clubs = await clubsInScope(admin, viewer, scope);
@@ -69,6 +71,8 @@ export async function postShortage(userId: string, input: NewShortage): Promise<
   const note = typeof input.note === 'string' ? input.note.trim().slice(0, 300) : '';
 
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   if (!mayPostShortage(viewer.junior, await isStaffAt(admin, userId, input.clubId))) return no('Only a coach or club admin can post a game for their club.');
   const check = await checkContent([note, input.place].filter(Boolean).join('\n'), { place: 'public', authorJunior: false, readerJunior: true }, 500);
@@ -87,6 +91,8 @@ export async function postShortage(userId: string, input: NewShortage): Promise<
 export async function replyToShortage(userId: string, shortageId: unknown, on: boolean): Promise<Result<{ replied: boolean }>> {
   if (typeof shortageId !== 'string') return no('Game not found.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   if (!on) { await admin.from('community_shortage_replies').delete().eq('shortage_id', shortageId).eq('user_id', userId); return ok({ replied: false }); }
   const { data: s } = await admin.from('community_shortages').select('id, club_id, posted_by, play_at, status').eq('id', shortageId).maybeSingle();
   if (!s || s.status !== 'open' || new Date(s.play_at as string).getTime() <= Date.now()) return no('Game not found.');
@@ -106,6 +112,8 @@ export type ShortageReply = { id: string; name: string; club: string | null; rol
 /** The poster sees who has said they can play. Nobody else does. */
 export async function getReplies(userId: string, shortageId: string): Promise<Result<ShortageReply[]>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: s } = await admin.from('community_shortages').select('posted_by').eq('id', shortageId).maybeSingle();
   if (!s || s.posted_by !== userId) return no('Game not found.');
   const { data } = await admin.from('community_shortage_replies').select('user_id').eq('shortage_id', shortageId);

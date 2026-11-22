@@ -12,6 +12,7 @@ import {
   type Availability, type ConnectFilters, type LookingFor, type Scope, type Standard,
 } from './rules';
 import { notify } from './notify';
+import { ageStatus, type AgeStatus } from './age';
 
 export type Admin = ReturnType<typeof createAdminClient>;
 export type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -23,19 +24,40 @@ export const communityOpen = () => process.env.COMMUNITY_ENABLED === 'true';
 
 type ClubRow = { id: string; name: string; county: string | null; league: string | null; ground_lat: number | null; ground_lng: number | null };
 
-export type Viewer = { userId: string; junior: boolean; club: ClubRow | null; clubIds: string[] };
+export type Viewer = {
+  userId: string; junior: boolean; club: ClubRow | null; clubIds: string[];
+  /** needs_dob and pending_parent keep a person out of the Community; hold says why */
+  status: AgeStatus; hold: string | null;
+};
 
-/** Who is asking: their clubs, and whether they are under 18 (a junior at every club they belong to). */
+/** Who is asking: their clubs, whether they are under 18, and whether the Community is open to them yet. */
 export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
-  const { data: rows } = await admin.from('club_members').select('club_id, is_junior, is_active, joined_at').eq('user_id', userId).eq('is_active', true).order('joined_at');
+  const [{ data: rows }, { data: profileRows }, parents] = await Promise.all([
+    admin.from('club_members').select('club_id, is_junior, is_active, joined_at').eq('user_id', userId).eq('is_active', true).order('joined_at'),
+    admin.from('profiles').select('date_of_birth').eq('id', userId).limit(1),
+    parentsOf(admin, userId),
+  ]);
   const mine = rows ?? [];
-  const clubIds = [...new Set(mine.map((m) => m.club_id as string))];
+  const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null } | undefined;
+  const age = ageStatus({
+    clubJunior: mine.length > 0 && mine.every((m) => m.is_junior === true),
+    dob: (profile?.date_of_birth as string | null | undefined) ?? null,
+    hasVerifiedParent: parents.length > 0,
+  });
+  // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
+  // clubs can show them anyone. The explicit checks on each action give the reason.
+  const clubIds = age.cleared ? [...new Set(mine.map((m) => m.club_id as string))] : [];
   let club: ClubRow | null = null;
   if (clubIds.length > 0) {
     const { data } = await admin.from('clubs').select('id, name, county, league, ground_lat, ground_lng').eq('id', clubIds[0]).maybeSingle();
     club = (data as ClubRow | null) ?? null;
   }
-  return { userId, junior: mine.length > 0 && mine.every((m) => m.is_junior === true), club, clubIds };
+  return { userId, junior: age.junior, club, clubIds, status: age.status, hold: age.hold };
+}
+
+/** The reason the Community is closed to this person, or null when it is open. */
+export async function holdFor(admin: Admin, userId: string): Promise<string | null> {
+  return (await getViewer(admin, userId)).hold;
 }
 
 /** The clubs a scope covers, with how far each is from the viewer's own ground where known. */
@@ -67,27 +89,35 @@ export async function blockedIds(admin: Admin, userId: string): Promise<Set<stri
   return new Set([...(mine ?? []).map((r) => r.blocked_id as string), ...(theirs ?? []).map((r) => r.blocker_id as string)]);
 }
 
-export type Person = { id: string; name: string; junior: boolean; clubId: string | null; clubName: string | null; roles: string[] };
+export type Person = { id: string; name: string; junior: boolean; cleared: boolean; hold: string | null; clubId: string | null; clubName: string | null; roles: string[] };
 
 /** Names, clubs and roles for a set of people, with juniors shown by first name only. */
 export async function people(admin: Admin, ids: string[]): Promise<Map<string, Person>> {
   const unique = [...new Set(ids)];
   const out = new Map<string, Person>();
   if (unique.length === 0) return out;
-  const [{ data: profiles }, { data: members }] = await Promise.all([
-    admin.from('profiles').select('id, full_name, display_name').in('id', unique),
+  const [{ data: profiles }, { data: members }, { data: linked }] = await Promise.all([
+    admin.from('profiles').select('id, full_name, display_name, date_of_birth').in('id', unique),
     admin.from('club_members').select('user_id, club_id, role, is_junior, is_active').in('user_id', unique).eq('is_active', true),
+    admin.from('child_profiles').select('linked_user_id, parent_child_links!inner ( verified_at )').in('linked_user_id', unique).not('parent_child_links.verified_at', 'is', null),
   ]);
+  const withParent = new Set((linked ?? []).map((r) => r.linked_user_id as string));
   const clubIds = [...new Set((members ?? []).map((m) => m.club_id as string))];
   const { data: clubs } = clubIds.length ? await admin.from('clubs').select('id, name').in('id', clubIds) : { data: [] as Array<{ id: string; name: string }> };
   const clubName = new Map((clubs ?? []).map((c) => [c.id as string, c.name as string]));
   for (const id of unique) {
     const rows = (members ?? []).filter((m) => m.user_id === id);
-    const junior = rows.length > 0 && rows.every((m) => m.is_junior === true);
     const profile = (profiles ?? []).find((p) => p.id === id);
+    // The same rule as getViewer: a club admin's mark or a date of birth under 18 makes someone a junior
+    const age = ageStatus({
+      clubJunior: rows.length > 0 && rows.every((m) => m.is_junior === true),
+      dob: (profile?.date_of_birth as string | null | undefined) ?? null,
+      hasVerifiedParent: withParent.has(id),
+    });
+    const junior = age.junior;
     const clubId = (rows[0]?.club_id as string | undefined) ?? null;
     out.set(id, {
-      id, junior, clubId,
+      id, junior, cleared: age.cleared, hold: age.hold, clubId,
       name: shownName((profile?.display_name as string | null) || (profile?.full_name as string | null), junior),
       clubName: clubId ? clubName.get(clubId) ?? null : null,
       roles: [...new Set(rows.map((m) => (m.role === 'member' ? 'player' : (m.role as string))))],
@@ -110,6 +140,8 @@ export async function visibleAuthors(admin: Admin, viewerId: string, authorIds: 
   const allowed = new Set<string>();
   const juniors: string[] = [];
   for (const id of ids) {
+    // Someone the Community is shut to (no date of birth, or a child with no verified parent) is not shown to others
+    if (id !== viewerId && known.get(id) && !known.get(id)!.cleared) continue;
     if (id === viewerId || !known.get(id)?.junior) allowed.add(id);
     else juniors.push(id);
   }
@@ -131,6 +163,8 @@ export type FeedPost = {
 
 export async function getFeed(userId: string, scope: Scope): Promise<Result<{ scope: Scope; posts: FeedPost[]; canFilter: { miles: boolean; league: boolean; county: boolean } }>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   const clubs = await clubsInScope(admin, viewer, scope);
 
@@ -177,6 +211,8 @@ export type Posted = { status: 'live' | 'held'; tell: string | null };
 export async function createPost(userId: string, body: unknown): Promise<Result<Posted>> {
   if (typeof body !== 'string') return no('Write something first.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   if (viewer.clubIds.length === 0) return no('Join a club before posting.');
 
@@ -195,6 +231,8 @@ export async function createPost(userId: string, body: unknown): Promise<Result<
 
 export async function toggleLike(userId: string, postId: string): Promise<Result<{ liked: boolean }>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
   if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const { data: existing } = await admin.from('community_post_likes').select('post_id').eq('post_id', postId).eq('user_id', userId).maybeSingle();
@@ -210,6 +248,8 @@ export type Comment = { id: string; body: string; createdAt: string; mine: boole
 
 export async function getComments(userId: string, postId: string): Promise<Result<Comment[]>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
   if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const { data } = await admin.from('community_comments').select('id, author_id, body, created_at').eq('post_id', postId).eq('status', 'live').order('created_at').limit(100);
@@ -227,6 +267,8 @@ export async function getComments(userId: string, postId: string): Promise<Resul
 export async function addComment(userId: string, postId: string, body: unknown): Promise<Result<Posted>> {
   if (typeof body !== 'string') return no('Write something first.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
   if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const viewer = await getViewer(admin, userId);
@@ -258,6 +300,8 @@ export async function connectionBetween(admin: Admin, a: string, b: string) {
 
 export async function getProfile(userId: string, targetId: string): Promise<Result<CommunityProfile>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const [who, { data: row }, { count }, link, blocked] = await Promise.all([
     people(admin, [targetId]),
     admin.from('community_profiles').select('headline, about, looking_for, open_to_club, standard, availability').eq('user_id', targetId).maybeSingle(),
@@ -268,6 +312,7 @@ export async function getProfile(userId: string, targetId: string): Promise<Resu
   const person = who.get(targetId);
   if (!person || blocked.has(targetId)) return no('Profile not found.');
   const mine = targetId === userId;
+  if (!mine && !person.cleared) return no('Profile not found.');
   return ok({
     id: targetId, name: person.name, junior: person.junior, club: person.clubName, roles: person.roles,
     headline: (row?.headline as string | null) ?? '', about: (row?.about as string | null) ?? '',
@@ -289,6 +334,8 @@ export async function saveProfile(userId: string, input: unknown): Promise<Resul
   const standard = isStandard(v.standard) ? v.standard : null;
   const availability = Array.isArray(v.availability) ? v.availability.filter(isAvailability) : [];
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   // A profile is public, so its words are checked the same way a post is
   const text = [headline, about].filter(Boolean).join('\n');
@@ -309,6 +356,8 @@ export type NearbyPerson = { id: string; name: string; club: string | null; role
 
 export async function getNearby(userId: string, scope: Scope, want: LookingFor | null, filters: ConnectFilters = {}): Promise<Result<{ scope: Scope; people: NearbyPerson[]; notice: string | null }>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   if (viewer.clubIds.length === 0) return ok({ scope, people: [], notice: null });
   const clubs = await clubsInScope(admin, viewer, scope);
@@ -330,7 +379,7 @@ export async function getNearby(userId: string, scope: Scope, want: LookingFor |
   const ids = [...new Set((rows ?? []).map((r) => r.user_id as string))].filter((id) => !skip.has(id));
   const who = await people(admin, ids);
   // Juniors meet juniors and adults meet adults: nobody under 18 is shown to an adult here
-  const shown = ids.map((id) => who.get(id)!).filter((p) => p && p.junior === viewer.junior);
+  const shown = ids.map((id) => who.get(id)!).filter((p) => p && p.cleared && p.junior === viewer.junior);
   const { data: profiles } = shown.length ? await admin.from('community_profiles').select('user_id, headline, looking_for, open_to_club, standard, availability').in('user_id', shown.map((p) => p.id)) : { data: [] as Array<Record<string, unknown>> };
 
   const list = shown.map((p) => {
@@ -373,9 +422,12 @@ export async function parentsOf(admin: Admin, juniorUserId: string): Promise<str
 export async function answerPerson(userId: string, otherId: string, yes: boolean): Promise<Result<{ link: 'requested' | 'connected' | 'passed'; connectionId: string | null }>> {
   if (otherId === userId) return no('That is you.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const [who, blocked, existing] = await Promise.all([people(admin, [userId, otherId]), blockedIds(admin, userId), connectionBetween(admin, userId, otherId)]);
   const me = who.get(userId); const them = who.get(otherId);
-  if (!me || !them || blocked.has(otherId)) return no('Person not found.');
+  if (!me || !them || blocked.has(otherId) || !them.cleared) return no('Person not found.');
+  if (!me.cleared) return no(me.hold ?? 'The Community is not open to you yet.');
   const bothJunior = me.junior && them.junior;
 
   if (!yes && me.junior !== them.junior && me.junior) {
@@ -437,6 +489,8 @@ export type ClubCard = { id: string; name: string; county: string | null; league
 /** Clubs in range other than your own, for the club cards. Public club information only. */
 export async function getNearbyClubs(userId: string, scope: Scope, within?: number): Promise<Result<{ clubs: ClubCard[] }>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const viewer = await getViewer(admin, userId);
   if (viewer.clubIds.length === 0) return ok({ clubs: [] });
   const inScope = await clubsInScope(admin, viewer, scope);
@@ -468,6 +522,8 @@ export type ConnectionRow = { id: string; person: { id: string; name: string; cl
 
 export async function getConnections(userId: string): Promise<Result<ConnectionRow[]>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data } = await admin.from('community_connections').select('id, requester_id, addressee_id, status, created_at')
     .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).in('status', ['pending', 'accepted']).order('created_at', { ascending: false }).limit(200);
   const blocked = await blockedIds(admin, userId);
@@ -494,7 +550,7 @@ async function openThread(admin: Admin, userId: string, connectionId: string) {
   const [who, blocked] = await Promise.all([people(admin, [userId, other]), blockedIds(admin, userId)]);
   const me = who.get(userId); const them = who.get(other);
   // Checked again on every read and send: someone's age band can change after they connected
-  if (!me || !them || blocked.has(other)) return null;
+  if (!me || !them || blocked.has(other) || !me.cleared || !them.cleared) return null;
   // An adult and a junior can talk only through a parent-approved contact that is still active
   if (!mayMessage(me.junior, them.junior) && !(await (await import('./guardian')).guardianContactActive(admin, userId, other))) return null;
   return { me, them };

@@ -54,7 +54,7 @@ describe('staff review queue', () => {
     };
     from.mockImplementation((t: string) => {
       const c: Record<string, unknown> = {};
-      for (const m of ['select', 'eq', 'in', 'order', 'limit', 'or', 'maybeSingle']) c[m] = () => c;
+      for (const m of ['select', 'eq', 'in', 'order', 'limit', 'or', 'not', 'maybeSingle']) c[m] = () => c;
       c.then = (res: (v: unknown) => unknown) => res({ data: rows[t] ?? [], error: null });
       return c;
     });
