@@ -177,3 +177,26 @@ export function libraryPlan(request: PlanRequest, passedIds: ReadonlySet<string>
     days,
   };
 }
+
+// ── Badges and certificates ──────────────────────────────────────────────────
+
+export const GRADUATE = 'graduate' as const;
+export type CertificateKey = TrackKey | typeof GRADUATE;
+
+export const badgeSlugFor = (key: CertificateKey): string => `academy-${key}`;
+
+export const isCertificateKey = (v: string): v is CertificateKey => v === GRADUATE || TRACKS.some((t) => t.key === v);
+
+/** True when every track is finished. */
+export function allTracksComplete(passedIds: ReadonlySet<string>): boolean {
+  return TRACKS.every((t) => trackComplete(t.key, passedIds));
+}
+
+/** Which badges a first pass of `lessonId` earns: the track badge if it finished the track, plus graduate if that finished them all. */
+export function badgesEarned(lessonTrack: TrackKey, passedBefore: ReadonlySet<string>, lessonId: string): string[] {
+  const after = new Set([...passedBefore, lessonId]);
+  const out: string[] = [];
+  if (trackComplete(lessonTrack, after) && !trackComplete(lessonTrack, passedBefore)) out.push(badgeSlugFor(lessonTrack));
+  if (allTracksComplete(after) && !allTracksComplete(passedBefore)) out.push(badgeSlugFor(GRADUATE));
+  return out;
+}

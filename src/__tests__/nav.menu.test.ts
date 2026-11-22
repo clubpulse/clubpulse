@@ -10,7 +10,7 @@ describe('menu by role', () => {
   it('lists every page once', () => {
     const all = NAV_GROUPS.flatMap((g) => g.links.map((l) => l.href));
     expect(new Set(all).size).toBe(all.length);
-    expect(all.length).toBe(61);
+    expect(all.length).toBe(62);
   });
 
   it('treats someone with no role as a player', () => {

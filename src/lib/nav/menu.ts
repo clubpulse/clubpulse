@@ -107,6 +107,7 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: '📚',
     tint: '#2DD4BF',
     links: [
+      { href: '/academy/plan', label: 'Practice Plan', icon: '🗓️' },
       { href: '/games', label: 'Games', icon: '🎲' },
       { href: '/qualifications', label: 'Qualifications', icon: '🎖️', for: ['player', 'coach', 'volunteer'] },
     ],

@@ -4,9 +4,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { MODEL_FAST, extractText, getAnthropic, parseJsonObject } from '@/lib/ai/client';
 import { awardScores, getPrimaryClubId } from '@/lib/scores/context';
 import { LESSONS, TRACKS, getLesson } from '@/lib/academy/content';
+import { shownName } from '@/lib/community/rules';
 import {
-  PLAN_LIMIT_PER_WEEK, buildOverview, cleanPlan, libraryPlan, mark, publicLesson, trackComplete,
-  type Overview, type Plan, type PlanRequest, type Progress,
+  PLAN_LIMIT_PER_WEEK, badgesEarned, buildOverview, cleanPlan, libraryPlan, mark, publicLesson, trackComplete,
+  GRADUATE, type CertificateKey, type Overview, type Plan, type PlanRequest, type Progress,
 } from '@/lib/academy/logic';
 
 type Admin = ReturnType<typeof createAdminClient>;
@@ -116,6 +117,7 @@ export async function submitLesson(userId: string, lessonId: string, answers: nu
   let amount = 0;
   let trackBonus = 0;
   let trackDone: string | null = null;
+  const badges: string[] = [];
   if (firstPass && !missing) {
     const clubId = await getPrimaryClubId(userId);
     if (clubId) {
@@ -127,9 +129,17 @@ export async function submitLesson(userId: string, lessonId: string, answers: nu
         const bonus = await awardScores(userId, clubId, RULE_TRACK, lesson.track);
         if (bonus.ok) trackBonus = bonus.amount ?? 0;
       }
+      // Badges on the first finish of a track, and of all four. Only a first pass of the
+      // lesson that completes them gets here, and award_badge ignores a repeat in the same season.
+      const before = new Set(progress.filter((p) => p.passed).map((p) => p.lessonId));
+      for (const slug of badgesEarned(lesson.track, before, lessonId)) {
+        const why = slug === 'academy-graduate' ? 'Finished all four Academy tracks' : `Finished the ${TRACKS.find((t) => t.key === lesson.track)!.title} track`;
+        const { error: badgeError } = await admin.rpc('award_badge', { p_user_id: userId, p_badge_slug: slug, p_club_id: clubId, p_reason: why });
+        if (!badgeError) badges.push(slug);
+      }
     }
   }
-  return { ok: true as const, ...marked, firstPass, amount, trackBonus, trackDone };
+  return { ok: true as const, ...marked, firstPass, amount, trackBonus, trackDone, badges };
 }
 
 // ── Personal plan ────────────────────────────────────────────────────────────
@@ -196,5 +206,32 @@ export async function createPlan(userId: string, request: PlanRequest): Promise<
     ok: true,
     plan: { ...plan, focus: request.focus, createdAt: data.created_at as string, fromCoachAi: !!fromAi },
     plansLeftThisWeek: PLAN_LIMIT_PER_WEEK - plans.usedThisWeek - 1,
+  };
+}
+
+// ── Certificates ─────────────────────────────────────────────────────────────
+
+export type Certificate = { name: string; title: string; completedOn: string; graduate: boolean };
+
+/** A certificate only for someone who has passed every lesson it covers. Null otherwise. */
+export async function getCertificate(userId: string, key: CertificateKey): Promise<Certificate | null> {
+  const admin = createAdminClient();
+  const { data: rows, error } = await admin.from('academy_progress').select('lesson_id, passed, first_passed_at').eq('user_id', userId).eq('passed', true);
+  if (error) return null;
+  const passed = new Map((rows ?? []).map((r) => [r.lesson_id as string, r.first_passed_at as string | null]));
+  const ids = new Set(passed.keys());
+  const covered = key === GRADUATE ? LESSONS : LESSONS.filter((l) => l.track === key);
+  if (!covered.every((l) => ids.has(l.id))) return null;
+  const dates = covered.map((l) => passed.get(l.id)).filter((d): d is string => !!d).sort();
+  const [{ data: profile }, { data: member }] = await Promise.all([
+    admin.from('profiles').select('full_name, display_name').eq('id', userId).maybeSingle(),
+    admin.from('club_members').select('is_junior').eq('user_id', userId).eq('is_active', true),
+  ]);
+  const junior = (member ?? []).length > 0 && (member ?? []).every((m) => m.is_junior === true);
+  return {
+    name: shownName((profile?.display_name as string | null) || (profile?.full_name as string | null), junior),
+    title: key === GRADUATE ? 'ClubPulse Academy Graduate' : TRACKS.find((t) => t.key === key)!.title,
+    completedOn: dates[dates.length - 1] ?? new Date().toISOString(),
+    graduate: key === GRADUATE,
   };
 }
