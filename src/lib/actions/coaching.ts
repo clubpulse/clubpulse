@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { CoachingListing, CoachingBooking } from '@/lib/types/coaching';
 
@@ -12,13 +13,19 @@ export async function getCoachingListings(clubId: string): Promise<ActionResult<
 
   const { data, error } = await supabase
     .from('coaching_listings')
-    .select('*, coach_profile:profiles(full_name)')
+    .select('*')
     .eq('club_id', clubId)
     .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   if (error) return { success: false, error: error.message };
-  return { success: true, data: (data ?? []) as CoachingListing[] };
+  const cards = await clubNameCards(clubId, (data ?? []).map((r) => (r as { coach_user_id?: string; user_id?: string }).coach_user_id ?? (r as { user_id?: string }).user_id));
+  const withNames = (data ?? []).map((r) => {
+    const row = r as { coach_user_id?: string; user_id?: string };
+    const c = cards.get((row.coach_user_id ?? row.user_id) as string);
+    return { ...r, coach_profile: c ? { full_name: c.full_name ?? c.display_name ?? 'Unknown' } : null };
+  });
+  return { success: true, data: withNames as unknown as CoachingListing[] };
 }
 
 export async function createListing(data: {

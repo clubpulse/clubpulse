@@ -25,3 +25,11 @@ If you want those pages to keep working unchanged in the meantime, the lowest-ri
 
 ## Exposure that already happened
 Treat this as a possible personal-data exposure. Check the Supabase API logs for anon requests to `/rest/v1/profiles`, and take advice on whether it needs reporting. Push tokens were readable, so a leaked token could be used to send notifications to that device.
+
+## Update: how those pages now get names
+A test run on a Supabase branch showed these pages were broken by two things: own-row RLS, and several tables whose foreign key points at `auth.users` rather than `profiles`, which makes `profiles(...)` embeds fail with PGRST200. All `profiles` embeds are gone. Names are looked up by id in `src/lib/profile/lookup.ts` (service role, four columns only):
+- `clubNameCards(clubId, ids)`: the signed-in person must be an active member of that club; only that club's members are returned.
+- `sharedClubNameCards(ids)`: people who share an active club with the signed-in person, for records not tied to one club (rivalries).
+- `directoryCards(ids)`: adults only, from `public_profile_cards` (mentors-style directory lists such as raffle winners).
+- `namesAlreadyAuthorised(ids)`: no check, for code that already runs with the service role and has decided who may see whom (public scorecard, XI selection, match roster).
+`src/__tests__/profile.no-embeds.test.ts` fails if a `profiles(...)` embed is added again.

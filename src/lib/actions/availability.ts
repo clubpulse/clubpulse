@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import { getMyXIStates } from '@/lib/actions/xi-selection';
 import type { AvailabilityStatus, FixtureWithMyStatus, FixtureGridRow } from '@/lib/types/availability';
 
@@ -100,19 +101,20 @@ export async function getFixtureGrid(clubId: string): Promise<FixtureGridRow[]> 
   // Fetch all availability rows for these fixtures, joined with profiles
   const { data: availRows } = await supabase
     .from('fixture_availability')
-    .select('fixture_id, user_id, status, profiles(full_name, display_name)')
+    .select('fixture_id, user_id, status')
     .in('fixture_id', fixtureIds);
 
   // Fetch active club members so we know the full player list (including those who haven't responded)
   const { data: members } = await supabase
     .from('club_members')
-    .select('user_id, profiles(full_name, display_name)')
+    .select('user_id')
     .eq('club_id', clubId)
     .eq('is_active', true);
 
+  const cards = await clubNameCards(clubId, [...(members ?? []).map((m) => m.user_id), ...(availRows ?? []).map((r) => r.user_id)]);
   const memberMap = new Map<string, { full_name: string; display_name: string }>();
   for (const m of members ?? []) {
-    const p = m.profiles as unknown as { full_name: string; display_name: string } | null;
+    const p = cards.get(m.user_id);
     memberMap.set(m.user_id, {
       full_name: p?.full_name ?? 'Unknown',
       display_name: p?.display_name ?? 'Unknown',
@@ -124,7 +126,6 @@ export async function getFixtureGrid(clubId: string): Promise<FixtureGridRow[]> 
     fixture_id: string;
     user_id: string;
     status: AvailabilityStatus;
-    profiles: { full_name: string; display_name: string } | null;
   };
   const availByFixture = new Map<string, AvailRow[]>();
   for (const row of (availRows ?? []) as unknown as AvailRow[]) {
@@ -139,8 +140,8 @@ export async function getFixtureGrid(clubId: string): Promise<FixtureGridRow[]> 
 
     const respondedPlayers = responded.map((r) => ({
       user_id: r.user_id,
-      full_name: r.profiles?.full_name ?? memberMap.get(r.user_id)?.full_name ?? 'Unknown',
-      display_name: r.profiles?.display_name ?? memberMap.get(r.user_id)?.display_name ?? 'Unknown',
+      full_name: cards.get(r.user_id)?.full_name ?? memberMap.get(r.user_id)?.full_name ?? 'Unknown',
+      display_name: cards.get(r.user_id)?.display_name ?? memberMap.get(r.user_id)?.display_name ?? 'Unknown',
       status: r.status,
     }));
 

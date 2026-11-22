@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { sharedClubNameCards, cardName } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { NemesisPair, RivalryStats, MatchPerformance } from '@/lib/types/rivalry';
 
@@ -8,7 +9,7 @@ export async function getMyNemesis(userId: string): Promise<ActionResult<Nemesis
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('nemesis_pairs')
-    .select('*, bowler:bowler_id(id, profiles!inner(full_name, display_name))')
+    .select('*')
     .eq('batter_id', userId)
     .order('dismissals', { ascending: false })
     .limit(1)
@@ -17,10 +18,10 @@ export async function getMyNemesis(userId: string): Promise<ActionResult<Nemesis
   if (error) return { success: false, error: error.message };
   if (!data) return { success: true, data: null };
 
-  const bp = (data.bowler as { profiles: { full_name: string; display_name: string }[] })?.profiles?.[0];
+  const cards = await sharedClubNameCards([data.bowler_id]);
   return {
     success: true,
-    data: { ...data, bowler_name: bp?.display_name || bp?.full_name || 'Unknown' } as NemesisPair,
+    data: { ...data, bowler_name: cardName(cards.get(data.bowler_id as string)) } as NemesisPair,
   };
 }
 
@@ -28,15 +29,15 @@ export async function getMyVictims(userId: string): Promise<ActionResult<Nemesis
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('nemesis_pairs')
-    .select('*, batter:batter_id(id, profiles!inner(full_name, display_name))')
+    .select('*')
     .eq('bowler_id', userId)
     .order('dismissals', { ascending: false })
     .limit(10);
 
   if (error) return { success: false, error: error.message };
+  const cards = await sharedClubNameCards((data ?? []).map((r) => r.batter_id));
   const enriched = (data ?? []).map((row) => {
-    const bp = (row.batter as { profiles: { full_name: string; display_name: string }[] })?.profiles?.[0];
-    return { ...row, batter_name: bp?.display_name || bp?.full_name || 'Unknown' } as NemesisPair;
+    return { ...row, batter_name: cardName(cards.get(row.batter_id as string)) } as NemesisPair;
   });
   return { success: true, data: enriched };
 }
@@ -47,21 +48,17 @@ export async function getRivalryStats(
 ): Promise<ActionResult<RivalryStats>> {
   const supabase = await createClient();
 
-  const [nemR, encountersR, profilesR] = await Promise.all([
+  const [nemR, encountersR, cards] = await Promise.all([
     supabase.from('nemesis_pairs').select('*').eq('batter_id', userId).eq('bowler_id', opponentId).maybeSingle(),
     supabase.from('match_performances').select('*')
       .or(`and(user_id.eq.${userId},dismissed_by.eq.${opponentId}),and(user_id.eq.${opponentId},dismissed_by.eq.${userId})`)
       .order('match_date', { ascending: false }),
-    supabase.from('profiles').select('id, full_name, display_name').in('id', [userId, opponentId]),
+    sharedClubNameCards([userId, opponentId]),
   ]);
 
   if (encountersR.error) return { success: false, error: encountersR.error.message };
 
-  const profiles = profilesR.data ?? [];
-  const getProfile = (id: string) => {
-    const p = profiles.find((pr) => pr.id === id);
-    return { id, name: p?.display_name || p?.full_name || 'Unknown' };
-  };
+  const getProfile = (id: string) => ({ id, name: cardName(cards.get(id)) });
 
   const encounters = (encountersR.data ?? []) as MatchPerformance[];
   const userBatting = encounters.filter((e) => e.user_id === userId && e.dismissed_by === opponentId);

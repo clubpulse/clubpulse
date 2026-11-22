@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { DressingRoomPost, PollOption } from '@/lib/types/dressing-room';
 
@@ -21,8 +22,7 @@ export async function getPosts(
   const { data, error } = await supabase
     .from('dressing_room_posts')
     .select(`
-      id, club_id, user_id, kind, body, poll_options, poll_votes, pinned, created_at,
-      profiles!dressing_room_posts_user_id_fkey ( display_name, avatar_url )
+      id, club_id, user_id, kind, body, poll_options, poll_votes, pinned, created_at
     `)
     .eq('club_id', clubId)
     .order('created_at', { ascending: true })
@@ -30,8 +30,9 @@ export async function getPosts(
 
   if (error) return { success: false, error: error.message };
 
+  const cards = await clubNameCards(clubId, (data ?? []).map((r: Record<string, unknown>) => r.user_id));
   const posts = (data ?? []).map((row: Record<string, unknown>) => {
-    const profile = row.profiles as { display_name?: string | null; avatar_url?: string | null } | null;
+    const profile = cards.get(row.user_id as string);
     return {
       id: row.id,
       club_id: row.club_id,

@@ -2,6 +2,7 @@
 // Uses the service role on the server, never in the browser, and returns only a safe payload:
 // no user ids, no emails, and juniors are never named.
 import { createAdminClient } from '@/lib/supabase/admin';
+import { namesAlreadyAuthorised } from '@/lib/profile/lookup';
 import type { Delivery } from '@/lib/match-day/scoring';
 import type { InningsState, ScorecardStatus } from '@/lib/types/match-day';
 
@@ -50,15 +51,16 @@ export async function getPublicScorecard(token: string): Promise<PublicScorecard
 
   const [{ data: scores }, { data: members }, { data: commentary }, { data: deliveries }] = await Promise.all([
     db.from('match_player_scores').select('*').eq('scorecard_id', card.id).order('batting_position'),
-    db.from('club_members').select('user_id, is_junior, profiles(full_name)').eq('club_id', card.club_id),
+    db.from('club_members').select('user_id, is_junior').eq('club_id', card.club_id),
     db.from('match_commentary').select('message, event_type, created_at').eq('scorecard_id', card.id).order('created_at', { ascending: false }).limit(30),
     db.from('match_deliveries').select('*').eq('scorecard_id', card.id).order('seq', { ascending: false }).limit(12),
   ]);
 
+  // The scorecard token is the authorisation; names come from the service role, never the viewer's own session
+  const cards = await namesAlreadyAuthorised((members ?? []).map((m) => m.user_id));
   const nameOf = new Map<string, string>();
   for (const m of members ?? []) {
-    const p = m.profiles as unknown as { full_name?: string } | null;
-    nameOf.set(m.user_id as string, publicName(p?.full_name, m.is_junior === true));
+    nameOf.set(m.user_id as string, publicName(cards.get(m.user_id as string)?.full_name ?? undefined, m.is_junior === true));
   }
 
   const rows = (scores ?? []) as Array<Record<string, number | string | null>>;
