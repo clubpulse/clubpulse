@@ -10,7 +10,7 @@ import { parseEnquiry } from '@/lib/enquiries/logic';
 import { fail, readJson } from '@/lib/utils/http';
 import { sendEmail } from '@/lib/email/resend';
 
-const NOTIFY_TO = process.env.ENQUIRY_NOTIFY_TO ?? 'hello@shift.club';
+const NOTIFY_TO = process.env.ENQUIRY_NOTIFY_TO ?? 'hello@shiftup.club';
 
 export async function POST(req: NextRequest) {
   const parsed = parseEnquiry(await readJson(req));
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const { error } = await createAdminClient()
     .from('enquiries')
     .insert({ ...parsed.value, user_id: user?.id ?? null, club_id: clubId });
-  if (error) return fail('We could not save your message. Please email hello@shift.club instead.', 500);
+  if (error) return fail('We could not save your message. Please email hello@shiftup.club instead.', 500);
 
   // Tell SHIFTUP a club is waiting. The enquiry is already saved, so a failed email changes nothing.
   const v = parsed.value;

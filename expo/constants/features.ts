@@ -21,6 +21,6 @@ export const VOLUNTEERS_ENABLED = process.env.EXPO_PUBLIC_VOLUNTEERS_ENABLED ===
 // Legal pages, opened in the in-app browser. Apple and Google both require the privacy policy
 // to be reachable from inside the app. They live on the website at /privacy and /terms; the
 // two variables are only for pointing somewhere else.
-const SITE = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') || 'https://shift.club';
+const SITE = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') || 'https://shiftup.club';
 export const PRIVACY_URL: string | null = process.env.EXPO_PUBLIC_PRIVACY_URL || `${SITE}/privacy`;
 export const TERMS_URL: string | null = process.env.EXPO_PUBLIC_TERMS_URL || `${SITE}/terms`;

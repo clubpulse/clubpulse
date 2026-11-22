@@ -9,7 +9,7 @@ import { getStripe } from './client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { TIER_CONFIG, type SubscriptionTier } from '@/lib/types/subscription';
 
-const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shift.club';
+const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
 /**
  * Create a Stripe Checkout session for a club subscription upgrade.

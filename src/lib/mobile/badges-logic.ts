@@ -184,7 +184,7 @@ export const GROUPS: ReadonlyArray<{ key: BadgeGroup; title: string }> = [
   { key: 'scores', title: 'Bonus Points' },
 ];
 
-export const SHARE_BASE = 'https://shift.club/badge';
+export const SHARE_BASE = 'https://shiftup.club/badge';
 
 export type Badge = {
   key: string;
