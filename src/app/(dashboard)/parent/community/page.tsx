@@ -3,7 +3,8 @@ import { requireUser } from '@/lib/auth/server';
 import { communityOpen } from '@/lib/community/service';
 import { getChildrenOversight } from '@/lib/community/social';
 import Link from 'next/link';
-import { parentBlockAction, parentCancelAction, decideRequestAction, endContactAction } from '@/lib/actions/community-social';
+import { parentBlockAction, parentCancelAction, decideRequestAction, endContactAction, decideJuniorConnectionAction } from '@/lib/actions/community-social';
+import { getApprovalsForParent } from '@/lib/community/junior-approval';
 import { crossBandOpen, getParentRequests } from '@/lib/community/guardian';
 import { ActionButton, ClosedNotice, cardStyle } from '@/components/community/ui';
 
@@ -17,10 +18,28 @@ export default async function ParentCommunity() {
   const kids = r.success ? r.data : [];
   const asks = crossBandOpen() ? await getParentRequests(user.id) : null;
   const requests = asks && asks.success ? asks.data : [];
+  const approvalsR = await getApprovalsForParent(user.id);
+  const approvals = approvalsR.success ? approvalsR.data : [];
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: 16 }}>
       <h1>Your child’s Community activity</h1>
       <p>You can see your child’s public profile, who they are connected to and who they follow. You cannot read their private messages with other young people. The one exception is a coach you have approved: you can read that conversation and end it at any time. You can cancel a request, block someone or report a concern for them.</p>
+      {approvals.length > 0 && (
+        <div style={{ ...cardStyle, marginBottom: 16 }}>
+          <h2 style={{ marginTop: 0 }}>Waiting for your yes</h2>
+          <p>Two young people can message each other only once a parent of each has said yes. Nothing happens unless you approve.</p>
+          {approvals.map((a) => (
+            <div key={`${a.connectionId}-${a.childId}`} style={{ padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+              <strong>{a.childName}</strong> would like to connect with {a.otherName}{a.otherClub ? ` (${a.otherClub})` : ''}.
+              {a.decided === 'approved'
+                ? <p style={{ margin: '4px 0' }}>You approved. It opens once the other child’s parent approves too.</p>
+                : <span style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                    <ActionButton label="Approve" run={decideJuniorConnectionAction.bind(null, a.connectionId, a.childId, true)} />
+                    <ActionButton quiet label="Decline" run={decideJuniorConnectionAction.bind(null, a.connectionId, a.childId, false)} /></span>}
+            </div>
+          ))}
+        </div>
+      )}
       {requests.length > 0 && (
         <div style={{ ...cardStyle, marginBottom: 16 }}>
           <h2 style={{ marginTop: 0 }}>Coaches asking to connect</h2>

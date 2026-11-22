@@ -85,26 +85,22 @@ describe('answerPerson between two juniors', () => {
     expect(notices()).toEqual([expect.objectContaining({ user_id: 'b', kind: 'connect_request' })]);
   });
 
-  it('on accept, logs it, tells the requester and tells each junior\'s parents', async () => {
+  it('on the second yes, holds the connection and asks every parent of both children, opening nothing', async () => {
     setup({ juniors: true, pending: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
-    expect(r.success && r.data.link).toBe('connected');
-    expect(events()).toContain('accepted');
-    expect(events()).toContain('parent_notified');
-    expect(notices().map((n) => n.kind)).toEqual(expect.arrayContaining(['connect_accepted', 'parent_connection']));
-    expect(notices().filter((n) => n.kind === 'parent_connection').map((n) => n.user_id).sort()).toEqual(['pa', 'pb']);
-  });
-
-  it('with parents on both sides, each set is told', async () => {
-    setup({ juniors: true, pending: true, parents: { a: ['pa'], b: ['pb'] } });
-    await answerPerson('a', 'b', true);
-    expect(notices().filter((n) => n.kind === 'parent_connection').map((n) => n.user_id).sort()).toEqual(['pa', 'pb']);
-    expect(events()).not.toContain('no_parent_to_notify');
+    expect(r.success && r.data.link).toBe('awaiting_parents');
+    const updates = calls.filter((c) => c.table === 'community_connections' && c.op === 'update').map((c) => (c.args[0] as { status: string }).status);
+    expect(updates).toEqual(['awaiting_parents']);
+    expect(events()).toContain('sent_to_parents');
+    expect(events()).not.toContain('accepted');
+    expect(notices().filter((n) => n.kind === 'parent_approval_needed').map((n) => n.user_id).sort()).toEqual(['pa', 'pb']);
+    // Nobody is told they are connected, and nobody is told after the fact
+    expect(notices().some((n) => n.kind === 'parent_connection')).toBe(false);
   });
 
   it('a failed push never fails the connection', async () => {
     fetchMock.mockRejectedValue(new Error('offline'));
-    setup({ juniors: true, parents: { a: ['pa'], b: ['pb'] } });
+    setup({ juniors: true, pending: true, parents: { a: ['pa'], b: ['pb'] } });
     const r = await answerPerson('a', 'b', true);
     expect(r.success).toBe(true);
   });

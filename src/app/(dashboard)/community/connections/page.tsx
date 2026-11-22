@@ -34,7 +34,7 @@ export default async function ConnectionsPage() {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', padding: 16 }}>
       <h1>Connections</h1>
-      {group('incoming', 'Requests to you')}{group('connected', 'Connected')}{group('requested', 'Waiting for a reply')}
+      {group('incoming', 'Requests to you')}{group('connected', 'Connected')}{group('requested', 'Waiting for a reply')}{group('awaiting_parents', 'Waiting for parents to say yes')}
       {rows.length === 0 && <p>No connections yet.</p>}
     </div>
   );

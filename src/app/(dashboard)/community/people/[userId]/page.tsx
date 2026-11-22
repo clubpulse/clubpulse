@@ -36,6 +36,7 @@ export default async function PersonPage({ params }: { params: Promise<{ userId:
             {p.link === 'incoming' && <ActionButton label="Accept" run={connectAction.bind(null, userId, true)} />}
             {p.link === 'requested' && <span>Request sent</span>}
             {p.link === 'connected' && <span>Connected</span>}
+            {p.link === 'awaiting_parents' && <span>Waiting for parents to say yes</span>}
             {f?.canFollow && <ActionButton quiet label={f.following ? 'Unfollow' : 'Follow'} run={followAction.bind(null, 'player', userId, !f.following)} />}
             <ReportProfileButton userId={userId} />
             <ActionButton quiet label="Block" confirm="Block this person? They will not be able to find you." run={blockAction.bind(null, userId)} />
