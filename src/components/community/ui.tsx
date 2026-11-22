@@ -36,7 +36,16 @@ export function ClosedNotice({ children }: { children?: ReactNode }) {
   );
 }
 
-export function ProfileForm({ initial, onSave }: { initial: { headline: string; about: string; openToClub: boolean }; onSave: (v: { headline: string; about: string; openToClub: boolean }) => Promise<R> }) {
+export const LOOKING_OPTIONS = [
+  { key: 'net_partner', label: 'A net partner' },
+  { key: 'club', label: 'A club' },
+  { key: 'coach', label: 'A coach' },
+  { key: 'teammates', label: 'Teammates' },
+] as const;
+
+type ProfileValues = { headline: string; about: string; openToClub: boolean; lookingFor: string[] };
+
+export function ProfileForm({ initial, onSave }: { initial: ProfileValues; onSave: (v: ProfileValues) => Promise<R> }) {
   const [v, setV] = useState(initial);
   const [pending, start] = useTransition();
   const [note, setNote] = useState<string | null>(null);
@@ -45,6 +54,14 @@ export function ProfileForm({ initial, onSave }: { initial: { headline: string; 
     <form onSubmit={(e) => { e.preventDefault(); start(async () => { const r = await onSave(v); setNote(r.success ? (r.message ?? 'Saved.') : (r.error ?? 'Could not save.')); }); }}>
       <label>Headline<input style={field} maxLength={80} value={v.headline} onChange={(e) => setV({ ...v, headline: e.target.value })} /></label>
       <label>About you<textarea style={{ ...field, minHeight: 90 }} maxLength={400} value={v.about} onChange={(e) => setV({ ...v, about: e.target.value })} /></label>
+      <fieldset style={{ border: 0, padding: 0, margin: '0 0 12px' }}>
+        <legend style={{ marginBottom: 6 }}>I am looking for</legend>
+        {LOOKING_OPTIONS.map((o) => (
+          <label key={o.key} style={{ display: 'inline-block', marginRight: 16 }}>
+            <input type="checkbox" checked={v.lookingFor.includes(o.key)} onChange={(e) => setV({ ...v, lookingFor: e.target.checked ? [...v.lookingFor, o.key] : v.lookingFor.filter((k) => k !== o.key) })} /> {o.label}
+          </label>
+        ))}
+      </fieldset>
       <label style={{ display: 'block', marginBottom: 12 }}><input type="checkbox" checked={v.openToClub} onChange={(e) => setV({ ...v, openToClub: e.target.checked })} /> Open to hearing from other clubs</label>
       <button type="submit" style={btn} disabled={pending}>{pending ? 'Saving…' : 'Save profile'}</button>
       {note && <p role="status">{note}</p>}
