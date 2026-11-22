@@ -30,7 +30,7 @@ export default async function MatchPage({ searchParams }: { searchParams: Promis
         <div key={p.id} style={{ ...cardStyle, marginBottom: 12 }}>
           <Link href={`/community/people/${p.id}`}><strong>{p.name}</strong></Link>{p.club ? ` · ${p.club}` : ''}{p.distance ? ` · ${p.distance}` : ''}
           {p.headline && <p style={{ margin: '4px 0' }}>{p.headline}</p>}
-          <ActionButton label="Say yes" run={() => connectAction(p.id, true)} />
+          <ActionButton label="Say yes" run={connectAction.bind(null, p.id, true)} />
         </div>
       ))}
     </div>

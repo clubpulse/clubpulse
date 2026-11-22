@@ -23,8 +23,8 @@ export default async function ConnectionsPage() {
           <div key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0' }}>
             <Link href={`/community/people/${x.person.id}`}>{x.person.name}{x.person.club ? ` · ${x.person.club}` : ''}</Link>
             {state === 'incoming' && <span style={{ display: 'flex', gap: 8 }}>
-              <ActionButton label="Accept" run={() => connectAction(x.person.id, true)} />
-              <ActionButton quiet label="Not now" run={() => connectAction(x.person.id, false)} /></span>}
+              <ActionButton label="Accept" run={connectAction.bind(null, x.person.id, true)} />
+              <ActionButton quiet label="Not now" run={connectAction.bind(null, x.person.id, false)} /></span>}
           </div>
         ))}
       </div>

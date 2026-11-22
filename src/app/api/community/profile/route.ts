@@ -4,13 +4,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { fail, readJson, unauthorized } from '@/lib/utils/http';
-import { communityOpen, getProfile, saveProfile } from '@/lib/community/service';
+import { communityOpen, saveProfile } from '@/lib/community/service';
+import { getProfileGuarded } from '@/lib/community/social';
 
 export async function GET(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
   if (!communityOpen()) return fail('The Community is not open yet.', 404);
-  const result = await getProfile(user.id, req.nextUrl.searchParams.get('id') ?? user.id);
+  const result = await getProfileGuarded(user.id, req.nextUrl.searchParams.get('id') ?? user.id);
   return result.success ? NextResponse.json(result.data) : fail(result.error);
 }
 

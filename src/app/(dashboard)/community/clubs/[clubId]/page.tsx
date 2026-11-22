@@ -25,7 +25,7 @@ export default async function ClubPage({ params }: { params: Promise<{ clubId: s
         {c.about && <p>{c.about}</p>}
         {c.netsNotes && <p>Nets: {c.netsNotes}</p>}
         <p>{c.members} members · {c.followers} follower{c.followers === 1 ? '' : 's'}</p>
-        <ActionButton label={c.following ? 'Unfollow' : 'Follow club'} run={() => followAction('club', clubId, !c.following)} />
+        <ActionButton label={c.following ? 'Unfollow' : 'Follow club'} run={followAction.bind(null, 'club', clubId, !c.following)} />
       </div>
       {c.canEdit && <div style={{ ...cardStyle, marginTop: 16 }}><h2 style={{ marginTop: 0 }}>Edit club profile</h2>
         <ClubProfileEditor initial={{ headline: c.headline, about: c.about, netsNotes: c.netsNotes }} onSave={saveClubProfileAction.bind(null, clubId)} /></div>}
