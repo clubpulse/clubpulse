@@ -68,6 +68,9 @@ export const PILLARS: Pillar[] = [
       { key: 'awareness', label: 'Reading the Game', detail: 'Game awareness: what the situation needs', icon: '🧭', route: '/warmup/awareness' },
       { key: 'tips', label: 'Team Talk', detail: 'Quick tips for batters, bowlers and fielders', icon: '💬', route: '/warmup/tips' },
       { key: 'support', label: 'Talk to Someone', detail: 'Where to turn when things are hard', icon: '🤝', route: '/warmup/support' },
+      { key: 'readiness', label: 'Readiness', detail: 'Check in before you play and see your four weeks', icon: '📈', route: '/warmup/readiness', for: PLAYING },
+      { key: 'recovery', label: 'Recovery Log', detail: 'How your body feels after playing. Private', icon: '🩹', route: '/warmup/recovery', for: PLAYING },
+      { key: 'sharing', label: 'Sharing', detail: 'Choose whether your coach sees your averages', icon: '🔒', route: '/warmup/sharing', for: PLAYING },
       { key: 'check-in', label: 'The Toss', detail: 'Your daily check-in: keep your streak going', icon: '🔥', route: '/rewards' },
     ],
   },
@@ -93,6 +96,7 @@ export const PILLARS: Pillar[] = [
 const SOCIAL: MenuLink[] = [
   { key: 'feed', label: 'Commentary Box', detail: 'The feed: what cricket people near you are sharing', icon: '🎙️', route: '/community/feed' },
   { key: 'nearby', label: 'Partnerships', detail: 'Meet cricket people around you', icon: '🤝', route: '/community/nearby' },
+  { key: 'sessions', label: 'Nets and Games', detail: 'Nets sessions and pick-up games near you', icon: '🏏', route: '/community/sessions' },
   { key: 'connections', label: 'My Squad', detail: 'Your connections and messages', icon: '🧢', route: '/community/connections' },
   { key: 'cv', label: 'My Scorecard', detail: 'Your profile and cricket CV', icon: '📋', route: '/community/profile' },
 ];

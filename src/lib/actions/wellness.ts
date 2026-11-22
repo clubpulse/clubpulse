@@ -4,26 +4,21 @@ import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
 import { ukToday } from '@/lib/utils/uk-date';
-import { validateReadiness, type ReadinessInput } from '@/lib/wellness/readiness';
+import type { ReadinessInput } from '@/lib/wellness/readiness';
 import { ALL_CHECKLIST_ITEM_IDS } from '@/lib/wellness/content';
 import type { ActionResult } from '@/lib/types/action';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { awardScores, getPrimaryClubId } from '@/lib/scores/context';
-import { cleanRoutine, lastDays, TREND_DAYS, validateRecovery, type ReadinessDay, type RecoveryInput } from '@/lib/wellness/trend';
+import { cleanRoutine, type ReadinessDay } from '@/lib/wellness/trend';
+import {
+  deleteRecoveryFor, friendly, readinessTrendFor, recoveryLogFor, saveReadinessFor, saveRecoveryFor, setShareFor, shareSettingsFor,
+  type RecoveryRow as Recovery, type ShareClub as Share,
+} from '@/lib/wellness/service';
 
 export type WellnessToday = {
   date: string;
   readiness: (Required<Omit<ReadinessInput, 'notes'>> & { notes: string | null }) | null;
   ticks: string[];
 };
-
-const NOT_READY = 'Readiness check-ins are not switched on yet. Please try again soon.';
-
-// A missing table (migration not run yet) must not crash the page.
-function friendly(error: { code?: string; message?: string }): string {
-  if (error.code === '42P01' || /does not exist|schema cache/i.test(error.message ?? '')) return NOT_READY;
-  return 'Something went wrong. Please try again.';
-}
 
 export async function getWellnessToday(): Promise<ActionResult<WellnessToday>> {
   const user = await requireUser();
@@ -40,19 +35,9 @@ export async function getWellnessToday(): Promise<ActionResult<WellnessToday>> {
 
 export async function saveReadiness(input: unknown): Promise<ActionResult<null>> {
   const user = await requireUser();
-  const v = validateReadiness(input);
-  if (!v.ok) return { success: false, error: v.error };
-  const supabase = await createClient();
-  const { error } = await supabase.from('wellness_readiness').upsert(
-    { user_id: user.id, check_date: ukToday(), ...v.value },
-    { onConflict: 'user_id,check_date' },
-  );
-  if (error) return { success: false, error: friendly(error) };
-  // Scores for the day's first check-in; the reference makes a second save the same day pay nothing
-  const clubId = await getPrimaryClubId(user.id);
-  if (clubId) await awardScores(user.id, clubId, 'wellness_readiness', `day:${ukToday()}`).catch(() => undefined);
-  revalidatePath('/wellness');
-  return { success: true, data: null };
+  const r = await saveReadinessFor(user.id, input);
+  if (r.success) revalidatePath('/wellness');
+  return r;
 }
 
 export async function setChecklistTick(itemId: string, ticked: boolean): Promise<ActionResult<null>> {
@@ -72,11 +57,7 @@ export async function setChecklistTick(itemId: string, ticked: boolean): Promise
 
 export async function getReadinessTrend(): Promise<ActionResult<{ days: string[]; rows: ReadinessDay[] }>> {
   const user = await requireUser();
-  const supabase = await createClient();
-  const days = lastDays(ukToday(), TREND_DAYS);
-  const { data, error } = await supabase.from('wellness_readiness').select('check_date, sleep, mood, soreness, stress').eq('user_id', user.id).gte('check_date', days[0]).order('check_date');
-  if (error) return { success: false, error: friendly(error) };
-  return { success: true, data: { days, rows: (data ?? []).map((r) => ({ date: r.check_date as string, sleep: r.sleep as number, mood: r.mood as number, soreness: r.soreness as number, stress: r.stress as number })) } };
+  return readinessTrendFor(user.id);
 }
 
 export async function getMyRoutine(): Promise<ActionResult<{ itemIds: string[]; ticks: string[] }>> {
@@ -101,72 +82,40 @@ export async function saveMyRoutine(ids: unknown): Promise<ActionResult<null>> {
   return { success: true, data: null };
 }
 
-export type RecoveryRow = { id: string; date: string; soreness: number | null; activity: string | null; notes: string | null };
+export type RecoveryRow = Recovery;
 
 export async function getRecoveryLog(): Promise<ActionResult<RecoveryRow[]>> {
   const user = await requireUser();
-  const supabase = await createClient();
-  const { data, error } = await supabase.from('wellness_recovery').select('id, log_date, soreness, activity, notes').eq('user_id', user.id).order('log_date', { ascending: false }).limit(30);
-  if (error) return { success: false, error: friendly(error) };
-  return { success: true, data: (data ?? []).map((r) => ({ id: r.id as string, date: r.log_date as string, soreness: (r.soreness as number | null) ?? null, activity: (r.activity as string | null) ?? null, notes: (r.notes as string | null) ?? null })) };
+  return recoveryLogFor(user.id);
 }
 
 export async function saveRecovery(input: unknown): Promise<ActionResult<null>> {
   const user = await requireUser();
-  const v = validateRecovery(input);
-  if (!v.ok) return { success: false, error: v.error };
-  const value: RecoveryInput = v.value;
-  const supabase = await createClient();
-  const { error } = await supabase.from('wellness_recovery').upsert({ user_id: user.id, log_date: ukToday(), ...value }, { onConflict: 'user_id,log_date' });
-  if (error) return { success: false, error: friendly(error) };
-  revalidatePath('/wellness/recovery');
-  return { success: true, data: null };
+  const r = await saveRecoveryFor(user.id, input);
+  if (r.success) revalidatePath('/wellness/recovery');
+  return r;
 }
 
 export async function deleteRecovery(id: string): Promise<ActionResult<null>> {
   const user = await requireUser();
-  const supabase = await createClient();
-  const { error } = await supabase.from('wellness_recovery').delete().eq('id', id).eq('user_id', user.id);
-  if (error) return { success: false, error: friendly(error) };
-  revalidatePath('/wellness/recovery');
-  return { success: true, data: null };
+  const r = await deleteRecoveryFor(user.id, id);
+  if (r.success) revalidatePath('/wellness/recovery');
+  return r;
 }
 
-export type ShareClub = { clubId: string; name: string; share: boolean; canShare: boolean };
+export type ShareClub = Share;
 
 /** The player's clubs and whether they share readiness averages with each club's coaches. Under-18s cannot share. */
 export async function getShareSettings(): Promise<ActionResult<ShareClub[]>> {
   const user = await requireUser();
-  const supabase = await createClient();
-  const admin = createAdminClient();
-  const { data: members, error } = await admin.from('club_members').select('club_id, is_junior, clubs ( name )').eq('user_id', user.id).eq('is_active', true);
-  if (error) return { success: false, error: 'Something went wrong. Please try again.' };
-  const { data: consent, error: cErr } = await supabase.from('wellness_share_consent').select('club_id, share_readiness').eq('user_id', user.id);
-  if (cErr) return { success: false, error: friendly(cErr) };
-  return {
-    success: true,
-    data: (members ?? []).map((m) => {
-      const club = (Array.isArray(m.clubs) ? m.clubs[0] : m.clubs) as { name: string } | null;
-      return { clubId: m.club_id as string, name: club?.name ?? 'Your club', share: (consent ?? []).some((c) => c.club_id === m.club_id && c.share_readiness === true), canShare: m.is_junior !== true };
-    }),
-  };
+  return shareSettingsFor(user.id);
 }
 
 export async function setShareReadiness(clubId: string, share: boolean): Promise<ActionResult<null>> {
   const user = await requireUser();
-  const settings = await getShareSettings();
-  if (!settings.success) return settings;
-  const club = settings.data.find((c) => c.clubId === clubId);
-  if (!club) return { success: false, error: 'Club not found.' };
-  if (share && !club.canShare) return { success: false, error: 'Sharing is not available for under-18s.' };
-  const supabase = await createClient();
-  const { error } = await supabase.from('wellness_share_consent').upsert(
-    { user_id: user.id, club_id: clubId, share_readiness: share, agreed_at: share ? new Date().toISOString() : null },
-    { onConflict: 'user_id,club_id' },
-  );
-  if (error) return { success: false, error: friendly(error) };
-  revalidatePath('/wellness/settings');
-  return { success: true, data: null };
+  const r = await setShareFor(user.id, clubId, share);
+  if (r.success) revalidatePath('/wellness/settings');
+  return r;
 }
 
 export type TeamReadinessRow = { name: string; checkIns: number; sleep: number; mood: number; soreness: number; stress: number };

@@ -108,6 +108,12 @@ export default function AcademyScreen() {
               )}
             </View>
 
+            {data.tracks.length > 0 && data.tracks.every((t) => t.total > 0 && t.done === t.total) && (
+              <Pressable onPress={() => router.push({ pathname: '/academy-certificate', params: { track: 'graduate' } })} accessibilityRole="button" style={styles.primaryBtn}>
+                <Text style={styles.primaryBtnText}>🎓 Academy Graduate certificate</Text>
+              </Pressable>
+            )}
+
             {/* Tracks */}
             {data.tracks.map((t) => (
               <View key={t.key} style={styles.card}>
@@ -120,6 +126,11 @@ export default function AcademyScreen() {
                   </Text>
                 </View>
                 <Text style={[fonts.small, { marginTop: 4 }]}>{t.blurb}</Text>
+                {t.done === t.total && t.total > 0 && (
+                  <Pressable onPress={() => router.push({ pathname: '/academy-certificate', params: { track: t.key } })} accessibilityRole="button" style={styles.outlineBtn}>
+                    <Text style={styles.outlineBtnText}>🎓 View your certificate</Text>
+                  </Pressable>
+                )}
                 {t.lessons.map((l) => (
                   <Pressable key={l.id} onPress={() => openLesson(l.id)} style={styles.lessonRow}>
                     <Ionicons
