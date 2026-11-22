@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
   const totalScoresEarned = recentTransactions?.reduce((s, t) => s + t.amount, 0) ?? 0;
   const avgScoresPerMember = totalMembers ? Math.round(totalScoresEarned / totalMembers) : 0;
 
-  const prompt = `You are a sports club analyst for ClubPulse. Generate a health score for this grassroots cricket club.
+  const prompt = `You are a sports club analyst for SHIFTUP. Generate a health score for this grassroots cricket club.
 
 Club stats (last 30 days):
 - Total members: ${totalMembers ?? 0}

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ClubPulse",
+    "name": "SHIFTUP",
     "slug": "clubpulse",
     "scheme": "clubpulse",
     "version": "1.0.0",
@@ -19,10 +19,10 @@
       "bundleIdentifier": "com.clubpulse.app",
       "buildNumber": "1",
       "infoPlist": {
-        "NSMotionUsageDescription": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores.",
+        "NSMotionUsageDescription": "SHIFTUP uses your phone's motion sensors to count your daily steps and reward you with Scores.",
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "ClubPulse uses the camera to film your batting or bowling so it can score your technique.",
-        "NSMicrophoneUsageDescription": "ClubPulse uses the microphone only if you record a new video with sound to analyse.",
+        "NSCameraUsageDescription": "SHIFTUP uses the camera to film your batting or bowling so it can score your technique.",
+        "NSMicrophoneUsageDescription": "SHIFTUP uses the microphone only if you record a new video with sound to analyse.",
         "UISupportedInterfaceOrientations~ipad": [
           "UIInterfaceOrientationPortrait",
           "UIInterfaceOrientationPortraitUpsideDown",
@@ -53,7 +53,7 @@
       [
         "expo-sensors",
         {
-          "motionPermission": "ClubPulse uses your phone's motion sensors to count your daily steps and reward you with Scores."
+          "motionPermission": "SHIFTUP uses your phone's motion sensors to count your daily steps and reward you with Scores."
         }
       ],
       [
@@ -66,8 +66,8 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "ClubPulse reads your step count from Apple Health, including steps from your watch or other wearables, so you can earn Scores for staying active.",
-          "NSHealthUpdateUsageDescription": "ClubPulse does not save anything to Apple Health. It only reads your step count.",
+          "NSHealthShareUsageDescription": "SHIFTUP reads your step count from Apple Health, including steps from your watch or other wearables, so you can earn Scores for staying active.",
+          "NSHealthUpdateUsageDescription": "SHIFTUP does not save anything to Apple Health. It only reads your step count.",
           "background": false
         }
       ],

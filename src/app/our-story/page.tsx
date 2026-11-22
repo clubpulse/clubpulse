@@ -5,8 +5,8 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our story — ClubPulse',
-  description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',
+  title: 'Our story — SHIFTUP',
+  description: 'From Grassroots to Greatness. How a Sunday cricket club became the blueprint for grassroots cricket management.',
 };
 
 export default function OurStoryPage() {
@@ -97,7 +97,7 @@ export default function OurStoryPage() {
       <section className="about-hero">
         <p className="section-tag">Our story</p>
         <h1 className="hero-h">Built on a real cricket club,<br />for every cricket club</h1>
-        <p className="hero-sub">ClubPulse started as a solution to the chaos of running a grassroots cricket club. It grew into a platform that every grassroots club deserves.</p>
+        <p className="hero-sub">SHIFTUP started as a solution to the chaos of running a grassroots cricket club. It grew into a platform that every grassroots club deserves.</p>
       </section>
 
       {/* ── Story ── */}
@@ -110,12 +110,12 @@ export default function OurStoryPage() {
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, ClubPulse</cite>
+          <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</cite>
         </div>
 
         <div className="story-block">
           <h2 className="story-h">A real club as the testbed</h2>
-          <p className="story-p">Every feature in ClubPulse was born from a real frustration on the ground. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
+          <p className="story-p">Every feature in SHIFTUP was born from a real frustration on the ground. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
           <p className="story-p">The AI coaching engine came when we realised players were recording sessions anyway, just without any feedback. Scores — our loyalty currency — came when we wanted to reward the players who show up week after week, not just the stars.</p>
         </div>
 
@@ -132,7 +132,7 @@ export default function OurStoryPage() {
           <div className="origin-text">
             <p className="section-tag" style={{ marginBottom: '12px' }}>In development</p>
             <h2>Starting to contact clubs</h2>
-            <p>ClubPulse is in development and is now starting to contact clubs.</p>
+            <p>SHIFTUP is in development and is now starting to contact clubs.</p>
           </div>
           <div className="stat-cluster">
             {[
@@ -152,7 +152,7 @@ export default function OurStoryPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring ClubPulse<br />to your club?</h2>
+        <h2 className="cta-h">Ready to bring SHIFTUP<br />to your club?</h2>
         <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>

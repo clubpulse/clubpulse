@@ -79,7 +79,7 @@ export function ChatWindow({
       }}>
         <div>
           <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '15px', color: '#fff' }}>
-            Your ClubPulse Coach
+            Your SHIFTUP Coach
           </p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
             Personal cricket coaching based on your stats

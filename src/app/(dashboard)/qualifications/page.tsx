@@ -6,7 +6,7 @@ import { QualificationBadge } from '@/components/ecb/QualificationBadge';
 import { LogQualificationForm } from '@/components/ecb/LogQualificationForm';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Courses & Qualifications | ClubPulse' };
+export const metadata = { title: 'Courses & Qualifications | SHIFTUP' };
 
 const heading: React.CSSProperties = {
   fontFamily: "'Bricolage Grotesque', sans-serif",

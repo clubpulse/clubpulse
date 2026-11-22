@@ -10,7 +10,7 @@ export function LegalPage({ title, updated, intro, sections }: { title: string; 
     <div className="min-h-screen bg-[#04091A] text-neutral-200">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-5 py-6">
         <Link href="/" className="text-lg font-bold text-white no-underline">
-          Club<span style={{ color: '#60A5FA' }}>Pulse</span>
+          SHIFT<span style={{ color: '#60A5FA' }}>UP</span>
         </Link>
         <nav className="flex gap-5 text-sm text-neutral-400">
           <Link href="/privacy" className="hover:text-white">Privacy</Link>

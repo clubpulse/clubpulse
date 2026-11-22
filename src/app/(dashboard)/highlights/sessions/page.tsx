@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { Card } from '@/components/ui/Card';
 import { formatSessionDate, type Highlight } from '@/lib/highlights';
 
-export const metadata: Metadata = { title: 'All sessions | ClubPulse' };
+export const metadata: Metadata = { title: 'All sessions | SHIFTUP' };
 
 export default async function HighlightSessionsPage() {
   const user = await getCurrentUser();

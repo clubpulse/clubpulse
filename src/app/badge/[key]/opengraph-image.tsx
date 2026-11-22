@@ -6,13 +6,13 @@ import { badgeDef } from '@/lib/mobile/badges-logic';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'A ClubPulse badge';
+export const alt = 'A SHIFTUP badge';
 
 const GOLD = '#EFC84A';
 
 export default async function Image({ params }: { params: Promise<{ key: string }> }) {
   const def = badgeDef((await params).key);
-  const title = def?.title ?? 'ClubPulse badge';
+  const title = def?.title ?? 'SHIFTUP badge';
 
   return new ImageResponse(
     (

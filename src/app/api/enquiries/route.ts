@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     .insert({ ...parsed.value, user_id: user?.id ?? null, club_id: clubId });
   if (error) return fail('We could not save your message. Please email hello@clubpulse.co instead.', 500);
 
-  // Tell ClubPulse a club is waiting. The enquiry is already saved, so a failed email changes nothing.
+  // Tell SHIFTUP a club is waiting. The enquiry is already saved, so a failed email changes nothing.
   const v = parsed.value;
   await sendEmail({
     to: NOTIFY_TO,

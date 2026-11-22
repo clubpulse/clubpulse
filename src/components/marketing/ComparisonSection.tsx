@@ -1,7 +1,7 @@
 export default function ComparisonSection() {
   type Platform = 'clubpulse' | 'pitchero' | 'teamapp' | 'playcricket';
   const platforms: { id: Platform; name: string; short: string }[] = [
-    { id: 'clubpulse', name: 'ClubPulse', short: 'CP' },
+    { id: 'clubpulse', name: 'SHIFTUP', short: 'CP' },
     { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
     { id: 'teamapp', name: 'TeamApp', short: 'TA' },
     { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
@@ -12,10 +12,10 @@ export default function ComparisonSection() {
   const rows: Row[] = [
     { label: 'Built for cricket only',          cp: '✓', pi: '~', ta: '✕', pc: '✓', note: 'Pitchero covers all sports; TeamApp is generic' },
     { label: 'Live in-app scorecard',            cp: '✓', pi: '✓', ta: '✕', pc: '~', note: 'Play-Cricket is web-only, no native app' },
-    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse-exclusive: Claude-powered insights' },
+    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'SHIFTUP-exclusive: Claude-powered insights' },
     { label: 'Availability & XI selection',      cp: '✓', pi: '✓', ta: '✓', pc: '✕' },
     { label: 'Integrated fee & finance tracking', cp: '✓', pi: '~', ta: '~', pc: '✕', note: 'Others require third-party payment tools' },
-    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse Scores: earn, redeem, retain players' },
+    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'SHIFTUP Scores: earn, redeem, retain players' },
     { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
     { label: 'Free tier to start',               cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
     { label: 'Club plan from £29.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
@@ -39,7 +39,7 @@ export default function ComparisonSection() {
           A generation ahead of the alternatives
         </h2>
         <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: '16px', marginBottom: '48px', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
-          ClubPulse was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
+          SHIFTUP was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
         </p>
 
         <div style={{ overflowX: 'auto', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>

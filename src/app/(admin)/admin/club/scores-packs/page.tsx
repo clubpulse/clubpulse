@@ -32,7 +32,7 @@ export default async function ScoresPacksPage() {
       </div>
 
       <ClubPlanCard title="Club pool" current={`${poolBalance.toLocaleString('en-GB')} Scores`}>
-        Scores for your club are arranged as part of your agreement with ClubPulse, not bought here. If you would like more Scores
+        Scores for your club are arranged as part of your agreement with SHIFTUP, not bought here. If you would like more Scores
         for your members, or a different way of funding them, tell us and we will sort it out with you.
       </ClubPlanCard>
     </div>

@@ -140,7 +140,7 @@ export default function AICoachPage() {
         <section className="ai-hero">
           <div>
             <p className="ai-eyebrow">🎯 AI Coach</p>
-            <div className="ai-road-tag">✓ In the ClubPulse app</div>
+            <div className="ai-road-tag">✓ In the SHIFTUP app</div>
             <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">Pose analysis on your phone.</span></h1>
             <p className="ai-sub">MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
             <div className="ai-btns">
@@ -207,13 +207,13 @@ export default function AICoachPage() {
           <div className="ai-section">
             <p className="ai-section-eyebrow">How it works</p>
             <h2 className="ai-section-h2">Pose tracking. On your phone. In real time.</h2>
-            <p className="ai-section-sub">MediaPipe is the same technology used in Google&apos;s fitness and AR apps — ClubPulse brings it to grassroots cricket coaching for the first time.</p>
+            <p className="ai-section-sub">MediaPipe is the same technology used in Google&apos;s fitness and AR apps — SHIFTUP brings it to grassroots cricket coaching for the first time.</p>
             <div className="ai-steps">
               <div className="ai-step">
                 <p className="ai-step-n">01</p>
                 <div className="ai-step-icon"><Glyph e="📱" /></div>
                 <h3 className="ai-step-h">Open AI Coach</h3>
-                <p className="ai-step-body">Open the AI Coach screen in the ClubPulse app. Point your phone camera at the batter or bowler — or prop it up against a bag at the nets.</p>
+                <p className="ai-step-body">Open the AI Coach screen in the SHIFTUP app. Point your phone camera at the batter or bowler — or prop it up against a bag at the nets.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">02</p>
@@ -248,7 +248,7 @@ export default function AICoachPage() {
                 <span className="ai-privacy-icon"><Glyph e="🔒" /></span>
                 <div>
                   <div className="ai-privacy-h">Pose analysis runs on your phone.</div>
-                  <p className="ai-privacy-body">Body-pose tracking happens on your device. Ball tracking and session reports are processed on our servers, so some session data is sent to ClubPulse. See our privacy policy for how it is stored and used.</p>
+                  <p className="ai-privacy-body">Body-pose tracking happens on your device. Ball tracking and session reports are processed on our servers, so some session data is sent to SHIFTUP. See our privacy policy for how it is stored and used.</p>
                 </div>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function AICoachPage() {
           <h2 className="ai-section-h2">Common questions about AI Coach.</h2>
           <div className="ai-faq-list">
             {[
-              ['Where do I find AI Coach?', 'In the ClubPulse app. Open the AI Coach screen, choose batting or bowling, and film a shot or a delivery. The analysis runs on your phone.'],
+              ['Where do I find AI Coach?', 'In the SHIFTUP app. Open the AI Coach screen, choose batting or bowling, and film a shot or a delivery. The analysis runs on your phone.'],
               ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose runs on-device, so a reasonably recent phone gives the smoothest results.'],
               ['Can it be used without an internet connection?', 'Pose tracking runs on your phone, but ball tracking and session reports need a connection, so AI Coach is not fully offline.'],
               ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],

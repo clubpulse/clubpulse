@@ -17,8 +17,8 @@ const syne = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://clubpulse.co"),
-  title: "ClubPulse",
-  description: "The ClubPulse platform",
+  title: "SHIFTUP",
+  description: "From Grassroots to Greatness.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

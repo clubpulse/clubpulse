@@ -150,7 +150,7 @@ export function ScratchCardPlayer({ clubId, config, unscratched, walletBalance }
         }}>
           <div>
             <p style={{ margin: 0, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,0.4)' }}>
-              ClubPulse
+              SHIFTUP
             </p>
             <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '16px', color: '#fff' }}>
               Scratch Card

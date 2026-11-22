@@ -92,7 +92,7 @@ export function SignUpForm() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-neutral-400">How will you use ClubPulse? Select all that apply.</p>
+      <p className="text-sm text-neutral-400">How will you use SHIFTUP? Select all that apply.</p>
       <div className="space-y-2">
         {ROLES.map((r) => {
           const selected = roles.includes(r.value);

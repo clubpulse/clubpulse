@@ -58,7 +58,7 @@ export async function DashboardShell({ user, children }: { user: User; children:
     ? profile.data.display_name || profile.data.full_name
     : user.email?.split('@')[0] ?? 'Player';
   const balance = totalBalance(wallet.success ? wallet.data : null);
-  // ClubPulse staff see both sides. A club admin sees the club tools, and the player side only if
+  // SHIFTUP staff see both sides. A club admin sees the club tools, and the player side only if
   // they also hold the Player role.
   const audience = isPlatformAdmin ? asStaff(baseAudience) : adminCtx.adminClubIds.length > 0 ? asAdmin(baseAudience) : baseAudience;
 

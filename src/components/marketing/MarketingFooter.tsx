@@ -51,8 +51,8 @@ export default function MarketingFooter() {
       <div className="mk-foot-inner">
         <div className="mk-foot-cols">
           <div className="mk-foot-col-brand">
-            <Link href="/" className="mk-foot-brand">Club<span>Pulse</span></Link>
-            <p className="mk-foot-tag">Runs a cricket club&apos;s Saturday, and gives every player four pillars to grow with.</p>
+            <Link href="/" className="mk-foot-brand">SHIFT<span>UP</span></Link>
+            <p className="mk-foot-tag">From Grassroots to Greatness.</p>
           </div>
           {GROUPS.map((g) => (
             <div key={g.title}>
@@ -65,7 +65,7 @@ export default function MarketingFooter() {
             </div>
           ))}
         </div>
-        <p className="mk-foot-copy">© 2026 ClubPulse.</p>
+        <p className="mk-foot-copy">© 2026 SHIFTUP.</p>
       </div>
     </footer>
   );

@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const sport = profile?.sport ?? 'cricket';
 
-  const prompt = `You are a ClubPulse rewards coach. Generate personalised Scores-earning nudges for a ${sport} player.
+  const prompt = `You are a SHIFTUP rewards coach. Generate personalised Scores-earning nudges for a ${sport} player.
 
 What they've done in the last 7 days:
 - Logged performance: ${hasLogged}
@@ -72,7 +72,7 @@ Generate 2-3 nudges for things they HAVEN'T done recently. Return JSON:
 Available earning paths and typical Scores:
 - Log a performance session: 25-100 Scores (href: /companion)
 - Volunteer for club event: 50-150 Scores (href: /admin/club/volunteers)
-- Refer a friend to ClubPulse: 200 Scores (href: /profile)
+- Refer a friend to SHIFTUP: 200 Scores (href: /profile)
 - Sync daily steps: 5-20 Scores/day (href: /profile)
 - Complete onboarding: 50 Scores (href: /profile/edit)
 
@@ -123,7 +123,7 @@ Only suggest paths they haven't used recently. Keep it motivating and specific.`
       id: 'refer_friend',
       emoji: '👥',
       title: 'Refer a teammate',
-      description: 'Invite a friend to ClubPulse and earn 200 Scores when they join.',
+      description: 'Invite a friend to SHIFTUP and earn 200 Scores when they join.',
       scoresPotential: 200,
       href: '/profile',
       cta: 'Share invite link',

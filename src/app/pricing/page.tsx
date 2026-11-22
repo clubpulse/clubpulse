@@ -61,10 +61,10 @@ const PLAYER_SECTIONS: Section[] = [
     rows: [
       { label: 'Video uploads', desc: 'Upload batting or bowling footage — full nets sessions, match clips, any length', free: '7 lifetime', pro: 'Unlimited', elite: 'Unlimited', legend: 'Unlimited' },
       { label: 'Max file size per video', desc: 'Supports high-quality recordings from any device', free: '250 MB', pro: '750 MB', elite: '2 GB', legend: '4 GB' },
-      { label: 'Total monthly storage', desc: 'Your personal video library on ClubPulse', free: '2 GB', pro: '10 GB', elite: '30 GB', legend: '100 GB' },
+      { label: 'Total monthly storage', desc: 'Your personal video library on SHIFTUP', free: '2 GB', pro: '10 GB', elite: '30 GB', legend: '100 GB' },
       { label: 'AI feedback detail', desc: 'Depth of technical analysis returned from your video', free: 'Basic highlights', pro: 'Standard breakdown', elite: 'Detailed technical report', legend: 'Full frame-by-frame analysis' },
       { label: 'Drill recommendations from video', desc: 'Actionable practice drills generated directly from your footage', free: '✕', pro: '1 per video', elite: '3 per video', legend: 'Unlimited' },
-      { label: 'Video history retained', desc: 'How long your uploaded videos are stored on ClubPulse', free: '7 days', pro: '1 month', elite: '6 months', legend: 'Unlimited' },
+      { label: 'Video history retained', desc: 'How long your uploaded videos are stored on SHIFTUP', free: '7 days', pro: '1 month', elite: '6 months', legend: 'Unlimited' },
       { label: 'Download your video back', desc: 'Save your footage back to your device at any time', free: '✕', pro: '✕', elite: '✓', legend: '✓' },
     ],
   },
@@ -88,7 +88,7 @@ const PLAYER_SECTIONS: Section[] = [
     title: 'Legend Only',
     rows: [
       { label: 'vs club & regional avg comparison', desc: 'See how your stats stack up beyond your own club — across the region', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
-      { label: 'Early feature access', desc: 'Try new ClubPulse features before they launch to everyone else', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
+      { label: 'Early feature access', desc: 'Try new SHIFTUP features before they launch to everyone else', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Legend badge & profile flair', desc: 'Exclusive profile distinction that sets you apart on the leaderboard', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Direct support line', desc: 'Priority human support — not just chat, a real response within hours', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Scores — Platinum (4×)', desc: 'The maximum points multiplier — every contribution counts more', free: '✕', pro: '✕', elite: '✕', legend: '✓' },

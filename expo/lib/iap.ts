@@ -155,7 +155,7 @@ export const AWIN_CATEGORY_CONFIG: Record<AwinCategory, { label: string; icon: s
 
 /**
  * Example Awin deals — in production these come from the API / Supabase.
- * ClubPulse signs up as an Awin publisher and rotates deals monthly.
+ * SHIFTUP signs up as an Awin publisher and rotates deals monthly.
  */
 export const SAMPLE_AWIN_DEALS: AwinDeal[] = [
   // Sports Apparel
@@ -613,7 +613,7 @@ export function getUpsell(trigger: UpsellTrigger, context?: { streakDays?: numbe
       };
     case 'free_hit':
       return {
-        trigger, title: 'Welcome to ClubPulse! 🏏',
+        trigger, title: 'Welcome to SHIFTUP! 🏏',
         message: "Here's your free Net Session scratch card — scratch to win discounts and more.",
         ctaLabel: 'Scratch Your Free Card', ctaProduct: 'net_session_card',
       };

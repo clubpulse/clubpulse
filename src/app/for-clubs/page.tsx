@@ -5,8 +5,8 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
 export const metadata: Metadata = {
-  title: 'For clubs | ClubPulse',
-  description: 'Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
+  title: 'For clubs | SHIFTUP',
+  description: 'From Grassroots to Greatness. Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
 };
 
 const SATURDAY = [
@@ -75,7 +75,7 @@ export default function ForClubsPage() {
         <section className="fc-sec">
           <p className="fc-eyebrow">Match Day</p>
           <h2 className="fc-h2">The Saturday flow.</h2>
-          <p className="fc-sub">Four steps for Saturday. ClubPulse is in development and is now starting to contact clubs.</p>
+          <p className="fc-sub">Four steps for Saturday. SHIFTUP is in development and is now starting to contact clubs.</p>
           <div className="fc-grid fc-grid-4">
             {SATURDAY.map((s) => (
               <div key={s.n} className="fc-card">
@@ -115,7 +115,7 @@ export default function ForClubsPage() {
 
         <div className="fc-cta">
           <h2>Tell us about your club.</h2>
-          <p>We set ClubPulse up with you. Club plans start from £29.99 a month and cover the whole club.</p>
+          <p>We set SHIFTUP up with you. Club plans start from £29.99 a month and cover the whole club.</p>
           <Link href="/contact">Get in touch →</Link>
         </div>
       </main>

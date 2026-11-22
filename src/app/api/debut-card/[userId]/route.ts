@@ -106,8 +106,8 @@ export async function GET(
   <!-- Bottom divider -->
   <line x1="24" y1="475" x2="376" y2="475" stroke="#f59e0b" stroke-width="0.5" opacity="0.3"/>
 
-  <!-- ClubPulse branding -->
-  <text x="200" y="505" font-family="'Arial Black', Arial, sans-serif" font-size="16" font-weight="900" fill="#f59e0b" text-anchor="middle" letter-spacing="1">ClubPulse</text>
+  <!-- SHIFTUP branding -->
+  <text x="200" y="505" font-family="'Arial Black', Arial, sans-serif" font-size="16" font-weight="900" fill="#f59e0b" text-anchor="middle" letter-spacing="1">SHIFTUP</text>
   <text x="200" y="525" font-family="Arial, sans-serif" font-size="10" fill="#6ee7b7" text-anchor="middle" opacity="0.6" letter-spacing="2">GRASSROOTS CRICKET</text>
 </svg>`;
 

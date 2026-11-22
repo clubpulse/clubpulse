@@ -224,7 +224,7 @@ export default function OppositionIntelPage() {
                   style={{ width: '100%', padding: '11px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                 />
                 <p style={{ margin: '5px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
-                  Find this on play-cricket.com in the club's URL. Without it, ClubPulse generates a general tactical briefing.
+                  Find this on play-cricket.com in the club's URL. Without it, SHIFTUP generates a general tactical briefing.
                 </p>
               </div>
               <div>

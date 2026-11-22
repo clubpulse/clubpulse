@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     scores_balance:    wallet?.scores_balance    ?? 0,
     lifetime_received: wallet?.lifetime_received ?? 0,
     pending_cashout:   wallet?.pending_cashout   ?? 0,
-    // GBP equivalent at the cashout rate (face value less the ClubPulse margin)
+    // GBP equivalent at the cashout rate (face value less the SHIFTUP margin)
     available_gbp_pence: cashoutPence(wallet?.scores_balance ?? 0),
   });
 }

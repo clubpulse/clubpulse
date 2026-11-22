@@ -108,7 +108,7 @@ export function RoleDashboard({ role, firstName, data, error, onRetry, onSwitch,
             <Text style={fonts.title}>This page is not open to you yet</Text>
             <Text style={[fonts.small, { marginTop: 6, lineHeight: 19 }]}>
               {role === 'admin'
-                ? 'It is for the people who run a club on ClubPulse. If that should be you, ask your club to make you an admin.'
+                ? 'It is for the people who run a club on SHIFTUP. If that should be you, ask your club to make you an admin.'
                 : `It is for members with the ${page.title.toLowerCase()} role. You can ask to add it from your profile, and your club will confirm it.`}
             </Text>
             <Pressable onPress={() => router.push('/(tabs)/profile')} accessibilityRole="button"><Text style={[styles.link, { color: page.from }]}>Go to my profile</Text></Pressable>

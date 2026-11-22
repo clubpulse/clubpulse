@@ -91,7 +91,7 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
   }, [slide, stats.clubPulseScore]);
 
   async function handleShare() {
-    const text = `My ${stats.year} cricket season on ClubPulse: ${stats.runs} runs, ${stats.wickets} wickets in ${stats.matches} matches. ClubPulse Score: ${stats.clubPulseScore}. "${superlative.title}" 🏏`;
+    const text = `My ${stats.year} cricket season on SHIFTUP: ${stats.runs} runs, ${stats.wickets} wickets in ${stats.matches} matches. SHIFTUP Score: ${stats.clubPulseScore}. "${superlative.title}" 🏏`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -154,7 +154,7 @@ export function SeasonWrapClient({ stats }: { stats: SeasonStats }) {
 
     /* 5 — score + share */
     <div key="score" className="sw-slide">
-      <p style={{ fontSize: '13px', letterSpacing: '4px', color: '#6ee7b7', textTransform: 'uppercase', marginBottom: '16px' }}>Your ClubPulse score</p>
+      <p style={{ fontSize: '13px', letterSpacing: '4px', color: '#6ee7b7', textTransform: 'uppercase', marginBottom: '16px' }}>Your SHIFTUP score</p>
       <div className="sw-gold-pulse" style={{ ...BIG, color: '#f59e0b', fontSize: 'clamp(80px, 20vw, 130px)' }}>{scoreDisplay}</div>
       <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginTop: '24px', maxWidth: '280px', lineHeight: 1.5 }}>Every match played, every contribution made — it all counts.</p>
       <button

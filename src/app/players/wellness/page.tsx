@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PillarPage from '@/components/marketing/PillarPage';
 
 export const metadata: Metadata = {
-  title: 'Wellness | ClubPulse',
+  title: 'Wellness | SHIFTUP',
   description: 'Private check-ins, match mood, an injury log and match-day preparation for cricketers.',
 };
 
@@ -30,7 +30,7 @@ export default function WellnessPage() {
         {
           status: 'app',
           items: [
-            { h: 'Breathing circle and timer', body: 'Guided breathing with an animated circle and timer in the ClubPulse app. The website has the same exercises as written steps.' },
+            { h: 'Breathing circle and timer', body: 'Guided breathing with an animated circle and timer in the SHIFTUP app. The website has the same exercises as written steps.' },
           ],
         },
       ]}

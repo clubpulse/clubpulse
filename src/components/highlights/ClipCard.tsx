@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { HighlightClip } from '@/lib/highlights';
 
 const CRIMSON = '#1D4ED8';
-const SHARE_TITLE = 'My ClubPulse highlight';
+const SHARE_TITLE = 'My SHIFTUP highlight';
 
 type Platform = 'Instagram' | 'TikTok';
 

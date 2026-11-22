@@ -5,8 +5,8 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { CATEGORIES } from '@/lib/marketing/feature-categories';
 
 export const metadata: Metadata = {
-  title: 'Features | ClubPulse',
-  description: 'ClubPulse features for players and for clubs.',
+  title: 'Features | SHIFTUP',
+  description: 'From Grassroots to Greatness. SHIFTUP features for players and for clubs.',
 };
 
 const PLAYER_PAGES: Partial<Record<string, string>> = { coach: '/players/analysis', community: '/players/community', wellness: '/players/wellness', academy: '/players/academy' };
