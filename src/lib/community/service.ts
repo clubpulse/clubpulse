@@ -3,6 +3,8 @@
 // about who may see and message whom are applied in this file and in rules.ts.
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { awardScores } from '@/lib/scores/context';
+import { ukToday } from '@/lib/utils/uk-date';
 import { checkContent } from './moderation';
 import {
   LOOKING_FOR, MAX_COMMENT, MAX_MESSAGE, MAX_POST, NEAR_MILES, mayMessage, milesBetween, roughDistance, shownName,
@@ -157,6 +159,8 @@ export async function createPost(userId: string, body: unknown): Promise<Result<
     status: check.status, held_reason: check.status === 'held' ? check.tell : null,
   });
   if (error) return no('Could not save your post.');
+  // Scores only for a post that went live, once a day. A held post pays nothing.
+  if (check.status === 'live' && viewer.club) await awardScores(userId, viewer.club.id, 'community_post', `day:${ukToday()}`).catch(() => undefined);
   return ok({ status: check.status, tell: check.status === 'held' ? check.tell : null });
 }
 

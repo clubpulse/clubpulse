@@ -18,6 +18,7 @@ import { getAudience } from '@/lib/nav/audience';
 import { asAdmin, playsCricket } from '@/lib/nav/menu';
 import { getAdminClubIds } from '@/lib/mobile/club-data';
 import { PILLARS, pillarCounts } from '@/lib/nav/pillars';
+import { getPillarFacts } from '@/lib/nav/pillar-facts';
 import { MagicCard } from '@/components/magic/MagicCard';
 
 const SYNE = "'Bricolage Grotesque', sans-serif";
@@ -50,6 +51,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   // The player side of Home (next match, the pillars, Scores activity). A club admin who is not
   // also a player gets the club side only.
   const playerSide = playsCricket(audience);
+  // One live fact per pillar, only on the player side of Home
+  const facts = playerSide ? await getPillarFacts(user.id).catch(() => null) : null;
 
   const name = profile.success
     ? (profile.data.display_name || profile.data.full_name || 'You').split(' ')[0]
@@ -86,7 +89,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <MagicCard key={p.key} href={p.href} tint={p.from} index={i} style={{ padding: '18px', '--mg-from': p.from, '--mg-to': p.to } as CSSProperties}>
             <span aria-hidden style={{ fontSize: '26px', lineHeight: 1 }}><Glyph e={p.icon} /></span>
             <p className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', letterSpacing: '-0.02em', margin: '10px 0 4px' }}>{p.title}</p>
-            <p style={{ ...hint, margin: 0 }}>{p.short}</p>
+            <p style={{ ...hint, margin: 0 }}>{facts?.[p.key] ?? p.short}</p>
             <p style={{ fontSize: '12px', fontWeight: 700, color: p.from, margin: '10px 0 0' }}>
               {counts[p.key] > 0 ? `${counts[p.key]} ${counts[p.key] === 1 ? 'page' : 'pages'}` : 'On the way'}
             </p>

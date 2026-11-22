@@ -30,19 +30,19 @@ export const PILLARS: Pillar[] = [
     key: 'community', href: '/community', title: 'Community', icon: '🤝', from: '#60A5FA', to: '#93C5FD',
     tagline: 'Your club, and the people you play with.',
     short: 'Your club and the game around you',
-    soon: ['The social network: feeds, connections, and finding players, clubs and games nearby', 'Club against club leaderboards'],
+    soon: ['The wider network (feed, connections, nets and games near you) is built and opens once final safety checks are complete', 'Club against club leaderboards'],
   },
   {
     key: 'wellness', href: '/wellness', title: 'Wellness', icon: '🧡', from: '#F472B6', to: '#F9A8D4',
     tagline: 'Your mindset, getting ready and being mentally prepared to play.',
     short: 'Mindset and mental readiness',
-    soon: ['Readiness trends over time', 'Mental-skills routines on the web (in the app today)', 'Support for a bad run of form'],
+    soon: ['Support for a bad run of form', 'Animated breathing circle on the web (in the app today)'],
   },
   {
     key: 'academy', href: '/academy', title: 'Academy', icon: '📚', from: '#2DD4BF', to: '#5EEAD4',
     tagline: 'Learn the game: its Laws, its tactics and its skills.',
     short: 'Learn the Laws, tactics and skills',
-    soon: ['Lessons on the web (in the app today)', 'Courses with a ClubPulse certificate when you finish'],
+    soon: ['Courses written by your own club’s coaches'],
   },
 ];
 

@@ -582,7 +582,7 @@ const DEMOS: Record<CategoryId, React.ReactNode> = {
   rewards:     <RewardsDemo />,
   coach: <ListDemo items={COACH_ITEMS} />,
   hub: <ListDemo items={HUB_ITEMS} />,
-  wellness: <ListDemo items={WELLNESS_ITEMS} note="What you do in the app's wellness routines stays on your phone. ClubPulse only learns that a session was done, so it can count towards Run Chase." />,
+  wellness: <ListDemo items={WELLNESS_ITEMS} note="Readiness check-ins, recovery notes and routines are private to you. Coaches see only averages you choose to share, never notes. In the app, what you do in a breathing session stays on your phone." />,
   academy: <ListDemo items={ACADEMY_ITEMS} />,
 };
 
