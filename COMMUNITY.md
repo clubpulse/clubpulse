@@ -72,3 +72,17 @@ Off by default and separate from `COMMUNITY_ENABLED`. It needs `COMMUNITY_CROSSB
 - **A parent must be an adult.** Registering a child (web or app) and verifying a parent both need the parent's account to have a real date of birth showing 18 or over, and not be marked a junior by the club on every membership. No date of birth is a refusal. This is declared age: it stops a junior or an account with no date of birth being a parent, not someone who lies about their age. Parent oversight, and acting for a child, also need the link to be verified by a club.
 - **Posts, comments and messages record when their text was last edited** (`updated_at`, set by a trigger only when `body` changes, migration `20261122000023`). Nothing in the app edits them today; this is for scans that look for edited content.
 - **A named safeguarding lead owns the review queue.** The software cannot hold that role. Until one is appointed it is the founder. Suggested: urgent items within an hour, everything else within 24 hours; club concerns to the club welfare officer then the ECB safeguarding team; concerns about an adult who works with children to the LADO; a child in immediate danger to the police; sexual images of children to the Internet Watch Foundation; grooming to CEOP.
+
+## Safeguarding alerts
+
+When a report is filed or the safety check holds a post, comment, message, session or game, the active safeguarding **lead** and **deputy** are emailed straight away (and sent an Expo push if their account has a token). The message gives the item type, whether it involves a junior, the reason and a link to `/admin/community/reports`. It never contains the reported content, and for a junior item it leaves out what the reporter wrote.
+
+- Tables (service role only, no client policies): `safeguarding_contacts`, `safeguarding_alerts`, `safeguarding_alert_deliveries` (migration 025). One event is one alert; each recipient gets one email and, if they have a token, one push. Every delivery has `status`, `attempts` and `sent_at`.
+- Failures are retried after 1, 2, 4, 8 then 15 minutes, up to 10 attempts. Retries run when any alert is raised, when the moderation queue is opened, and from `GET /api/cron/safeguarding-alerts` with `Authorization: Bearer $CRON_SECRET`. **Something must call that URL every minute** (Vercel cron on a plan that allows it, or any pinger) for retries to happen with nobody in the queue. Nothing is scheduled by this change.
+- The queue shows a red banner when no contact is configured and an amber one when deliveries have failed.
+- Set the contacts once, in the SQL editor (email is required for email, `user_id` for push):
+
+```sql
+INSERT INTO public.safeguarding_contacts (role, name, email, user_id)
+VALUES ('lead', 'Ishwar Suresh', 'LEAD_EMAIL', NULL);   -- then the deputy: role 'deputy'
+```
