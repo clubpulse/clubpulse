@@ -6,9 +6,9 @@ import { safeRedirect } from '@/lib/utils/redirect';
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirectTo?: string; error?: string; detail?: string }>;
+  searchParams: Promise<{ redirectTo?: string; error?: string; detail?: string; confirmed?: string }>;
 }) {
-  const { redirectTo, error, detail } = await searchParams;
+  const { redirectTo, error, detail, confirmed } = await searchParams;
 
   return (
     <AuthShell
@@ -20,6 +20,11 @@ export default async function SignInPage({
         </>
       }
     >
+      {confirmed === '1' && !error && (
+        <p className="mb-4 rounded-lg border border-emerald-900 bg-emerald-950/50 px-3 py-2 text-sm text-emerald-300">
+          Your email is confirmed. Please sign in with your email and password to carry on.
+        </p>
+      )}
       {error && (
         <p className="mb-4 rounded-lg border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">
           That link is invalid or has expired. Please sign in or request a new one.

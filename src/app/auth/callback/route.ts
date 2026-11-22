@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { ensureProfileAndRoles } from "@/lib/auth/onboarding";
+import { ensureProfileAndRoles, isMissingVerifier } from "@/lib/auth/onboarding";
 import { safeRedirect } from "@/lib/utils/redirect";
 
 // Handles OAuth / PKCE (?code=) and email links (?token_hash=&type=).
@@ -14,6 +14,9 @@ export async function GET(request: Request) {
 
   const failure = (detail: string) => {
     console.error("[auth/callback] verification failed:", detail);
+    // The link was opened in a different browser from the one that signed up, so the PKCE code verifier is not
+    // here. Supabase has already confirmed the email by this point: say so, and let them sign in with their password.
+    if (isMissingVerifier(detail)) return NextResponse.redirect(`${origin}/auth/sign-in?confirmed=1`);
     return NextResponse.redirect(
       `${origin}/auth/sign-in?error=auth-code-error&detail=${encodeURIComponent(detail)}`
     );
@@ -40,6 +43,9 @@ export async function GET(request: Request) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (user) await ensureProfileAndRoles(user);
+  if (user) {
+    try { await ensureProfileAndRoles(user); }
+    catch (e) { console.error("[auth/callback] could not create the profile:", e instanceof Error ? e.message : e); }
+  }
   return NextResponse.redirect(`${origin}${target}`);
 }
