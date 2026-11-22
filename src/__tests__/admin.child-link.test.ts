@@ -7,14 +7,14 @@ jest.mock('@/lib/supabase/admin', () => ({
     from: (table: string) => {
       const ops: Op[] = [];
       const c: Record<string, unknown> = {};
-      for (const m of ['select', 'eq', 'neq', 'ilike', 'limit', 'maybeSingle']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
+      for (const m of ['select', 'eq', 'neq', 'in', 'ilike', 'limit', 'maybeSingle']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
       c.update = (...a: unknown[]) => { writes.push({ table, op: 'update', args: a }); ops.push(['update']); return c; };
       c.then = (res: (v: unknown) => unknown) => { const rows = (db[table] ?? (() => []))(ops); res({ data: ops.some((o) => o[0] === 'maybeSingle') ? rows[0] ?? null : rows, error: null }); };
       return c;
     },
   }),
 }));
-import { linkChildToAccount, unlinkChildAccount } from '@/lib/admin/child-link';
+import { clubsWithCurrentDbs, linkChildToAccount, unlinkChildAccount } from '@/lib/admin/child-link';
 
 const kid = { id: 'k1', club_id: 'c1', first_name: 'Kit', date_of_birth: '2013-05-01', linked_user_id: null };
 const world = (o: { child?: Record<string, unknown> | null; profile?: boolean; member?: boolean; taken?: boolean } = {}) => {
@@ -76,5 +76,23 @@ describe('unlinkChildAccount', () => {
     writes.length = 0;
     expect((await unlinkChildAccount(['nope'], 'k1')).success).toBe(false);
     expect(writes).toHaveLength(0);
+  });
+});
+
+describe('clubsWithCurrentDbs', () => {
+  const dbs = (rows: Array<Record<string, unknown>>) => { db = { dbs_checks: () => rows }; };
+  it('keeps only the clubs where the admin holds a current enhanced check', async () => {
+    dbs([
+      { club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: '2099-01-01' },
+      { club_id: 'c2', check_type: 'enhanced', status: 'valid', expiry_date: '2020-01-01' },
+      { club_id: 'c3', check_type: 'basic', status: 'valid', expiry_date: '2099-01-01' },
+      { club_id: 'c4', check_type: 'enhanced', status: 'pending', expiry_date: '2099-01-01' },
+    ]);
+    expect(await clubsWithCurrentDbs('u', ['c1', 'c2', 'c3', 'c4', 'c5'])).toEqual(['c1']);
+  });
+  it('is empty with no clubs or no checks', async () => {
+    dbs([]);
+    expect(await clubsWithCurrentDbs('u', ['c1'])).toEqual([]);
+    expect(await clubsWithCurrentDbs('u', [])).toEqual([]);
   });
 });

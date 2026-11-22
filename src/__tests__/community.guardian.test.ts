@@ -206,12 +206,23 @@ describe('private messages across the age line', () => {
     thread([req('pending_junior')]);
     expect((await sendMessage(ADULT, 'conn1', 'hello')).success).toBe(false);
   });
+  it('stay off for under-18s whatever the contact says, until COMMUNITY_JUNIOR_DMS is true', async () => {
+    thread([req('active')]);
+    delete process.env.COMMUNITY_JUNIOR_DMS;
+    const read = await getMessages(KID, 'conn1');
+    expect(read).toEqual({ success: false, error: 'Private messages are not available for under-18s yet.' });
+    expect((await sendMessage(KID, 'conn1', 'hi')).success).toBe(false);
+    expect((await sendMessage(ADULT, 'conn1', 'hello')).success).toBe(false);
+    expect(wrote('community_messages', 'insert')).toHaveLength(0);
+  });
   it('work once the contact is active, and stop when the flag is off', async () => {
+    process.env.COMMUNITY_JUNIOR_DMS = 'true';
     thread([req('active')]);
     expect((await getMessages(KID, 'conn1')).success).toBe(true);
     expect((await sendMessage(ADULT, 'conn1', 'See you at nets')).success).toBe(true);
     expect(wrote('community_messages', 'insert')).toHaveLength(1);
     delete process.env.COMMUNITY_CROSSBAND_ENABLED;
     expect((await getMessages(KID, 'conn1')).success).toBe(false);
+    delete process.env.COMMUNITY_JUNIOR_DMS;
   });
 });

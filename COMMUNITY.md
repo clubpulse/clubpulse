@@ -60,3 +60,9 @@ Off by default and separate from `COMMUNITY_ENABLED`. It needs `COMMUNITY_CROSSB
 - A parent's "no" blocks the same adult from asking again for 90 days. An adult can have at most 5 requests waiting on a parent.
 - Every step is recorded in `community_guardian_events`.
 - To switch it off: remove the variable and redeploy. Existing contacts stop working at once.
+
+## Safeguarding controls
+- **Private messages are off for under-18s.** Nothing private is read or sent to or from a junior, whatever the connection or parent-approved contact says, until `COMMUNITY_JUNIOR_DMS=true` is set. Do not set it until messages are checked as they are sent and the safeguarding lead agrees. This is a new variable; it is unset by default, so nothing needs changing for it to stay off.
+- **Linking a child to an account needs a current enhanced DBS check.** Only a club admin with a valid, unexpired enhanced check recorded at that club (`dbs_checks`) can link a child record to an account, because linking is what makes an account a junior. Any club admin can unlink, which only makes things safer. Named safeguarding training as an alternative to a DBS check is not built.
+- **Report a concern** is on every post, comment, profile and private message, with a "call 999 if a child is in immediate danger" prompt, and a note at the foot of every Community page. Reports land in the review queue at `/admin/community/reports`. Sessions and games cannot be reported yet.
+- **A named safeguarding lead owns the review queue.** The software cannot hold that role. Until one is appointed it is the founder. Suggested: urgent items within an hour, everything else within 24 hours; club concerns to the club welfare officer then the ECB safeguarding team; concerns about an adult who works with children to the LADO; a child in immediate danger to the police; sexual images of children to the Internet Watch Foundation; grooming to CEOP.
