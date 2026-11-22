@@ -110,7 +110,7 @@ export default function OurStoryPage() {
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Co-Founder, ClubPulse</cite>
+          <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, ClubPulse</cite>
         </div>
 
         <div className="story-block">

@@ -772,7 +772,7 @@ export default function HomePage() {
                   {phoneTab === 'dash' && (
                     <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
                       <div>
-                        <p className="cp-sc-greeting">Good morning, Ishwar 👋</p>
+                        <p className="cp-sc-greeting">Good morning 👋</p>
                         <p className="cp-sc-sub">Your Club · 2026 Season</p>
                       </div>
                       <div className="cp-score-card">
@@ -940,7 +940,7 @@ export default function HomePage() {
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
             <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Co-Founder, ClubPulse</p>
+            <p className="cp-quote-attr">— Harinarayanan J and Ishwar Suresh, Co-Founders, ClubPulse</p>
           </div>
         </section>
 
