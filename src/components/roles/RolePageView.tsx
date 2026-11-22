@@ -163,7 +163,7 @@ export function RoleNotHeld({ page }: { page: RolePage }) {
       <h1 className="mg-shine" style={{ fontFamily: SYNE, fontWeight: 800, fontSize: 'clamp(34px, 6vw, 56px)', letterSpacing: '-0.03em', margin: '14px 0 10px' }}>{page.title}</h1>
       <p style={{ margin: '0 auto', maxWidth: '460px', fontSize: '15px', lineHeight: 1.6, color: 'rgba(255,255,255,0.7)' }}>
         {page.role === 'admin'
-          ? 'This page is for the people who run a club on SHIFTUP. If that should be you, ask your club to make you an admin.'
+          ? 'This page is for the people who run a club on ShiftUp. If that should be you, ask your club to make you an admin.'
           : `This page is for members with the ${page.title.toLowerCase()} role. You can ask to add it from your profile, and your club will confirm it.`}
       </p>
       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '22px' }}>

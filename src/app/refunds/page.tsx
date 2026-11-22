@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Refund policy | SHIFTUP',
+  title: 'Refund policy | ShiftUp',
   description: 'Refunds for individual players, how clubs are covered by their agreement, and how to ask.',
 };
 
@@ -15,11 +15,11 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          Refunds under this policy are for <strong>individual players and members</strong> who pay SHIFTUP directly for something
+          Refunds under this policy are for <strong>individual players and members</strong> who pay ShiftUp directly for something
           for themselves.
         </p>
         <p>
-          <strong>Clubs are different.</strong> A club uses SHIFTUP under a signed agreement for a fixed period. What the club pays,
+          <strong>Clubs are different.</strong> A club uses ShiftUp under a signed agreement for a fixed period. What the club pays,
           for how long, and what happens if it wants to leave early are set out in that agreement, not here. See section 4.
         </p>
         <p>Payments are taken by Stripe. We never see or store card numbers.</p>
@@ -52,10 +52,10 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          A club joins SHIFTUP by signing an agreement for a fixed period. The fees for that period are due as the agreement says.
+          A club joins ShiftUp by signing an agreement for a fixed period. The fees for that period are due as the agreement says.
         </p>
         <ul>
-          <li>Fees paid by a club are not refunded under this policy, including if the club stops using SHIFTUP before the agreed period ends.</li>
+          <li>Fees paid by a club are not refunded under this policy, including if the club stops using ShiftUp before the agreed period ends.</li>
           <li>Scores bought by a club to give to its members are not refundable and cannot be exchanged for cash.</li>
           <li>If a club is charged twice or charged the wrong amount, we will correct it.</li>
           <li>Anything else about ending early, renewing or changing what a club pays is dealt with in the club&apos;s agreement.</li>
@@ -85,7 +85,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          Email {mail} from the address on your SHIFTUP account. Tell us what you paid for, the date and the amount.
+          Email {mail} from the address on your ShiftUp account. Tell us what you paid for, the date and the amount.
         </p>
         <p>
           We reply within 5 working days. Approved refunds go back to the card or account that paid, and usually arrive within 5 to
@@ -110,7 +110,7 @@ export default function RefundsPage() {
     <LegalPage
       title="Refund policy"
       updated="18 November 2026"
-      intro={<p>This policy explains when SHIFTUP gives a refund and how to ask for one.</p>}
+      intro={<p>This policy explains when ShiftUp gives a refund and how to ask for one.</p>}
       sections={SECTIONS}
     />
   );

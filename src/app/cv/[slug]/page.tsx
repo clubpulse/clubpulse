@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!result.success || !result.data) {
     return {
-      title: 'Cricket CV | SHIFTUP',
-      description: 'View this player\'s cricket profile on SHIFTUP.',
+      title: 'Cricket CV | ShiftUp',
+      description: 'View this player\'s cricket profile on ShiftUp.',
     };
   }
 
@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const name = profile.display_name ?? 'Cricket Player';
   const role = profile.primary_role ? PRIMARY_ROLE_LABELS[profile.primary_role] : '';
   const description = profile.personal_statement
-    ?? (profile.tagline ?? `${name}${role ? ` · ${role}` : ''} — Cricket CV on SHIFTUP`);
-  const title = `${name} · Cricket CV | SHIFTUP`;
+    ?? (profile.tagline ?? `${name}${role ? ` · ${role}` : ''} — Cricket CV on ShiftUp`);
+  const title = `${name} · Cricket CV | ShiftUp`;
 
   return {
     title,
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: 'profile',
-      siteName: 'SHIFTUP',
+      siteName: 'ShiftUp',
       images: [
         {
           url: profile.avatar_url ?? `${APP_URL}/og-default.png`,
@@ -94,7 +94,7 @@ export default async function PublicCVPage({ params }: Props) {
               fontWeight: 600,
             }}
           >
-            Go to SHIFTUP
+            Go to ShiftUp
           </a>
         </div>
       </main>
@@ -136,7 +136,7 @@ export default async function PublicCVPage({ params }: Props) {
           }}
         >
           <span style={{ fontSize: '20px' }}><Glyph e="🏏" /></span>
-          SHIFTUP
+          ShiftUp
         </a>
         <a
           href={`${APP_URL}/auth/sign-up`}

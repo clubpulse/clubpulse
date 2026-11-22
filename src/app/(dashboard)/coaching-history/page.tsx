@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Coaching History | SHIFTUP',
+  title: 'Coaching History | ShiftUp',
   description: 'Track your AI coaching progress over time — session logs, speed trends, and coaching insights.',
 };
 

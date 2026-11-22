@@ -1,12 +1,12 @@
 /**
  * POST /api/xi/sync-match
  *
- * Fires when a SHIFTUP scorecard is closed for a specific player.
+ * Fires when a ShiftUp scorecard is closed for a specific player.
  * Sends their performance to The XI and writes the resulting fantasy + rewards
  * points back to Supabase, then returns the breakdown to the caller.
  *
  * Body:
- *   match_id       — SHIFTUP match/fixture UUID
+ *   match_id       — ShiftUp match/fixture UUID
  *   match_date     — ISO date string
  *   opposition     — opponent club name (optional)
  *   batting        — batting stats (optional)
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     }, { status: 202 });
   }
 
-  // ── Write XI results back to SHIFTUP ────────────────────────────────────
+  // ── Write XI results back to ShiftUp ────────────────────────────────────
   // Store fantasy points and XI rewards on the match performance record
   const { error: updateError } = await supabase
     .from('match_performances')
@@ -103,8 +103,8 @@ export async function POST(req: NextRequest) {
     // Still return success — the data came back from XI, Supabase write is best-effort
   }
 
-  // Also record the rewards earned as a wallet transaction on SHIFTUP
-  // so the player sees it in their SHIFTUP wallet history too
+  // Also record the rewards earned as a wallet transaction on ShiftUp
+  // so the player sees it in their ShiftUp wallet history too
   if (xiResult.rewards_points > 0) {
     await supabase.from('wallet_transactions').insert({
       user_id: user.id,

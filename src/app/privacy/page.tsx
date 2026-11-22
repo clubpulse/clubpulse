@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy | SHIFTUP',
-  description: 'What SHIFTUP collects, why, who it is shared with, and your rights.',
+  title: 'Privacy policy | ShiftUp',
+  description: 'What ShiftUp collects, why, who it is shared with, and your rights.',
 };
 
 const mail = <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>;
@@ -15,7 +15,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          SHIFTUP is an app and website for grassroots cricket clubs and their members. SHIFTUP decides how the information
+          ShiftUp is an app and website for grassroots cricket clubs and their members. ShiftUp decides how the information
           described here is used, which makes us the data controller for it under UK data protection law.
         </p>
         <p>
@@ -51,7 +51,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          A child under 13 cannot have their own SHIFTUP account. A parent or guardian adds the child from their own account, and
+          A child under 13 cannot have their own ShiftUp account. A parent or guardian adds the child from their own account, and
           the club confirms the link before the parent can see anything about the child.
         </p>
         <p>For a child we hold what the parent or the club enters: the child&apos;s name and date of birth, their team, the consents the parent has given or refused (for example for photographs or emergency medical treatment), an emergency contact, and any medical notes the parent chooses to add, such as allergies.</p>
@@ -70,7 +70,7 @@ const SECTIONS: LegalSection[] = [
         <li><strong>To provide the service you signed up for</strong> (contract): your account, club features, Scores, games, lessons, bookings and video analysis.</li>
         <li><strong>With your consent</strong>: reading your step count, notifications, and a child&apos;s medical notes and consents. You can withdraw consent at any time in your phone&apos;s settings or in the app.</li>
         <li><strong>To keep children safe and meet legal duties</strong> (legal obligation and the club&apos;s safeguarding responsibilities): safeguarding records and consent records.</li>
-        <li><strong>To run and improve SHIFTUP</strong> (legitimate interests): keeping the service secure, fixing faults, preventing misuse of rewards, and understanding which features are used.</li>
+        <li><strong>To run and improve ShiftUp</strong> (legitimate interests): keeping the service secure, fixing faults, preventing misuse of rewards, and understanding which features are used.</li>
       </ul>
     ),
   },
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
     <LegalPage
       title="Privacy policy"
       updated="19 November 2026"
-      intro={<p>This policy explains what SHIFTUP collects about you, why, who we share it with, and the rights you have. It covers the SHIFTUP app and the website at clubpulse.co.</p>}
+      intro={<p>This policy explains what ShiftUp collects about you, why, who we share it with, and the rights you have. It covers the ShiftUp app and the website at clubpulse.co.</p>}
       sections={SECTIONS}
     />
   );

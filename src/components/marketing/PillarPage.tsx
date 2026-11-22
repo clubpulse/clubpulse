@@ -9,7 +9,7 @@ const LABEL: Record<PillarStatus, string> = { live: 'Live now', app: 'In the app
 const COLOUR: Record<PillarStatus, string> = { live: '#4ADE80', app: '#60A5FA', soon: '#EFC84A' };
 const NOTE: Record<PillarStatus, string> = {
   live: 'Available on the website today.',
-  app: 'In the SHIFTUP mobile app, not on the website yet.',
+  app: 'In the ShiftUp mobile app, not on the website yet.',
   soon: 'Not open yet.',
 };
 

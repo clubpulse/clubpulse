@@ -59,15 +59,11 @@ export function AuthShell({ title, subtitle, children, footer }: {
                     <stop offset="100%" stopColor="#1D4ED8"/>
                   </linearGradient>
                 </defs>
-                <rect x="10.5" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                <rect x="16.6" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                <rect x="22.7" y="5" width="2.8" height="18" rx="1.4" fill="white"/>
-                <rect x="10.5" y="4" width="15" height="2.5" rx="1.25" fill="white"/>
-                <path d="M3 29.5 L7 29.5 L9.5 25 L12.5 33 L16 18 L19.5 29.5 L22 29.5 L25 26 L29 26 L33 26"
-                      stroke="url(#authPulse)" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M8 19.5 L18 9.5 L28 19.5" stroke="white" strokeWidth="3.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M8 28.5 L18 18.5 L28 28.5" stroke="url(#authPulse)" strokeWidth="3.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
-            <span className="auth-logo-name"><span className="club">Club</span><span className="pulse">Pulse</span></span>
+            <span className="auth-logo-name"><span className="club">Shift</span><span className="pulse">Up</span></span>
           </Link>
           <h1 className="auth-title">{title}</h1>
           {subtitle && <p className="auth-subtitle">{subtitle}</p>}

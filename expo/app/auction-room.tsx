@@ -341,7 +341,7 @@ function Lobby(props: {
         {status?.unavailable && <Text style={[fonts.small, { marginTop: spacing.sm }]}>{status.unavailable}</Text>}
         {outOfDate && (
           <Text style={[fonts.small, { marginTop: spacing.sm, color: colors.orange }]}>
-            The player pool has been updated. Update the SHIFTUP app to play today&apos;s auction. Practice still works.
+            The player pool has been updated. Update the ShiftUp app to play today&apos;s auction. Practice still works.
           </Text>
         )}
         {status && !status.unavailable && (
