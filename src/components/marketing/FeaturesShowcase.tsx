@@ -773,7 +773,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
           ))}
           <div style={{ marginTop: 32, padding: '0 12px' }}>
             <a href="/auth/sign-up" style={{ display: 'block', padding: '11px', background: '#2563EB', color: '#fff', textAlign: 'center', borderRadius: 10, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 0 20px rgba(37,99,235,0.3)' }}>
-              Start free →
+              Start on Free →
             </a>
           </div>
         </nav>
@@ -802,7 +802,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
       {/* Footer CTA */}
       <div className="fp-footer-cta">
         <h2>{audience === 'clubs' ? 'Want this for your club?' : 'Ready to join in?'}</h2>
-        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Free to join, whether or not your club is on ClubPulse yet.'}</p>
+        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Start on the free tier, whether or not your club is on ClubPulse yet.'}</p>
         <div className="fp-footer-btns">
           <a href={audience === 'clubs' ? '/contact' : '/auth/sign-up'} className="fp-footer-btn-p">{audience === 'clubs' ? 'Tell us about your club' : 'Join as a player'}</a>
           <Link href="/" className="fp-footer-btn-g">Back to home</Link>

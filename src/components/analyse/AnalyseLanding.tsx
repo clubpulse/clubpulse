@@ -90,7 +90,7 @@ export function AnalyseLanding() {
             <Link href="/auth/sign-up"
               className="inline-flex items-center rounded-xl px-7 py-3.5 text-[15px] font-semibold text-white transition hover:brightness-110"
               style={{ background: CRIMSON }}>
-              Sign up free
+              Start on Free
             </Link>
             <Link href="/auth/sign-in?redirectTo=/analyse"
               className="inline-flex items-center rounded-xl border border-white/15 px-7 py-3.5 text-[15px] font-medium text-neutral-200 transition hover:bg-white/5">

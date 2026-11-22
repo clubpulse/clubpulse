@@ -387,7 +387,7 @@ export default function AvailabilityPage() {
           <h2 className="av-section-h2">Common questions about Availability.</h2>
           <div className="av-faq-list">
             {[
-              ['Do players need to download an app?', 'Yes — players download the ClubPulse app (iOS and Android). It\'s free forever for players. The captain manages everything from the web dashboard or the same app.'],
+              ['Do players need to download an app?', 'Yes — players download the ClubPulse app (iOS and Android). They can start on the free tier, with Pro, Elite and Legend if they want more. The captain manages everything from the web dashboard or the same app.'],
               ['What if a player doesn\'t have a smartphone?', 'The captain can mark players available manually from the dashboard. The system doesn\'t block selection if someone can\'t use the app — it just removes the automated workflow for them.'],
               ['Can we have multiple matches open at once?', 'Yes. If you have a first XI and a second XI playing on the same weekend, both can have separate availability polls running simultaneously. Each match has its own squad count and player list.'],
               ['What happens when someone changes their response?', 'Players can update their response right up until the captain locks the squad. The captain sees the change in real time and the squad count updates automatically.'],
@@ -407,9 +407,9 @@ export default function AvailabilityPage() {
           <div className="av-cta-inner">
             <div>
               <h2 className="av-cta-h">Ready to fix Saturday mornings?</h2>
-              <p className="av-cta-sub">Get in touch and we&apos;ll bring ClubPulse to your club — free for all your players.</p>
+              <p className="av-cta-sub">Get in touch and we&apos;ll bring ClubPulse to your club. Players can start on the free tier.</p>
             </div>
-            <Link href="/contact" className="av-cta-btn">Get started — it&apos;s free →</Link>
+            <Link href="/contact" className="av-cta-btn">Get started →</Link>
           </div>
         </section>
 

@@ -17,7 +17,7 @@ const SATURDAY = [
 ];
 
 const CLUB = [
-  { tag: 'Live now', h: 'Membership', body: 'Invite the squad, keep the member list in one place, and give committee, coaches and parents the right level of access. Players join free.' },
+  { tag: 'Live now', h: 'Membership', body: 'Invite the squad, keep the member list in one place, and give committee, coaches and parents the right level of access. Players start on the free tier.' },
   { tag: 'Live now', h: 'Finance', body: 'Track match fees, income and expenses in one ledger, with a dashboard for the treasurer. Paying fees in the app is coming soon; for now the club collects as it does today.' },
   { tag: 'Live now', h: 'Safeguarding and coaches', body: 'Keep coaches’ qualifications and checks in one place and in date, with junior-aware rules built in.' },
 ];

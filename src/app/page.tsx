@@ -748,7 +748,7 @@ export default function HomePage() {
               </div>
               <div className="cp-hero-stats">
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
+                <div className="cp-hero-stat"><div className="cp-stat-n">From £0</div><div className="cp-stat-l">Player plans</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">4</div><div className="cp-stat-l">Player pillars</div></div>
               </div>
             </div>
@@ -894,7 +894,7 @@ export default function HomePage() {
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
           <h2 className="cp-section-h2">From first chat to first Saturday.</h2>
-          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and the squad joins free.</p>
+          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and players start on the free tier.</p>
 
           <div className="cp-steps">
             <div className="cp-step">
@@ -908,7 +908,7 @@ export default function HomePage() {
               <p className="cp-step-num">STEP 02</p>
               <div className="cp-step-icon"><Glyph e="📱" /></div>
               <h3 className="cp-step-h">Invite the squad</h3>
-              <p className="cp-step-body">Players join free, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
+              <p className="cp-step-body">Players start on the free tier, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
@@ -924,9 +924,9 @@ export default function HomePage() {
         <section className="cp-pricing">
           <div className="cp-pricing-inner" style={{ textAlign: 'center' }}>
             <p className="cp-eyebrow">Pricing</p>
-            <h2 className="cp-section-h2">Free for players. Simple for clubs.</h2>
+            <h2 className="cp-section-h2">Player plans from £0. Simple for clubs.</h2>
             <p className="cp-section-sub" style={{ margin: '0 auto 28px' }}>
-              Players join free. Club plans start from £29.99 a month and cover the whole club.
+              Players start on Free (£0), with Pro, Elite and Legend above it. Club plans start from £29.99 a month and cover the whole club.
             </p>
             <Link href="/pricing" className="cp-btn-hero-ghost">See pricing →</Link>
             <p style={{ marginTop: 28, fontSize: 13, color: 'rgba(240,236,228,0.45)' }}>
@@ -949,7 +949,7 @@ export default function HomePage() {
           <div className="cp-cta-band-inner">
             <div>
               <h2 className="cp-cta-h">Two doors in. One platform.</h2>
-              <p className="cp-cta-sub">Clubs: we set you up. Players: free to join, with or without your club.</p>
+              <p className="cp-cta-sub">Clubs: we set you up. Players: start on Free, with or without your club.</p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <Link href="/contact" className="cp-cta-btn">Register your club →</Link>

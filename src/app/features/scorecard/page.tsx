@@ -257,9 +257,9 @@ export default function ScorecardPage() {
           <div className="sc-cta-inner">
             <div>
               <h2 className="sc-cta-h">Let your supporters follow every ball.</h2>
-              <p className="sc-cta-sub">Free for players. Get in touch to bring live scoring to your club.</p>
+              <p className="sc-cta-sub">Players can start on the free tier. Get in touch to bring live scoring to your club.</p>
             </div>
-            <Link href="/contact" className="sc-cta-btn">Get started — it&apos;s free →</Link>
+            <Link href="/contact" className="sc-cta-btn">Get started →</Link>
           </div>
         </section>
 
