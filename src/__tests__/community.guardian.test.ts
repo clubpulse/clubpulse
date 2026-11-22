@@ -32,7 +32,7 @@ const world = (w: World = {}) => {
   writes.length = 0;
   const parents = w.parents ?? [PARENT];
   db = {
-    profiles: () => [{ id: ADULT, full_name: 'Carl Coach', push_token: null }, { id: KID, full_name: 'Kit Young', push_token: null }],
+    profiles: () => [{ id: ADULT, full_name: 'Carl Coach', push_token: null, date_of_birth: '1985-01-01' }, { id: KID, full_name: 'Kit Young', push_token: null, date_of_birth: '2015-01-01' }],
     club_members: (ops) => {
       if (has(ops, 'in', 'user_id')) return [
         { user_id: ADULT, club_id: 'c1', role: w.coachRole ?? 'coach', is_junior: false, is_active: true },
@@ -42,7 +42,7 @@ const world = (w: World = {}) => {
     },
     clubs: () => [{ id: 'c1', name: 'Slough CC' }],
     dbs_checks: () => w.dbs ?? [{ club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: future }],
-    child_profiles: () => parents.length ? [{ parent_child_links: parents.map((p) => ({ parent_id: p, verified_at: 'x' })) }] : [],
+    child_profiles: () => parents.length ? [{ linked_user_id: KID, parent_child_links: parents.map((p) => ({ parent_id: p, verified_at: 'x' })) }] : [],
     community_blocks: () => [],
     community_guardian_requests: (ops) => {
       if (has(ops, 'eq', 'status', 'declined') && ops.some((o) => o[0] === 'gte')) return w.declinedRecently ? [{ id: 'old' }] : [];

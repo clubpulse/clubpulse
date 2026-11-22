@@ -5,7 +5,7 @@ const has = (ops: Op[], m: string, col: string, val?: unknown) => ops.some((o) =
 const makeChain = (table: string) => {
   const ops: Op[] = [];
   const c: Record<string, unknown> = {};
-  for (const m of ['select', 'eq', 'in', 'or', 'gt', 'order', 'limit', 'maybeSingle', 'single']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
+  for (const m of ['select', 'eq', 'in', 'or', 'gt', 'not', 'order', 'limit', 'maybeSingle', 'single']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
   for (const op of ['insert', 'update', 'upsert', 'delete']) c[op] = (...a: unknown[]) => { writes.push({ table, op, args: a }); ops.push([op]); return c; };
   c.then = (res: (v: unknown) => unknown) => { const rows = (db[table] ?? (() => []))(ops); res({ data: ops.some((o) => o[0] === 'maybeSingle' || o[0] === 'single') ? rows[0] ?? null : rows, count: rows.length, error: null }); };
   return c;
@@ -26,7 +26,7 @@ const world = () => {
       return [{ user_id: 'me', club_id: 'c1', role: 'coach', is_junior: false, is_active: true }];
     },
     clubs: () => [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
-    profiles: () => [{ id: 'me', full_name: 'Coach Carla', display_name: null, push_token: null }],
+    profiles: () => [{ id: 'me', full_name: 'Coach Carla', display_name: null, push_token: null, date_of_birth: '1985-01-01' }],
     community_blocks: () => [],
     community_sessions: () => [{ id: 's1' }],
   };

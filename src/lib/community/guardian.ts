@@ -8,7 +8,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { ukToday } from '@/lib/utils/uk-date';
 import { checkContent } from './moderation';
 import { notify } from './notify';
-import { blockedIds, communityOpen, no, ok, parentsOf, people, type Admin, type Message, type Result } from './service';
+import { blockedIds, communityOpen, no, ok, parentsOf, people, type Admin, type Message, type Result, holdFor } from './service';
 import { GUARDIAN_COOLDOWN_DAYS, GUARDIAN_NOTE_MAX, GUARDIAN_PENDING_MAX, dbsIsCurrent, guardianBlock, type DbsRow } from './rules';
 
 export const crossBandOpen = () => communityOpen() && process.env.COMMUNITY_CROSSBAND_ENABLED === 'true';
@@ -24,7 +24,7 @@ type Eligibility = { ok: true; clubId: string } | { ok: false; reason: string };
 export async function checkEligibility(admin: Admin, adultId: string, juniorId: string): Promise<Eligibility> {
   const who = await people(admin, [adultId, juniorId]);
   const adult = who.get(adultId); const junior = who.get(juniorId);
-  if (!adult || !junior) return { ok: false, reason: 'Person not found.' };
+  if (!adult || !junior || !adult.cleared || !junior.cleared) return { ok: false, reason: 'Person not found.' };
   const [{ data: mine }, { data: theirs }] = await Promise.all([
     admin.from('club_members').select('club_id, role').eq('user_id', adultId).eq('is_active', true),
     admin.from('club_members').select('club_id').eq('user_id', juniorId).eq('is_active', true),
@@ -53,6 +53,8 @@ export async function requestJunior(adultId: string, juniorId: string, noteIn: u
   if (!crossBandOpen()) return no('This is not open yet.');
   if (adultId === juniorId) return no('That is you.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, adultId);
+  if (hold) return no(hold);
   if ((await blockedIds(admin, adultId)).has(juniorId)) return no('Person not found.');
   const e = await checkEligibility(admin, adultId, juniorId);
   if (!e.ok) return no(e.reason);

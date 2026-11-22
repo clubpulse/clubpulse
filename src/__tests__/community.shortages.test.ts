@@ -5,7 +5,7 @@ const has = (ops: Op[], m: string, col: string, val?: unknown) => ops.some((o) =
 const makeChain = (table: string) => {
   const ops: Op[] = [];
   const c: Record<string, unknown> = {};
-  for (const m of ['select', 'eq', 'in', 'or', 'gt', 'order', 'limit', 'maybeSingle', 'single']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
+  for (const m of ['select', 'eq', 'in', 'or', 'gt', 'not', 'order', 'limit', 'maybeSingle', 'single']) c[m] = (...a: unknown[]) => { ops.push([m, ...a]); return c; };
   for (const op of ['insert', 'update', 'upsert', 'delete']) c[op] = (...a: unknown[]) => { writes.push({ table, op, args: a }); ops.push([op]); return c; };
   c.then = (res: (v: unknown) => unknown) => { const rows = (db[table] ?? (() => []))(ops); res({ data: ops.some((o) => o[0] === 'maybeSingle' || o[0] === 'single') ? rows[0] ?? null : rows, count: rows.length, error: null }); };
   return c;
@@ -27,8 +27,9 @@ const world = (o: { junior?: boolean; staff?: boolean; shortage?: Record<string,
       if (has(ops, 'in', 'user_id')) return [{ user_id: 'me', club_id: 'c1', role: 'member', is_junior: !!o.junior, is_active: true }, { user_id: 'p', club_id: 'c2', role: 'member', is_junior: false, is_active: true }];
       return [{ club_id: 'c1', role: 'member', is_junior: !!o.junior }];
     },
+    child_profiles: () => [{ linked_user_id: 'me', parent_child_links: [{ parent_id: 'mum', verified_at: 'x' }] }],
     clubs: () => [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }, { id: 'c2', name: 'Eton CC', county: null, league: null, ground_lat: null, ground_lng: null }],
-    profiles: () => [{ id: 'me', full_name: 'Mo Player', display_name: null, push_token: null }, { id: 'p', full_name: 'Pat Poster', display_name: null, push_token: null }],
+    profiles: () => [{ id: 'me', full_name: 'Mo Player', display_name: null, push_token: null, date_of_birth: '1990-01-01' }, { id: 'p', full_name: 'Pat Poster', display_name: null, push_token: null, date_of_birth: '1990-01-01' }],
     community_blocks: () => [],
     community_shortages: (ops) => ops.some((x) => x[0] === 'select' && typeof x[1] === 'string' && x[1].includes('posted_by') && !x[1].includes('play_at') && !x[1].includes('format'))
       ? (o.shortage ? [o.shortage] : []) : (o.shortage === undefined ? [{ id: 's1', club_id: 'c2', posted_by: 'p', play_at: soon(), format: 'league', need: 2, place: 'Eton ground', note: 'Bring whites', status: 'open' }] : o.shortage ? [o.shortage] : []),

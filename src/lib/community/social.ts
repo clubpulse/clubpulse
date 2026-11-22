@@ -5,7 +5,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
 import { liveRecentPostsBy } from './review';
-import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted } from './service';
+import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted, holdFor } from './service';
 import { mayFollow, mayViewProfile, milesBetween, roughDistance, type CrossBandContext } from './rules';
 
 /** How two people relate across the age line, for profile and follow decisions. */
@@ -43,6 +43,8 @@ export async function setFollow(userId: string, subject: unknown, subjectId: unk
   if ((subject !== 'player' && subject !== 'club') || typeof subjectId !== 'string') return no('Nothing to follow.');
   if (subject === 'player' && subjectId === userId) return no('That is you.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   if (!on) {
     await admin.from('community_follows').delete().eq('follower_id', userId).eq('subject_type', subject).eq('subject_id', subjectId);
     return ok({ following: false });
@@ -77,6 +79,8 @@ export type ClubProfile = {
 
 export async function getClubProfile(userId: string, clubId: string): Promise<Result<ClubProfile>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const [{ data: club }, { data: row }, viewer, followers, { count }, state, adminRow] = await Promise.all([
     admin.from('clubs').select('id, name, county, league, ground_lat, ground_lng').eq('id', clubId).maybeSingle(),
     admin.from('community_club_profiles').select('headline, about, nets_notes').eq('club_id', clubId).maybeSingle(),
@@ -102,6 +106,8 @@ export async function getClubProfile(userId: string, clubId: string): Promise<Re
 
 export async function saveClubProfile(userId: string, clubId: string, input: unknown): Promise<Result<Posted>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: m } = await admin.from('club_members').select('role').eq('club_id', clubId).eq('user_id', userId).eq('is_active', true).maybeSingle();
   if (m?.role !== 'club_admin') return no('Only a club admin can edit the club profile.');
   const v = (input ?? {}) as Record<string, unknown>;

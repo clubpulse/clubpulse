@@ -1,5 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { isPlausibleDob } from '@/lib/community/age';
 
 // Roles a person may pick for themselves at sign-up. club_admin and merchant are never
 // self-assigned: sign-up metadata is user-controlled, so it is filtered here.
@@ -10,7 +11,7 @@ const SELF_SERVE_ROLES = ['player', 'volunteer', 'parent', 'coach'] as const;
 // confirmation on there is no session at sign-up time to create them with.
 export async function ensureProfileAndRoles(user: User): Promise<void> {
   const admin = createAdminClient();
-  const meta = (user.user_metadata ?? {}) as { full_name?: unknown; name?: unknown; roles?: unknown };
+  const meta = (user.user_metadata ?? {}) as { full_name?: unknown; name?: unknown; roles?: unknown; date_of_birth?: unknown };
 
   const rawName = typeof meta.full_name === 'string' ? meta.full_name : typeof meta.name === 'string' ? meta.name : '';
   const fullName = rawName.trim().slice(0, 100) || user.email?.split('@')[0] || 'Athlete';
@@ -26,6 +27,12 @@ export async function ensureProfileAndRoles(user: User): Promise<void> {
     { onConflict: 'id', ignoreDuplicates: true }
   );
   if (profileError) throw new Error(`Could not create the profile: ${profileError.message}`);
+
+  // The database trigger may have made the profile already, without the date of birth, so it is set here when none is
+  // on file. Never overwritten: a date that is already saved decides who is a junior and is not changed from sign-up data.
+  if (isPlausibleDob(meta.date_of_birth)) {
+    await admin.from('profiles').update({ date_of_birth: meta.date_of_birth }).eq('id', user.id).is('date_of_birth', null);
+  }
 
   const { data: existing } = await admin.from('user_roles').select('id').eq('user_id', user.id).limit(1);
   if ((existing ?? []).length > 0) return;

@@ -23,7 +23,7 @@ jest.mock('@/lib/supabase/admin', () => ({
         return (db[table] ?? []).filter((r) => filters.every((f) => f(r)));
       };
       const f = (key: string, fn: (r: Row) => boolean) => { const g = Object.assign((r: Row) => fn(r), { key }); filters.push(g); };
-      chain.select = () => chain;
+      chain.select = () => chain; chain.not = () => chain;
       chain.insert = (p: Row) => { op = 'insert'; payload = p; return chain; };
       chain.delete = () => { op = 'delete'; return chain; };
       chain.eq = (k: string, v: unknown) => { if (k === 'parent_child_links.parent_id') f(k, (r) => r.parent_ids.includes(v)); else f(k, (r) => r[k] === v); return chain; };
@@ -53,12 +53,12 @@ const member = (user_id: string, club_id: string, role: string, is_junior = fals
 
 beforeEach(() => {
   db.clubs = [club('c1', 'Demo CC'), club('c2', 'Other CC')];
-  db.profiles = ['kid', 'kid2', 'mum', 'coach', 'teammate', 'stranger'].map((id) => ({ id, full_name: `${id} Surname`, display_name: id }));
+  db.profiles = ['kid', 'kid2', 'mum', 'coach', 'teammate', 'stranger'].map((id) => ({ id, full_name: `${id} Surname`, display_name: id, date_of_birth: '1990-01-01' }));
   db.club_members = [
     member('kid', 'c1', 'player', true), member('kid2', 'c1', 'player', true), member('mum', 'c1', 'parent'), member('coach', 'c1', 'coach'),
     member('teammate', 'c1', 'player'), member('stranger', 'c2', 'player'),
   ];
-  db.child_profiles = [{ id: 'ch1', linked_user_id: 'kid', parent_ids: ['mum'] }];
+  db.child_profiles = [{ id: 'ch1', linked_user_id: 'kid', parent_ids: ['mum'], parent_child_links: [{ parent_id: 'mum', verified_at: 'x' }] }, { id: 'ch2', linked_user_id: 'kid2', parent_ids: ['dad'], parent_child_links: [{ parent_id: 'dad', verified_at: 'x' }] }];
   db.community_blocks = []; db.community_post_likes = []; db.community_comments = [
     { id: 'cm-kid', post_id: 'adult-post', author_id: 'kid', body: 'Well played', status: 'live', created_at: '2026-01-02' },
     { id: 'cm-adult', post_id: 'adult-post', author_id: 'teammate', body: 'Cheers', status: 'live', created_at: '2026-01-03' },
