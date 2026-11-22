@@ -1,5 +1,5 @@
 """
-SHIFTUP YOLO Ball Detector
+ShiftUp YOLO Ball Detector
 ------------------------------
 Wraps an Ultralytics YOLO model fine-tuned for cricket ball detection.
 

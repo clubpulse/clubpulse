@@ -68,7 +68,7 @@ export async function getAdminContext(userId: string): Promise<AdminContext> {
   return { adminClubIds, isMerchant: merchant, isPlatformAdmin: isPlatformAdmin(userId) };
 }
 
-// SHIFTUP staff (profiles.role = 'admin') for the /admin dashboard. Separate from club admins
+// ShiftUp staff (profiles.role = 'admin') for the /admin dashboard. Separate from club admins
 // (club_members) and from PLATFORM_ADMIN_USER_IDS, which gates editing global config.
 export const getAdminSession = cache(async (): Promise<User | null> => {
   const user = await getCurrentUser();

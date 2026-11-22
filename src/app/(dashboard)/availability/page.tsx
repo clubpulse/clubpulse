@@ -38,7 +38,7 @@ export default async function AvailabilityPage() {
           No club yet
         </h2>
         <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255,255,255,0.45)', maxWidth: '300px' }}>
-          Ask your club admin to add you to SHIFTUP — then you&apos;ll see your upcoming fixtures here.
+          Ask your club admin to add you to ShiftUp — then you&apos;ll see your upcoming fixtures here.
         </p>
       </div>
     );

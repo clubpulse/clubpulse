@@ -67,7 +67,7 @@ function parseState(raw: string): SidebarState {
   }
 }
 
-// showAdmin: club admin (club_members). isPlatformAdmin: SHIFTUP staff (profiles.role = 'admin').
+// showAdmin: club admin (club_members). isPlatformAdmin: ShiftUp staff (profiles.role = 'admin').
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,

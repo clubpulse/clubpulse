@@ -36,7 +36,7 @@ function tangoHeaders(): HeadersInit {
 
 /**
  * Tango only enables API access once an account has processed $25,000 of rewards in a year.
- * Until the three keys are set, gift cards are queued for a SHIFTUP admin to order by hand
+ * Until the three keys are set, gift cards are queued for a ShiftUp admin to order by hand
  * in the Tango portal (see /admin/gift-cards).
  */
 export function isTangoApiConfigured(): boolean {
@@ -106,7 +106,7 @@ export async function placeTangoOrder(
         // Tango sends the voucher directly to the player's email as well
         recipient: {
           email:     recipientEmail,
-          firstName: 'SHIFTUP',
+          firstName: 'ShiftUp',
           lastName:  'Player',
         },
         // Our ID for deduplication — Tango is idempotent on this per platform

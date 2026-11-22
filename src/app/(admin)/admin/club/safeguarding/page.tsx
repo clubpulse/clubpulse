@@ -6,7 +6,7 @@ import DbsCheckList from '@/components/club/DbsCheckList';
 import { h1, card, muted } from '@/components/play/ui';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Safeguarding · SHIFTUP' };
+export const metadata: Metadata = { title: 'Safeguarding · ShiftUp' };
 
 export default async function SafeguardingPage() {
   const { clubId } = await requireClubAdminPage();

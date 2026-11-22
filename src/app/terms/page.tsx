@@ -3,18 +3,18 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Terms of use | SHIFTUP',
-  description: 'The terms for using the SHIFTUP app and website.',
+  title: 'Terms of use | ShiftUp',
+  description: 'The terms for using the ShiftUp app and website.',
 };
 
 const mail = <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>;
 
 const SECTIONS: LegalSection[] = [
   {
-    heading: 'Using SHIFTUP',
+    heading: 'Using ShiftUp',
     body: (
       <>
-        <p>SHIFTUP is for grassroots cricket clubs and their members. By creating an account or using the app or website, you agree to these terms.</p>
+        <p>ShiftUp is for grassroots cricket clubs and their members. By creating an account or using the app or website, you agree to these terms.</p>
         <p>You must be 13 or over to have your own account. Children under 13 are added by a parent or guardian from the parent&apos;s account.</p>
         <p>Keep your sign-in details to yourself, give accurate information, and tell us at {mail} if you think someone else has used your account.</p>
       </>
@@ -25,7 +25,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          Clubs use SHIFTUP under a signed agreement for a fixed period, and what a club pays is set out in that agreement. Our{' '}
+          Clubs use ShiftUp under a signed agreement for a fixed period, and what a club pays is set out in that agreement. Our{' '}
           <Link href="/refunds">refund policy</Link> covers payments made by individual players.
         </p>
         <p>Scores are earned by taking part: walking, checking in, volunteering, learning, playing the games and other club activity. They are a thank-you for taking part.</p>
@@ -43,7 +43,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p>
         The games are free to play and are for entertainment. Nothing is staked and nothing can be lost. Player names in the games
-        are used to describe real cricketers. SHIFTUP is not affiliated with, sponsored by or endorsed by any player, team, league
+        are used to describe real cricketers. ShiftUp is not affiliated with, sponsored by or endorsed by any player, team, league
         or governing body, and the points given to players in the games are our own estimates.
       </p>
     ),
@@ -70,7 +70,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'How you must behave',
     body: (
       <>
-        <p>Do not use SHIFTUP to:</p>
+        <p>Do not use ShiftUp to:</p>
         <ul>
           <li>bully, harass, threaten or discriminate against anyone;</li>
           <li>post anything unlawful, abusive, sexual or harmful to children;</li>
@@ -95,7 +95,7 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p>
         Your club decides who its members are, what its fees are and how it runs its teams, sessions and volunteering. Those matters
-        are between you and your club. SHIFTUP provides the tools the club uses.
+        are between you and your club. ShiftUp provides the tools the club uses.
       </p>
     ),
   },
@@ -113,7 +113,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'Our responsibility to you',
     body: (
       <>
-        <p>We work to keep SHIFTUP running well, but we provide it as it is and cannot promise it will always be available or free of faults.</p>
+        <p>We work to keep ShiftUp running well, but we provide it as it is and cannot promise it will always be available or free of faults.</p>
         <p>
           Nothing in these terms limits our liability for death or personal injury caused by our negligence, for fraud, or for
           anything else that cannot be limited by law. Nothing here affects your legal rights as a consumer.
@@ -139,7 +139,7 @@ export default function TermsPage() {
     <LegalPage
       title="Terms of use"
       updated="18 November 2026"
-      intro={<p>These are the terms for using the SHIFTUP app and the website at shiftup.club. Please read them with our <Link href="/privacy">privacy policy</Link>.</p>}
+      intro={<p>These are the terms for using the ShiftUp app and the website at shiftup.club. Please read them with our <Link href="/privacy">privacy policy</Link>.</p>}
       sections={SECTIONS}
     />
   );

@@ -5,7 +5,7 @@ import { getMerchQueue } from '@/lib/actions/merch-orders';
 import { MerchQueue } from '@/components/merch/MerchQueue';
 import { h1, muted } from '@/components/play/ui';
 
-// SHIFTUP staff only: these orders hold members' home addresses.
+// ShiftUp staff only: these orders hold members' home addresses.
 export default async function MerchandiseOrdersPage() {
   const user = await requireUser();
   if (!isPlatformAdmin(user.id)) redirect('/admin/club');

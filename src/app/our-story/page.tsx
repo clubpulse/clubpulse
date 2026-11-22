@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our story — SHIFTUP',
+  title: 'Our story — ShiftUp',
   description: 'How a Sunday cricket club in Slough became the blueprint for grassroots cricket management.',
 };
 
@@ -97,7 +97,7 @@ export default function OurStoryPage() {
       <section className="about-hero">
         <p className="section-tag">Our story</p>
         <h1 className="hero-h">Built on a real cricket club,<br />for every cricket club</h1>
-        <p className="hero-sub">SHIFTUP started as a solution to the chaos of running Slough Cricket Club. It grew into a platform that every grassroots club deserves.</p>
+        <p className="hero-sub">ShiftUp started as a solution to the chaos of running Slough Cricket Club. It grew into a platform that every grassroots club deserves.</p>
       </section>
 
       {/* ── Story ── */}
@@ -110,12 +110,12 @@ export default function OurStoryPage() {
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Co-Founder, SHIFTUP</cite>
+          <cite>— Co-Founder, ShiftUp</cite>
         </div>
 
         <div className="story-block">
           <h2 className="story-h">Slough CC as the testbed</h2>
-          <p className="story-p">Every feature in SHIFTUP was born from a real frustration at Slough CC. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
+          <p className="story-p">Every feature in ShiftUp was born from a real frustration at Slough CC. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
           <p className="story-p">The AI coaching engine came when we realised players were recording sessions anyway, just without any feedback. Scores — our loyalty currency — came when we wanted to reward the players who show up week after week, not just the stars.</p>
         </div>
 
@@ -132,12 +132,12 @@ export default function OurStoryPage() {
           <div className="origin-text">
             <p className="section-tag" style={{ marginBottom: '12px' }}>Live at Slough CC</p>
             <h2>Running in production every weekend</h2>
-            <p>SHIFTUP isn&apos;t a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
+            <p>ShiftUp isn&apos;t a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
             <p>That means every bug gets found fast, and every feature gets stress-tested in the most unforgiving environment: a cricket club where people actually care about the result.</p>
           </div>
           <div className="stat-cluster">
             {[
-              { val: '2026', desc: 'Season running live on SHIFTUP' },
+              { val: '2026', desc: 'Season running live on ShiftUp' },
               { val: 'Live', desc: 'Ball-by-ball scoring, updated as it happens' },
               { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
               { val: '£0', desc: 'Admin overhead for tracking availability' },
@@ -153,7 +153,7 @@ export default function OurStoryPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring SHIFTUP<br />to your club?</h2>
+        <h2 className="cta-h">Ready to bring ShiftUp<br />to your club?</h2>
         <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>

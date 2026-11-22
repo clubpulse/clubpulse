@@ -88,8 +88,8 @@ export default function MerchantWalletPage() {
   async function handleQrInput(raw: string) {
     try {
       const payload: QrPayload = JSON.parse(raw.trim());
-      if (payload.type !== 'shiftup_scores_payment' || !payload.session_id) {
-        setScanError('Not a valid SHIFTUP payment QR');
+      if (payload.type !== 'clubpulse_scores_payment' || !payload.session_id) {
+        setScanError('Not a valid ShiftUp payment QR');
         return;
       }
       setScanned(payload);

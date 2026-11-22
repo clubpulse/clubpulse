@@ -1,4 +1,4 @@
-// SHIFTUP staff review of reports and held content. Service-role only; callers must already have
+// ShiftUp staff review of reports and held content. Service-role only; callers must already have
 // passed requireAdmin().
 
 import { createAdminClient } from '@/lib/supabase/admin';

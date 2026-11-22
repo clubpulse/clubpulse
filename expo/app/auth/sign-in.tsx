@@ -22,7 +22,7 @@ export default function SignInScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Text style={styles.logo}>SHIFTUP</Text>
+        <Text style={styles.logo}>ShiftUp</Text>
         <Text style={[fonts.small, { textAlign: 'center', marginBottom: spacing.xl }]}>Sign in to earn Scores</Text>
 
         <TextInput
@@ -41,7 +41,7 @@ export default function SignInScreen() {
         <Link href="/auth/forgot-password" style={styles.forgot}>Forgot your password?</Link>
 
         <View style={styles.footer}>
-          <Text style={fonts.small}>New to SHIFTUP? </Text>
+          <Text style={fonts.small}>New to ShiftUp? </Text>
           <Link href="/auth/sign-up" style={{ color: colors.gold, fontWeight: '600' }}>Create an account</Link>
         </View>
       </KeyboardAvoidingView>
