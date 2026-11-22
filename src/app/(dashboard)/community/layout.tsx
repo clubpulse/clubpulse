@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { requireUser } from '@/lib/auth/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { communityOpen, getViewer } from '@/lib/community/service';
+import { communityOpen, getViewer, JUNIORS_OFF } from '@/lib/community/service';
 import { DobForm } from '@/components/community/DobForm';
 
 // The Community is closed to anyone whose age is not known, and to under-18s with no verified parent. The service
@@ -21,7 +21,7 @@ export default async function CommunityLayout({ children }: { children: ReactNod
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: 16, display: 'grid', gap: 12 }}>
-      <h1 style={{ margin: 0 }}>{viewer.status === 'needs_dob' ? 'One thing before you start' : 'Almost there'}</h1>
+      <h1 style={{ margin: 0 }}>{viewer.hold === JUNIORS_OFF ? 'Not open to under-18s yet' : viewer.status === 'needs_dob' ? 'One thing before you start' : 'Almost there'}</h1>
       <p style={{ margin: 0 }}>{viewer.hold}</p>
       {viewer.status === 'needs_dob' && (
         <>

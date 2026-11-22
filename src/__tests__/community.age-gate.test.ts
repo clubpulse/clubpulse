@@ -1,3 +1,5 @@
+// These tests are about how under-18s behave when the Community is open to them
+process.env.COMMUNITY_JUNIORS_ENABLED = 'true';
 // The age rule is applied by the service itself, not only by the screens: a shut-out person can do nothing.
 
 type Rows = Record<string, unknown[]>;

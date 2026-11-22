@@ -1,3 +1,5 @@
+// These tests are about how under-18s behave when the Community is open to them
+process.env.COMMUNITY_JUNIORS_ENABLED = 'true';
 // A junior's posts and comments reach only people who may open that junior's profile.
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any

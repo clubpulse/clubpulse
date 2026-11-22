@@ -4,7 +4,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { notify } from './notify';
-import { no, ok, parentsOf, people, type Admin, type Result } from './service';
+import { JUNIORS_OFF, juniorsOpen, no, ok, parentsOf, people, type Admin, type Result } from './service';
 
 export type Approval = { junior_id: string; decision: 'approved' | 'declined' };
 
@@ -78,6 +78,7 @@ export async function getApprovalsForParent(parentId: string): Promise<Result<Ap
 /** A verified parent of one of the two children approves or declines. */
 export async function decideJuniorConnection(parentId: string, connectionId: unknown, childId: unknown, approve: boolean): Promise<Result<{ state: 'opened' | 'waiting' | 'declined' }>> {
   if (typeof connectionId !== 'string' || typeof childId !== 'string') return no('Request not found.');
+  if (!juniorsOpen()) return no(JUNIORS_OFF);
   const admin = createAdminClient();
   const { data: conn } = await admin.from('community_connections').select('id, requester_id, addressee_id, status').eq('id', connectionId).maybeSingle();
   if (!conn || conn.status !== 'awaiting_parents') return no('Request not found.');

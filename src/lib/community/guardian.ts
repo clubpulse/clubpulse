@@ -8,10 +8,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { ukToday } from '@/lib/utils/uk-date';
 import { checkContent } from './moderation';
 import { notify } from './notify';
-import { blockedIds, communityOpen, no, ok, parentsOf, people, type Admin, type Message, type Result, holdFor } from './service';
+import { blockedIds, communityOpen, juniorsOpen, no, ok, parentsOf, people, type Admin, type Message, type Result, holdFor } from './service';
 import { GUARDIAN_COOLDOWN_DAYS, GUARDIAN_NOTE_MAX, GUARDIAN_PENDING_MAX, dbsIsCurrent, guardianBlock, type DbsRow } from './rules';
 
-export const crossBandOpen = () => communityOpen() && process.env.COMMUNITY_CROSSBAND_ENABLED === 'true';
+export const crossBandOpen = () => communityOpen() && juniorsOpen() && process.env.COMMUNITY_CROSSBAND_ENABLED === 'true';
 
 type Event = 'requested' | 'parent_approved' | 'parent_declined' | 'junior_accepted' | 'junior_declined' | 'withdrawn' | 'ended' | 'thread_read';
 async function logEvent(admin: Admin, requestId: string | null, actor: string, event: Event) {
