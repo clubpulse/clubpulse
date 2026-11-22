@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { EcbCourseType, MemberQualification, ClubQualificationSummary, CourseCategory } from '@/lib/types/ecb-courses';
 
@@ -94,20 +95,21 @@ export async function getClubQualifications(clubId: string): Promise<ActionResul
 
   const { data, error } = await supabase
     .from('member_qualifications')
-    .select('*, course:ecb_course_types(*), profile:profiles(full_name, display_name)')
+    .select('*, course:ecb_course_types(*)')
     .eq('club_id', clubId)
     .order('completed_date', { ascending: false });
 
   if (error) return { success: false, error: error.message };
+  const cards = await clubNameCards(clubId, (data ?? []).map((r) => (r as { user_id: string }).user_id));
 
   const today = new Date().toISOString().split('T')[0];
 
   // Group by user_id
   const byUser = new Map<string, { name: string; quals: MemberQualification[] }>();
-  for (const row of data as (MemberQualification & { profile: { full_name: string; display_name?: string } })[]) {
+  for (const row of data as MemberQualification[]) {
     if (!byUser.has(row.user_id)) {
       byUser.set(row.user_id, {
-        name: row.profile?.display_name || row.profile?.full_name || 'Unknown',
+        name: cards.get(row.user_id)?.display_name || cards.get(row.user_id)?.full_name || 'Unknown',
         quals: [],
       });
     }
@@ -159,7 +161,7 @@ export async function getExpiringQualifications(clubId: string): Promise<ActionR
 
   const { data, error } = await supabase
     .from('member_qualifications')
-    .select('*, course:ecb_course_types(*), profile:profiles(full_name, display_name)')
+    .select('*, course:ecb_course_types(*)')
     .eq('club_id', clubId)
     .gte('expires_date', today)
     .lte('expires_date', in90)
@@ -167,5 +169,10 @@ export async function getExpiringQualifications(clubId: string): Promise<ActionR
 
   if (error) return { success: false, error: error.message };
 
-  return { success: true, data: data as MemberQualification[] };
+  const cards = await clubNameCards(clubId, (data ?? []).map((r) => (r as { user_id: string }).user_id));
+  const withNames = (data ?? []).map((r) => {
+    const c = cards.get((r as { user_id: string }).user_id);
+    return { ...r, profile: c ? { full_name: c.full_name ?? c.display_name ?? 'Unknown', display_name: c.display_name ?? undefined } : null };
+  });
+  return { success: true, data: withNames as unknown as MemberQualification[] };
 }

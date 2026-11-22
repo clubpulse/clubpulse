@@ -1,5 +1,6 @@
 import { requireUser } from '@/lib/auth/server';
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards, cardName } from '@/lib/profile/lookup';
 import { LogPerformanceForm } from '@/components/rivalry/LogPerformanceForm';
 import { Card } from '@/components/ui/Card';
 
@@ -25,15 +26,16 @@ export default async function LogPerformancePage() {
 
   const { data: members } = await supabase
     .from('club_members')
-    .select('user_id, profiles!inner(id, full_name, display_name)')
+    .select('user_id')
     .eq('club_id', membership.club_id)
     .eq('is_active', true)
     .neq('user_id', user.id);
 
-  const clubMembers = (members ?? []).map((m) => {
-    const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles as { id: string; full_name: string; display_name: string };
-    return { id: m.user_id as string, name: p?.display_name || p?.full_name || 'Unknown' };
-  });
+  const cards = await clubNameCards(membership.club_id as string, (members ?? []).map((m) => m.user_id));
+  // A member with no profile row is left out, as the old inner join did
+  const clubMembers = (members ?? [])
+    .filter((m) => cards.has(m.user_id as string))
+    .map((m) => ({ id: m.user_id as string, name: cardName(cards.get(m.user_id as string)) }));
 
   return (
     <div style={{ maxWidth: '540px', margin: '0 auto', fontFamily: "'Inter', sans-serif" }}>

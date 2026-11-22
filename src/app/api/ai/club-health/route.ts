@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { getUserRoles } from '@/lib/auth/admin';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { fail, unauthorized } from '@/lib/utils/http';
 import Anthropic from '@anthropic-ai/sdk';
 
@@ -43,6 +44,7 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = await createClient();
+  const adminDb = createAdminClient();
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
@@ -52,8 +54,10 @@ export async function GET(req: NextRequest) {
     { count: scorecardSubmissions },
     { data: recentTransactions },
   ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).not('sport', 'is', null),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    // Counts across everyone, after the admin check above. profiles is own-row for the signed-in client, so these use
+    // the service role and select no personal columns (head: true returns a count only).
+    adminDb.from('profiles').select('id', { count: 'exact', head: true }).not('sport', 'is', null),
+    adminDb.from('profiles').select('id', { count: 'exact', head: true }),
     supabase.from('volunteer_sessions').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
     supabase.from('wallet_transactions').select('*', { count: 'exact', head: true })
       .eq('category', 'performance').gte('occurred_at', thirtyDaysAgo),

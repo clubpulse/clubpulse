@@ -97,6 +97,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <div style={{ minHeight: '100vh', background: '#04091A', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
+      <style>{`.admin-nav-link{color:rgba(255,255,255,0.65);background:transparent;transition:background .12s,color .12s}.admin-nav-link:hover{background:rgba(255,255,255,0.05);color:#fff}`}</style>
 
       {/* Top bar */}
       <header style={{
@@ -156,21 +157,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 {section.links.map((link) => (
                   <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
-                    <div style={{
+                    {/* Hover is plain CSS (admin-nav-link below): a Server Component cannot pass event handlers */}
+                    <div className="admin-nav-link" style={{
                       padding: '7px 10px',
                       borderRadius: '8px',
-                      fontSize: '13px', color: 'rgba(255,255,255,0.65)',
-                      transition: 'background 0.12s, color 0.12s',
-                    }}
-                    onMouseOver={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)';
-                      (e.currentTarget as HTMLDivElement).style.color = '#fff';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.background = 'transparent';
-                      (e.currentTarget as HTMLDivElement).style.color = 'rgba(255,255,255,0.65)';
-                    }}
-                    >
+                      fontSize: '13px',
+                    }}>
                       {link.label}
                     </div>
                   </Link>

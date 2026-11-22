@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { FormRating, ClubFormGuideEntry } from '@/lib/types/form';
 
@@ -31,20 +32,15 @@ export async function getClubFormGuide(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('form_ratings')
-      .select(`
-        *,
-        profiles!user_id (
-          full_name,
-          display_name
-        )
-      `)
+      .select('*')
       .eq('club_id', clubId)
       .order('rating', { ascending: false });
 
     if (error) return { success: false, error: error.message };
 
+    const cards = await clubNameCards(clubId, (data ?? []).map((r: Record<string, unknown>) => r.user_id));
     const entries: ClubFormGuideEntry[] = (data ?? []).map((row: Record<string, unknown>) => {
-      const profile = row.profiles as { full_name: string; display_name: string } | null;
+      const profile = cards.get(row.user_id as string);
       return {
         user_id:        row.user_id as string,
         club_id:        row.club_id as string,

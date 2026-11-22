@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type {
   ClubDocument,
@@ -176,11 +177,12 @@ export async function adminGetAcknowledgementStatus(
 
   const { data: members, error: membErr } = await supabase
     .from('club_members')
-    .select('user_id, profiles(display_name)')
+    .select('user_id')
     .eq('club_id', clubId)
     .eq('is_active', true);
 
   if (membErr) return { success: false, error: membErr.message };
+  const cards = await clubNameCards(clubId, (members ?? []).map((m) => m.user_id));
 
   const { data: acks, error: acksErr } = await supabase
     .from('document_acknowledgements')
@@ -195,7 +197,7 @@ export async function adminGetAcknowledgementStatus(
     .filter((m) => !ackedIds.has(m.user_id as string))
     .map((m) => ({
       user_id: m.user_id as string,
-      display_name: (m.profiles as unknown as { display_name: string | null } | null)?.display_name ?? null,
+      display_name: cards.get(m.user_id as string)?.display_name ?? null,
     }));
 
   return {
