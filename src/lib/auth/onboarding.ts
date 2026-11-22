@@ -6,6 +6,17 @@ import { isPlausibleDob } from '@/lib/community/age';
 // self-assigned: sign-up metadata is user-controlled, so it is filtered here.
 const SELF_SERVE_ROLES = ['player', 'volunteer', 'parent', 'coach'] as const;
 
+/**
+ * Copies a plausible date of birth from the sign-up metadata onto the profile when it has none. The database trigger
+ * may have made the profile without one, and someone who signs in with a password after confirming in a different
+ * browser never reaches the callback. Never overwrites: a date that is already saved decides who is a junior.
+ */
+export async function backfillDateOfBirth(user: User): Promise<void> {
+  const dob = (user.user_metadata as { date_of_birth?: unknown } | null | undefined)?.date_of_birth;
+  if (!isPlausibleDob(dob)) return;
+  await createAdminClient().from('profiles').update({ date_of_birth: dob }).eq('id', user.id).is('date_of_birth', null);
+}
+
 // Creates the profile row and role rows for a verified user if they don't exist yet.
 // Idempotent, so it's safe to call on every sign-in callback. Needed because with email
 // confirmation on there is no session at sign-up time to create them with.
@@ -28,11 +39,7 @@ export async function ensureProfileAndRoles(user: User): Promise<void> {
   );
   if (profileError) throw new Error(`Could not create the profile: ${profileError.message}`);
 
-  // The database trigger may have made the profile already, without the date of birth, so it is set here when none is
-  // on file. Never overwritten: a date that is already saved decides who is a junior and is not changed from sign-up data.
-  if (isPlausibleDob(meta.date_of_birth)) {
-    await admin.from('profiles').update({ date_of_birth: meta.date_of_birth }).eq('id', user.id).is('date_of_birth', null);
-  }
+  await backfillDateOfBirth(user);
 
   const { data: existing } = await admin.from('user_roles').select('id').eq('user_id', user.id).limit(1);
   if ((existing ?? []).length > 0) return;

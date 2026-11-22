@@ -2,7 +2,8 @@
 // browser from the sign-up (no PKCE verifier, so /auth/callback never creates it).
 const upserts: Record<string, unknown>[] = [];
 const roleInserts: Record<string, unknown>[][] = [];
-const state = { profileExists: false, hasRoles: false, profileError: null as null | { message: string }, roleError: null as null | { message: string } };
+const dobUpdates: Array<{ row: Record<string, unknown>; onlyWhenNull: boolean }> = [];
+const state = { dob: null as string | null, profileExists: false, hasRoles: false, profileError: null as null | { message: string }, roleError: null as null | { message: string } };
 
 jest.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => ({
@@ -10,7 +11,12 @@ jest.mock('@/lib/supabase/admin', () => ({
       if (table === 'profiles') {
         return {
           upsert: async (row: Record<string, unknown>) => { upserts.push(row); return { error: state.profileError }; },
-          select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: state.profileExists ? { id: 'u1' } : null }) }) }),
+          select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: state.profileExists ? { id: 'u1', date_of_birth: state.dob } : null }) }) }),
+          update: (row: Record<string, unknown>) => ({ eq: () => ({ is: async () => {
+            dobUpdates.push({ row, onlyWhenNull: true });
+            if (state.dob === null && typeof row.date_of_birth === 'string') { state.dob = row.date_of_birth; state.profileExists = true; }
+            return { error: null };
+          } }) }),
         };
       }
       return {
@@ -36,10 +42,22 @@ import { GET } from '@/app/auth/callback/route';
 const user = (over: Partial<User> = {}) => ({ id: 'u1', email: 'ada@example.com', user_metadata: {}, ...over }) as User;
 
 beforeEach(() => {
-  upserts.length = 0; roleInserts.length = 0;
-  Object.assign(state, { profileExists: false, hasRoles: false, profileError: null, roleError: null });
+  upserts.length = 0; roleInserts.length = 0; dobUpdates.length = 0;
+  Object.assign(state, { dob: null, profileExists: false, hasRoles: false, profileError: null, roleError: null });
   verifyOtp.mockReset(); exchangeCodeForSession.mockReset(); getUser.mockReset();
   jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+describe('ensureProfileAndRoles and the date of birth', () => {
+  it('sets a plausible sign-up date after creating the profile, only where none is saved', async () => {
+    await ensureProfileAndRoles(user({ user_metadata: { date_of_birth: '2010-10-10' } }));
+    expect(upserts[0]).not.toHaveProperty('date_of_birth');   // the upsert never carries it, so it cannot overwrite
+    expect(dobUpdates).toEqual([{ row: { date_of_birth: '2010-10-10' }, onlyWhenNull: true }]);
+  });
+  it('sets nothing for an implausible date', async () => {
+    await ensureProfileAndRoles(user({ user_metadata: { date_of_birth: '2999-01-01' } }));
+    expect(dobUpdates).toHaveLength(0);
+  });
 });
 
 describe('ensureProfileAndRoles', () => {
@@ -85,7 +103,36 @@ describe('ensureProfile (the sign-in safety net)', () => {
   });
   it('logs a failure and lets the page load', async () => {
     state.profileError = { message: 'boom' };
-    await expect(ensureProfile(user({ id: 'u3' }))).resolves.toBeUndefined();
+    await expect(ensureProfile(user({ id: 'u3' }))).resolves.toEqual({ needsDob: false });
+  });
+  it('does nothing more when the profile and its date of birth are both there', async () => {
+    state.profileExists = true; state.dob = '1990-05-05';
+    await expect(ensureProfile(user({ user_metadata: { date_of_birth: '2012-01-01' } }))).resolves.toEqual({ needsDob: false });
+    expect(upserts).toHaveLength(0);
+    expect(dobUpdates).toHaveLength(0);   // an existing date is never overwritten
+  });
+  it('backfills the date of birth from sign-up data when the profile exists without one (password sign-in after a missed callback)', async () => {
+    state.profileExists = true;
+    await expect(ensureProfile(user({ user_metadata: { date_of_birth: '2012-03-01' } }))).resolves.toEqual({ needsDob: false });
+    expect(dobUpdates).toEqual([{ row: { date_of_birth: '2012-03-01' }, onlyWhenNull: true }]);
+    expect(upserts).toHaveLength(0);
+  });
+  it('asks for the date of birth when there is none on file and none in the sign-up data', async () => {
+    state.profileExists = true;
+    await expect(ensureProfile(user())).resolves.toEqual({ needsDob: true });
+    expect(dobUpdates).toHaveLength(0);
+  });
+  it('ignores an implausible date in the sign-up data and still asks', async () => {
+    for (const bad of ['not a date', '2999-01-01', '1800-01-01', '2026-02-30', 20120301, null]) {
+      dobUpdates.length = 0; state.dob = null; state.profileExists = true;
+      await expect(ensureProfile(user({ id: `bad-${String(bad)}`, user_metadata: { date_of_birth: bad } }))).resolves.toEqual({ needsDob: true });
+      expect(dobUpdates).toHaveLength(0);
+    }
+  });
+  it('creates a missing profile and fills the date of birth from sign-up data in the same pass', async () => {
+    await expect(ensureProfile(user({ id: 'u9', user_metadata: { date_of_birth: '2011-06-06' } }))).resolves.toEqual({ needsDob: false });
+    expect(upserts[0]).toMatchObject({ id: 'u9' });
+    expect(dobUpdates[0].row).toEqual({ date_of_birth: '2011-06-06' });
   });
 });
 
