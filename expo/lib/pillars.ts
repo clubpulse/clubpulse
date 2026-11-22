@@ -96,6 +96,7 @@ export const PILLARS: Pillar[] = [
 const SOCIAL: MenuLink[] = [
   { key: 'feed', label: 'Commentary Box', detail: 'The feed: what cricket people near you are sharing', icon: '🎙️', route: '/community/feed' },
   { key: 'nearby', label: 'Partnerships', detail: 'Meet cricket people around you', icon: '🤝', route: '/community/nearby' },
+  { key: 'shortages', label: 'Short for Saturday', detail: 'Clubs that need players for a game', icon: '📣', route: '/community/shortages' },
   { key: 'clubs-nearby', label: 'Clubs near you', detail: 'Find a club to join or visit', icon: '🏟️', route: '/community/clubs-nearby' },
   { key: 'notifications', label: 'Notifications', detail: 'Requests and replies', icon: '🔔', route: '/community/notifications' },
   { key: 'sessions', label: 'Nets and Games', detail: 'Nets sessions and pick-up games near you', icon: '🏏', route: '/community/sessions' },

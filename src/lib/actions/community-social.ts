@@ -10,6 +10,7 @@ import { resolveItem } from '@/lib/community/review';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { markRead } from '@/lib/community/notify';
 import { requestJunior, decideAsParent, endContact } from '@/lib/community/guardian';
+import { postShortage, replyToShortage, closeShortage, getReplies, type ShortageReply } from '@/lib/community/shortages';
 import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 type R = { success: boolean; error?: string; message?: string };
@@ -67,6 +68,24 @@ export async function decideRequestAction(requestId: string, approve: boolean): 
 export async function endContactAction(requestId: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await endContact(u.id, requestId), 'Ended.', '/parent/community');
+}
+
+export async function postShortageAction(input: Record<string, unknown>): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await postShortage(u.id, input as never), 'Posted. People nearby can now say they can play.', '/community/shortages');
+}
+export async function replyShortageAction(shortageId: string, on: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await replyToShortage(u.id, shortageId, on), on ? 'Sent. They will see your name.' : 'Taken back.', '/community/shortages');
+}
+export async function closeShortageAction(shortageId: string, status: 'filled' | 'cancelled'): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await closeShortage(u.id, shortageId, status), status === 'filled' ? 'Marked as filled.' : 'Cancelled.', '/community/shortages');
+}
+export async function shortageRepliesAction(shortageId: string): Promise<{ success: boolean; error?: string; replies?: ShortageReply[] }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await getReplies(u.id, shortageId);
+  return r.success ? { success: true, replies: r.data } : { success: false, error: r.error };
 }
 
 export async function reportProfileAction(userId: string, reason: string): Promise<R> {

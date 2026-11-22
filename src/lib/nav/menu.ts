@@ -210,6 +210,8 @@ export function playsCricket(audience: Audience): boolean {
 export const NETWORK_LINKS: NavLink[] = [
   { href: '/community/feed', label: 'Commentary Box', icon: '🎙️', for: PLAYING, section: 'Across clubs' },
   { href: '/community/match', label: 'Find a Teammate', icon: '🤝', for: PLAYING, section: 'Across clubs' },
+  { href: '/community/shortages', label: 'Short for Saturday', icon: '📣', for: PLAYING, adult: true, section: 'Across clubs' },
+  { href: '/community/match?want=coach&role=coach', label: 'Find a Coach', icon: '🎓', for: ['player'], adult: true, section: 'Across clubs' },
   { href: '/community/near', label: 'Nets and Games', icon: '🏏', for: PLAYING, section: 'Across clubs' },
   { href: '/community/connections', label: 'Connections', icon: '🧢', for: PLAYING, section: 'Across clubs' },
   { href: '/community/notifications', label: 'Notifications', icon: '🔔', for: ['player', 'coach', 'parent'], section: 'Across clubs' },

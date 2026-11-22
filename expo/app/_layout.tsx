@@ -101,6 +101,7 @@ function AuthGate() {
       <Stack.Screen name="community/sessions" options={screen('Nets and Games')} />
       <Stack.Screen name="community/feed" options={screen('Commentary Box')} />
       <Stack.Screen name="community/nearby" options={screen('Partnerships')} />
+      <Stack.Screen name="community/shortages" options={screen('Short for Saturday')} />
       <Stack.Screen name="community/clubs-nearby" options={screen('Clubs near you')} />
       <Stack.Screen name="community/notifications" options={screen('Notifications')} />
       <Stack.Screen name="community/connections" options={screen('My Squad')} />
