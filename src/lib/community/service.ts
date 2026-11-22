@@ -94,6 +94,31 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
   return out;
 }
 
+// ── Juniors' words stay inside the age line ─────────────────────────────────────────────────────
+
+/**
+ * Of these authors, the ones whose posts and comments this viewer may see. Adults' words are open to
+ * all (the usual scope and block rules still apply); a junior's only to those who may open that junior's
+ * profile: other juniors, the linked parent, a coach or admin of a shared club. Computed once per
+ * distinct junior, and the author always sees their own.
+ */
+export async function visibleAuthors(admin: Admin, viewerId: string, authorIds: string[], who?: Map<string, Person>): Promise<Set<string>> {
+  const ids = [...new Set(authorIds)];
+  const known = who ?? await people(admin, ids);
+  const allowed = new Set<string>();
+  const juniors: string[] = [];
+  for (const id of ids) {
+    if (id === viewerId || !known.get(id)?.junior) allowed.add(id);
+    else juniors.push(id);
+  }
+  if (juniors.length) {
+    const { mayOpenProfile } = await import('./social'); // social imports this file, so load it when needed
+    const verdicts = await Promise.all(juniors.map((id) => mayOpenProfile(admin, viewerId, id)));
+    juniors.forEach((id, i) => { if (verdicts[i]) allowed.add(id); });
+  }
+  return allowed;
+}
+
 // ── Feed ────────────────────────────────────────────────────────────────────────────────────────
 
 export type FeedPost = {
@@ -116,10 +141,12 @@ export async function getFeed(userId: string, scope: Scope): Promise<Result<{ sc
   if (error) return no('Could not load the feed.');
 
   const blocked = await blockedIds(admin, userId);
-  const rows = (data ?? []).filter((p) => !blocked.has(p.author_id as string) && p.status !== 'removed');
+  const unblocked = (data ?? []).filter((p) => !blocked.has(p.author_id as string) && p.status !== 'removed');
+  const who = await people(admin, unblocked.map((p) => p.author_id as string));
+  const seen = await visibleAuthors(admin, userId, unblocked.map((p) => p.author_id as string), who);
+  const rows = unblocked.filter((p) => seen.has(p.author_id as string));
   const ids = rows.map((p) => p.id as string);
-  const [who, { data: likes }, { data: comments }] = await Promise.all([
-    people(admin, rows.map((p) => p.author_id as string)),
+  const [{ data: likes }, { data: comments }] = await Promise.all([
     ids.length ? admin.from('community_post_likes').select('post_id, user_id').in('post_id', ids) : Promise.resolve({ data: [] as Array<{ post_id: string; user_id: string }> }),
     ids.length ? admin.from('community_comments').select('post_id').in('post_id', ids).eq('status', 'live') : Promise.resolve({ data: [] as Array<{ post_id: string }> }),
   ]);
@@ -166,8 +193,8 @@ export async function createPost(userId: string, body: unknown): Promise<Result<
 
 export async function toggleLike(userId: string, postId: string): Promise<Result<{ liked: boolean }>> {
   const admin = createAdminClient();
-  const { data: post } = await admin.from('community_posts').select('id').eq('id', postId).eq('status', 'live').maybeSingle();
-  if (!post) return no('Post not found.');
+  const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
+  if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const { data: existing } = await admin.from('community_post_likes').select('post_id').eq('post_id', postId).eq('user_id', userId).maybeSingle();
   if (existing) {
     await admin.from('community_post_likes').delete().eq('post_id', postId).eq('user_id', userId);
@@ -181,10 +208,14 @@ export type Comment = { id: string; body: string; createdAt: string; mine: boole
 
 export async function getComments(userId: string, postId: string): Promise<Result<Comment[]>> {
   const admin = createAdminClient();
+  const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
+  if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const { data } = await admin.from('community_comments').select('id, author_id, body, created_at').eq('post_id', postId).eq('status', 'live').order('created_at').limit(100);
   const blocked = await blockedIds(admin, userId);
-  const rows = (data ?? []).filter((c) => !blocked.has(c.author_id as string));
-  const who = await people(admin, rows.map((c) => c.author_id as string));
+  const unblocked = (data ?? []).filter((c) => !blocked.has(c.author_id as string));
+  const who = await people(admin, unblocked.map((c) => c.author_id as string));
+  const seen = await visibleAuthors(admin, userId, unblocked.map((c) => c.author_id as string), who);
+  const rows = unblocked.filter((c) => seen.has(c.author_id as string));
   return ok(rows.map((c) => ({
     id: c.id as string, body: c.body as string, createdAt: c.created_at as string, mine: c.author_id === userId,
     author: { id: c.author_id as string, name: who.get(c.author_id as string)?.name ?? 'Member' },
@@ -194,8 +225,8 @@ export async function getComments(userId: string, postId: string): Promise<Resul
 export async function addComment(userId: string, postId: string, body: unknown): Promise<Result<Posted>> {
   if (typeof body !== 'string') return no('Write something first.');
   const admin = createAdminClient();
-  const { data: post } = await admin.from('community_posts').select('id').eq('id', postId).eq('status', 'live').maybeSingle();
-  if (!post) return no('Post not found.');
+  const { data: post } = await admin.from('community_posts').select('id, author_id').eq('id', postId).eq('status', 'live').maybeSingle();
+  if (!post || !(await visibleAuthors(admin, userId, [post.author_id as string])).has(post.author_id as string)) return no('Post not found.');
   const viewer = await getViewer(admin, userId);
   const check = await checkContent(body, { place: 'public', authorJunior: viewer.junior, readerJunior: true }, MAX_COMMENT);
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });
