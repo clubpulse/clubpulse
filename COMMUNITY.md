@@ -5,7 +5,7 @@ The Community (feed, profiles, connections, follows, messages) is off by default
 
 ## Before you turn it on
 
-Preferably on a **preview or demo environment first**. If clubpulse.co already has real under-18 members, do not
+Preferably on a **preview or demo environment first**. If shiftup.club already has real under-18 members, do not
 enable it there until every box below is ticked and a person who handles safeguarding at the club has agreed.
 
 - [ ] All Community migrations are run in Supabase: `20261121000001_community.sql`, `20261122000002_community_follows.sql`, `20261122000003_community_moderation.sql`, `20261122000004_community_sessions.sql`

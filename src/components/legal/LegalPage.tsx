@@ -35,4 +35,4 @@ export function LegalPage({ title, updated, intro, sections }: { title: string; 
   );
 }
 
-export const CONTACT_EMAIL = 'hello@clubpulse.co';
+export const CONTACT_EMAIL = 'hello@shiftup.club';

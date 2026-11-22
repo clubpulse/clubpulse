@@ -173,7 +173,7 @@ export default function PrivacyPage() {
     <LegalPage
       title="Privacy policy"
       updated="19 November 2026"
-      intro={<p>This policy explains what ShiftUp collects about you, why, who we share it with, and the rights you have. It covers the ShiftUp app and the website at clubpulse.co.</p>}
+      intro={<p>This policy explains what ShiftUp collects about you, why, who we share it with, and the rights you have. It covers the ShiftUp app and the website at shiftup.club.</p>}
       sections={SECTIONS}
     />
   );

@@ -28,7 +28,7 @@ const SELF_CHECKOUT = process.env.CLUB_SELF_CHECKOUT === 'on';
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (!SELF_CHECKOUT) return NextResponse.json({ error: 'Club plans and Scores are arranged directly with ShiftUp. Tell us what your club needs at clubpulse.co/contact.' }, { status: 403 });
+  if (!SELF_CHECKOUT) return NextResponse.json({ error: 'Club plans and Scores are arranged directly with ShiftUp. Tell us what your club needs at shiftup.club/contact.' }, { status: 403 });
 
   let body: { club_id?: string; pack_id?: string };
   try {

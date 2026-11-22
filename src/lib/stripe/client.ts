@@ -20,7 +20,7 @@ export function getStripe(): Stripe {
     appInfo: {
       name: 'ShiftUp',
       version: '1.0.0',
-      url: 'https://clubpulse.co',
+      url: 'https://shiftup.club',
     },
   });
 

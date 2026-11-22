@@ -7,7 +7,7 @@ import { getPrimaryClubId } from '@/lib/scores/context';
 import type { SubscriptionTier } from '@/lib/types/subscription';
 import { isLive, isPlayerPlan, lookupKey, offerFor, type Offer, type PlanKind, type PlayerPlan } from '@/lib/billing/player-plans';
 
-const SITE = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co').replace(/\/$/, '');
+const SITE = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club').replace(/\/$/, '');
 
 /** Online payment stays off until this is set to "on" in Vercel. The Stripe key there is a live one. */
 export const playerCheckoutEnabled = (): boolean => process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on';

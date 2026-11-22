@@ -35,7 +35,7 @@ export default function ContactPage() {
       }
       setSubmitted(true);
     } catch (err) {
-      setError(`${err instanceof Error ? err.message : 'Something went wrong.'} You can also email hello@clubpulse.co.`);
+      setError(`${err instanceof Error ? err.message : 'Something went wrong.'} You can also email hello@shiftup.club.`);
     } finally {
       setSending(false);
     }
@@ -162,7 +162,7 @@ export default function ContactPage() {
             <div className="method-icon">✉️</div>
             <div>
               <p className="method-label">Email</p>
-              <p className="method-val">hello@clubpulse.co</p>
+              <p className="method-val">hello@shiftup.club</p>
               <p className="method-note">We respond within 2 working days</p>
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
             <div>
               <p className="method-label">Currently live at</p>
               <p className="method-val">Slough Cricket Club</p>
-              <p className="method-note">clubpulse.co — see it in production</p>
+              <p className="method-note">shiftup.club — see it in production</p>
             </div>
           </div>
 

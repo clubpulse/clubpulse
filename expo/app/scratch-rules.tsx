@@ -10,7 +10,7 @@ const RULES: { heading: string; lines: string[] }[] = [
   {
     heading: 'Who runs it',
     lines: [
-      'ShiftUp scratch cards are a free prize draw run by ShiftUp. You can reach us at hello@clubpulse.co.',
+      'ShiftUp scratch cards are a free prize draw run by ShiftUp. You can reach us at hello@shiftup.club.',
       'Apple is not a sponsor of this prize draw and is not involved in it in any way. No prize is an Apple product.',
     ],
   },
@@ -63,13 +63,13 @@ const RULES: { heading: string; lines: string[] }[] = [
   },
   {
     heading: 'Your information',
-    lines: ['We use your account details to record the cards you earn and to send your prize. See the privacy policy at clubpulse.co/privacy.'],
+    lines: ['We use your account details to record the cards you earn and to send your prize. See the privacy policy at shiftup.club/privacy.'],
   },
   {
     heading: 'Changes and questions',
     lines: [
       'We may change these rules or end scratch cards. If we do, a card you have already earned can still be opened under the rules that applied when you earned it.',
-      'These rules are governed by the law of England and Wales. Questions and complaints: hello@clubpulse.co.',
+      'These rules are governed by the law of England and Wales. Questions and complaints: hello@shiftup.club.',
     ],
   },
 ];
