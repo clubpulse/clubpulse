@@ -9,7 +9,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ActionResult } from '@/lib/types/action';
 import { decideJoinRequest, listJoinRequests } from './club-admin';
-import { VERIFY_NEEDS_DBS, hasCurrentDbsAt } from '@/lib/admin/child-link';
+import { parentEligibility, parentRefusalMessage, verifyParentGate } from '@/lib/admin/parent-eligibility';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_RE.test(value);
@@ -461,11 +461,13 @@ export async function approveRequest(userId: string, approvalId: string): Promis
   }
 
   if (kind === 'link') {
-    const { data: link } = await sb.from('parent_child_links').select('id, child_profiles ( club_id )').eq('id', id).maybeSingle();
+    const { data: link } = await sb.from('parent_child_links').select('id, parent_id, child_profiles ( club_id )').eq('id', id).maybeSingle();
     const child = one(link?.child_profiles);
     if (!link || !child || !clubIds.includes(child.club_id as string)) return { success: false, error: 'Request not found' };
-    // A verified parent can approve their child's Community connections, so only a DBS-checked admin may verify one
-    if (!(await hasCurrentDbsAt(userId, child.club_id as string))) return { success: false, error: VERIFY_NEEDS_DBS };
+    // A verified parent can approve their child's Community connections: only a DBS-checked admin may verify one, and only
+    // for an account that is an adult
+    const refused = await verifyParentGate(userId, child.club_id as string, link.parent_id as string);
+    if (refused) return { success: false, error: refused };
     const { error } = await sb.from('parent_child_links').update({ verified_at: now, verified_by: userId }).eq('id', id);
     if (error) return { success: false, error: 'Could not approve this link' };
     return { success: true, data: null };
@@ -591,6 +593,10 @@ export async function registerJunior(
   meta: { ip_address?: string; user_agent?: string },
 ): Promise<ActionResult<{ id: string }>> {
   const sb = createAdminClient();
+
+  // Only an adult can register a child as their parent: a real date of birth on the profile, 18 or over, not a junior
+  const adult = await parentEligibility(userId);
+  if (!adult.ok) return { success: false, error: parentRefusalMessage(adult.reason, 'self') };
 
   const { data: memberships } = await sb
     .from('club_members')

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { SessionCard } from '@/lib/community/sessions';
-import { joinSessionAction, cancelSessionAction, reportProfileAction } from '@/lib/actions/community-social';
+import { joinSessionAction, cancelSessionAction, reportContentAction } from '@/lib/actions/community-social';
 import { ActionButton, ReportButton, cardStyle } from './ui';
 
 export function SessionList({ sessions }: { sessions: SessionCard[] }) {
@@ -16,11 +16,12 @@ export function SessionList({ sessions }: { sessions: SessionCard[] }) {
           <p style={{ margin: 0 }}>{new Date(s.startsAt).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · {s.place}</p>
           <p style={{ margin: '4px 0' }}>{s.club}{s.distance ? ` · ${s.distance}` : ''} · hosted by <Link href={`/community/people/${s.hostId}`}>{s.host}</Link> · {s.taken}/{s.capacity} places</p>
           {s.note && <p style={{ margin: '4px 0' }}>{s.note}</p>}
+          {s.responsibleAdult && <p style={{ margin: '4px 0', fontSize: 13, opacity: 0.8 }}>Responsible adult: {s.responsibleAdult} (current enhanced DBS check)</p>}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 8 }}>
             {s.canJoin && <ActionButton label="Join" run={() => joinSessionAction(s.id, true)} />}
             {s.joined && <ActionButton quiet label="Leave" run={() => joinSessionAction(s.id, false)} />}
             {s.mine && <ActionButton quiet label="Cancel session" confirm="Cancel this session?" run={() => cancelSessionAction(s.id)} />}
-            {!s.mine && <ReportButton run={(reason) => reportProfileAction(s.hostId, `Session "${s.title}": ${reason}`)} />}
+            {!s.mine && <ReportButton run={(reason) => reportContentAction('session', s.id, reason)} />}
           </div>
         </div>
       ))}

@@ -592,12 +592,19 @@ export async function sendMessage(userId: string, connectionId: string, body: un
 
 // ── Report and block ────────────────────────────────────────────────────────────────────────────
 
-const KINDS = ['post', 'comment', 'message', 'profile'] as const;
+/** What a member can report. Sessions and games are reported as themselves, not as their host's profile. */
+export const REPORT_KINDS = ['post', 'comment', 'message', 'profile', 'session', 'shortage'] as const;
+const REPORT_TABLE = { session: 'community_sessions', shortage: 'community_shortages' } as const;
 
 export async function report(userId: string, input: unknown): Promise<Result<{ sent: true }>> {
   const v = (input ?? {}) as Record<string, unknown>;
-  if (!(KINDS as readonly string[]).includes(v.kind as string) || typeof v.targetId !== 'string') return no('Nothing to report.');
+  if (!(REPORT_KINDS as readonly string[]).includes(v.kind as string) || typeof v.targetId !== 'string') return no('Nothing to report.');
   const admin = createAdminClient();
+  if (v.kind === 'session' || v.kind === 'shortage') {
+    // The target has to exist, so the review queue is never given an id that points at nothing
+    const { data: target } = await admin.from(REPORT_TABLE[v.kind]).select('id').eq('id', v.targetId).maybeSingle();
+    if (!target) return no('Nothing to report.');
+  }
   const { error } = await admin.from('community_reports').insert({
     reporter_id: userId, kind: v.kind, target_id: v.targetId, reason: typeof v.reason === 'string' ? v.reason.trim().slice(0, 500) : null,
   });

@@ -12,6 +12,7 @@ jest.mock('@/lib/supabase/admin', () => ({
       chain.select = () => chain;
       chain.eq = (k: string, v: unknown) => { eq[k] = v; return chain; };
       chain.limit = () => chain;
+      chain.not = () => chain; // the real query also requires the parent link to be verified; every fixture link here is
       chain.then = (resolve: (v: unknown) => unknown) => {
         let data: Row[] = [];
         if (table === 'club_members') data = db.members.filter((m) => m.user_id === eq.user_id);

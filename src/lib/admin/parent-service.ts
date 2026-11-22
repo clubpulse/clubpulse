@@ -1,6 +1,7 @@
 'use server';
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { parentEligibility, parentRefusalMessage } from '@/lib/admin/parent-eligibility';
 import type {
   ChildProfile,
   ChildWithConsents,
@@ -35,6 +36,10 @@ export async function registerChild(
   }
 ): Promise<ActionResult<ChildProfile>> {
   const sb = createAdminClient();
+
+  // Only an adult can register a child as their parent: a real date of birth on the profile, 18 or over, not a junior
+  const adult = await parentEligibility(parentId);
+  if (!adult.ok) return { success: false, error: parentRefusalMessage(adult.reason, 'self') };
 
   // Create child profile
   const { data: child, error } = await sb
