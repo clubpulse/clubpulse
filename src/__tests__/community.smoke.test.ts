@@ -11,6 +11,7 @@ jest.mock('@/lib/supabase/request-auth', () => ({ getRequestAuth: async () => ({
 
 type Handler = (req: NextRequest, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>;
 const ROUTES: Array<[string, () => Promise<Record<string, Handler | undefined>>]> = [
+  ['approvals', () => import('@/app/api/community/approvals/route') as never],
   ['clubs', () => import('@/app/api/community/clubs/route') as never],
   ['connections', () => import('@/app/api/community/connections/route') as never],
   ['feed', () => import('@/app/api/community/feed/route') as never],

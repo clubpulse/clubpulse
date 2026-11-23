@@ -105,6 +105,7 @@ function AuthGate() {
       <Stack.Screen name="community/clubs-nearby" options={screen('Clubs near you')} />
       <Stack.Screen name="community/notifications" options={screen('Notifications')} />
       <Stack.Screen name="community/connections" options={screen('My Squad')} />
+      <Stack.Screen name="community/approvals" options={screen('Approvals')} />
       <Stack.Screen name="community/profile" options={screen('Scorecard')} />
       <Stack.Screen name="community/chat/[id]" options={screen('Mid-Pitch Chat')} />
     </Stack>

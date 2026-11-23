@@ -1,8 +1,10 @@
 # Build 12: what is in it and how to ship it
 
 Build 11 was made on 22 November 2026 and had Readiness, Recovery, Sharing and certificates. Build 12 adds the Cricket Connect screens below. If build 11 has not been submitted yet, send build 12 instead. Version 1.0.0 was submitted for App Store review on 19 November 2026 and has been removed from review.
-It was never released, so build 12 goes up under the **same version, 1.0.0**: the build number goes up
-by itself (`autoIncrement` in `eas.json`, version source `remote`). Do not edit `buildNumber` in `app.json`.
+It was never released, so build 12 goes up under the **same version, 1.0.0**. `app.json` now says build 12
+(`ios.buildNumber` and `android.versionCode`) so the file matches this note, but with `appVersionSource: remote` and
+`autoIncrement` in `eas.json` the number EAS actually uses comes from its own counter, which goes up by itself. Check
+the number EAS reports when the build starts; it should be 12. Nothing has been built or submitted.
 
 ## What is new since the build that was submitted
 
@@ -14,7 +16,7 @@ Everything below is in the code; the 19 November build has none of it.
 - **Academy**: certificates for each finished track and for graduating.
 - **Rewards in the pillars**, the Honours Board and 108 badges, each shareable.
 - **Form Guide**: a coach's view of players' technique progress.
-- **Community screens** (Commentary Box, Partnerships with filters, Clubs near you, Notifications, Short for Saturday, My Squad, Scorecard with standard and availability, Nets and Games): present, but **off** (see below). The adult-to-junior contact has no app screen; it is website only and behind its own website flag.
+- **Community screens** (Commentary Box, Partnerships with filters, Clubs near you, Notifications, Short for Saturday, My Squad, Scorecard with standard and availability, Nets and Games, and **Approvals** for parents: approve or decline a child's connection with another young person): present, but **off** (see below). The adult-to-junior contact has no app screen; it is website only and behind its own website flag.
 - Volunteering parked, scratch cards and the store as before.
 
 ## Before you build

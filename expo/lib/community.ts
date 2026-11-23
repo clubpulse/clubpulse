@@ -51,9 +51,19 @@ export type Profile = {
 };
 export type NearbyPerson = { id: string; name: string; club: string | null; roles: string[]; distance: string | null; headline: string; lookingFor: LookingFor[]; openToClub: boolean; standard: Standard | null; availability: Availability[] };
 export type ClubCard = { id: string; name: string; county: string | null; league: string | null; distance: string | null; headline: string; netsNotes: string; following: boolean };
-export type Notice = { id: string; kind: 'connect_request' | 'connect_accepted' | 'parent_connection' | 'message'; title: string; body: string | null; read: boolean; createdAt: string };
+export type Notice = { id: string; kind: 'connect_request' | 'connect_accepted' | 'parent_connection' | 'parent_approval_needed' | 'message'; title: string; body: string | null; read: boolean; createdAt: string };
 export type ConnectionRow = { id: string; person: { id: string; name: string; club: string | null }; state: 'connected' | 'incoming' | 'requested'; last: string | null };
 export type Message = { id: string; body: string; createdAt: string; mine: boolean };
+
+/** A connection between two young people waiting on this parent, for one of their children. Names are first names only. */
+export type ApprovalRequest = { connectionId: string; childId: string; childName: string; otherName: string; otherClub: string | null; decided: 'approved' | null };
+export type ApprovalState = 'opened' | 'waiting' | 'declined';
+/** What to tell the parent after they answer. */
+export function approvalMessage(state: ApprovalState): string {
+  if (state === 'opened') return 'Approved. They can now message each other.';
+  if (state === 'waiting') return 'Thank you. Waiting for the other young person’s parent to answer.';
+  return 'Declined. The request is closed.';
+}
 
 export const initials = (name: string) => name.split(/\s+/).map((p) => p[0] ?? '').join('').slice(0, 2).toUpperCase() || '?';
 
