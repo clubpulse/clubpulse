@@ -1,6 +1,6 @@
-# ClubPulse Community: Online Safeguarding Policy
+# ShiftUp Community: Online Safeguarding Policy
 
-**DRAFT v0.2 – 22 November 2026.** Not approved. An independent, suitably qualified safeguarding person must review it before any junior (under-18) is invited to ClubPulse Community.
+**DRAFT v0.2 – 22 November 2026.** Not approved. An independent, suitably qualified safeguarding person must review it before any junior (under-18) is invited to ShiftUp Community.
 
 | | |
 |---|---|
@@ -28,16 +28,16 @@ Items marked **[PLACEHOLDER: …]** must be completed before this policy is appr
 
 ## 1. Purpose, scope and commitment
 
-ClubPulse is a UK cricket club platform. Its Community feature lets members use a feed, posts, comments, connections, direct messages, nets and pickup sessions, and 'Short for Saturday' games (finding players for a match). Members include adults and juniors (under 18). This policy sets out how ClubPulse keeps children and adults at risk safe online, and what everyone involved must do when there is a concern.
+ShiftUp is a UK cricket club platform. Its Community feature lets members use a feed, posts, comments, connections, direct messages, nets and pickup sessions, and 'Short for Saturday' games (finding players for a match). Members include adults and juniors (under 18). This policy sets out how ShiftUp keeps children and adults at risk safe online, and what everyone involved must do when there is a concern.
 
-**Scope.** This policy applies to everyone at ClubPulse, including founders, staff, contractors and volunteers. It also applies to club admins and club welfare officers when they use ClubPulse, and to all Community content and features. It sits alongside each club's own safeguarding policy, not in place of it.
+**Scope.** This policy applies to everyone at ShiftUp, including founders, staff, contractors and volunteers. It also applies to club admins and club welfare officers when they use ShiftUp, and to all Community content and features. It sits alongside each club's own safeguarding policy, not in place of it.
 
 **Our commitment.** We follow these principles:
 
 - The welfare of the child is paramount. This is the core principle of the Children Act 1989 and the Children Act 2004.
 - Safeguarding is everyone's responsibility. Concerns are shared promptly with the right people, as set out in the statutory guidance *Working Together to Safeguard Children*.
 - We follow the ECB's Safe Hands safeguarding policy and guidance for cricket. Club-related concerns are routed through club welfare officers, county safeguarding officers and the ECB.
-- We aim to reduce the risk of illegal and harmful content, protect children from harmful content and contact, provide easy reporting, and act on reports. We are taking legal advice on how the Online Safety Act 2023 and the ICO's Children's Code apply to ClubPulse. This policy is not itself a statement of compliance with them. **[PLACEHOLDER: LEGAL ADVICE TAKEN, BY WHOM, DATE]**
+- We aim to reduce the risk of illegal and harmful content, protect children from harmful content and contact, provide easy reporting, and act on reports. We are taking legal advice on how the Online Safety Act 2023 and the ICO's Children's Code apply to ShiftUp. This policy is not itself a statement of compliance with them. **[PLACEHOLDER: LEGAL ADVICE TAKEN, BY WHOM, DATE]**
 - All children have an equal right to protection, whatever their age, disability, gender, race, religion or belief, sex or sexual orientation.
 - When we are unsure, we act. If in doubt, we hold the content, record it and escalate.
 
@@ -46,8 +46,8 @@ ClubPulse is a UK cricket club platform. Its Community feature lets members use 
 | Role | Who | Responsibilities |
 |---|---|---|
 | Safeguarding Lead | Ishwar Suresh (ECB Safeguarding Level 2; enhanced DBS issued February 2026) | Owns this policy. Receives and decides concerns. Makes referrals. Keeps records. Gives written sign-off for any change to the switched-off features (section 7). Makes sure the response times are met. |
-| Deputy Safeguarding Lead | **[PLACEHOLDER: DEPUTY NAME]** (**[PLACEHOLDER: DEPUTY QUALIFICATION AND DBS DETAILS]**) | Covers when the Lead is unavailable. Receives every alert the Lead receives. Decides any concern that involves the Lead, or the ClubPulse project or company itself, without the Lead's involvement. |
-| Club admins | Named per club | Must hold a current enhanced DBS at their club to verify parents or link child records. Confirm juniors' dates of birth. Mark juniors. Pass concerns to the club welfare officer and ClubPulse. |
+| Deputy Safeguarding Lead | **[PLACEHOLDER: DEPUTY NAME]** (**[PLACEHOLDER: DEPUTY QUALIFICATION AND DBS DETAILS]**) | Covers when the Lead is unavailable. Receives every alert the Lead receives. Decides any concern that involves the Lead, or the ShiftUp project or company itself, without the Lead's involvement. |
+| Club admins | Named per club | Must hold a current enhanced DBS at their club to verify parents or link child records. Confirm juniors' dates of birth. Mark juniors. Pass concerns to the club welfare officer and ShiftUp. |
 | Club welfare officers | Named per club | The club's safeguarding contact under Safe Hands. Receive club-related concerns and escalate to the county safeguarding officer. |
 | Human moderators | **[PLACEHOLDER: MODERATOR NAMES / ROLES]** | Review held content. Remove or allow it. Escalate to the Lead. Only a person can release held content. |
 | Automated moderation tools | Platform systems | Check and HOLD content. They support people but never make final decisions. They never delete content and cannot release it. |
@@ -118,7 +118,7 @@ If a child is at risk, do not wait for consent before referring. Do not investig
 
 ## 7. Platform safeguards
 
-These are the controls ClubPulse Community uses to reduce risk. They support people's judgement but do not replace it. See the box at the top for which are live.
+These are the controls ShiftUp Community uses to reduce risk. They support people's judgement but do not replace it. See the box at the top for which are live.
 
 - **Age and status.** Everyone gives a date of birth. A date of birth is declared, not proof of age. Under-18s, and anyone a club admin marks as junior, are treated as juniors. Juniors without a verified parent, and anyone with no date of birth, are hidden and cannot take part.
 - **Club-confirmed date of birth.** A club admin can confirm a junior member's date of birth after checking it against what the club holds. Once `DOB_CONFIRMATION_REQUIRED` is on, a junior cannot use Community until a club admin has confirmed it. The Lead turns this on before any junior is invited. **[VERIFY: switched on]**
@@ -148,7 +148,7 @@ Adult-to-junior contact, direct messages to or from under-18s, and the under-18s
 ## 8. Allegations against staff, volunteers or club admins
 
 - Any allegation that someone working or volunteering with children has harmed a child, may have committed an offence against a child, or has behaved in a way that suggests they may be unsuitable must be reported to the Safeguarding Lead straight away. The Lead refers it to the LADO within one working day, and informs the club welfare officer, the county safeguarding officer and the ECB where cricket is involved.
-- If the allegation involves the Lead or the ClubPulse project or company, it goes to the Deputy, who handles it independently.
+- If the allegation involves the Lead or the ShiftUp project or company, it goes to the Deputy, who handles it independently.
 - While the matter is looked at, the person's admin, verification and session-leading permissions may be suspended. This is a neutral act and not a finding of guilt. Their content is held, not deleted.
 - Do not investigate, interview the child, or tell the person about the allegation unless the LADO or police advise you to.
 - Keep a full record (section 6). Where the legal threshold is met, refer to the Disclosure and Barring Service (DBS).
@@ -167,7 +167,7 @@ The platform checks DBS status when a session is created, shown or joined, and w
 ## 10. Review
 
 - This policy will be reviewed by **[PLACEHOLDER: REVIEW DATE – suggest within 12 months]**, or sooner after any serious incident, a change in law or ECB guidance, or a change to the platform safeguards.
-- An independent, suitably qualified safeguarding person outside the ClubPulse project must review it before any junior is invited. Their name, date and comments will be recorded here. **[PLACEHOLDER: INDEPENDENT REVIEWER NAME, QUALIFICATION, DATE, COMMENTS]**
+- An independent, suitably qualified safeguarding person outside the ShiftUp project must review it before any junior is invited. Their name, date and comments will be recorded here. **[PLACEHOLDER: INDEPENDENT REVIEWER NAME, QUALIFICATION, DATE, COMMENTS]**
 - Response times (section 4) are reviewed at every policy review, and at any time they are not being met.
 
 | Version | Date | Change | Approved by |
@@ -183,7 +183,7 @@ The platform checks DBS status when a session is created, shown or joined, and w
 | 2. Report it | Use 'Report a concern' on the post, comment, profile, session or game, or contact the Safeguarding Lead directly at **[PLACEHOLDER: CONTACT DETAILS]**. |
 | 3. Hold, don't delete | Moderators HOLD the content. Never delete it, and never download, screenshot, share or forward sexual images of children. |
 | 4. Is it urgent? | Risk to a child, sexual content involving a minor, grooming or threats: the Lead or Deputy responds within 1 hour. Other concerns: **[PLACEHOLDER: OTHER RESPONSE TIMES]**. |
-| 5. Does it involve the Lead or ClubPulse? | YES: send it to the Deputy Safeguarding Lead, **[PLACEHOLDER: DEPUTY NAME]**, at **[PLACEHOLDER: CONTACT DETAILS]**. |
+| 5. Does it involve the Lead or ShiftUp? | YES: send it to the Deputy Safeguarding Lead, **[PLACEHOLDER: DEPUTY NAME]**, at **[PLACEHOLDER: CONTACT DETAILS]**. |
 | 6. Escalate | Club welfare officer, then the **[PLACEHOLDER: COUNTY CRICKET BOARD NAME]** county safeguarding officer, then the ECB safeguarding team. Allegation against an adult working with children: LADO. Online grooming or sexual abuse: CEOP. Sexual images of children: IWF. Need advice: NSPCC helpline. |
 | 7. Record it | Log the facts, times, actions and decisions in the community reports and moderation log, and in the safeguarding incident log if the case is serious and club-related. |
 | 8. Follow up | Check that actions are done, the child is safe, and lessons are fed into the next review. |
