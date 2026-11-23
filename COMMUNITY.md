@@ -97,3 +97,11 @@ While it is off, enforced in the service layer (so every API route, server actio
 - Junior sessions are hidden from everyone, and cannot be created or joined.
 - Junior matching and connecting are closed; parent approval of junior connections, adult-to-junior contact (`COMMUNITY_CROSSBAND_ENABLED`) and junior messaging (`COMMUNITY_JUNIOR_DMS`) are closed even if their own flags are `true`. Turning the switch on does not turn those on; each still needs its own flag.
 - Reporting, blocking and parents' oversight still work.
+
+## Club-confirmed date of birth (`DOB_CONFIRMATION_REQUIRED`)
+
+A date of birth is typed in by the family. A club admin can confirm a junior member's date after checking it against what the club holds (Safeguarding page, "Confirm dates of birth"). The confirmation is `profiles.dob_confirmed_by` and `dob_confirmed_at` (migration 026).
+
+- Only the server action `confirmDobAction` writes it, and only for a junior who is an active member of a club where the caller is an active club admin, for the exact date the admin was shown, and never for their own. Migration 026 also stops anon and signed-in database roles from setting, changing or clearing it directly. Changing the date of birth clears the confirmation.
+- With `DOB_CONFIRMATION_REQUIRED` exactly `true`, a junior (club-marked or under 18 by date) also needs a confirmed date before any junior feature opens; adults are not affected. Off by default. **Apply migration 026 before turning it on**: only then does the app read the two columns.
+- "Confirmed" means a club admin checked it, not that ClubPulse has seen a document.

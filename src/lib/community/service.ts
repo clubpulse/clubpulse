@@ -37,10 +37,19 @@ export const juniorMessagingOpen = () => communityOpen() && juniorsOpen() && pro
  * sessions are hidden and cannot be joined or created, junior matching is closed, and no private message to or from one works.
  */
 export const juniorsOpen = () => process.env.COMMUNITY_JUNIORS_ENABLED === 'true';
+/**
+ * With DOB_CONFIRMATION_REQUIRED exactly "true", an under-18 also needs a date of birth a club admin has confirmed. Off by
+ * default. Apply migration 026 before turning it on: the columns it reads do not exist until then.
+ */
+export const dobConfirmationRequired = () => process.env.DOB_CONFIRMATION_REQUIRED === 'true';
 export const JUNIORS_OFF = 'The Community is not open to under-18s yet.';
 export const JUNIOR_DMS_OFF = 'Private messages are not available for under-18s yet.';
 
 type ClubRow = { id: string; name: string; county: string | null; league: string | null; ground_lat: number | null; ground_lng: number | null };
+
+/** The profile columns the age rules read. The confirmation columns exist only once migration 026 is applied, so they are asked for only when the switch needs them. */
+export const dobColumns = (): string => (dobConfirmationRequired() ? 'date_of_birth, dob_confirmed_by, dob_confirmed_at' : 'date_of_birth');
+export const isDobConfirmed = (p: { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined | null) => !!(p?.dob_confirmed_by && p?.dob_confirmed_at);
 
 export type Viewer = {
   userId: string; junior: boolean; club: ClubRow | null; clubIds: string[];
@@ -52,15 +61,16 @@ export type Viewer = {
 export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
   const [{ data: rows }, { data: profileRows }, parents] = await Promise.all([
     admin.from('club_members').select('club_id, is_junior, is_active, joined_at').eq('user_id', userId).eq('is_active', true).order('joined_at'),
-    admin.from('profiles').select('date_of_birth').eq('id', userId).limit(1),
+    admin.from('profiles').select(dobColumns()).eq('id', userId).limit(1),
     parentsOf(admin, userId),
   ]);
   const mine = rows ?? [];
-  const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null } | undefined;
+  const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null; dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined;
   const age = ageStatus({
     clubJunior: mine.length > 0 && mine.every((m) => m.is_junior === true),
     dob: (profile?.date_of_birth as string | null | undefined) ?? null,
     hasVerifiedParent: parents.length > 0,
+    dobConfirmed: isDobConfirmed(profile), requireDobConfirmation: dobConfirmationRequired(),
   });
   // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
   // clubs can show them anyone. The explicit checks on each action give the reason.
@@ -115,11 +125,12 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
   const unique = [...new Set(ids)];
   const out = new Map<string, Person>();
   if (unique.length === 0) return out;
-  const [{ data: profiles }, { data: members }, { data: linked }] = await Promise.all([
-    admin.from('profiles').select('id, full_name, display_name, date_of_birth').in('id', unique),
+  const [{ data: profilesRaw }, { data: members }, { data: linked }] = await Promise.all([
+    admin.from('profiles').select(`id, full_name, display_name, ${dobColumns()}`).in('id', unique),
     admin.from('club_members').select('user_id, club_id, role, is_junior, is_active').in('user_id', unique).eq('is_active', true),
     admin.from('child_profiles').select('linked_user_id, parent_child_links!inner ( verified_at )').in('linked_user_id', unique).not('parent_child_links.verified_at', 'is', null),
   ]);
+  const profiles = profilesRaw as unknown as Array<Record<string, unknown>> | null;
   const withParent = new Set((linked ?? []).map((r) => r.linked_user_id as string));
   const clubIds = [...new Set((members ?? []).map((m) => m.club_id as string))];
   const { data: clubs } = clubIds.length ? await admin.from('clubs').select('id, name').in('id', clubIds) : { data: [] as Array<{ id: string; name: string }> };
@@ -132,6 +143,7 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
       clubJunior: rows.length > 0 && rows.every((m) => m.is_junior === true),
       dob: (profile?.date_of_birth as string | null | undefined) ?? null,
       hasVerifiedParent: withParent.has(id),
+      dobConfirmed: isDobConfirmed(profile as { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined), requireDobConfirmation: dobConfirmationRequired(),
     });
     const junior = age.junior;
     const juniorsClosed = junior && !juniorsOpen();

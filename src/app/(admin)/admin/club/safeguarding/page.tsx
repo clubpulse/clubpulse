@@ -3,19 +3,22 @@ import { getSafeguardingDashboard, listChildren, listIncidents, listDbsChecks } 
 import ChildrenList from '@/components/club/ChildrenList';
 import IncidentList from '@/components/club/IncidentList';
 import DbsCheckList from '@/components/club/DbsCheckList';
+import DobConfirmList from '@/components/club/DobConfirmList';
+import { listDobToConfirm } from '@/lib/admin/dob-confirmation';
 import { h1, card, muted } from '@/components/play/ui';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Safeguarding · ShiftUp' };
 
 export default async function SafeguardingPage() {
-  const { clubId } = await requireClubAdminPage();
+  const { clubId, ctx } = await requireClubAdminPage();
 
-  const [dashboard, children, incidents, dbsChecks] = await Promise.all([
+  const [dashboard, children, incidents, dbsChecks, dobs] = await Promise.all([
     getSafeguardingDashboard(clubId),
     listChildren(clubId),
     listIncidents(clubId),
     listDbsChecks(clubId),
+    listDobToConfirm(ctx.adminClubIds),
   ]);
 
   return (
@@ -40,6 +43,11 @@ export default async function SafeguardingPage() {
           color={dashboard.pending_verifications > 0 ? '#EFC84A' : undefined} />
         <Tile label="DBS Expiring (30d)" value={dashboard.expiring_dbs}
           color={dashboard.expiring_dbs > 0 ? '#ff5252' : undefined} />
+      </div>
+
+      {/* Dates of birth waiting for a club admin to confirm them */}
+      <div style={{ marginBottom: '2rem' }}>
+        <DobConfirmList items={dobs.items} confirmed={dobs.confirmed} error={dobs.error} />
       </div>
 
       {/* Children registry */}
