@@ -15,6 +15,9 @@ import { colors, fonts, radius, spacing } from '../constants/theme';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
 
+// shiftup.club and www.shiftup.club are the same site; the server may send us from one to the other
+const bare = (url: string) => url.replace(/^(https?:\/\/)www\./, '$1');
+
 // Website pages this screen may show. Keep in step with APP_PATHS in src/lib/auth/app-view.ts.
 const IN_APP_PATHS = [
   '/auth', '/analyse', '/highlights', '/coaching-history', '/development', '/player-report', '/log-performance',
@@ -77,11 +80,13 @@ export default function WebScreen() {
   // Other sites open in the phone's browser.
   const allow = useCallback((request: WebViewNavigation) => {
     if (!BASE_URL || request.url.startsWith('about:') || request.url.startsWith('blob:')) return true;
-    if (!request.url.startsWith(BASE_URL)) {
+    const base = bare(BASE_URL);
+    const url = bare(request.url);
+    if (!url.startsWith(base)) {
       Linking.openURL(request.url).catch(() => null);
       return false;
     }
-    const pagePath = request.url.slice(BASE_URL.length).split(/[?#]/)[0] || '/';
+    const pagePath = url.slice(base.length).split(/[?#]/)[0] || '/';
     if (IN_APP_PATHS.some((allowed) => pagePath === allowed || pagePath.startsWith(`${allowed}/`))) return true;
     // Coach AI has its own screen in the app
     if (pagePath === '/companion') router.replace('/(tabs)/companion');

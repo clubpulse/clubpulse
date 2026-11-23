@@ -71,7 +71,7 @@ export default function CoachesScreen() {
           <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
             <Text style={fonts.heading}>Coaches</Text>
             <Text style={fonts.small}>Coaches approved by your club.</Text>
-            {error && <Text style={{ color: colors.danger }}>{error}. Pull down to try again.</Text>}
+            {error && <Text style={{ color: colors.danger }}>{error}</Text>}
 
             {/* Show own coaching profile if user is a coach */}
             {isCoach && user && (

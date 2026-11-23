@@ -11,7 +11,7 @@
         "simulator": true
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://shiftup.club",
+        "EXPO_PUBLIC_API_URL": "https://www.shiftup.club",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
@@ -22,7 +22,7 @@
         "buildConfiguration": "Release"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://shiftup.club",
+        "EXPO_PUBLIC_API_URL": "https://www.shiftup.club",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
@@ -33,7 +33,7 @@
         "buildConfiguration": "Release"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://shiftup.club",
+        "EXPO_PUBLIC_API_URL": "https://www.shiftup.club",
         "EXPO_PUBLIC_SUPABASE_URL": "https://nzdejcuvqpebmcqahups.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_5pRsYWL9hjOJATlh42s2fA_vKfghhUc"
       }
