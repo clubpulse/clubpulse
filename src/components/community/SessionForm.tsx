@@ -26,7 +26,7 @@ export function SessionForm({ clubs, canHostJunior, adults }: { clubs: Array<{ i
             {choices.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
         </label>
-      ) : <p role="alert">A junior session needs a named adult from your club with a current enhanced DBS check recorded. Nobody at this club qualifies yet. Ask ClubPulse to record the check.</p>)}
+      ) : <p role="alert">A junior session needs a named adult from your club with a current enhanced DBS check recorded. Nobody at this club qualifies yet. Ask ShiftUp to record the check.</p>)}
       <input style={field} placeholder="Title" maxLength={80} value={v.title} onChange={(e) => setV({ ...v, title: e.target.value })} />
       <input style={field} placeholder="Where (club ground or public venue)" maxLength={120} value={v.place} onChange={(e) => setV({ ...v, place: e.target.value })} />
       <input style={field} type="datetime-local" value={v.startsAt} onChange={(e) => setV({ ...v, startsAt: e.target.value })} />

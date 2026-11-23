@@ -1,4 +1,4 @@
-// Who may be a parent or guardian on ClubPulse, and who may verify one. Service role; callers have already resolved who
+// Who may be a parent or guardian on ShiftUp, and who may verify one. Service role; callers have already resolved who
 // is asking. A date of birth here is declared, not proven: this stops a junior or an account with no date of birth being
 // treated as a parent, not someone who lies about their age.
 

@@ -33,7 +33,7 @@ export async function clubsWithCurrentDbs(userId: string, adminClubIds: string[]
   return adminClubIds.filter((c) => dbsIsCurrent((data ?? []).filter((d) => d.club_id === c) as DbsRow[], today));
 }
 
-export const VERIFY_NEEDS_DBS = 'Verifying a parent or guardian needs a current enhanced DBS check recorded for you at this club. Ask ClubPulse to record yours.';
+export const VERIFY_NEEDS_DBS = 'Verifying a parent or guardian needs a current enhanced DBS check recorded for you at this club. Ask ShiftUp to record yours.';
 
 /** Whether this person holds a current enhanced DBS check at this one club. */
 export async function hasCurrentDbsAt(userId: string, clubId: string): Promise<boolean> {
