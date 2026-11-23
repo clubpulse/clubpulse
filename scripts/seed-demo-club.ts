@@ -25,7 +25,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { DEMO_CLUB_NAMES, demoScore, guardSeed, isDemoEmail, nextWeekday } from '../src/lib/demo/guard';
 import { LESSONS } from '../src/lib/academy/content';
 
-const DEFAULT_PASSWORD = 'DemoPass-ClubPulse-2026!';
+const DEFAULT_PASSWORD = 'DemoPass-ShiftUp-2026!';
 
 type Person = { key: string; email: string; name: string; display: string; role: 'club_admin' | 'coach' | 'parent' | 'player'; junior?: boolean; club: 'main' | 'rovers' };
 
@@ -96,8 +96,8 @@ async function main() {
   const password = process.env.DEMO_PASSWORD || DEFAULT_PASSWORD;
 
   console.log('Seeding fictional demo data…');
-  const main = await ensureClub(db, DEMO_CLUB_NAMES[0], 'clubpulse-demo-cc', 51.3811, -2.3590);
-  const rovers = await ensureClub(db, DEMO_CLUB_NAMES[1], 'clubpulse-demo-rovers-cc', 51.4016, -2.3105);
+  const main = await ensureClub(db, DEMO_CLUB_NAMES[0], 'shiftup-demo-cc', 51.3811, -2.3590);
+  const rovers = await ensureClub(db, DEMO_CLUB_NAMES[1], 'shiftup-demo-rovers-cc', 51.4016, -2.3105);
   const club = { main, rovers };
 
   const id: Record<string, string> = {};
@@ -115,7 +115,7 @@ async function main() {
   // A Saturday fixture, availability and an XI
   const saturday = nextWeekday(new Date(), 6);
   const { data: fx } = await db.from('fixtures').select('id').eq('club_id', main).eq('match_date', saturday).maybeSingle();
-  const fixtureId = fx?.id as string | undefined ?? must('fixture', await db.from('fixtures').insert({ club_id: main, opponent: 'ClubPulse Demo Rovers CC', match_date: saturday, match_time: '13:00', venue: 'Demo Ground, Bath', format: 'league' }).select('id').single()).id as string;
+  const fixtureId = fx?.id as string | undefined ?? must('fixture', await db.from('fixtures').insert({ club_id: main, opponent: 'ShiftUp Demo Rovers CC', match_date: saturday, match_time: '13:00', venue: 'Demo Ground, Bath', format: 'league' }).select('id').single()).id as string;
   const adults = ['captain', 'opener', 'spinner', 'keeper', 'allrounder'];
   for (const [i, k] of adults.entries()) await tolerate(`availability ${k}`, db.from('fixture_availability').upsert({ fixture_id: fixtureId, user_id: id[k], status: i === 4 ? 'maybe' : 'available' }, { onConflict: 'fixture_id,user_id' }));
   await tolerate('XI', db.from('fixture_team_selections').upsert({ fixture_id: fixtureId, club_id: main, selected_players: adults.slice(0, 4).map((k) => id[k]), confirmed_by: id.captain }, { onConflict: 'fixture_id' }));
@@ -129,7 +129,7 @@ async function main() {
   const { count: postCount } = await db.from('community_posts').select('id', { count: 'exact', head: true }).eq('club_id', main);
   if (!postCount) {
     await tolerate('posts', db.from('community_posts').insert([
-      { author_id: id.captain, club_id: main, body: 'Great session in the nets tonight. Saturday’s XI is up on ClubPulse.', status: 'live' },
+      { author_id: id.captain, club_id: main, body: 'Great session in the nets tonight. Saturday’s XI is up on ShiftUp.', status: 'live' },
       { author_id: id.spinner, club_id: main, body: 'Anyone up for early nets on Thursday before work?', status: 'live' },
       { author_id: id.keeper, club_id: main, body: 'Thank you to everyone who helped with the working party at the ground.', status: 'live' },
       { author_id: id.opener, club_id: main, body: 'This post is held to show the moderation inbox (demo).', status: 'held', held_reason: 'Held by the safety check (demo)' },
@@ -192,7 +192,7 @@ function printDemoScript(saturday: string) {
     '  1. Signed out: the homepage, then For Clubs, then For Players. Point out the four pillars and what is live versus opening soon.',
     `  2. Sign in as the captain (demo-captain). Home shows one live fact per pillar. Open Match Day: availability for Saturday ${saturday} and the XI.`,
     '  3. Analysis: open the Analysis pillar and the progress view (needs a real clip; describe it if no demo clip is uploaded).',
-    '  4. Community (only if COMMUNITY_ENABLED is on in this environment, see COMMUNITY.md): the feed with three live posts; the moderation inbox as a ClubPulse staff admin shows one held post;',
+    '  4. Community (only if COMMUNITY_ENABLED is on in this environment, see COMMUNITY.md): the feed with three live posts; the moderation inbox as a ShiftUp staff admin shows one held post;',
     '     Near me shows Thursday nets; as demo-junior-one, an adult cannot be messaged or followed and adult sessions are not shown. The parent account sees the child at /parent/community.',
     '  5. Wellness (captain): today’s check-in, the four-week trend, the match-day routine, Mental skills, and the private recovery log. As demo-coach open /wellness/team: only averages for players who chose to share.',
     '  6. Academy (captain): the catalogue shows Cricket skills finished. Open /academy/certificate/skills. Make a practice plan.',

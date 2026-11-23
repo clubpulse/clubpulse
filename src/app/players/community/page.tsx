@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PillarPage from '@/components/marketing/PillarPage';
 
 export const metadata: Metadata = {
-  title: 'Community | ClubPulse',
+  title: 'Community | ShiftUp',
   description: 'The tools your club already uses together, and a cricket network with safeguarding built in, opening soon.',
 };
 

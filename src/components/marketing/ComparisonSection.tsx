@@ -1,7 +1,7 @@
 export default function ComparisonSection() {
-  type Platform = 'clubpulse' | 'pitchero' | 'teamapp' | 'playcricket';
+  type Platform = 'shiftup' | 'pitchero' | 'teamapp' | 'playcricket';
   const platforms: { id: Platform; name: string; short: string }[] = [
-    { id: 'clubpulse', name: 'ClubPulse', short: 'CP' },
+    { id: 'shiftup', name: 'ShiftUp', short: 'SU' },
     { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
     { id: 'teamapp', name: 'TeamApp', short: 'TA' },
     { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
@@ -12,17 +12,17 @@ export default function ComparisonSection() {
   const rows: Row[] = [
     { label: 'Built for cricket only',          cp: '✓', pi: '~', ta: '✕', pc: '✓', note: 'Pitchero covers all sports; TeamApp is generic' },
     { label: 'Live in-app scorecard',            cp: '✓', pi: '✓', ta: '✕', pc: '~', note: 'Play-Cricket is web-only, no native app' },
-    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse-exclusive: Claude-powered insights' },
+    { label: 'AI coaching & opposition intel',   cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ShiftUp-exclusive: Claude-powered insights' },
     { label: 'Availability & XI selection',      cp: '✓', pi: '✓', ta: '✓', pc: '✕' },
     { label: 'Integrated fee & finance tracking', cp: '✓', pi: '~', ta: '~', pc: '✕', note: 'Others require third-party payment tools' },
-    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ClubPulse Scores: earn, redeem, retain players' },
+    { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ShiftUp Scores: earn, redeem, retain players' },
     { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
     { label: 'Free for players',                 cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
     { label: 'Club plan from £29.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
     { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
   ];
 
-  const colStyle = (id: Platform): React.CSSProperties => id === 'clubpulse'
+  const colStyle = (id: Platform): React.CSSProperties => id === 'shiftup'
     ? { background: 'rgba(37,99,235,0.08)', borderLeft: '1px solid rgba(37,99,235,0.3)', borderRight: '1px solid rgba(37,99,235,0.3)' }
     : {};
 
@@ -39,7 +39,7 @@ export default function ComparisonSection() {
           A generation ahead of the alternatives
         </h2>
         <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: '16px', marginBottom: '48px', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
-          ClubPulse was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
+          ShiftUp was built for how cricket clubs actually run today — not retrofitted from a generic sports template.
         </p>
 
         <div style={{ overflowX: 'auto', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -48,7 +48,7 @@ export default function ComparisonSection() {
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <th style={{ padding: '14px 20px', textAlign: 'left', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.03)' }}>Feature</th>
                 {platforms.map(p => (
-                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'clubpulse' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'clubpulse' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
+                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'shiftup' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'shiftup' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
                     <span style={{ display: 'none' }} aria-hidden="true">{p.short}</span>
                     <span>{p.name}</span>
                   </th>

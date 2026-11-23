@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
       matchDate ? `Match date: ${matchDate}` : null,
     ].filter(Boolean).join('\n');
 
-    const prompt = `You are ClubPulse's opposition intelligence analyst for grassroots cricket. Generate a concise captain's pre-match briefing for an upcoming fixture.
+    const prompt = `You are ShiftUp's opposition intelligence analyst for grassroots cricket. Generate a concise captain's pre-match briefing for an upcoming fixture.
 
 Opponent: ${opponent}
 ${contextSection}

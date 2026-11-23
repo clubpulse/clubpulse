@@ -19,7 +19,7 @@ export type SyncOutcome = {
 
 // Highest count already sent per user and local date, so an unchanged total is not re-sent.
 // Persisted because the background task starts in a fresh JS runtime each time.
-const SENT_KEY = 'clubpulse.steps.sent';
+const SENT_KEY = 'shiftup.steps.sent';
 type Sent = Record<string, number>;
 
 async function loadSent(): Promise<Sent> {

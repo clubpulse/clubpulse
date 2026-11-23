@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const redemptionId: string = rpc.redemption_id;
 
   // ── 3b. No API access yet: queue the card for a manual order ───────────────
-  // The Scores are already deducted and the redemption row is 'pending'. A ClubPulse admin
+  // The Scores are already deducted and the redemption row is 'pending'. A ShiftUp admin
   // orders the card in the Tango portal from /admin/gift-cards and marks it sent.
   if (!isTangoApiConfigured()) {
     await admin
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
   // ── 4. Fetch player email (needed for Tango order) ─────────────────────────
   const { data: userData } = await admin.auth.admin.getUserById(user.id);
-  const email = userData?.user?.email ?? 'player@clubpulse.app';
+  const email = userData?.user?.email ?? 'player@shiftup.club';
 
   // ── 5. Place Tango order ───────────────────────────────────────────────────
   const amountGBP = reward.tango_amount_gbp ?? reward.creds_cost / SCORES_PER_GBP; // fallback: app-wide rate

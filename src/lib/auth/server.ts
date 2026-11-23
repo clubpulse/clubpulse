@@ -5,7 +5,7 @@ import { safeRedirect } from '@/lib/utils/redirect';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { ensureProfileAndRoles } from '@/lib/auth/onboarding';
+import { backfillDateOfBirth, ensureProfileAndRoles } from '@/lib/auth/onboarding';
 
 // Memoised per request, so layouts and pages can both call it without extra round trips.
 export const getCurrentUser = cache(async () => {
@@ -17,18 +17,28 @@ export const getCurrentUser = cache(async () => {
 });
 
 /**
- * Makes sure a signed-in person has a profile. Someone who confirms their email in a different browser from the
- * sign-up never reaches /auth/callback, which is where the profile used to be created, so password sign-in must
- * heal it. Once per request (cache), one cheap lookup when the profile exists, and a failure is logged, never thrown:
- * it must not stop the page from loading.
+ * Makes sure a signed-in person has a profile, and a date of birth where the sign-up recorded one. Someone who
+ * confirms their email in a different browser from the sign-up never reaches /auth/callback, which is where the
+ * profile used to be created, so password sign-in must heal it. Once per request (cache), one cheap lookup when
+ * the profile is complete, and a failure is logged, never thrown: it must not stop the page from loading.
+ * Says whether a date of birth is still missing, so the dashboard can ask for it.
  */
-export const ensureProfile = cache(async (user: User): Promise<void> => {
+export const ensureProfile = cache(async (user: User): Promise<{ needsDob: boolean }> => {
   try {
-    const { data } = await createAdminClient().from('profiles').select('id').eq('id', user.id).maybeSingle();
-    if (data) return;
-    await ensureProfileAndRoles(user);
+    const admin = createAdminClient();
+    const { data } = await admin.from('profiles').select('id, date_of_birth').eq('id', user.id).maybeSingle();
+    if (!data) {
+      await ensureProfileAndRoles(user);
+    } else if (!data.date_of_birth) {
+      await backfillDateOfBirth(user);
+    } else {
+      return { needsDob: false };
+    }
+    const { data: after } = await admin.from('profiles').select('date_of_birth').eq('id', user.id).maybeSingle();
+    return { needsDob: !!after && !after.date_of_birth };
   } catch (e) {
     console.error('[auth] could not ensure profile:', e instanceof Error ? e.message : e);
+    return { needsDob: false };
   }
 });
 

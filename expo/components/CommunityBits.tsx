@@ -42,14 +42,14 @@ export function Stopped({ tell, onClose }: { tell: string; onClose: () => void }
   );
 }
 
-/** Report something to ClubPulse, or block the person behind it. */
+/** Report something to ShiftUp, or block the person behind it. */
 export function safetyMenu(kind: 'post' | 'comment' | 'message' | 'profile', targetId: string, person: { id: string; name: string }, after?: () => void) {
   const send = async (body: Record<string, unknown>, done: string) => {
     try { await api('/api/community/safety', { method: 'POST', body }); Alert.alert(done); after?.(); }
     catch (e) { Alert.alert('That did not work', e instanceof Error ? e.message : 'Try again.'); }
   };
   Alert.alert(person.name, undefined, [
-    { text: 'Report to ClubPulse', onPress: () => send({ action: 'report', kind, targetId }, 'Reported. ClubPulse will look at it.') },
+    { text: 'Report to ShiftUp', onPress: () => send({ action: 'report', kind, targetId }, 'Reported. ShiftUp will look at it.') },
     { text: `Block ${person.name}`, style: 'destructive', onPress: () => send({ action: 'block', userId: person.id }, `${person.name} is blocked. You will not see each other.`) },
     { text: 'Cancel', style: 'cancel' },
   ]);

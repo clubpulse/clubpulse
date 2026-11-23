@@ -3,9 +3,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
 import type { ActionResult } from '@/lib/types/action';
-import type { ClubPulseScore } from '@/lib/types/pulse-score';
+import type { ShiftupScore } from '@/lib/types/pulse-score';
 
-export async function getLatestPulseScore(clubId: string): Promise<ActionResult<ClubPulseScore>> {
+export async function getLatestPulseScore(clubId: string): Promise<ActionResult<ShiftupScore>> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not authenticated' };
@@ -23,7 +23,7 @@ export async function getLatestPulseScore(clubId: string): Promise<ActionResult<
   return { success: true, data };
 }
 
-export async function getPulseHistory(clubId: string, weeks = 8): Promise<ActionResult<ClubPulseScore[]>> {
+export async function getPulseHistory(clubId: string, weeks = 8): Promise<ActionResult<ShiftupScore[]>> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, error: 'Not authenticated' };

@@ -15,7 +15,7 @@ describe('safeAppPath', () => {
 });
 
 describe('isCrossSite', () => {
-  const own = 'https://clubpulse.co';
+  const own = 'https://shiftup.club';
 
   it('lets the app web view and our own pages through', () => {
     expect(isCrossSite(null, null, own)).toBe(false);
@@ -26,6 +26,6 @@ describe('isCrossSite', () => {
   it('refuses other websites', () => {
     expect(isCrossSite('https://evil.example', null, own)).toBe(true);
     expect(isCrossSite(null, 'cross-site', own)).toBe(true);
-    expect(isCrossSite('https://clubpulse.co.evil.example', 'same-site', own)).toBe(true);
+    expect(isCrossSite('https://shiftup.club.evil.example', 'same-site', own)).toBe(true);
   });
 });

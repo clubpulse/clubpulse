@@ -8,7 +8,7 @@
 // Everything here is a pure function of the seed and what has happened so far. No imports.
 //
 // Players are real cricketers, by name, country and role only: no photos, no team badges, and
-// nothing that suggests they endorse the game. The points next to each are ClubPulse's own
+// nothing that suggests they endorse the game. The points next to each are ShiftUp's own
 // estimate of T20 value, not an official figure. Franchises are invented. Money is in lakhs of
 // pretend rupees (100 lakh = 1 crore) and exists only inside the game; it is nothing to do with Scores.
 
@@ -111,7 +111,7 @@ const COUNTRY: Record<string, { name: string; flag: string }> = {
   AFG: { name: 'Afghanistan', flag: '🇦🇫' },
 };
 
-// name|country|points, with |U on the end for an uncapped player. Points are ClubPulse's own
+// name|country|points, with |U on the end for an uncapped player. Points are ShiftUp's own
 // estimate of T20 value: edit them here (in both copies of this file) as form changes. Anyone not
 // from India counts as an overseas player.
 //

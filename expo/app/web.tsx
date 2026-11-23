@@ -1,4 +1,4 @@
-// Shows a page of the ClubPulse website inside the app, signed in as the same person.
+// Shows a page of the ShiftUp website inside the app, signed in as the same person.
 // Used for the features that only exist on the web so far: video analysis (which needs the
 // camera), highlights, progress tracking and coaching.
 //
@@ -64,10 +64,10 @@ export default function WebScreen() {
   }, [start]);
 
   // Links inside a page can lead to another page (Development tracking to Analyse, say), so the
-  // header follows whatever page is showing. Web titles look like "Analyse | ClubPulse".
+  // header follows whatever page is showing. Web titles look like "Analyse | ShiftUp".
   const followTitle = useCallback((state: WebViewNavigation) => {
     const pageTitle = state.title?.split('|')[0].trim();
-    if (pageTitle && !state.loading && !/^https?:|^about:/.test(pageTitle) && pageTitle !== 'ClubPulse') {
+    if (pageTitle && !state.loading && !/^https?:|^about:/.test(pageTitle) && pageTitle !== 'ShiftUp') {
       navigation.setOptions({ title: pageTitle });
     }
   }, [navigation]);
@@ -99,7 +99,7 @@ export default function WebScreen() {
           onLoadEnd={() => setLoading(false)}
           onError={() => setError('Could not load this page. Check your connection.')}
           onHttpError={(event) => {
-            if (event.nativeEvent.statusCode >= 500) setError('ClubPulse is having trouble. Please try again in a moment.');
+            if (event.nativeEvent.statusCode >= 500) setError('ShiftUp is having trouble. Please try again in a moment.');
           }}
           onShouldStartLoadWithRequest={allow}
           onNavigationStateChange={followTitle}

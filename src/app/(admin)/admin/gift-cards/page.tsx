@@ -5,7 +5,7 @@ import { getGiftCardQueue } from '@/lib/actions/gift-card-orders';
 import { GiftCardQueue } from '@/components/gift-card-orders/GiftCardQueue';
 import { h1, muted } from '@/components/play/ui';
 
-// ClubPulse staff only: the gift card account belongs to ClubPulse, not to a club.
+// ShiftUp staff only: the gift card account belongs to ShiftUp, not to a club.
 export default async function GiftCardOrdersPage() {
   const user = await requireUser();
   if (!isPlatformAdmin(user.id)) redirect('/admin/club');

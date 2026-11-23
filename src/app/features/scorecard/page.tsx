@@ -191,7 +191,7 @@ export default function ScorecardPage() {
           <div className="sc-section">
             <p className="sc-section-eyebrow">What&apos;s included</p>
             <h2 className="sc-section-h2">Everything a modern scorecard should do.</h2>
-            <p className="sc-section-sub">ClubPulse&apos;s live scorecard goes far beyond pencil and paper — and far beyond a static spreadsheet shared in a group chat.</p>
+            <p className="sc-section-sub">ShiftUp&apos;s live scorecard goes far beyond pencil and paper — and far beyond a static spreadsheet shared in a group chat.</p>
             <div className="sc-grid">
               {[
                 { icon: '⚡', h: 'Live for members', body: 'The moment a scorer records a ball, signed-in club members watching see it update. Anyone with the public link sees it refresh every few seconds.' },
@@ -218,7 +218,7 @@ export default function ScorecardPage() {
               <p className="sc-section-eyebrow">The technology</p>
               <h2 className="sc-section-h2">Built for real match conditions.</h2>
               <div className="sc-tech-body">
-                <p>Most scoring apps were built for county cricket or for ECB return reporting. ClubPulse was built at a grassroots club, by someone who scores on a phone in the rain with one bar of signal.</p>
+                <p>Most scoring apps were built for county cricket or for ECB return reporting. ShiftUp was built at a grassroots club, by someone who scores on a phone in the rain with one bar of signal.</p>
                 <p>Club members get live updates as each ball is recorded, and the scoring pad is designed for one-handed phone use. Scoring needs a data connection, so it works best with at least a little signal.</p>
                 <p>The shareable link is a web page that refreshes every few seconds, with no login required for viewers. Copy the URL, drop it in the club&apos;s Facebook group, and anyone can follow along.</p>
               </div>
@@ -241,8 +241,8 @@ export default function ScorecardPage() {
               ['Who scores? Does it need special training?', 'Any player, volunteer, or parent with a phone can score. The interface is designed to be intuitive — wide, no-ball, dot, run, boundary. No training required, though we provide a short guide.'],
               ['What happens if the scorer loses signal mid-match?', 'Scoring needs a connection to save each ball. Offline scoring is not available yet. If signal drops, wait for it to return and carry on; balls already recorded are saved.'],
               ['Can opposition teams or the league use this too?', 'The shareable link works for anyone — opposition clubs, league administrators, or journalists. They see a read-only live view. You control your own data.'],
-              ['Does this integrate with Play-Cricket or other ECB systems?', 'Not yet — ECB integration is on our roadmap. Currently, match data lives in ClubPulse. We\'re exploring Play-Cricket integration.'],
-              ['How far back does career history go?', 'From the moment your club joins ClubPulse. We can\'t import historical data from other systems, but from day one, every match is captured and every player\'s stats begin building.'],
+              ['Does this integrate with Play-Cricket or other ECB systems?', 'Not yet — ECB integration is on our roadmap. Currently, match data lives in ShiftUp. We\'re exploring Play-Cricket integration.'],
+              ['How far back does career history go?', 'From the moment your club joins ShiftUp. We can\'t import historical data from other systems, but from day one, every match is captured and every player\'s stats begin building.'],
               ['Can multiple scorers work on one match?', 'One primary scorer per match is supported currently. Multi-scorer and tablet scoring modes (common for two-scorer setups) are on the roadmap.'],
             ].map(([q, a], i) => (
               <div key={i} className="sc-faq-item">

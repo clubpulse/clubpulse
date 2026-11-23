@@ -51,11 +51,11 @@ export default async function SeasonWrapPage() {
     // Table doesn't exist yet — use zeros; the UI handles this gracefully
   }
 
-  const clubPulseScore = wallet.success && wallet.data
+  const shiftupScore = wallet.success && wallet.data
     ? Math.round(totalBalance(wallet.data))
     : Math.round(runs * 2 + wickets * 10 + matches * 5);
 
-  const stats: SeasonStats = { displayName, runs, wickets, matches, clubPulseScore, year };
+  const stats: SeasonStats = { displayName, runs, wickets, matches, shiftupScore, year };
 
   return <SeasonWrapClient stats={stats} />;
 }

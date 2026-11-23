@@ -7,7 +7,7 @@ import { getPrimaryClubId } from '@/lib/scores/context';
 import type { SubscriptionTier } from '@/lib/types/subscription';
 import { isLive, isPlayerPlan, lookupKey, offerFor, type Offer, type PlanKind, type PlayerPlan } from '@/lib/billing/player-plans';
 
-const SITE = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co').replace(/\/$/, '');
+const SITE = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club').replace(/\/$/, '');
 
 /** Online payment stays off until this is set to "on" in Vercel. The Stripe key there is a live one. */
 export const playerCheckoutEnabled = (): boolean => process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on';
@@ -83,7 +83,7 @@ export async function createPlayerCheckout(userId: string, email: string | null,
 
   let customerId = row?.stripe_customer_id ?? null;
   if (!customerId) {
-    const customer = await stripe.customers.create({ email: email ?? undefined, metadata: { user_id: userId, platform: 'clubpulse', type: 'player' } });
+    const customer = await stripe.customers.create({ email: email ?? undefined, metadata: { user_id: userId, platform: 'shiftup', type: 'player' } });
     customerId = customer.id;
     await admin.from('player_subscriptions').upsert({ user_id: userId, stripe_customer_id: customerId, status: 'none' }, { onConflict: 'user_id' });
   }
@@ -94,7 +94,7 @@ export async function createPlayerCheckout(userId: string, email: string | null,
   let priceId = found.data[0]?.id;
   if (!priceId) {
     const product = await stripe.products.create({
-      name: `ClubPulse ${option.label}`,
+      name: `ShiftUp ${option.label}`,
       metadata: { platform: 'clubpulse', type: 'player', kind: offer.kind, plan: option.plan },
     });
     const price = await stripe.prices.create({

@@ -348,7 +348,7 @@ export default function AvailabilityPage() {
             <h2 className="av-section-h2">What Saturday mornings used to look like.</h2>
             <div className="av-compare-grid">
               <div className="av-compare-col before">
-                <p className="av-compare-label before">Without ClubPulse</p>
+                <p className="av-compare-label before">Without ShiftUp</p>
                 {[
                   ['😩', 'Captain posts in WhatsApp group at 9pm Wednesday'],
                   ['😩', '30-person group chat explodes with "Yes", "Maybe", voice notes'],
@@ -363,7 +363,7 @@ export default function AvailabilityPage() {
                 ))}
               </div>
               <div className="av-compare-col after">
-                <p className="av-compare-label after">With ClubPulse</p>
+                <p className="av-compare-label after">With ShiftUp</p>
                 {[
                   ['✅', 'Captain sends poll from dashboard — one tap'],
                   ['✅', 'Players respond via app — 2 seconds each, no thread noise'],
@@ -387,11 +387,11 @@ export default function AvailabilityPage() {
           <h2 className="av-section-h2">Common questions about Availability.</h2>
           <div className="av-faq-list">
             {[
-              ['Do players need to download an app?', 'Yes — players download the ClubPulse app (iOS and Android). It\'s free forever for players. The captain manages everything from the web dashboard or the same app.'],
+              ['Do players need to download an app?', 'Yes — players download the ShiftUp app (iOS and Android). It\'s free forever for players. The captain manages everything from the web dashboard or the same app.'],
               ['What if a player doesn\'t have a smartphone?', 'The captain can mark players available manually from the dashboard. The system doesn\'t block selection if someone can\'t use the app — it just removes the automated workflow for them.'],
               ['Can we have multiple matches open at once?', 'Yes. If you have a first XI and a second XI playing on the same weekend, both can have separate availability polls running simultaneously. Each match has its own squad count and player list.'],
               ['What happens when someone changes their response?', 'Players can update their response right up until the captain locks the squad. The captain sees the change in real time and the squad count updates automatically.'],
-              ['Can we still use WhatsApp alongside this?', 'Of course. ClubPulse doesn\'t replace your club culture — it replaces one specific workflow (the availability poll) so that WhatsApp can go back to being for banter, not admin.'],
+              ['Can we still use WhatsApp alongside this?', 'Of course. ShiftUp doesn\'t replace your club culture — it replaces one specific workflow (the availability poll) so that WhatsApp can go back to being for banter, not admin.'],
               ['How does the +5 Scores award work?', 'The moment a player submits their response (available, unavailable, or unsure), 5 Scores are added to their balance automatically. No action needed from the captain or admin.'],
             ].map(([q, a], i) => (
               <div key={i} className="av-faq-item">
@@ -407,7 +407,7 @@ export default function AvailabilityPage() {
           <div className="av-cta-inner">
             <div>
               <h2 className="av-cta-h">Ready to fix Saturday mornings?</h2>
-              <p className="av-cta-sub">Get in touch and we&apos;ll bring ClubPulse to your club — free for all your players.</p>
+              <p className="av-cta-sub">Get in touch and we&apos;ll bring ShiftUp to your club — free for all your players.</p>
             </div>
             <Link href="/contact" className="av-cta-btn">Get started — it&apos;s free →</Link>
           </div>

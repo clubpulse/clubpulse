@@ -10,7 +10,7 @@ import { CATEGORIES, type CategoryId } from '@/lib/marketing/feature-categories'
  *
  * Sticky left nav of feature categories, with an interactive demo panel on the
  * right that mimics the real product UI. Each category belongs to the side of
- * ClubPulse where it is mostly used (players or clubs).
+ * ShiftUp where it is mostly used (players or clubs).
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -553,7 +553,7 @@ const HUB_ITEMS = [
   li('📖','Club bible','Rules, contacts and how the club works in one place',['An admin adds the club rules, key contacts and how things run.','Members open the club bible from the app.','New joiners find the answers without asking the committee.']),
   li('⚙️','Scores rules','Choose what earns Scores and how many',['Open Scores rules in the club admin area.','Choose what earns Scores, such as turning up, helping out or playing, and how many.','Members earn Scores automatically as it happens.']),
   li('🎟️','Scratch cards','Reward turn-up and effort with a bit of fun',['Set up scratch cards for your club.','Hand them out for turn-up and effort.','Members scratch to reveal what they have earned.']),
-  li('🛡️','Coaches and safeguarding','Qualifications and checks, tracked and in date',['Add each coach with their qualifications and checks.','ClubPulse keeps them in one list with dates.','You can see at a glance what is in date and what needs renewing.']),
+  li('🛡️','Coaches and safeguarding','Qualifications and checks, tracked and in date',['Add each coach with their qualifications and checks.','ShiftUp keeps them in one list with dates.','You can see at a glance what is in date and what needs renewing.']),
 ];
 const WELLNESS_ITEMS = [
   li('🫁','Breathing and focus','Short guided sessions with a breathing circle and a timer',['Choose a short breathing or focus session.','Follow the breathing circle on screen.','The timer ends the session and it counts towards your Run Chase.']),
@@ -802,7 +802,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
       {/* Footer CTA */}
       <div className="fp-footer-cta">
         <h2>{audience === 'clubs' ? 'Want this for your club?' : 'Ready to join in?'}</h2>
-        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Free to join, whether or not your club is on ClubPulse yet.'}</p>
+        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Free to join, whether or not your club is on ShiftUp yet.'}</p>
         <div className="fp-footer-btns">
           <a href={audience === 'clubs' ? '/contact' : '/auth/sign-up'} className="fp-footer-btn-p">{audience === 'clubs' ? 'Tell us about your club' : 'Join as a player'}</a>
           <Link href="/" className="fp-footer-btn-g">Back to home</Link>

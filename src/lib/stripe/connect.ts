@@ -9,7 +9,7 @@ import { getStripe } from './client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ClubStripeAccount } from '@/lib/types/subscription';
 
-const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co';
+const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
 /**
  * Create a Stripe Connect account for a club and return the onboarding URL.
@@ -44,7 +44,7 @@ export async function createConnectAccount(
       metadata: {
         club_id: clubId,
         club_name: clubName,
-        platform: 'clubpulse',
+        platform: 'shiftup',
       },
       business_profile: {
         name: clubName,

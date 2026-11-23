@@ -25,7 +25,7 @@ export type StepsRead = { access: StepsAccess; steps: number; source: StepSource
  */
 export type ReadOptions = { interactive: boolean };
 
-const ASKED_KEY = 'clubpulse.health.asked';
+const ASKED_KEY = 'shiftup.health.asked';
 
 async function hasAsked(): Promise<boolean> {
   return (await AsyncStorage.getItem(ASKED_KEY).catch(() => null)) === '1';

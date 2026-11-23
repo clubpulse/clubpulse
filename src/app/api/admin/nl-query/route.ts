@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
       formRatings: namedFormRatings,
     }, null, 2);
 
-    const systemPrompt = `You are ClubPulse Analytics — an intelligent data assistant for grassroots cricket clubs.
+    const systemPrompt = `You are ShiftUp Analytics — an intelligent data assistant for grassroots cricket clubs.
 You have been given a JSON snapshot of the club's data. Answer the admin's question in clear, direct, plain English.
 
 Rules:

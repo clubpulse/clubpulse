@@ -18,7 +18,7 @@ export default function CertificateScreen() {
     api<Certificate>(`/api/academy/certificate/${encodeURIComponent(String(track))}`).then(setCert).catch((e) => setError(e instanceof ApiError && e.status === 404 ? 'Finish every lesson in this track to earn the certificate.' : 'Could not load the certificate.'));
   }, [track]);
 
-  const share = () => cert && Share.share({ message: `${cert.name} has completed ${cert.title} in the ClubPulse Academy (${prettyDate(cert.completedOn)}).` });
+  const share = () => cert && Share.share({ message: `${cert.name} has completed ${cert.title} in the ShiftUp Academy (${prettyDate(cert.completedOn)}).` });
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -28,7 +28,7 @@ export default function CertificateScreen() {
         {cert && (
           <>
             <View style={styles.paper} accessibilityLabel={`Certificate: ${cert.name}, ${cert.title}`}>
-              <Text style={styles.eyebrow}>CLUBPULSE ACADEMY</Text>
+              <Text style={styles.eyebrow}>ShiftUp Academy</Text>
               <Text style={styles.small}>This certifies that</Text>
               <Text style={styles.name}>{cert.name}</Text>
               <Text style={styles.small}>has completed</Text>

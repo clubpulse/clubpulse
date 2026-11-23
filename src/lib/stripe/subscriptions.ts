@@ -9,7 +9,7 @@ import { getStripe } from './client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { TIER_CONFIG, type SubscriptionTier } from '@/lib/types/subscription';
 
-const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co';
+const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
 /**
  * Create a Stripe Checkout session for a club subscription upgrade.
@@ -46,7 +46,7 @@ export async function createSubscriptionCheckout(
 
     const customer = await stripe.customers.create({
       email: adminEmail,
-      name: club?.name ?? 'ClubPulse Club',
+      name: club?.name ?? 'ShiftUp Club',
       metadata: { club_id: clubId, platform: 'clubpulse' },
     });
     customerId = customer.id;
@@ -77,7 +77,7 @@ export async function createSubscriptionCheckout(
   } else {
     // Create product + price
     const product = await stripe.products.create({
-      name: `ClubPulse ${config.label} (${billingCycle})`,
+      name: `ShiftUp ${config.label} (${billingCycle})`,
       metadata: { tier, billing_cycle: billingCycle, platform: 'clubpulse' },
     });
 
@@ -101,7 +101,7 @@ export async function createSubscriptionCheckout(
     success_url: `${PLATFORM_URL}/admin/club/settings?subscription=success&tier=${tier}`,
     cancel_url: `${PLATFORM_URL}/admin/club/settings?subscription=canceled`,
     subscription_data: {
-      metadata: { club_id: clubId, tier, platform: 'clubpulse' },
+      metadata: { club_id: clubId, tier, platform: 'shiftup' },
       trial_period_days: 30,
     },
     metadata: { club_id: clubId, tier },

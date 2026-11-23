@@ -1,4 +1,4 @@
-// Warm-Up: the mind side of cricket. Sections of mental preparation, all written for ClubPulse
+// Warm-Up: the mind side of cricket. Sections of mental preparation, all written for ShiftUp
 // and all kept on the phone. Nothing about how anyone feels is sent anywhere; the only thing the
 // server ever hears is that a session or a week was finished, so it can count towards rewards.
 //

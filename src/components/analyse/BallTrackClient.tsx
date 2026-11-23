@@ -494,7 +494,7 @@ export function BallTrackClient() {
           Ball Tracking
         </h2>
         <p style={{ fontSize: '13px', color: 'rgba(240,236,228,0.5)', lineHeight: 1.6 }}>
-          Pick a bowling clip. ClubPulse finds the ball frame by frame, tracks its path, finds the
+          Pick a bowling clip. ShiftUp finds the ball frame by frame, tracks its path, finds the
           bounce point and estimates speed and swing. It reads the first 10 seconds, on this device:
           the video is not uploaded. Keep the phone still and film from side-on for the best result.
         </p>

@@ -5,12 +5,12 @@ The Community (feed, profiles, connections, follows, messages) is off by default
 
 ## Before you turn it on
 
-Preferably on a **preview or demo environment first**. If clubpulse.co already has real under-18 members, do not
+Preferably on a **preview or demo environment first**. If shiftup.club already has real under-18 members, do not
 enable it there until every box below is ticked and a person who handles safeguarding at the club has agreed.
 
 - [ ] All Community migrations are run in Supabase: `20261121000001_community.sql`, `20261122000002_community_follows.sql`, `20261122000003_community_moderation.sql`, `20261122000004_community_sessions.sql`
 - [ ] `ANTHROPIC_API_KEY` is set. Without it the safety check **holds every post** (it fails closed), so nothing goes live.
-- [ ] At least one ClubPulse staff account has `profiles.role = 'admin'` and can open `/admin/community/reports`
+- [ ] At least one ShiftUp staff account has `profiles.role = 'admin'` and can open `/admin/community/reports`
 - [ ] Someone has agreed to look at that inbox daily (held posts wait there until a person decides)
 - [ ] `COMMUNITY_ENABLED` is set to `true` (no quotes, no spaces). `EXPO_PUBLIC_COMMUNITY_ENABLED` is a separate flag for the phone app and needs a new app build; leave it off for now.
 

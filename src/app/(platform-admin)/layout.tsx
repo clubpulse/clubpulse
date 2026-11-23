@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { requireAdmin } from '@/lib/auth/admin';
 import { AdminNav } from '@/components/platform-admin/AdminNav';
 
-// ClubPulse staff dashboard (profiles.role = 'admin'). Its own route group because /admin/club and
+// ShiftUp staff dashboard (profiles.role = 'admin'). Its own route group because /admin/club and
 // /admin/merchant in (admin) serve club admins and merchants, who must not hit this guard.
 export default async function PlatformAdminLayout({ children }: { children: ReactNode }) {
   const user = await requireAdmin();
@@ -14,7 +14,7 @@ export default async function PlatformAdminLayout({ children }: { children: Reac
         <div className="flex items-center gap-3 px-4 py-3 md:px-6">
           <Link href="/admin" className="flex items-center gap-2.5">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-primary text-sm font-bold">C</span>
-            <span className="font-semibold">Admin <span className="text-neutral-500">—</span> ClubPulse</span>
+            <span className="font-semibold">Admin <span className="text-neutral-500">—</span> ShiftUp</span>
           </Link>
           <div className="ml-auto flex items-center gap-4 text-sm">
             <span className="hidden truncate text-neutral-400 sm:inline">{user.email}</span>
