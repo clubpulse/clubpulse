@@ -62,7 +62,7 @@ export function GiftCardQueue({ orders, apiConfigured }: { orders: GiftCardOrder
   function download() {
     const url = URL.createObjectURL(new Blob([toCsv(orders)], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a');
-    a.href = url; a.download = `clubpulse-gift-cards-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.href = url; a.download = `shiftup-gift-cards-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
   }

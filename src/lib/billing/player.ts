@@ -83,7 +83,7 @@ export async function createPlayerCheckout(userId: string, email: string | null,
 
   let customerId = row?.stripe_customer_id ?? null;
   if (!customerId) {
-    const customer = await stripe.customers.create({ email: email ?? undefined, metadata: { user_id: userId, platform: 'clubpulse', type: 'player' } });
+    const customer = await stripe.customers.create({ email: email ?? undefined, metadata: { user_id: userId, platform: 'shiftup', type: 'player' } });
     customerId = customer.id;
     await admin.from('player_subscriptions').upsert({ user_id: userId, stripe_customer_id: customerId, status: 'none' }, { onConflict: 'user_id' });
   }

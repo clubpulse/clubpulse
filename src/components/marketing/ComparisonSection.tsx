@@ -1,7 +1,7 @@
 export default function ComparisonSection() {
-  type Platform = 'clubpulse' | 'pitchero' | 'teamapp' | 'playcricket';
+  type Platform = 'shiftup' | 'pitchero' | 'teamapp' | 'playcricket';
   const platforms: { id: Platform; name: string; short: string }[] = [
-    { id: 'clubpulse', name: 'ShiftUp', short: 'SU' },
+    { id: 'shiftup', name: 'ShiftUp', short: 'SU' },
     { id: 'pitchero', name: 'Pitchero', short: 'Pi' },
     { id: 'teamapp', name: 'TeamApp', short: 'TA' },
     { id: 'playcricket', name: 'Play-Cricket', short: 'PC' },
@@ -22,7 +22,7 @@ export default function ComparisonSection() {
     { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
   ];
 
-  const colStyle = (id: Platform): React.CSSProperties => id === 'clubpulse'
+  const colStyle = (id: Platform): React.CSSProperties => id === 'shiftup'
     ? { background: 'rgba(37,99,235,0.08)', borderLeft: '1px solid rgba(37,99,235,0.3)', borderRight: '1px solid rgba(37,99,235,0.3)' }
     : {};
 
@@ -48,7 +48,7 @@ export default function ComparisonSection() {
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <th style={{ padding: '14px 20px', textAlign: 'left', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.03)' }}>Feature</th>
                 {platforms.map(p => (
-                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'clubpulse' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'clubpulse' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
+                  <th key={p.id} style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, fontSize: '13px', background: p.id === 'shiftup' ? 'rgba(37,99,235,0.1)' : 'rgba(255,255,255,0.03)', color: p.id === 'shiftup' ? 'var(--sky)' : 'rgba(255,255,255,0.6)', ...colStyle(p.id) }}>
                     <span style={{ display: 'none' }} aria-hidden="true">{p.short}</span>
                     <span>{p.name}</span>
                   </th>

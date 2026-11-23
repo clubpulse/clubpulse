@@ -101,7 +101,7 @@ export async function createSubscriptionCheckout(
     success_url: `${PLATFORM_URL}/admin/club/settings?subscription=success&tier=${tier}`,
     cancel_url: `${PLATFORM_URL}/admin/club/settings?subscription=canceled`,
     subscription_data: {
-      metadata: { club_id: clubId, tier, platform: 'clubpulse' },
+      metadata: { club_id: clubId, tier, platform: 'shiftup' },
       trial_period_days: 30,
     },
     metadata: { club_id: clubId, tier },

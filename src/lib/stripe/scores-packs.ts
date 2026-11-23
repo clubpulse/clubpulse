@@ -81,7 +81,7 @@ export async function createScoresPackCheckout(
           product_data: {
             name: scoresPack.name,
             description: `${scoresPack.scores_amount.toLocaleString()} Scores for ${club?.name ?? 'your club'}`,
-            metadata: { pack_id: packId, platform: 'clubpulse' },
+            metadata: { pack_id: packId, platform: 'shiftup' },
           },
         },
         quantity: 1,
