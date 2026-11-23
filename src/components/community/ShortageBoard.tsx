@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
-import { closeShortageAction, postShortageAction, replyShortageAction, shortageRepliesAction } from '@/lib/actions/community-social';
-import { ActionButton } from './ui';
+import { closeShortageAction, postShortageAction, replyShortageAction, reportContentAction, shortageRepliesAction } from '@/lib/actions/community-social';
+import { ActionButton, ReportButton } from './ui';
 import { connectAction } from '@/lib/actions/community-social';
 
 export type Shortage = { id: string; club: string; clubId: string; format: string; playAt: string; need: number; place: string; note: string; distance: string | null; mine: boolean; replied: boolean; replies: number; canReply: boolean };
@@ -42,6 +42,7 @@ export function ShortageList({ shortages }: { shortages: Shortage[] }) {
           <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
             {s.canReply && <ActionButton label="I can play" run={replyShortageAction.bind(null, s.id, true)} />}
             {s.replied && <ActionButton quiet label="I can’t play after all" run={replyShortageAction.bind(null, s.id, false)} />}
+            {!s.mine && <ReportButton run={(reason) => reportContentAction('shortage', s.id, reason)} />}
             {s.mine && <>
               <ActionButton quiet label="Filled" run={closeShortageAction.bind(null, s.id, 'filled')} />
               <ActionButton quiet label="Cancel" confirm="Cancel this post?" run={closeShortageAction.bind(null, s.id, 'cancelled')} />
