@@ -12,6 +12,8 @@ import {
   type Availability, type ConnectFilters, type LookingFor, type Scope, type Standard,
 } from './rules';
 import { notify } from './notify';
+import { randomUUID } from 'crypto';
+import { raiseAlert, targetIsJunior } from '@/lib/safeguarding/alerts';
 import { ageStatus, type AgeStatus } from './age';
 
 export type Admin = ReturnType<typeof createAdminClient>;
@@ -226,11 +228,13 @@ export async function createPost(userId: string, body: unknown): Promise<Result<
   const check = await checkContent(body, { place: 'public', authorJunior: viewer.junior, readerJunior: true }, MAX_POST);
   // Text that broke a written rule is not kept at all; text the AI stopped is kept for ShiftUp to review
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });
+  const postId = randomUUID();
   const { error } = await admin.from('community_posts').insert({
-    author_id: userId, club_id: viewer.club?.id ?? null, body: body.trim(),
+    id: postId, author_id: userId, club_id: viewer.club?.id ?? null, body: body.trim(),
     status: check.status, held_reason: check.status === 'held' ? check.tell : null,
   });
   if (error) return no('Could not save your post.');
+  if (check.status === 'held') await raiseAlert(admin, { source: 'held', kind: 'post', targetId: postId, junior: viewer.junior, reason: check.tell });
   // Scores only for a post that went live, once a day. A held post pays nothing.
   if (check.status === 'live' && viewer.club) await awardScores(userId, viewer.club.id, 'community_post', `day:${ukToday()}`).catch(() => undefined);
   return ok({ status: check.status, tell: check.status === 'held' ? check.tell : null });
@@ -281,10 +285,12 @@ export async function addComment(userId: string, postId: string, body: unknown):
   const viewer = await getViewer(admin, userId);
   const check = await checkContent(body, { place: 'public', authorJunior: viewer.junior, readerJunior: true }, MAX_COMMENT);
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });
+  const commentId = randomUUID();
   const { error } = await admin.from('community_comments').insert({
-    post_id: postId, author_id: userId, body: body.trim(), status: check.status, held_reason: check.status === 'held' ? check.tell : null,
+    id: commentId, post_id: postId, author_id: userId, body: body.trim(), status: check.status, held_reason: check.status === 'held' ? check.tell : null,
   });
   if (error) return no('Could not save your reply.');
+  if (check.status === 'held') await raiseAlert(admin, { source: 'held', kind: 'comment', targetId: commentId, junior: viewer.junior, reason: check.tell });
   return ok({ status: check.status, tell: check.status === 'held' ? check.tell : null });
 }
 
@@ -583,10 +589,12 @@ export async function sendMessage(userId: string, connectionId: string, body: un
   if (!thread) return no('Conversation not found.');
   const check = await checkContent(body, { place: 'private', authorJunior: thread.me.junior, readerJunior: thread.them.junior }, MAX_MESSAGE);
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });
+  const messageId = randomUUID();
   const { error } = await admin.from('community_messages').insert({
-    connection_id: connectionId, sender_id: userId, body: body.trim(), status: check.status, held_reason: check.status === 'held' ? check.tell : null,
+    id: messageId, connection_id: connectionId, sender_id: userId, body: body.trim(), status: check.status, held_reason: check.status === 'held' ? check.tell : null,
   });
   if (error) return no('Could not send your message.');
+  if (check.status === 'held') await raiseAlert(admin, { source: 'held', kind: 'message', targetId: messageId, junior: thread.me.junior || thread.them.junior, reason: check.tell });
   return ok({ status: check.status, tell: check.status === 'held' ? check.tell : null });
 }
 
@@ -605,10 +613,11 @@ export async function report(userId: string, input: unknown): Promise<Result<{ s
     const { data: target } = await admin.from(REPORT_TABLE[v.kind]).select('id').eq('id', v.targetId).maybeSingle();
     if (!target) return no('Nothing to report.');
   }
-  const { error } = await admin.from('community_reports').insert({
-    reporter_id: userId, kind: v.kind, target_id: v.targetId, reason: typeof v.reason === 'string' ? v.reason.trim().slice(0, 500) : null,
-  });
+  const reportId = randomUUID();
+  const reason = typeof v.reason === 'string' ? v.reason.trim().slice(0, 500) : null;
+  const { error } = await admin.from('community_reports').insert({ id: reportId, reporter_id: userId, kind: v.kind, target_id: v.targetId, reason });
   if (error) return no('Could not send your report.');
+  await raiseAlert(admin, { source: 'report', kind: v.kind as string, targetId: v.targetId, reportId, reason, junior: await targetIsJunior(admin, v.kind as string, v.targetId) });
   return ok({ sent: true });
 }
 

@@ -4,6 +4,8 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
+import { randomUUID } from 'crypto';
+import { raiseAlert } from '@/lib/safeguarding/alerts';
 import { liveRecentPostsBy } from './review';
 import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted, holdFor, REPORT_KINDS } from './service';
 import { mayFollow, mayViewProfile, milesBetween, roughDistance, type CrossBandContext } from './rules';
@@ -220,8 +222,11 @@ export async function parentReport(parentId: string, childId: string, input: unk
     const { data: target } = await admin.from(v.kind === 'session' ? 'community_sessions' : 'community_shortages').select('id').eq('id', v.targetId).maybeSingle();
     if (!target) return no('Nothing to report.');
   }
-  const { error } = await admin.from('community_reports').insert({ reporter_id: parentId, kind: v.kind, target_id: v.targetId, reason: `Reported by a parent: ${typeof v.reason === 'string' ? v.reason.trim().slice(0, 450) : ''}` });
+  const reportId = randomUUID();
+  const { error } = await admin.from('community_reports').insert({ id: reportId, reporter_id: parentId, kind: v.kind, target_id: v.targetId, reason: `Reported by a parent: ${typeof v.reason === 'string' ? v.reason.trim().slice(0, 450) : ''}` });
   if (error) return no('Could not send your report.');
+  // A parent reporting is about their child's world, so it is treated as a junior item
+  await raiseAlert(admin, { source: 'report', kind: v.kind as string, targetId: v.targetId, reportId, reason: null, junior: true });
   return ok({ sent: true });
 }
 

@@ -4,6 +4,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { awardScores } from '@/lib/scores/context';
 import { checkContent } from './moderation';
+import { raiseAlert } from '@/lib/safeguarding/alerts';
 import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor } from './service';
 import { checkCapacity, checkPlace, checkWhen, dbsIsCurrent, mayHost, maySeeSession, maySignUp, roughDistance, SESSION_KINDS, type AgeBand, type DbsRow, type Scope, type SessionContext, type SessionKind } from './rules';
 import { ukToday } from '@/lib/utils/uk-date';
@@ -160,6 +161,7 @@ export async function createSession(userId: string, input: NewSession): Promise<
     status: queued ? 'held' : 'open', held_reason: queued ? check.tell : null,
   }).select('id').single();
   if (error || !data) return no('Could not save the session.');
+  if (queued) await raiseAlert(admin, { source: 'held', kind: 'session', targetId: data.id as string, junior: input.band === 'junior', reason: check.tell });
   return ok({ id: data.id as string, held: queued, tell: queued ? 'Thanks. ShiftUp will check this and it will go live once approved.' : null });
 }
 

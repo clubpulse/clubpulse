@@ -3,6 +3,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
+import { raiseAlert, targetIsJunior } from '@/lib/safeguarding/alerts';
 import { notify } from './notify';
 import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor } from './service';
 import {
@@ -84,6 +85,7 @@ export async function postShortage(userId: string, input: NewShortage): Promise<
     status: queued ? 'held' : 'open', held_reason: queued ? check.tell : null,
   }).select('id').maybeSingle();
   if (error || !data) return no('Could not post this.');
+  if (queued) await raiseAlert(admin, { source: 'held', kind: 'shortage', targetId: data.id as string, junior: await targetIsJunior(admin, 'shortage', data.id as string), reason: check.tell });
   return ok({ id: data.id as string, held: queued });
 }
 
