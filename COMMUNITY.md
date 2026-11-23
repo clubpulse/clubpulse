@@ -86,3 +86,14 @@ When a report is filed or the safety check holds a post, comment, message, sessi
 INSERT INTO public.safeguarding_contacts (role, name, email, user_id)
 VALUES ('lead', 'Ishwar Suresh', 'LEAD_EMAIL', NULL);   -- then the deputy: role 'deputy'
 ```
+
+## Under-18s switch (`COMMUNITY_JUNIORS_ENABLED`)
+
+Under-18s can use the Community only while `COMMUNITY_JUNIORS_ENABLED` is exactly `true`. Unset, empty, `TRUE`, `1`, `yes`, `true ` and everything else mean off. **It is off by default, so juniors are shut out until it is set.** Turn it on only with the safeguarding lead's written sign-off. Adults are never affected.
+
+While it is off, enforced in the service layer (so every API route, server action and the mobile app are covered):
+- A junior (club-marked or under 18 by date of birth) is shut out like an account with no date of birth: every action returns "The Community is not open to under-18s yet." and they see no clubs.
+- Nobody else sees them or their words (feed, comments, nearby, profiles, connections).
+- Junior sessions are hidden from everyone, and cannot be created or joined.
+- Junior matching and connecting are closed; parent approval of junior connections, adult-to-junior contact (`COMMUNITY_CROSSBAND_ENABLED`) and junior messaging (`COMMUNITY_JUNIOR_DMS`) are closed even if their own flags are `true`. Turning the switch on does not turn those on; each still needs its own flag.
+- Reporting, blocking and parents' oversight still work.

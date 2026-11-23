@@ -1,3 +1,5 @@
+// These tests are about how under-18s behave when the Community is open to them
+process.env.COMMUNITY_JUNIORS_ENABLED = 'true';
 // A junior session names a responsible adult: an adult member of the club with a current enhanced DBS check there.
 import { memdb, client } from './helpers/memdb';
 

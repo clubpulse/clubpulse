@@ -1,3 +1,5 @@
+// These tests are about how under-18s behave when the Community is open to them
+process.env.COMMUNITY_JUNIORS_ENABLED = 'true';
 type Op = [string, ...unknown[]];
 const writes: Array<{ table: string; op: string; args: unknown[] }> = [];
 let db: Record<string, (ops: Op[]) => unknown[]> = {};

@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { awardScores } from '@/lib/scores/context';
 import { checkContent } from './moderation';
 import { raiseAlert } from '@/lib/safeguarding/alerts';
-import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor } from './service';
+import { blockedIds, clubsInScope, getViewer, people, ok, no, type Admin, type Result, holdFor, juniorsOpen, JUNIORS_OFF } from './service';
 import { checkCapacity, checkPlace, checkWhen, dbsIsCurrent, mayHost, maySeeSession, maySignUp, roughDistance, SESSION_KINDS, type AgeBand, type DbsRow, type Scope, type SessionContext, type SessionKind } from './rules';
 import { ukToday } from '@/lib/utils/uk-date';
 
@@ -81,6 +81,7 @@ export async function listSessions(userId: string, scope: Scope, kind: SessionKi
   const rows = [];
   for (const s of data ?? []) {
     if (blocked.has(s.host_id as string)) continue;
+    if (s.age_band === 'junior' && !juniorsOpen()) continue; // junior sessions are hidden while under-18s are off
     const staffHere = base.viewerClubIds.includes(s.club_id as string) && await isStaffAt(admin, userId, s.club_id as string);
     if (!maySeeSession(s.age_band as AgeBand, { ...base, viewerIsClubStaff: staffHere }, s.club_id as string)) continue;
     rows.push(s);
@@ -133,6 +134,7 @@ export async function createSession(userId: string, input: NewSession): Promise<
   const admin = createAdminClient();
   const hold = await holdFor(admin, userId);
   if (hold) return no(hold);
+  if (input.band === 'junior' && !juniorsOpen()) return no(JUNIORS_OFF);
   const base = await context(admin, userId);
   const staffHere = await isStaffAt(admin, userId, input.clubId);
   if (!mayHost(input.band, { ...base, viewerIsClubStaff: staffHere }, input.clubId)) {
@@ -181,6 +183,7 @@ export async function joinSession(userId: string, sessionId: unknown, on: boolea
     admin.from('community_session_signups').select('user_id', { count: 'exact', head: true }).eq('session_id', sessionId),
   ]);
   if (blocked.has(s.host_id as string)) return no('Session not found.');
+  if (s.age_band === 'junior' && !juniorsOpen()) return no('This session is not open to you.');
   // Enforced here, not only by hiding the button
   if (!maySignUp(s.age_band as AgeBand, base, s.club_id as string)) return no('This session is not open to you.');
   // A junior session can be joined only while its named responsible adult still qualifies

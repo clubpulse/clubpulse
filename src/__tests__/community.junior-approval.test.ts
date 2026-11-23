@@ -1,3 +1,5 @@
+// These tests are about how under-18s behave when the Community is open to them
+process.env.COMMUNITY_JUNIORS_ENABLED = 'true';
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const db: Record<string, Row[]> = {};
 const written: Array<{ table: string; op: string; row: Row }> = [];

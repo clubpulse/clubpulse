@@ -28,7 +28,16 @@ export const communityOpen = () => process.env.COMMUNITY_ENABLED === 'true';
  * Private messages involving anyone under 18 are off until messages are checked as they are sent. They are switched on
  * only with COMMUNITY_JUNIOR_DMS=true, which should not be set until that moderation exists and the safeguarding lead agrees.
  */
-export const juniorMessagingOpen = () => communityOpen() && process.env.COMMUNITY_JUNIOR_DMS === 'true';
+export const juniorMessagingOpen = () => communityOpen() && juniorsOpen() && process.env.COMMUNITY_JUNIOR_DMS === 'true';
+
+/**
+ * Under-18s can use the Community only while COMMUNITY_JUNIORS_ENABLED is exactly "true". Anything else, including unset,
+ * is off. Adults are not affected. This is the safeguarding lead's switch: turn it on only with her written sign-off.
+ * When off: juniors are shut out (like an account with no date of birth), nobody sees them or their words, junior
+ * sessions are hidden and cannot be joined or created, junior matching is closed, and no private message to or from one works.
+ */
+export const juniorsOpen = () => process.env.COMMUNITY_JUNIORS_ENABLED === 'true';
+export const JUNIORS_OFF = 'The Community is not open to under-18s yet.';
 export const JUNIOR_DMS_OFF = 'Private messages are not available for under-18s yet.';
 
 type ClubRow = { id: string; name: string; county: string | null; league: string | null; ground_lat: number | null; ground_lng: number | null };
@@ -55,13 +64,14 @@ export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
   });
   // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
   // clubs can show them anyone. The explicit checks on each action give the reason.
-  const clubIds = age.cleared ? [...new Set(mine.map((m) => m.club_id as string))] : [];
+  const juniorsClosed = age.junior && !juniorsOpen();
+  const clubIds = age.cleared && !juniorsClosed ? [...new Set(mine.map((m) => m.club_id as string))] : [];
   let club: ClubRow | null = null;
   if (clubIds.length > 0) {
     const { data } = await admin.from('clubs').select('id, name, county, league, ground_lat, ground_lng').eq('id', clubIds[0]).maybeSingle();
     club = (data as ClubRow | null) ?? null;
   }
-  return { userId, junior: age.junior, club, clubIds, status: age.status, hold: age.hold };
+  return { userId, junior: age.junior, club, clubIds, status: age.status, hold: juniorsClosed ? JUNIORS_OFF : age.hold };
 }
 
 /** The reason the Community is closed to this person, or null when it is open. */
@@ -124,9 +134,10 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
       hasVerifiedParent: withParent.has(id),
     });
     const junior = age.junior;
+    const juniorsClosed = junior && !juniorsOpen();
     const clubId = (rows[0]?.club_id as string | undefined) ?? null;
     out.set(id, {
-      id, junior, cleared: age.cleared, hold: age.hold, clubId,
+      id, junior, cleared: age.cleared && !juniorsClosed, hold: juniorsClosed ? JUNIORS_OFF : age.hold, clubId,
       name: shownName((profile?.display_name as string | null) || (profile?.full_name as string | null), junior),
       clubName: clubId ? clubName.get(clubId) ?? null : null,
       roles: [...new Set(rows.map((m) => (m.role === 'member' ? 'player' : (m.role as string))))],
@@ -536,8 +547,10 @@ export async function getConnections(userId: string): Promise<Result<ConnectionR
   const { data } = await admin.from('community_connections').select('id, requester_id, addressee_id, status, created_at')
     .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).in('status', ['pending', 'awaiting_parents', 'accepted']).order('created_at', { ascending: false }).limit(200);
   const blocked = await blockedIds(admin, userId);
-  const rows = (data ?? []).map((c) => ({ c, other: (c.requester_id === userId ? c.addressee_id : c.requester_id) as string })).filter((r) => !blocked.has(r.other));
-  const who = await people(admin, rows.map((r) => r.other));
+  const all = (data ?? []).map((c) => ({ c, other: (c.requester_id === userId ? c.addressee_id : c.requester_id) as string })).filter((r) => !blocked.has(r.other));
+  const who = await people(admin, all.map((r) => r.other));
+  // While under-18s are switched off, connections with them are not listed
+  const rows = juniorsOpen() ? all : all.filter((r) => !who.get(r.other)?.junior);
   const accepted = rows.filter((r) => r.c.status === 'accepted').map((r) => r.c.id as string);
   const { data: messages } = accepted.length
     ? await admin.from('community_messages').select('connection_id, body, created_at').in('connection_id', accepted).eq('status', 'live').order('created_at', { ascending: false }).limit(300)
@@ -559,9 +572,11 @@ async function openThread(admin: Admin, userId: string, connectionId: string) {
   const [who, blocked] = await Promise.all([people(admin, [userId, other]), blockedIds(admin, userId)]);
   const me = who.get(userId); const them = who.get(other);
   // Checked again on every read and send: someone's age band can change after they connected
-  if (!me || !them || blocked.has(other) || !me.cleared || !them.cleared) return null;
-  // Nothing private is sent to or from an under-18 while this is off, whatever the connection or contact says
+  if (!me || !them || blocked.has(other)) return null;
+  // Nothing private is sent to or from an under-18 while this is off, whatever the connection or contact says. This
+  // comes first, so it also holds while under-18s are switched off as a whole.
   if ((me.junior || them.junior) && !juniorMessagingOpen()) return 'junior_off' as const;
+  if (!me.cleared || !them.cleared) return null;
   // An adult and a junior can talk only through a parent-approved contact that is still active
   if (!mayMessage(me.junior, them.junior) && !(await (await import('./guardian')).guardianContactActive(admin, userId, other))) return null;
   return { me, them };
