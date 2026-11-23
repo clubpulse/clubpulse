@@ -20,6 +20,6 @@ export async function saveDateOfBirth(dob: unknown): Promise<DobResult> {
   if (row?.date_of_birth) return { success: false, error: 'Your date of birth is already saved. Contact ShiftUp if it is wrong.' };
   const { error } = await admin.from('profiles').update({ date_of_birth: dob }).eq('id', user.id).is('date_of_birth', null);
   if (error) return { success: false, error: 'Could not save your date of birth.' };
-  revalidatePath('/community', 'layout');
+  revalidatePath('/', 'layout');
   return { success: true };
 }
