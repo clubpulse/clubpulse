@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { listChildren, registerChild, verifyParentLink } from '@/lib/admin/parent-service';
+import { VERIFY_NEEDS_DBS, hasCurrentDbsAt } from '@/lib/admin/child-link';
 
 async function getAdminClubId(userId: string): Promise<string | null> {
   const sb = createAdminClient();
@@ -100,6 +101,9 @@ export async function PATCH(req: NextRequest) {
       .maybeSingle();
     const child = Array.isArray(link?.child_profiles) ? link.child_profiles[0] : link?.child_profiles;
     if (!child || child.club_id !== clubId) return NextResponse.json({ error: 'Link not found' }, { status: 404 });
+
+    // A verified parent can approve their child's Community connections, so only a DBS-checked admin may verify one
+    if (!(await hasCurrentDbsAt(user.id, clubId))) return NextResponse.json({ error: VERIFY_NEEDS_DBS }, { status: 403 });
 
     const result = await verifyParentLink(linkId, user.id);
     if (!result.success) return NextResponse.json({ error: result.error }, { status: 400 });
