@@ -67,9 +67,16 @@ describe('bowlingAnalysis', () => {
     frames[15] = pose({ ...bent, rElbow: [690, 560], rWrist: [650, 470] });
     const result = bowlingAnalysis(frames, 'right', W, H);
     const byKey = Object.fromEntries(result!.metrics.map((m) => [m.key, m]));
-    expect(byKey.frontKnee.value).toBeLessThan(150);
-    expect(byKey.frontKnee.score).toBeLessThan(60);
+    // About 130° is the edge of the 150±20 research range, so it stays on target.
+    expect(byKey.frontKnee.value).toBeGreaterThan(125);
+    expect(byKey.frontKnee.value).toBeLessThan(155);
+    expect(byKey.frontKnee.score).toBeGreaterThanOrEqual(ON_TARGET);
     expect(byKey.armStraightness.score).toBeLessThan(60);
+    const collapsed = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [780, 1400], lAnkle: [620, 1545] });
+    const badKnee = bowlingAnalysis(collapsed, 'right', W, H)!;
+    const knee = badKnee.metrics.find((m) => m.key === 'frontKnee')!;
+    expect(knee.value).toBeLessThan(110);
+    expect(knee.score).toBeLessThan(60);
   });
 
   it('sees no action in someone standing still, or with the wrong arm chosen', () => {
@@ -193,7 +200,7 @@ describe('analyseDetailed', () => {
     const outcome = analyseDetailed(frames, 'batting', 'right', W, H, 'drive');
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
-    expect(outcome.analysis.keyFrame).toBe(7);
+    expect(outcome.analysis.keyLabel).toBe('At contact');
     expect(outcome.analysis.metrics).toHaveLength(8);
   });
 });
@@ -242,7 +249,7 @@ describe('strict scoring', () => {
 
 describe('unique actions', () => {
   it('names a bent front knee, shows it and leaves it out of the overall score', () => {
-    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [690, 1260], lAnkle: [640, 1545] });
+    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [780, 1400], lAnkle: [640, 1545] });
     const result = bowlingAnalysis(frames, 'right', W, H)!;
     expect(result.unique).toEqual(['bent-front-knee']);
     const knee = result.metrics.find((m) => m.key === 'frontKnee')!;

@@ -14,7 +14,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
-  analyseDetailed, drillFor, overallScore, weakestMeasure,
+  analyseDetailed, detectView, drillFor, lockPerson, overallScore, weakestMeasure,
   type Hand, type Landmark, type Mode,
 } from '../src/lib/analysis/pose-metrics';
 
@@ -54,8 +54,14 @@ async function main() {
         ? 'Install the pose reader first: pip install mediapipe opencv-python-headless'
         : (py.stderr || 'Could not read poses from the video.'));
     }
-    const read = JSON.parse(py.stdout) as { width: number; height: number; frames: Landmark[][] };
-    const marked = analyseDetailed(read.frames, discipline as Mode, hand as Hand, read.width, read.height);
+    const read = JSON.parse(py.stdout) as {
+      width: number; height: number; timestamps: number[]; frames: Landmark[][][];
+    };
+    const tracked = lockPerson(read.frames);
+    const times = tracked.index.map((i) => read.timestamps[i]);
+    const view = detectView(tracked.frames, read.width, read.height).view;
+    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, undefined, view, times);
+    if (tracked.crowded && marked.ok) marked.analysis.warnings.push('more than one person');
     if (!marked.ok) {
       process.stdout.write(`${JSON.stringify({ ok: false, problem: marked.problem, frames: read.frames.length }, null, 2)}\n`);
       process.exit(2);
@@ -66,7 +72,8 @@ async function main() {
       ok: true,
       discipline,
       hand,
-      view: 'side',
+      view,
+      warnings: marked.ok ? marked.analysis.warnings : [],
       frames: read.frames.length,
       overall: overallScore(metrics),
       weakest: weakest ? { key: weakest.key, label: weakest.label, score: weakest.score, value: weakest.value, tip: weakest.tip, drill: drillFor(weakest) } : null,

@@ -15,7 +15,7 @@ import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
   ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, drillFor, formatRange, formatValue,
-  overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
+  choosePose, overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
@@ -69,7 +69,7 @@ function markWindow(
   const batting = settings.mode === 'batting';
   const read = batting && settings.shotType === 'auto' ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
   const shot: ShotType | undefined = !batting ? undefined : settings.shotType === 'auto' ? (read?.shot ?? 'drive') : settings.shotType;
-  const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view);
+  const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view, data.times.slice(win.start, win.end + 1));
   if (!marked.ok) return null;
   return {
     win, key: win.start + marked.analysis.keyFrame, time: data.times[win.peak], shot, read,
@@ -265,10 +265,11 @@ export function AnalyseClient() {
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
-  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][]; times: number[] } | null>(null);
+  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][]; times: number[]; seen: number; extra: number } | null>(null);
   // The last analysed clip's poses and when each was seen, for replaying an uploaded video with the skeleton
-  const replayRef = useRef<{ frames: NormalizedLandmark[][]; times: number[] } | null>(null);
+  const replayRef = useRef<{ frames: NormalizedLandmark[][]; times: number[]; seen: number; extra: number } | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const trackedPose = useRef<NormalizedLandmark[] | null>(null);
 
   const [mode, setMode] = useState<Mode>('bowling');
   const [hand, setHand] = useState<Hand>('right');
@@ -508,9 +509,14 @@ export function AnalyseClient() {
         : splitDeliveries(data.frames, data.times, hd, video.videoWidth, video.videoHeight);
       const entries = found.flatMap((win) => markWindow(data, win, settingsRef.current, video.videoWidth, video.videoHeight) ?? []);
       if (entries.length >= 2) {
+        if (recording.seen > 0 && recording.extra / recording.seen >= 0.3) {
+          for (const entry of entries) {
+            if (!entry.analysis.warnings.includes('more than one person')) entry.analysis.warnings.push('more than one person');
+          }
+        }
         const first = bestAndWorst(entries.map((e) => e.overall))?.best ?? 0;
         coachCache.current.clear();
-        replayRef.current = data;
+        replayRef.current = { frames: recording.frames, times: recording.times, seen: recording.seen, extra: recording.extra };
         setShots(entries);
         setPhase('done');
         presentShot(entries[first], first);
@@ -526,13 +532,15 @@ export function AnalyseClient() {
     const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
     const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
     setReading(read);
-    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw);
+    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw, recording.times);
     if (!outcome.ok) {
       setError(outcome.problem === 'no-action'
-        ? `We could see a player but not a bowling action. The ${hd === 'right' ? 'right' : 'left'} arm never came up above the shoulder. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed are the right settings, and that the clip includes the delivery.`
-        : fromFile
-          ? "We couldn't see a player clearly enough in that video. Use a clip with head to ankles in the picture, in good light, with the player filling at least a third of the height."
-          : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
+        ? `We could see a player but not a bowling action after the front foot landed. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed, and that the clip includes the delivery.`
+        : outcome.problem === 'feet-out-of-frame'
+          ? 'Feet out of frame. Step back until your head and both feet are inside the picture.'
+          : fromFile
+            ? "We couldn't see a player clearly enough in that video. Use a clip with one person, head to ankles, in good light."
+            : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
       if (fromFile) {
         // Take the clip off screen so the starting message is not drawn over it
         stopCamera();
@@ -542,11 +550,14 @@ export function AnalyseClient() {
       return;
     }
     const { analysis } = outcome;
+    if (recording.seen > 0 && recording.extra / recording.seen >= 0.3 && !analysis.warnings.includes('more than one person')) {
+      analysis.warnings.push('more than one person');
+    }
     const metrics = analysis.metrics;
     setFrameCount(analysis.framesSeen);
     setResults(metrics);
     setDetail({ ...analysis, pose: recording.frames[analysis.keyFrame], width: video.videoWidth, height: video.videoHeight });
-    replayRef.current = fromFile ? { frames: recording.frames, times: recording.times } : null;
+    replayRef.current = fromFile ? { frames: recording.frames, times: recording.times, seen: recording.seen, extra: recording.extra } : null;
     setFrameAt(fromFile ? { index: analysis.keyFrame, total: recording.frames.length, key: analysis.keyFrame } : null);
     setPhase('done');
 
@@ -581,7 +592,9 @@ export function AnalyseClient() {
         const now = performance.now();
         const result = landmarker.detectForVideo(video, now);
         const ctx = canvas.getContext('2d');
-        const pose = result.landmarks[0];
+        const pose = choosePose(result.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
+        if (pose) trackedPose.current = pose;
+        const bodies = (result.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           if (pose) drawPose(ctx, pose, connectionsRef.current);
@@ -589,6 +602,8 @@ export function AnalyseClient() {
 
         const recording = recordingRef.current;
         if (recording) {
+          if (bodies.length > 0) recording.seen += 1;
+          if (bodies.length > 1) recording.extra += 1;
           if (pose) {
             recording.frames.push(pose);
             recording.times.push(video.currentTime);
@@ -598,7 +613,7 @@ export function AnalyseClient() {
         }
 
         if (sourceRef.current === 'camera' && !recording && sessionRef.current === null) {
-          const seen = wholeBodyVisible(pose);
+          const seen = wholeBodyVisible(pose ?? undefined);
           if (now - bodyCheckRef.current > 400) {
             bodyCheckRef.current = now;
             setBodyInFrame(pose ? seen : false);
@@ -628,7 +643,7 @@ export function AnalyseClient() {
     landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
       runningMode: 'VIDEO',
-      numPoses: 1,
+      numPoses: 3,
     });
     connectionsRef.current = PoseLandmarker.POSE_CONNECTIONS;
   }
@@ -757,7 +772,7 @@ export function AnalyseClient() {
   // The clip is playing: collect poses from it as it goes
   function readWhilePlaying() {
     lastVideoTimeRef.current = -1;
-    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
+    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [], seen: 0, extra: 0 };
     setPhase('recording');
     startLoop();
   }
@@ -768,7 +783,7 @@ export function AnalyseClient() {
     const landmarker = landmarkerRef.current;
     const canvas = canvasRef.current;
     if (!landmarker || !canvas || !Number.isFinite(video.duration) || video.duration <= 0) throw new Error('unreadable');
-    const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[] };
+    const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[], seen: 0, extra: 0 };
     recordingRef.current = recording;
     setProgress(0);
     setPhase('recording');
@@ -781,7 +796,12 @@ export function AnalyseClient() {
       await seekTo(video, time);
       // Someone started the camera or chose another clip while this one was being read
       if (recordingRef.current !== recording) return;
-      const pose = landmarker.detectForVideo(video, performance.now()).landmarks[0];
+      const found = landmarker.detectForVideo(video, performance.now());
+      const pose = choosePose(found.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
+      if (pose) trackedPose.current = pose;
+      const bodies = (found.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
+      if (bodies.length > 0) recording.seen += 1;
+      if (bodies.length > 1) recording.extra += 1;
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (pose) drawPose(ctx, pose, connectionsRef.current);
@@ -804,7 +824,7 @@ export function AnalyseClient() {
     const data = replayRef.current;
     if (!data) return;
     settingsRef.current = settings;
-    recordingRef.current = { until: 0, frames: data.frames, times: data.times };
+    recordingRef.current = { until: 0, frames: data.frames, times: data.times, seen: data.seen, extra: data.extra };
     finishRecording();
   }
 
@@ -963,7 +983,7 @@ export function AnalyseClient() {
     setCoaching({ state: 'idle' });
     setCompare({ state: 'idle' });
     setCountdown(null);
-    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [] };
+    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [], seen: 0, extra: 0 };
     setPhase('recording');
   }
 
@@ -1344,6 +1364,9 @@ export function AnalyseClient() {
                 <p className="text-5xl font-bold leading-none" style={{ color: scoreColour(overall) }}>
                   {overall}<span className="ml-1 text-lg font-medium text-neutral-400">/100</span>
                 </p>
+                {detail?.warnings && detail.warnings.length > 0 && (
+                  <p className="mt-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>
+                )}
                 {weak && (
                   <>
                     <p className="mt-5 text-sm font-semibold text-white">Work on {weak.label}</p>
