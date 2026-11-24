@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST  /api/ai/insights  { match_id }      → generate Tier 1 coaching insights (club admins of that match)
 // GET   /api/ai/insights?player_id=<uuid>   → that player's last 20 insights (own, or as their club admin)
 // PATCH /api/ai/insights  { id }            → mark one of your insights as acknowledged
@@ -23,6 +24,8 @@ function uuidField(body: unknown, key: string): string | null {
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'insights');
+  if (limited) return limited;
 
   const matchId = uuidField(await readJson(req), 'match_id');
   if (!matchId) return fail('match_id must be a UUID');
@@ -41,6 +44,8 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const { supabase, user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'insights');
+  if (limited) return limited;
 
   const playerId = req.nextUrl.searchParams.get('player_id') ?? user.id;
   if (!UUID.test(playerId)) return fail('player_id must be a UUID');
@@ -59,6 +64,8 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { supabase, user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'insights');
+  if (limited) return limited;
 
   const id = uuidField(await readJson(req), 'id');
   if (!id) return fail('id must be a UUID');

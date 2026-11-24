@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // GET /api/ai/dynamic-scores/multipliers?clubId=<uuid> → { multipliers }
 // Multipliers currently in force: platform-wide, plus the club's own if clubId is given.
 
@@ -10,6 +11,8 @@ import { isUuid } from '@/lib/utils/validate';
 export async function GET(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'multipliers');
+  if (limited) return limited;
 
   const clubId = req.nextUrl.searchParams.get('clubId');
   if (clubId && !isUuid(clubId)) return fail('Invalid clubId', 400);

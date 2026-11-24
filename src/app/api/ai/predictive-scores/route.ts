@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST /api/ai/predictive-scores → { forecast, currentPace, nextTier, sessionsNeeded, message }
 // Auth: Bearer access token (Expo) or cookie session (web).
 
@@ -9,6 +10,8 @@ import { unauthorized } from '@/lib/utils/http';
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'predictive-scores');
+  if (limited) return limited;
 
   try {
     return NextResponse.json(await predictSeasonScores(user.id));
