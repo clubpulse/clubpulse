@@ -20,12 +20,12 @@ import {
   generateNetSessionCard,
   getUpsell,
 } from '../../lib/iap';
-import { STORE_ENABLED } from '../../constants/features';
+import { PAID_SCRATCH_CARDS_ENABLED, STORE_ENABLED } from '../../constants/features';
 import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
 export default function ScratchCardScreen() {
   // Reachable by deep link even with the Store switched off
-  if (!STORE_ENABLED) return <Redirect href="/" />;
+  if (!STORE_ENABLED || !PAID_SCRATCH_CARDS_ENABLED) return <Redirect href="/" />;
   return <ScratchCardScreenContent />;
 }
 

@@ -59,10 +59,11 @@ export type Viewer = {
 
 /** Who is asking: their clubs, whether they are under 18, and whether the Community is open to them yet. */
 export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
-  const [{ data: rows }, { data: profileRows }, parents] = await Promise.all([
+  const [{ data: rows }, { data: profileRows }, parents, consent] = await Promise.all([
     admin.from('club_members').select('club_id, is_junior, is_active, joined_at').eq('user_id', userId).eq('is_active', true).order('joined_at'),
     admin.from('profiles').select(dobColumns()).eq('id', userId).limit(1),
     parentsOf(admin, userId),
+    admin.from('guardian_consents').select('confirmed_at').eq('user_id', userId).maybeSingle(),
   ]);
   const mine = rows ?? [];
   const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null; dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined;
@@ -71,6 +72,7 @@ export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
     dob: (profile?.date_of_birth as string | null | undefined) ?? null,
     hasVerifiedParent: parents.length > 0,
     dobConfirmed: isDobConfirmed(profile), requireDobConfirmation: dobConfirmationRequired(),
+    guardianConsented: !!(consent.data as { confirmed_at?: string | null } | null)?.confirmed_at,
   });
   // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
   // clubs can show them anyone. The explicit checks on each action give the reason.
@@ -125,13 +127,15 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
   const unique = [...new Set(ids)];
   const out = new Map<string, Person>();
   if (unique.length === 0) return out;
-  const [{ data: profilesRaw }, { data: members }, { data: linked }] = await Promise.all([
+  const [{ data: profilesRaw }, { data: members }, { data: linked }, { data: consents }] = await Promise.all([
     admin.from('profiles').select(`id, full_name, display_name, ${dobColumns()}`).in('id', unique),
     admin.from('club_members').select('user_id, club_id, role, is_junior, is_active').in('user_id', unique).eq('is_active', true),
     admin.from('child_profiles').select('linked_user_id, parent_child_links!inner ( verified_at )').in('linked_user_id', unique).not('parent_child_links.verified_at', 'is', null),
+    admin.from('guardian_consents').select('user_id, confirmed_at').in('user_id', unique),
   ]);
   const profiles = profilesRaw as unknown as Array<Record<string, unknown>> | null;
   const withParent = new Set((linked ?? []).map((r) => r.linked_user_id as string));
+  const guardianConsented = new Set((consents ?? []).filter((r) => r.confirmed_at).map((r) => r.user_id as string));
   const clubIds = [...new Set((members ?? []).map((m) => m.club_id as string))];
   const { data: clubs } = clubIds.length ? await admin.from('clubs').select('id, name').in('id', clubIds) : { data: [] as Array<{ id: string; name: string }> };
   const clubName = new Map((clubs ?? []).map((c) => [c.id as string, c.name as string]));
@@ -144,6 +148,7 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
       dob: (profile?.date_of_birth as string | null | undefined) ?? null,
       hasVerifiedParent: withParent.has(id),
       dobConfirmed: isDobConfirmed(profile as { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined), requireDobConfirmation: dobConfirmationRequired(),
+      guardianConsented: guardianConsented.has(id),
     });
     const junior = age.junior;
     const juniorsClosed = junior && !juniorsOpen();

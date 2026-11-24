@@ -5,6 +5,10 @@ import { requireUser } from '@/lib/auth/server';
 import { directoryCards } from '@/lib/profile/lookup';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AGE_GATE_MESSAGE, isAdultPlayer } from '@/lib/scores/context';
+import { RAFFLES_ENABLED } from '@/lib/nav/menu';
+
+// TODO: Gambling Act review and age verification before RAFFLES_ENABLED is turned on.
+const RAFFLES_CLOSED = 'Raffles are switched off.';
 import type { ActionResult } from '@/lib/types/action';
 import type { Raffle, RaffleTicket, RaffleWinner } from '@/lib/types/raffle';
 
@@ -57,6 +61,7 @@ export async function buyTickets(
   raffleId: string,
   quantity: number
 ): Promise<ActionResult<{ tickets_purchased: number; scores_spent: number; ticket_numbers: number[] }>> {
+  if (!RAFFLES_ENABLED) return { success: false, error: RAFFLES_CLOSED };
   const supabase = await createClient();
   const user = await requireUser();
 
@@ -117,6 +122,7 @@ export async function adminCreateRaffle(formData: {
   winner_count: number;
   draw_date?: string;
 }): Promise<ActionResult<{ id: string }>> {
+  if (!RAFFLES_ENABLED) return { success: false, error: RAFFLES_CLOSED };
   const supabase = await createClient();
   const user = await requireUser();
 
@@ -131,6 +137,7 @@ export async function adminCreateRaffle(formData: {
 }
 
 export async function adminDrawRaffle(raffleId: string): Promise<ActionResult<{ winners: Array<{ rank: number; ticket_number: number; user_id: string }> }>> {
+  if (!RAFFLES_ENABLED) return { success: false, error: RAFFLES_CLOSED };
   const supabase = await createClient();
   await requireUser();
 

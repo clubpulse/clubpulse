@@ -8,7 +8,7 @@
 // mistakes and makes lying a deliberate act; it cannot stop a child who gives a false date. A club admin marking
 // someone as a junior still counts, and always wins over a date that says 18 or over.
 
-export type AgeStatus = 'needs_dob' | 'pending_parent' | 'needs_dob_confirmation' | 'junior' | 'adult';
+export type AgeStatus = 'needs_dob' | 'pending_parent' | 'needs_guardian' | 'needs_dob_confirmation' | 'junior' | 'adult';
 
 export type AgeInfo = {
   status: AgeStatus;
@@ -23,6 +23,7 @@ export type AgeInfo = {
 export const HOLD_NEEDS_DOB = 'Add your date of birth to your profile to use the Community.';
 export const HOLD_NEEDS_DOB_CONFIRMATION = 'A club admin needs to confirm your date of birth before you can use the Community. Ask your club to confirm it.';
 export const HOLD_PENDING_PARENT = 'A parent or guardian needs to be linked to your account before you can use the Community. Ask your club to link you.';
+export const HOLD_NEEDS_GUARDIAN = 'Under 13s need a parent or guardian to confirm by email before this account can be used.';
 
 const DOB = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -50,10 +51,11 @@ export function isPlausibleDob(dob: unknown, today: Date = new Date()): dob is s
  * `requireDobConfirmation` is the DOB_CONFIRMATION_REQUIRED switch. When it is on, a junior also needs a date of birth
  * that a club admin has confirmed (`dobConfirmed`) before the Community opens to them. It applies to juniors only.
  */
-export function ageStatus(i: { clubJunior: boolean; dob: string | null | undefined; hasVerifiedParent: boolean; dobConfirmed?: boolean; requireDobConfirmation?: boolean }, today: Date = new Date()): AgeInfo {
+export function ageStatus(i: { clubJunior: boolean; dob: string | null | undefined; hasVerifiedParent: boolean; dobConfirmed?: boolean; requireDobConfirmation?: boolean; guardianConsented?: boolean }, today: Date = new Date()): AgeInfo {
   const age = i.dob ? ageOn(i.dob, today) : null;
   const junior = i.clubJunior || (age !== null && age < 18);
   if (!junior && age === null) return { status: 'needs_dob', junior: false, cleared: false, hold: HOLD_NEEDS_DOB };
+  if (age !== null && age < 13 && !i.guardianConsented) return { status: 'needs_guardian', junior: true, cleared: false, hold: HOLD_NEEDS_GUARDIAN };
   if (junior && !i.hasVerifiedParent) return { status: 'pending_parent', junior: true, cleared: false, hold: HOLD_PENDING_PARENT };
   if (junior && i.requireDobConfirmation && !(i.dobConfirmed && age !== null)) return { status: 'needs_dob_confirmation', junior: true, cleared: false, hold: HOLD_NEEDS_DOB_CONFIRMATION };
   return { status: junior ? 'junior' : 'adult', junior, cleared: true, hold: null };

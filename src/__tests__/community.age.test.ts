@@ -1,4 +1,4 @@
-import { ageOn, ageStatus, isPlausibleDob, HOLD_NEEDS_DOB, HOLD_PENDING_PARENT } from '@/lib/community/age';
+import { ageOn, ageStatus, isPlausibleDob, HOLD_NEEDS_DOB, HOLD_NEEDS_GUARDIAN, HOLD_PENDING_PARENT } from '@/lib/community/age';
 
 const on = new Date(Date.UTC(2026, 10, 22)); // 22 Nov 2026
 
@@ -37,6 +37,10 @@ describe('ageStatus', () => {
   it('lets a club admin\'s junior mark win over a date that says 18 or over', () => {
     expect(ageStatus({ clubJunior: true, dob: '1990-01-01', hasVerifiedParent: false }, on)).toMatchObject({ junior: true, cleared: false });
     expect(ageStatus({ clubJunior: true, dob: null, hasVerifiedParent: true }, on)).toMatchObject({ junior: true, status: 'junior', cleared: true });
+  });
+  it('keeps an under-13 closed until a guardian confirms, even with a linked parent', () => {
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true }, on)).toMatchObject({ status: 'needs_guardian', cleared: false, hold: HOLD_NEEDS_GUARDIAN });
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true, guardianConsented: true }, on)).toMatchObject({ status: 'junior', cleared: true });
   });
   it('opens to an adult with a date of birth', () => {
     expect(ageStatus({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false }, on)).toMatchObject({ junior: false, status: 'adult', cleared: true, hold: null });

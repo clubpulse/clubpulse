@@ -6,6 +6,7 @@
  *  2. Awin affiliate commission (3-15% on redeemed discount codes)
  *  3. Engagement retention (scratch cards drive daily opens)
  *
+ * TODO: Gambling Act review and age verification before paid scratch cards are sold.
  * Scores are NEVER sold directly. They are earned through participation; scratch cards
  * pay out discounts, and a Scores prize is a very rare top-tier bonus.
  */

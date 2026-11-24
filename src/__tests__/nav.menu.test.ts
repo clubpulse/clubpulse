@@ -52,6 +52,10 @@ describe('menu by role', () => {
     expect(menuFor(staff).map((g) => g.key)).toEqual(['matchday', 'technique', 'community', 'wellness', 'academy', 'scores', 'club']);
   });
 
+  it('parks raffles: nobody is shown the link while the flag is off', () => {
+    expect(hrefs(aud(['player']))).not.toContain('/raffle');
+  });
+
   it('parks volunteering: nobody is shown the link', () => {
     for (const r of ['player', 'coach', 'parent', 'volunteer']) expect(hrefs(aud([r]))).not.toContain('/volunteer');
   });

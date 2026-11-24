@@ -9,6 +9,14 @@ export const DEALS_ENABLED = process.env.EXPO_PUBLIC_DEALS_ENABLED === 'true';
 // open for free, the buy buttons do nothing, and the brand codes are samples.
 export const STORE_ENABLED = process.env.EXPO_PUBLIC_STORE_ENABLED === 'true';
 
+// Paid scratch cards (£0.49 and £0.99) stay off. The rules page describes a free prize draw.
+// TODO: Gambling Act review and age verification before this is turned on.
+export const PAID_SCRATCH_CARDS_ENABLED = process.env.EXPO_PUBLIC_PAID_SCRATCH_CARDS_ENABLED === 'true';
+
+// Raffles that sell tickets for Scores stay off.
+// TODO: Gambling Act review and age verification before this is turned on.
+export const RAFFLES_ENABLED = process.env.EXPO_PUBLIC_RAFFLES_ENABLED === 'true';
+
 // The Community: the feed, Nearby, connections and messages. Keep this off until the Community
 // tables exist in Supabase and COMMUNITY_ENABLED is set on the website, and until the App Store
 // listing says the app has member content and messaging.
