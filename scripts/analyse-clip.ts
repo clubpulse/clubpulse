@@ -16,10 +16,11 @@ import path from 'node:path';
 import { detectShot, shotToScore } from '../src/lib/analysis/shot-detect';
 import {
   LOW_CONFIDENCE_MESSAGE, analyseDetailed, capConfidence, drillFor, lockPerson, overallScore, weakestMeasure,
-  type Hand, type Landmark, type Mode, type ShotType, type View,
+  type CameraMotion, type Hand, type Landmark, type Mode, type ShotType, type View,
 } from '../src/lib/analysis/pose-metrics';
 
 const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+const HEAVY_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task';
 
 function arg(name: string): string | undefined {
   const at = process.argv.indexOf(name);
@@ -45,12 +46,15 @@ async function main() {
 
   const dir = mkdtempSync(path.join(tmpdir(), 'analyse-clip-'));
   const modelPath = path.join(dir, 'pose.task');
+  const heavyPath = path.join(dir, 'pose-heavy.task');
   try {
     const model = await fetch(MODEL_URL);
     if (!model.ok) fail('Could not download the pose model.');
     writeFileSync(modelPath, Buffer.from(await model.arrayBuffer()));
+    const heavy = await fetch(HEAVY_URL);
+    if (heavy.ok) writeFileSync(heavyPath, Buffer.from(await heavy.arrayBuffer()));
 
-    const py = spawnSync('python3', [path.join(process.cwd(), 'scripts/analyse-clip-landmarks.py'), video, modelPath], {
+    const py = spawnSync('python3', [path.join(process.cwd(), 'scripts/analyse-clip-landmarks.py'), video, modelPath, heavyPath], {
       encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
     });
     if (py.status !== 0) {
@@ -61,14 +65,18 @@ async function main() {
     }
     const read = JSON.parse(py.stdout) as {
       width: number; height: number; timestamps: number[]; frames: Landmark[][][];
+      world?: Landmark[][][]; motion?: CameraMotion;
     };
     const tracked = lockPerson(read.frames);
     const times = tracked.index.map((i) => read.timestamps[i]);
+    const world = read.world
+      ? tracked.index.map((frame, i) => read.world?.[frame]?.[tracked.which[i]] ?? [])
+      : undefined;
     const detectedShot = discipline === 'batting'
       ? detectShot(tracked.frames, read.width, read.height, { view: viewArg, hand })
       : null;
     const shot = discipline === 'batting' ? shotToScore(detectedShot, (shotArg as ShotType | undefined) ?? 'auto') : undefined;
-    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times);
+    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times, { world, motion: read.motion });
     if (tracked.crowded && marked.ok) {
       marked.analysis.warnings.push('more than one person');
       marked.analysis.confidence = capConfidence(marked.analysis.confidence, 'medium');

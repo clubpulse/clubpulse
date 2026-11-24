@@ -1,6 +1,6 @@
 import {
-  L, LOW_CONFIDENCE_MESSAGE, LOW_FPS_MESSAGE, analyse, analyseDetailed, detectView, findContactFrame, findReleaseFrame, headBehindFrontKnee, headOnTrunk, headWobble,
-  readingConfidence,
+  L, LOW_CONFIDENCE_MESSAGE, LOW_FPS_MESSAGE, analyse, analyseDetailed, detectView, elbowAngle3D, findContact, findContactFrame, findRelease, findReleaseFrame, headBehindFrontKnee, headOnTrunk, headWobble,
+  readingConfidence, upscaleFactor,
   interpolateGaps, lockPerson, metricDefFor, overallScore, resolveView, scoreFor, type Landmark,
 } from '@/lib/analysis/pose-metrics';
 import { shotToScore } from '@/lib/analysis/shot-detect';
@@ -224,8 +224,75 @@ describe('tracking and view', () => {
   it('gives a pull its own weight tip and lets a drive elbow reach 175°', () => {
     expect(metricDefFor('weightTransfer', 'batting', 'side', 'pull')?.tip ?? '').toMatch(/back foot/i);
     expect(metricDefFor('frontElbow', 'batting', 'side', 'drive')?.ideal[1]).toBeGreaterThanOrEqual(175);
+    const knee = metricDefFor('kneeFlex', 'batting', 'side', 'drive');
+    expect(knee?.ideal[0]).toBeLessThanOrEqual(110);
+    expect(scoreFor(129, knee?.ideal ?? [110, 170], knee?.tolerance ?? 30)).toBeGreaterThanOrEqual(85);
     expect(scoreFor(168, [90, 175], 40)).toBeGreaterThanOrEqual(85);
     expect(scoreFor(157, [55, 175], 35)).toBeGreaterThanOrEqual(85);
+  });
+
+  it('keeps the vertical peak just after the front foot lands, not the follow-through', () => {
+    const frames: Landmark[][] = [];
+    const times: number[] = [];
+    for (let i = 0; i < 90; i++) {
+      const t = i / 25;
+      times.push(t);
+      const stride = t >= 1.9 && t <= 2.35;
+      const release = Math.abs(t - 2.02) < 0.03;
+      const follow = Math.abs(t - 3.16) < 0.03;
+      frames.push(person({
+        lAnkle: [stride ? 30 : 90, 346],
+        rAnkle: [stride ? 175 : 110, 340],
+        rWrist: [release ? 112 : follow ? 30 : 114, release ? 18 : follow ? 6 : 175],
+        rElbow: [release ? 112 : 70, release ? 48 : 40],
+      }));
+    }
+    const picked = findRelease(frames, 'right', W, H, times);
+    expect(picked).not.toBeNull();
+    expect(times[picked?.frame ?? 0]).toBeGreaterThan(1.9);
+    expect(times[picked?.frame ?? 0]).toBeLessThan(2.4);
+  });
+
+  it('uses the highest hand in the stride when the arm looks short, at medium confidence', () => {
+    const frames: Landmark[][] = [];
+    const times: number[] = [];
+    for (let i = 0; i < 30; i++) {
+      const t = i / 10;
+      times.push(t);
+      const bowl = Math.abs(t - 2.1) < 0.05;
+      frames.push(person(bowl ? {
+        rWrist: [118, 72], rElbow: [150, 90], lAnkle: [35, 346], rAnkle: [175, 340],
+      } : {}));
+    }
+    const picked = findRelease(frames, 'right', W, H, times);
+    expect(picked?.confidence).toBe('medium');
+    expect(times[picked?.frame ?? 0]).toBeGreaterThan(1.5);
+  });
+
+  it('takes the earliest frame that is already at the peak hand speed', () => {
+    const frames = Array.from({ length: 20 }, () => person({ rWrist: [114, 160] }));
+    for (let i = 6; i <= 10; i++) frames[i] = person({ rWrist: [114, 160 - (i - 5) * 18] });
+    frames[11] = person({ rWrist: [114, 70] });
+    frames[12] = person({ rWrist: [160, 100] });
+    frames[13] = person({ rWrist: [200, 140] });
+    frames[14] = person({ rWrist: [202, 146] });
+    for (let i = 15; i < 20; i++) frames[i] = person({ rWrist: [204, 150] });
+    expect(findContactFrame(frames, 'right', W, H)).toBe(12);
+  });
+
+  it('hides a broadcast picture and a folded arm from either side', () => {
+    const body = Array.from({ length: 8 }, () => person());
+    expect(readingConfidence({ frames: body, keyFrame: 4, motion: 'pan' })).toBe('low');
+    expect(readingConfidence({ frames: body, keyFrame: 4, motion: 'zoom' })).toBe('low');
+    const far = body.map((lm) => lm.map((point) => ({ ...point, y: 0.45 + (point.y - 0.5) * 0.2 })));
+    expect(readingConfidence({ frames: far, keyFrame: 4 })).toBe('low');
+    const world = Array.from({ length: 33 }, () => ({ x: 0, y: 0, z: 0 }));
+    world[L.rShoulder] = { x: 0, y: 1, z: 0 };
+    world[L.rElbow] = { x: 0, y: 0, z: 0 };
+    world[L.rWrist] = { x: 1, y: 0, z: 0 };
+    expect(elbowAngle3D(world, 'right')).toBeCloseTo(90, 0);
+    expect(upscaleFactor(128)).toBe(2);
+    expect(upscaleFactor(400)).toBe(1);
   });
 
   it('gives a pull its own elbow tip', () => {
