@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const redemptionId: string = rpc.redemption_id;
 
   // ── 3b. No API access yet: queue the card for a manual order ───────────────
-  // The Scores are already deducted and the redemption row is 'pending'. A ShiftUp admin
+  // The Scores are already deducted and the redemption row is 'pending'. A SHIFTUP admin
   // orders the card in the Tango portal from /admin/gift-cards and marks it sent.
   if (!isTangoApiConfigured()) {
     await admin

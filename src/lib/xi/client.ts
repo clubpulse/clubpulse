@@ -89,8 +89,8 @@ function xiHeaders(): HeadersInit {
 }
 
 /**
- * Called once during ShiftUp sign-up to provision a matching XI account.
- * Returns the xi_user_id which is then stored on the ShiftUp profile.
+ * Called once during SHIFTUP sign-up to provision a matching XI account.
+ * Returns the xi_user_id which is then stored on the SHIFTUP profile.
  * Silently swallows errors — a failed XI provisioning must never block sign-up.
  */
 export async function xiCreateUser(
@@ -116,7 +116,7 @@ export async function xiCreateUser(
 }
 
 /**
- * Fired when a scorecard is closed on ShiftUp.
+ * Fired when a scorecard is closed on SHIFTUP.
  * Sends the player's match performance to The XI; receives fantasy + rewards points.
  */
 export async function xiSyncPerformance(
@@ -143,7 +143,7 @@ export async function xiSyncPerformance(
 
 /**
  * Fetches the player's current XI wallet — balance, tier and multiplier.
- * Used to display live rewards balance on the ShiftUp dashboard.
+ * Used to display live rewards balance on the SHIFTUP dashboard.
  */
 export async function xiGetWallet(
   xiUserId: string

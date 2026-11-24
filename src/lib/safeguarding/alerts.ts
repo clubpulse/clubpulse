@@ -31,7 +31,7 @@ export const alertLink = (kind: string, targetId: string) => `${APP_URL}${QUEUE_
 export function alertMessage(a: Pick<AlertRow, 'source' | 'item_kind' | 'junior' | 'reason' | 'link'>) {
   const what = KIND_LABEL[a.item_kind] ?? a.item_kind;
   const how = a.source === 'report' ? `A ${what} has been reported` : `A ${what} has been held by the safety check`;
-  const subject = `ShiftUp safeguarding: ${a.source === 'report' ? 'report' : 'held item'} (${what})${a.junior ? ' – junior' : ''}`;
+  const subject = `SHIFTUP safeguarding: ${a.source === 'report' ? 'report' : 'held item'} (${what})${a.junior ? ' – junior' : ''}`;
   const text = [
     `${how} and needs a safeguarding review.`,
     '',

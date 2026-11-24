@@ -1,5 +1,5 @@
 // Coaching and video: the way in to video analysis, highlights, progress tracking and coaching.
-// These features run on the ShiftUp website, so each row opens that page inside the app
+// These features run on the SHIFTUP website, so each row opens that page inside the app
 // (see web.tsx), already signed in.
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';

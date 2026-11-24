@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     ? transactions.slice(0, 15).map((t) => `${t.title}: ${t.amount > 0 ? '+' : ''}${t.amount} Scores`).join('\n')
     : 'No recent activity in the last 30 days.';
 
-  const prompt = `You are a sports performance analyst for ShiftUp, a grassroots sports loyalty platform.
+  const prompt = `You are a sports performance analyst for SHIFTUP, a grassroots sports loyalty platform.
 
 Member stats (last 30 days):
 - Total Scores balance: ${totalBalance}

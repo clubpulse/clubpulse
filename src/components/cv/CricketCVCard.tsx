@@ -316,7 +316,7 @@ export function CricketCVCard({ cv, isPreview = false }: Props) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              ShiftUp
+              SHIFTUP
             </a>
           </span>
         </div>

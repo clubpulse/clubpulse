@@ -108,7 +108,7 @@ export function Navbar({ name, balance, showAdmin, pages = [] }: NavbarProps) {
             </svg>
           </span>
           <span style={{ fontWeight: 800, fontSize: '16px', color: '#fff', letterSpacing: '-0.3px', fontFamily: 'var(--font-syne), sans-serif' }}>
-            Shift<span style={{ color: '#60A5FA' }}>Up</span>
+            SHIFT<span style={{ color: '#60A5FA' }}>UP</span>
           </span>
         </Link>
 

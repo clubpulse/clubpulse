@@ -2,7 +2,7 @@
 // The SQL payment functions use the same rate (see 20261111000001_scores_rate.sql).
 export const SCORES_PER_GBP = 500;
 
-// ShiftUp keeps 20% when a club cashes out Scores taken through Scores Pay.
+// SHIFTUP keeps 20% when a club cashes out Scores taken through Scores Pay.
 export const CASHOUT_MARGIN = 0.2;
 export const MIN_CASHOUT_SCORES = 500;
 

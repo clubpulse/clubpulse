@@ -249,7 +249,7 @@ export async function createPost(userId: string, body: unknown): Promise<Result<
   if (viewer.clubIds.length === 0) return no('Join a club before posting.');
 
   const check = await checkContent(body, { place: 'public', authorJunior: viewer.junior, readerJunior: true }, MAX_POST);
-  // Text that broke a written rule is not kept at all; text the AI stopped is kept for ShiftUp to review
+  // Text that broke a written rule is not kept at all; text the AI stopped is kept for SHIFTUP to review
   if (check.status === 'held' && !check.held) return ok({ status: 'held', tell: check.tell });
   const postId = randomUUID();
   const { error } = await admin.from('community_posts').insert({

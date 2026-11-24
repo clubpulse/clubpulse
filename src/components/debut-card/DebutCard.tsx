@@ -47,7 +47,7 @@ export function DebutCard({ userId, displayName }: DebutCardProps) {
         Your Debut Card
       </h2>
       <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '20px' }}>
-        Share your ShiftUp player card with the world.
+        Share your SHIFTUP player card with the world.
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>

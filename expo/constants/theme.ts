@@ -1,4 +1,4 @@
-// ShiftUp brand tokens — aligned with globals.css and Navbar.tsx
+// SHIFTUP brand tokens — aligned with globals.css and Navbar.tsx
 export const colors = {
   // Backgrounds
   background:   '#04091A',     // --background (root bg)

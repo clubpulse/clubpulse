@@ -1,5 +1,5 @@
 // The thought for the day. One line a day, the same for everyone, about the mind side of
-// cricket: mindset, getting ready, staying present. Written for ShiftUp, so none of these are
+// cricket: mindset, getting ready, staying present. Written for SHIFTUP, so none of these are
 // borrowed from a player or a book and none needs a name under it.
 
 export const THOUGHTS: string[] = [

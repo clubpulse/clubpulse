@@ -16,7 +16,7 @@ function back(kind: 'done' | 'error', message: string): never {
 
 const text = (v: FormDataEntryValue | null) => (typeof v === 'string' ? v.trim() : '');
 
-// Server actions are public endpoints, so each one re-checks that the caller is ShiftUp staff
+// Server actions are public endpoints, so each one re-checks that the caller is SHIFTUP staff
 
 /** Adds a club. It starts with no admin; add one next. */
 export async function createClub(formData: FormData) {

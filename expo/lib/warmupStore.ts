@@ -1,6 +1,6 @@
 // What Warm-Up remembers, kept on this phone only: which weeks of Mind Nets are done, and the
 // player's own pre-ball routine. Neither says anything about how someone feels. The routine never
-// leaves the phone. When a week is ticked, the app also tells ShiftUp that a week was finished,
+// leaves the phone. When a week is ticked, the app also tells SHIFTUP that a week was finished,
 // so it can count towards rewards.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';

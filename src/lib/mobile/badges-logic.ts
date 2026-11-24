@@ -1,6 +1,6 @@
 // Badges: one for every achievement, each of which can be shared.
 //
-// A badge is earned by doing something a number of times over a member's whole time on ShiftUp
+// A badge is earned by doing something a number of times over a member's whole time on SHIFTUP
 // (the Run Chase tasks cover today, this week and this month). Badges carry no Scores: they are
 // for showing, not spending. This file has no database in it, so it can be tested on its own.
 
@@ -97,7 +97,7 @@ const LADDERS: readonly Ladder[] = [
   {
     group: 'academy', stat: 'lessonsPassed',
     how: (n) => (n === 1 ? 'Pass your first lesson.' : n === 20 ? 'Pass every lesson in the Academy.' : `Pass ${n} lessons.`),
-    did: (n) => (n === 1 ? 'passed my first cricket lesson' : n === 20 ? 'passed every lesson in the ShiftUp Academy' : `passed ${n} cricket lessons`),
+    did: (n) => (n === 1 ? 'passed my first cricket lesson' : n === 20 ? 'passed every lesson in the SHIFTUP Academy' : `passed ${n} cricket lessons`),
     tiers: [[1, 'Opening Lesson', '🎓', 'opening-lesson'], [3, 'Quick Learner', '⚡'], [5, 'Student of the Game', '📘', 'student'], [8, 'Note Taker', '📝'], [10, 'Top of the Class', '🏫'], [15, 'Cricket Scholar', '📚', 'scholar'], [20, 'Full Syllabus', '🎖️']],
   },
   {
@@ -205,7 +205,7 @@ export function badgeDef(key: string): Def | null {
 
 /** The words that go with a shared badge. No name, club or number of the member is in them. */
 export function shareMessage(def: Pick<Def, 'title' | 'did'>): string {
-  return `I ${def.did} and earned the ${def.title} badge on ShiftUp 🏏`;
+  return `I ${def.did} and earned the ${def.title} badge on SHIFTUP 🏏`;
 }
 
 /**

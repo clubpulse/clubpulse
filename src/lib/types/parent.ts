@@ -12,7 +12,7 @@ export interface ChildProfile {
   emergency_contact_phone: string | null;
   photo_consent: boolean;
   data_consent: boolean;
-  /** The child's own ShiftUp account, once a club admin has linked it */
+  /** The child's own SHIFTUP account, once a club admin has linked it */
   linked_user_id?: string | null;
   created_at: string;
   updated_at: string;

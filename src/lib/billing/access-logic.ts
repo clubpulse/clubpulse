@@ -7,7 +7,7 @@ export type AccessFacts = {
   /** False until online payment is switched on: until then everything stays open, as it is today. */
   paymentsOn: boolean;
   platformAdmin: boolean;
-  /** On the list of accounts ShiftUp gives free access to (testers, founders, demos). */
+  /** On the list of accounts SHIFTUP gives free access to (testers, founders, demos). */
   onFreeList: boolean;
   /** The player's own plan or club add-on is paid up. */
   hasLivePlan: boolean;
@@ -29,4 +29,4 @@ export function parseFreeList(raw: string | undefined): Set<string> {
   return new Set((raw ?? '').split(',').map((e) => e.trim().toLowerCase()).filter((e) => e.includes('@')));
 }
 
-export const PAID_FEATURE_MESSAGE = 'This is part of a paid plan. See My plan on the ShiftUp website.';
+export const PAID_FEATURE_MESSAGE = 'This is part of a paid plan. See My plan on the SHIFTUP website.';

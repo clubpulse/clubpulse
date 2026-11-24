@@ -6,7 +6,7 @@ import type { MemberQualification, ClubQualificationSummary } from '@/lib/types/
 import { VerifyButton } from '@/components/ecb/VerifyButton';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Club Qualifications | ShiftUp Admin' };
+export const metadata = { title: 'Club Qualifications | SHIFTUP Admin' };
 
 const card: React.CSSProperties = {
   background: 'rgba(255,255,255,0.04)',

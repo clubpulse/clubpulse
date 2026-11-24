@@ -80,7 +80,7 @@ export default function MarketingNav() {
         }
       `}</style>
       <div className="mk-inner">
-        <Link href="/" className="mk-logo" aria-label="ShiftUp home">
+        <Link href="/" className="mk-logo" aria-label="SHIFTUP home">
           <span className="mk-logo-mark">
             <svg width="21" height="21" viewBox="0 0 36 36" fill="none" aria-hidden="true">
               <defs>
@@ -94,7 +94,7 @@ export default function MarketingNav() {
 <path d="M8 28.5 L18 18.5 L28 28.5" stroke="url(#mkNavPulse)" strokeWidth="3.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </span>
-          <span className="mk-logo-name">Shift<span>Up</span></span>
+          <span className="mk-logo-name">SHIFT<span>UP</span></span>
         </Link>
 
         <nav className="mk-links" aria-label="Main">
