@@ -33,7 +33,7 @@ export function demoHighlight(): Highlight {
   return { id: 'demo', session_date: new Date().toISOString(), video_url: SAMPLE_VIDEO, clips: DEMO_CLIPS, top_clip_url: SAMPLE_VIDEO };
 }
 
-// Real reels only ever point at our own storage bucket
+// Real reels point at the private session-videos bucket. Sample reels use an external clip.
 export function isDemoHighlight(highlight: Pick<Highlight, 'clips'>) {
-  return highlight.clips.some((clip) => !clip.url.includes(`/storage/v1/object/public/${HIGHLIGHTS_BUCKET}/`));
+  return highlight.clips.some((clip) => clip.path.startsWith('demo/') || !clip.url.includes(`/${HIGHLIGHTS_BUCKET}/`));
 }

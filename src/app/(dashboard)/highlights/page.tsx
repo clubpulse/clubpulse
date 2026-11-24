@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/auth/server';
 import { Card } from '@/components/ui/Card';
 import { ClipCard } from '@/components/highlights/ClipCard';
-import { formatSessionDate, type Highlight } from '@/lib/highlights';
+import { formatSessionDate, withSignedUrls, type Highlight } from '@/lib/highlights';
 import { demoHighlight, isDemoHighlight } from '@/lib/highlights-demo';
 
 export const metadata: Metadata = { title: 'Highlights | SHIFTUP', description: 'Your best clips from Analyse' };
@@ -19,7 +19,7 @@ async function loadHighlight(id: string | undefined) {
     .eq('user_id', user!.id);
   query = id ? query.eq('id', id) : query.order('created_at', { ascending: false }).limit(1);
   const { data } = await query.maybeSingle<Highlight>();
-  return data;
+  return data ? withSignedUrls(supabase, data) : data;
 }
 
 // Shows the latest reel, or a specific one via ?id= (linked from the sessions list).

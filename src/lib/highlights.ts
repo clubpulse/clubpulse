@@ -1,6 +1,7 @@
 // Highlight reels: the top-scoring 5-second segments from an /analyse session.
 
 export const HIGHLIGHTS_BUCKET = 'session-videos';
+export const SIGNED_URL_SECONDS = 60 * 60;
 export const SEGMENT_SECONDS = 5;
 export const MAX_CLIPS = 3;
 
@@ -68,4 +69,38 @@ export function parseHighlightRequest(body: unknown, userId: string): { data: Hi
   }
 
   return { data: { mode, clips: parsed.sort((a, b) => b.score - a.score) } };
+}
+
+/** Storage path for a clip, whether the saved URL is a path, a public URL, or a signed URL. */
+export function clipStoragePath(clip: { path: string; url: string }): string | null {
+  if (clip.path && !clip.path.startsWith('http') && !clip.path.startsWith('demo/')) return clip.path;
+  for (const marker of [`/object/public/${HIGHLIGHTS_BUCKET}/`, `/object/sign/${HIGHLIGHTS_BUCKET}/`]) {
+    const at = clip.url.indexOf(marker);
+    if (at >= 0) return decodeURIComponent(clip.url.slice(at + marker.length).split('?')[0]);
+  }
+  return null;
+}
+
+type UrlSigner = {
+  storage: {
+    from: (bucket: string) => {
+      createSignedUrl: (path: string, expiresIn: number) => Promise<{ data: { signedUrl: string } | null }>;
+    };
+  };
+};
+
+/** Replace stored public URLs with a one-hour signed URL. External demo clips are left alone. */
+export async function withSignedUrls<T extends Highlight>(signer: UrlSigner, highlight: T): Promise<T> {
+  const clips = await Promise.all(highlight.clips.map(async (clip) => {
+    const path = clipStoragePath(clip);
+    if (!path) return clip;
+    const { data } = await signer.storage.from(HIGHLIGHTS_BUCKET).createSignedUrl(path, SIGNED_URL_SECONDS);
+    return data?.signedUrl ? { ...clip, path, url: data.signedUrl } : clip;
+  }));
+  return {
+    ...highlight,
+    clips,
+    video_url: clips[0]?.url ?? highlight.video_url,
+    top_clip_url: clips[0]?.url ?? highlight.top_clip_url,
+  };
 }
