@@ -289,9 +289,17 @@ describe('unique actions', () => {
   });
 });
 
+function facing(frames: Landmark[][], left: number, right: number): Landmark[][] {
+  return frames.map((lm) => lm.map((point, index) => {
+    if (index === L.lShoulder) return { ...point, x: left / W };
+    if (index === L.rShoulder) return { ...point, x: right / W };
+    return point;
+  }));
+}
+
 describe('front-on view', () => {
-  it('uses its own measures for bowling', () => {
-    const outcome = analyseDetailed(delivery(), 'bowling', 'right', W, H, undefined, 'front');
+  it('uses its own measures when the picture is front-on', () => {
+    const outcome = analyseDetailed(facing(delivery(), 180, 900), 'bowling', 'right', W, H, undefined, 'front');
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
     const keys = outcome.analysis.metrics.map((m) => m.key);
@@ -299,8 +307,17 @@ describe('front-on view', () => {
     expect(keys).not.toContain('frontKnee');
   });
 
+  it('keeps the chosen view when the picture is not clearly the other way', () => {
+    // Shoulders a bit wide of side-on, not wide enough to be sure it is front-on.
+    const outcome = analyseDetailed(facing(delivery(), 400, 680), 'bowling', 'right', W, H, undefined, 'front');
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    expect(outcome.analysis.metrics.map((m) => m.key)).toEqual(expect.arrayContaining(['armHeight', 'frontFootLine']));
+    expect(outcome.analysis.warnings.join(' ')).toMatch(/side-on/i);
+  });
+
   it('uses its own measures for batting, and skips the bat for a leave', () => {
-    const frames = Array.from({ length: 20 }, () => pose());
+    const frames = facing(Array.from({ length: 20 }, () => pose()), 180, 900);
     const drive = analyseDetailed(frames, 'batting', 'right', W, H, 'drive', 'front');
     expect(drive.ok).toBe(true);
     if (!drive.ok) return;

@@ -41,6 +41,12 @@ export function sample(lm: Landmark[], w: number, h: number): Sample | null {
 
 export type ShotReading = { shot: ShotType; confident: boolean };
 
+/** The player's choice wins. Automatic detection is used only when they left it on auto. */
+export function shotToScore(detected: ShotReading | null, chosen: ShotType | 'auto'): ShotType {
+  if (chosen !== 'auto') return chosen;
+  return detected?.shot ?? 'drive';
+}
+
 /**
  * The shot played in these frames. `confident` is false when the reading was close to a boundary
  * or there was too little to go on, so the screen can ask the player to check it.
@@ -89,5 +95,35 @@ export function detectShot(
     const pull = finish < -1.05;
     return { shot: pull ? 'pull' : 'cut', confident: Math.abs(finish + 1.05) > 0.15 };
   }
+
+  // A pull can be fastest on the way down, so the moment of peak speed looks like a drive.
+  // The shape is the whole swing: hands across the body, weight on the back foot, front foot staying put.
+  const horizontal = spanX >= 0.45 && spanX >= spanY * 0.8;
+  const feet = footCues(frames, w, h, camera.hand);
+  if (horizontal && feet.backFoot && feet.noStride) {
+    return { shot: 'pull', confident: spanX >= spanY && spanX >= 0.6 && feet.clear };
+  }
   return { shot: 'drive', confident: !across && spanY > 0.8 };
+}
+
+function footCues(frames: Landmark[][], w: number, h: number, hand: 'right' | 'left') {
+  const front = hand === 'right' ? L.lAnkle : L.rAnkle;
+  const back = hand === 'right' ? L.rAnkle : L.lAnkle;
+  const usable = (lm: Landmark[]) => seen(lm, front, back, L.lHip, L.rHip, L.lShoulder, L.rShoulder);
+  const first = frames.find(usable);
+  const last = [...frames].reverse().find(usable);
+  if (!first || !last) return { backFoot: false, noStride: true, clear: false };
+  const px = (lm: Landmark[], i: number) => ({ x: lm[i].x * w, y: lm[i].y * h });
+  const torso = dist(mid(px(last, L.lShoulder), px(last, L.rShoulder)), mid(px(last, L.lHip), px(last, L.rHip))) || 1;
+  const sep = (lm: Landmark[]) => dist(px(lm, front), px(lm, back));
+  const grow = (sep(last) - sep(first)) / torso;
+  const hips = mid(px(last, L.lHip), px(last, L.rHip));
+  const backP = px(last, back);
+  const frontP = px(last, front);
+  const along = Math.hypot(frontP.x - backP.x, frontP.y - backP.y);
+  let weight = 0.5;
+  if (along > torso * 0.25) {
+    weight = ((hips.x - backP.x) * (frontP.x - backP.x) + (hips.y - backP.y) * (frontP.y - backP.y)) / (along * along);
+  }
+  return { backFoot: weight < 0.45, noStride: grow < 0.35, clear: weight < 0.4 && grow < 0.2 };
 }

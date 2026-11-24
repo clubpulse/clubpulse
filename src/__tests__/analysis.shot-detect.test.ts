@@ -50,6 +50,22 @@ describe('shot detection', () => {
     expect(read(swing([[-0.5, -0.9], [0.6, -0.95], [0.5, -1.4]], 5))).toBe('pull');
   });
 
+  it('reads a pull from back-foot weight and a cross-bat swing, even when the fast part is downward', () => {
+    const frames: Landmark[][] = [];
+    const put = (hands: [number, number]): Landmark[] => {
+      const lm = frame(hands);
+      const set = (i: number, x: number, y: number) => { lm[i] = { x: x / 1000, y: y / 1000, visibility: 0.9 }; };
+      // Weight over the back (right) foot. The front foot does not step toward the ball.
+      set(L.lAnkle, 350, 900); set(L.rAnkle, 700, 900);
+      set(L.lHip, 620, 500); set(L.rHip, 680, 500);
+      return lm;
+    };
+    for (let i = 0; i < 6; i++) frames.push(put([0.1, -0.3]));
+    for (let i = 0; i < 6; i++) frames.push(put([0.2 + i * 0.15, -0.35]));
+    frames.push(put([1.1, -0.2]));
+    expect(detectShot(frames, 1000, 1000, { view: 'side', hand: 'right' }).shot).toBe('pull');
+  });
+
   it('reads a cut: across at chest height, staying level', () => {
     expect(read(swing([[-0.3, -0.75], [0.9, -0.7], [1.0, -0.6]], 5))).toBe('cut');
   });

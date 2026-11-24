@@ -15,7 +15,7 @@ import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
   ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, drillFor, formatRange, formatValue,
-  choosePose, overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
+  LOW_CONFIDENCE_MESSAGE, choosePose, overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
@@ -23,7 +23,7 @@ import { ComparisonPanel } from '@/components/analyse/ComparisonPanel';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
-import { detectShot, type ShotReading } from '@/lib/analysis/shot-detect';
+import { detectShot, shotToScore, type ShotReading } from '@/lib/analysis/shot-detect';
 import { bestAndWorst, clipTime, splitDeliveries, splitShots, windowAround, type ShotWindow } from '@/lib/analysis/shot-split';
 
 type AnalyseTab = 'pose' | 'ball';
@@ -67,8 +67,8 @@ function markWindow(
 ): ShotEntry | null {
   const part = data.frames.slice(win.start, win.end + 1);
   const batting = settings.mode === 'batting';
-  const read = batting && settings.shotType === 'auto' ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
-  const shot: ShotType | undefined = !batting ? undefined : settings.shotType === 'auto' ? (read?.shot ?? 'drive') : settings.shotType;
+  const read = batting ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
+  const shot: ShotType | undefined = batting ? shotToScore(read, settings.shotType) : undefined;
   const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view, data.times.slice(win.start, win.end + 1));
   if (!marked.ok) return null;
   return {
@@ -155,10 +155,12 @@ function startSegment(session: Session, now: number): Segment {
 }
 
 function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), choice?: ShotChoice, view: View = 'side') {
-  const shotType = choice === 'auto' ? detectShot(segment.frames, session.width, session.height).shot : choice;
+  const shotType: ShotType | undefined = mode === 'batting'
+    ? shotToScore(detectShot(segment.frames, session.width, session.height, { view, hand }), choice ?? 'auto')
+    : undefined;
   const seconds = (now - segment.startedAt) / 1000;
   const long = seconds >= MIN_CLIP_SECONDS;
-  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined, view) : 0;
+  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, shotType, view) : 0;
   if (long) session.segments += 1;
   segment.frames = [];
 
@@ -529,8 +531,8 @@ export function AnalyseClient() {
     }
     setShots(null);
 
-    const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
-    const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
+    const read = m === 'batting' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
+    const st: ShotType = m === 'batting' ? shotToScore(read, choice) : 'drive';
     setReading(read);
     const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw, recording.times);
     if (!outcome.ok) {
@@ -1344,16 +1346,23 @@ export function AnalyseClient() {
           </Card>
       )}
 
-      {results && overall !== null && (
+      {results && overall !== null && detail?.confidence === 'low' && (
+        <Card title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}>
+          <p className="text-lg font-medium text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
+          {detail.warnings.length > 0 && <p className="mt-3 text-sm text-amber-200/80">{detail.warnings.join(' · ')}</p>}
+        </Card>
+      )}
+
+      {results && overall !== null && detail?.confidence !== 'low' && (
         <Card
           title={shots ? `${mode === 'bowling' ? 'Ball' : 'Shot'} ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
           description={mode === 'bowling'
             ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
-            : `Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
+            : `Measured around contact, from ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
           action={
             <div className="text-right">
               <div className="text-3xl font-bold" style={{ color: scoreColour(overall) }}>{overall}</div>
-              <div className="text-xs text-neutral-500">overall / 100</div>
+              <div className="text-xs text-neutral-500">{detail?.confidence ?? 'medium'} confidence</div>
             </div>
           }
         >
@@ -1364,6 +1373,7 @@ export function AnalyseClient() {
                 <p className="text-5xl font-bold leading-none" style={{ color: scoreColour(overall) }}>
                   {overall}<span className="ml-1 text-lg font-medium text-neutral-400">/100</span>
                 </p>
+                <p className="mt-2 text-sm text-neutral-400">{detail?.confidence ?? 'medium'} confidence</p>
                 {detail?.warnings && detail.warnings.length > 0 && (
                   <p className="mt-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>
                 )}
@@ -1500,6 +1510,7 @@ export function AnalyseClient() {
                   </span>
                   <span className="whitespace-nowrap text-neutral-400">
                     {formatValue(m)} · <span className="font-semibold" style={{ color: m.excused ? '#93C5FD' : scoreColour(m.score) }}>{m.score}/100</span>
+                    <span className="text-neutral-500"> · {m.confidence ?? detail?.confidence ?? 'medium'}</span>
                   </span>
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-800">

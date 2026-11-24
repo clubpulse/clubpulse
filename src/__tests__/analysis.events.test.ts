@@ -1,7 +1,8 @@
 import {
-  L, analyseDetailed, detectView, findContactFrame, findReleaseFrame, headBehindFrontKnee, headWobble,
-  interpolateGaps, lockPerson, metricDefFor, overallScore, scoreFor, type Landmark,
+  L, LOW_CONFIDENCE_MESSAGE, analyse, analyseDetailed, detectView, findContactFrame, findReleaseFrame, headBehindFrontKnee, headOnTrunk, headWobble,
+  interpolateGaps, lockPerson, metricDefFor, overallScore, resolveView, scoreFor, type Landmark,
 } from '@/lib/analysis/pose-metrics';
+import { shotToScore } from '@/lib/analysis/shot-detect';
 
 const W = 200;
 const H = 400;
@@ -35,10 +36,26 @@ describe('event detection', () => {
     expect(findReleaseFrame(frames, 'right', W, H)).toBe(10);
   });
 
-  it('finds contact at the fastest movement of the bat hand', () => {
-    const frames = Array.from({ length: 12 }, (_, i) => person({ rWrist: [114, 160 - i] }));
-    frames[6] = person({ rWrist: [114, 40] });
-    expect(findContactFrame(frames, 'right', W, H)).toBe(6);
+  it('finds contact on the downswing, not in the stance', () => {
+    const frames = Array.from({ length: 20 }, () => person({ rWrist: [114, 160] }));
+    // A twitch while setting up, inside the first tenth of the clip.
+    frames[1] = person({ rWrist: [20, 160] });
+    for (let i = 6; i <= 10; i++) frames[i] = person({ rWrist: [114, 160 - (i - 5) * 24] });
+    frames[11] = person({ rWrist: [114, 40] });
+    frames[12] = person({ rWrist: [114, 40] });
+    frames[13] = person({ rWrist: [114, 48] });
+    frames[14] = person({ rWrist: [180, 150] });
+    expect(findContactFrame(frames, 'right', W, H)).toBe(14);
+  });
+
+  it('does not keep a run-up landing when the arm comes over later', () => {
+    const frames: Landmark[][] = [];
+    for (let i = 0; i < 6; i++) frames.push(person({ lAnkle: [95, i < 3 ? 260 : 345], rWrist: [114, i === 4 ? 15 : 160] }));
+    for (let i = 0; i < 24; i++) frames.push(person());
+    frames.push(person({ rWrist: [114, 80], rElbow: [112, 50], lAnkle: [150, 345], rAnkle: [70, 340] }));
+    frames.push(person({ rWrist: [114, 20], rElbow: [112, 40], lAnkle: [160, 346], rAnkle: [60, 340] }));
+    frames.push(person({ rWrist: [90, 160], lAnkle: [160, 346], rAnkle: [60, 340] }));
+    expect(findReleaseFrame(frames, 'right', W, H)).toBe(31);
   });
 
   it('does not penalise a head that has moved forward of the front knee', () => {
@@ -123,6 +140,40 @@ describe('tracking and view', () => {
     if (marked.ok) expect(marked.analysis.warnings).toContain('feet out of frame');
     else expect(marked.problem).toBe('feet-out-of-frame');
     expect(analyseDetailed([], 'batting', 'right', W, H)).toEqual({ ok: false, problem: 'no-body' });
+  });
+
+  it('does not treat an unclear shoulder line as a confident view', () => {
+    const ratio = (width: number) => {
+      const frames = Array.from({ length: 6 }, () => person({ lShoulder: [100 - width / 2, 80], rShoulder: [100 + width / 2, 80] }));
+      return detectView(frames, W, H);
+    };
+    expect(ratio(68).confident).toBe(false);
+    expect(ratio(94).confident).toBe(false);
+    expect(resolveView('front', ratio(68))).toEqual({ view: 'front', hint: 'This looks side-on. Switch?' });
+    expect(resolveView('side', { view: 'front', confident: true }).view).toBe('front');
+  });
+
+  it('drops the front elbow for a pull and does not zero the head', () => {
+    const frames = Array.from({ length: 12 }, () => person());
+    const pull = analyse(frames, 'batting', 'right', W, H, 'pull');
+    expect(pull?.some((metric) => metric.key === 'frontElbow')).toBe(false);
+    expect(headOnTrunk(frames, W, H)!).toBeLessThan(0.05);
+    const ideal = metricDefFor('headStability', 'batting', 'side', 'pull')?.ideal ?? [0, 0];
+    expect(scoreFor(0.55, ideal, 0.35)).toBeGreaterThan(40);
+  });
+
+  it('withholds the score when the feet never appear', () => {
+    const hidden = Array.from({ length: 12 }, () => person({}, ['lAnkle', 'rAnkle']));
+    const marked = analyseDetailed(hidden, 'batting', 'right', W, H);
+    if (marked.ok) {
+      expect(marked.analysis.confidence).toBe('low');
+      expect(LOW_CONFIDENCE_MESSAGE).toMatch(/whole body in frame/);
+    }
+  });
+
+  it('keeps the shot the player chose when detection is unsure', () => {
+    expect(shotToScore({ shot: 'drive', confident: false }, 'pull')).toBe('pull');
+    expect(shotToScore({ shot: 'pull', confident: true }, 'auto')).toBe('pull');
   });
 
   it('gives a pull its own elbow tip', () => {
