@@ -46,7 +46,6 @@ export default function ScoresPayPage() {
   // Countdown timer while QR is displayed
   useEffect(() => {
     if (step !== 'qr') return;
-    setSeconds(300);
     timerRef.current = setInterval(() => {
       setSeconds(s => {
         if (s <= 1) {
@@ -97,6 +96,7 @@ export default function ScoresPayPage() {
       setSession(data);
       const url = await QRCode.toDataURL(data.qr_payload, { width: 280, margin: 2 });
       setQrDataUrl(url);
+      setSeconds(300);
       setStep('qr');
     } catch {
       setErrorMsg('Something went wrong. Please try again.');

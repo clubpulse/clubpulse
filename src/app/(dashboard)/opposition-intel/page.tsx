@@ -129,7 +129,7 @@ export default function OppositionIntelPage() {
           Opposition Intelligence
         </h1>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-          AI-powered captain's briefing — threats, opportunities and tactical tips before you take the field.
+          AI-powered captain&apos;s briefing — threats, opportunities and tactical tips before you take the field.
         </p>
       </div>
 
@@ -224,7 +224,7 @@ export default function OppositionIntelPage() {
                   style={{ width: '100%', padding: '11px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                 />
                 <p style={{ margin: '5px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
-                  Find this on play-cricket.com in the club's URL. Without it, SHIFTUP generates a general tactical briefing.
+                  Find this on play-cricket.com in the club&apos;s URL. Without it, SHIFTUP generates a general tactical briefing.
                 </p>
               </div>
               <div>
@@ -300,7 +300,7 @@ export default function OppositionIntelPage() {
 
           {/* Headline */}
           <div style={{ background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: '14px', padding: '20px 24px' }}>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Captain's Headline</p>
+            <p style={{ fontSize: '12px', fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Captain&apos;s Headline</p>
             <p style={{ fontSize: '17px', fontWeight: 700, color: '#fff', lineHeight: 1.5, margin: 0 }}>{result.briefing.headline}</p>
           </div>
 
