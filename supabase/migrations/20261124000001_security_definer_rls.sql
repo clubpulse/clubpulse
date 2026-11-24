@@ -1,0 +1,90 @@
+-- Stop anonymous callers using SECURITY DEFINER, and make the six definer views honour the caller's RLS.
+--
+-- The security advisor lists these views as SECURITY DEFINER and these functions as executable by anon.
+-- Revoking anon and PUBLIC does not drop data. Signed-in users and the service role keep EXECUTE,
+-- because the app calls these functions with a session or the service role. Trigger functions keep
+-- working without an anon grant. Idempotent: revoke and grant can run more than once.
+
+ALTER VIEW public.club_scores_leaderboard SET (security_invoker = true);
+ALTER VIEW public.mood_performance_correlation SET (security_invoker = true);
+ALTER VIEW public.finance_club_summary SET (security_invoker = true);
+ALTER VIEW public.ground_pitch_history SET (security_invoker = true);
+ALTER VIEW public.active_consents SET (security_invoker = true);
+ALTER VIEW public.public_profile_cards SET (security_invoker = true);
+
+REVOKE ALL ON FUNCTION public.admin_stats() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_stats() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.apply_fee_offset(p_club_id uuid, p_scores_to_apply integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.apply_fee_offset(p_club_id uuid, p_scores_to_apply integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.approve_waiting_list_entry(p_entry_id uuid, p_joining_bonus integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.approve_waiting_list_entry(p_entry_id uuid, p_joining_bonus integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.assign_queue_position() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.assign_queue_position() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.auto_create_club_subscription() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.auto_create_club_subscription() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.auto_create_coach_profile() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.auto_create_coach_profile() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.award_badge(p_user_id uuid, p_badge_slug text, p_club_id uuid, p_reason text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_badge(p_user_id uuid, p_badge_slug text, p_club_id uuid, p_reason text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.award_match_creds(p_scorecard_id uuid, p_user_id uuid, p_amount integer, p_reason text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_match_creds(p_scorecard_id uuid, p_user_id uuid, p_amount integer, p_reason text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.award_tour_participation(p_tour_id uuid, p_user_id uuid, p_days_attended integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_tour_participation(p_tour_id uuid, p_user_id uuid, p_days_attended integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.award_travel_points(p_club_id uuid, p_travel_date date, p_destination text, p_distance_miles integer, p_travel_mode text, p_fixture_id uuid, p_notes text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_travel_points(p_club_id uuid, p_travel_date date, p_destination text, p_distance_miles integer, p_travel_mode text, p_fixture_id uuid, p_notes text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.book_coaching_session(p_listing_id uuid, p_session_date date, p_session_time text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.book_coaching_session(p_listing_id uuid, p_session_date date, p_session_time text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.buy_raffle_tickets(p_raffle_id uuid, p_quantity integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.buy_raffle_tickets(p_raffle_id uuid, p_quantity integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.calculate_pulse_score(p_club_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.calculate_pulse_score(p_club_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.card_task_on_analysis() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.card_task_on_analysis() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.card_task_on_lesson() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.card_task_on_lesson() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.card_task_on_shift() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.card_task_on_shift() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.checkout_volunteer_shift(p_signup_id uuid, p_notes text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.checkout_volunteer_shift(p_signup_id uuid, p_notes text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.complete_coaching_session(p_booking_id uuid, p_notes text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.complete_coaching_session(p_booking_id uuid, p_notes text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.contribute_to_pot(p_club_id uuid, p_scores integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.contribute_to_pot(p_club_id uuid, p_scores integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.create_scout_session(p_club_id uuid, p_session_name text, p_date_from date, p_date_to date) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_scout_session(p_club_id uuid, p_session_name text, p_date_from date, p_date_to date) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.create_sponsorship(p_package_id uuid, p_junior_slot_id uuid, p_message text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_sponsorship(p_package_id uuid, p_junior_slot_id uuid, p_message text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.create_wallet_for_user() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_wallet_for_user() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.donate_to_charity(p_charity_id uuid, p_scores integer, p_message text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.donate_to_charity(p_charity_id uuid, p_scores integer, p_message text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.draw_raffle(p_raffle_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.draw_raffle(p_raffle_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.get_club_health(p_club_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_club_health(p_club_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.get_consented_readiness(p_club_id uuid, p_days integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_consented_readiness(p_club_id uuid, p_days integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.get_wellbeing_aggregate(p_club_id uuid, p_weeks integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_wellbeing_aggregate(p_club_id uuid, p_weeks integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.log_mentor_session(p_request_id uuid, p_session_date date, p_duration_minutes integer, p_notes text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.log_mentor_session(p_request_id uuid, p_session_date date, p_duration_minutes integer, p_notes text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.log_qualification(p_club_id uuid, p_course_type_id uuid, p_completed_date date, p_certificate_number text, p_expires_date date) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.log_qualification(p_club_id uuid, p_course_type_id uuid, p_completed_date date, p_certificate_number text, p_expires_date date) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.log_wallet_earning() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.log_wallet_earning() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.mark_volunteer_no_show(p_signup_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.mark_volunteer_no_show(p_signup_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.place_auction_bid(p_lot_id uuid, p_bid_amount integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.place_auction_bid(p_lot_id uuid, p_bid_amount integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.rate_mentor_session(p_session_id uuid, p_rating integer) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.rate_mentor_session(p_session_id uuid, p_rating integer) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.recalculate_form(p_user_id uuid, p_club_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.recalculate_form(p_user_id uuid, p_club_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.refresh_nemesis_pairs() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.refresh_nemesis_pairs() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.resolve_pitch_votes(p_fixture_id uuid, p_actual_condition text, p_notes text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.resolve_pitch_votes(p_fixture_id uuid, p_actual_condition text, p_notes text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.seed_infamy_categories(p_club_id uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.seed_infamy_categories(p_club_id uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.vote_on_proposal(p_proposal_id uuid, p_vote text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.vote_on_proposal(p_proposal_id uuid, p_vote text) TO authenticated, service_role;
