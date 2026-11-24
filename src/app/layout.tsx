@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: { siteName: "ShiftUp", title: "ShiftUp: From Grassroots to Greatness", description: "From Grassroots to Greatness." },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
