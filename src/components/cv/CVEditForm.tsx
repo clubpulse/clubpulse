@@ -239,7 +239,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
             <Input
               value={profile.clubs_played_for ?? ''}
               onChange={(e) => handleProfileChange('clubs_played_for', e.target.value)}
-              placeholder="Slough CC, Windsor CC, Staines CC…"
+              placeholder="Your club, a previous club…"
             />
           </Field>
           <Field label={`Personal statement (${(profile.personal_statement ?? '').length}/500)`}>
@@ -328,7 +328,7 @@ export function CVEditForm({ cv, onSaved }: Props) {
                 <Input
                   value={newRow.club_name}
                   onChange={(e) => setNewRow((r) => ({ ...r, club_name: e.target.value }))}
-                  placeholder="Slough CC"
+                  placeholder="Your club"
                 />
               </Field>
               <Field label="Matches">

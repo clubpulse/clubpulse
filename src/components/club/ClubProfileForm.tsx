@@ -103,7 +103,7 @@ export function ClubProfileForm({ clubId, club }: ClubProfileFormProps) {
             style={input}
             value={form.name}
             onChange={(e) => set('name', e.target.value)}
-            placeholder="e.g. Hightown CC"
+            placeholder="e.g. Fairwick CC"
           />
         </div>
 

@@ -29,7 +29,7 @@ export default function GetStartedPage() {
           <Link href="/auth/sign-up" style={card}>
             <span style={eyebrow}>For players</span>
             <strong style={title}>Join as a player</strong>
-            <span style={body}>Free to join, whether or not your club is on ShiftUp yet. Analysis, community, wellness and the academy, with Scores earned along the way.</span>
+            <span style={body}>Start on Free (£0), whether or not your club is on ClubPulse yet. Analysis, community, wellness and the academy, with Pro, Elite and Legend when you want more.</span>
             <span style={cta}>Create your account →</span>
           </Link>
         </div>

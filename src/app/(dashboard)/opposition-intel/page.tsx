@@ -209,7 +209,7 @@ export default function OppositionIntelPage() {
                 <input
                   value={manualOpponent}
                   onChange={e => setManualOpponent(e.target.value)}
-                  placeholder="e.g. Hambledon CC"
+                  placeholder="e.g. Fairwick CC"
                   style={{ width: '100%', padding: '11px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                 />
               </div>

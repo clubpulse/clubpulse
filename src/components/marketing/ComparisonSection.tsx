@@ -17,7 +17,7 @@ export default function ComparisonSection() {
     { label: 'Integrated fee & finance tracking', cp: '✓', pi: '~', ta: '~', pc: '✕', note: 'Others require third-party payment tools' },
     { label: 'Loyalty rewards for players',      cp: '✓', pi: '✕', ta: '✕', pc: '✕', note: 'ShiftUp Scores: earn, redeem, retain players' },
     { label: 'Player performance dashboard',     cp: '✓', pi: '~', ta: '✕', pc: '~', note: 'Deep stats with AI-driven trend analysis' },
-    { label: 'Free for players',                 cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
+    { label: 'Free tier to start',               cp: '✓', pi: '✕', ta: '✓', pc: '✓' },
     { label: 'Club plan from £29.99/mo',          cp: '✓', pi: '✕', ta: '~', pc: '✓' },
     { label: 'Mobile-first native experience',   cp: '✓', pi: '~', ta: '✓', pc: '✕' },
   ];

@@ -5,9 +5,8 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our story — ShiftUp',
-  description: 'How a Sunday cricket club in Slough became the blueprint for grassroots cricket management.',
-};
+  title: 'Our story — ClubPulse',
+  description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',};
 
 export default function OurStoryPage() {
   return (
@@ -97,7 +96,7 @@ export default function OurStoryPage() {
       <section className="about-hero">
         <p className="section-tag">Our story</p>
         <h1 className="hero-h">Built on a real cricket club,<br />for every cricket club</h1>
-        <p className="hero-sub">ShiftUp started as a solution to the chaos of running Slough Cricket Club. It grew into a platform that every grassroots club deserves.</p>
+        <p className="hero-sub">ClubPulse started as a solution to the chaos of running a grassroots cricket club. It grew into a platform that every grassroots club deserves.</p>
       </section>
 
       {/* ── Story ── */}
@@ -105,23 +104,23 @@ export default function OurStoryPage() {
         <div className="story-block">
           <h2 className="story-h">The problem every club knows</h2>
           <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two volunteers who burn out.</p>
-          <p className="story-p">At Slough CC, we lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
+          <p className="story-p">We lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
         </div>
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Co-Founder, ShiftUp</cite>
+          <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, ClubPulse</cite>
         </div>
 
         <div className="story-block">
-          <h2 className="story-h">Slough CC as the testbed</h2>
-          <p className="story-p">Every feature in ShiftUp was born from a real frustration at Slough CC. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
+          <h2 className="story-h">A real club as the testbed</h2>
+          <p className="story-p">Every feature in ClubPulse was born from a real frustration on the ground. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
           <p className="story-p">The AI coaching engine came when we realised players were recording sessions anyway, just without any feedback. Scores — our loyalty currency — came when we wanted to reward the players who show up week after week, not just the stars.</p>
         </div>
 
         <div className="story-block">
           <h2 className="story-h">From one club to many</h2>
-          <p className="story-p">What started as an internal tool for Slough CC is now a platform built to serve any grassroots cricket club in the UK. We&apos;ve kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
+          <p className="story-p">What started as an internal tool for one club is now a platform built to serve any grassroots cricket club in the UK. We&apos;ve kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
           <p className="story-p">We&apos;re not here to replace the human side of your club. We&apos;re here to remove the admin burden so you can focus on it.</p>
         </div>
       </section>
@@ -130,16 +129,15 @@ export default function OurStoryPage() {
       <section className="origin-section">
         <div className="origin-grid">
           <div className="origin-text">
-            <p className="section-tag" style={{ marginBottom: '12px' }}>Live at Slough CC</p>
-            <h2>Running in production every weekend</h2>
-            <p>ShiftUp isn&apos;t a demo. It runs live at Slough Cricket Club every Saturday and Sunday during the season — real players, real matches, real data.</p>
-            <p>That means every bug gets found fast, and every feature gets stress-tested in the most unforgiving environment: a cricket club where people actually care about the result.</p>
+            <p className="section-tag" style={{ marginBottom: '12px' }}>In development</p>
+            <h2>Starting to contact clubs</h2>
+            <p>ClubPulse is in development and is now starting to contact clubs.</p>
           </div>
           <div className="stat-cluster">
             {[
-              { val: '2026', desc: 'Season running live on ShiftUp' },
-              { val: 'Live', desc: 'Ball-by-ball scoring, updated as it happens' },
-              { val: '50 pts', desc: 'Earned per match played — rewarding commitment' },
+              { val: 'Now', desc: 'In development, and starting to contact clubs' },
+              { val: 'Score', desc: 'Ball-by-ball scoring, updated as it happens' },
+              { val: '500', desc: 'Scores equal £1' },
               { val: '£0', desc: 'Admin overhead for tracking availability' },
             ].map(s => (
               <div key={s.val} className="stat-row">

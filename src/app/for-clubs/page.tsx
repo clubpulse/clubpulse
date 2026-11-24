@@ -17,7 +17,7 @@ const SATURDAY = [
 ];
 
 const CLUB = [
-  { tag: 'Live now', h: 'Membership', body: 'Invite the squad, keep the member list in one place, and give committee, coaches and parents the right level of access. Players join free.' },
+  { tag: 'Live now', h: 'Membership', body: 'Invite the squad, keep the member list in one place, and give committee, coaches and parents the right level of access. Players start on the free tier.' },
   { tag: 'Live now', h: 'Finance', body: 'Track match fees, income and expenses in one ledger, with a dashboard for the treasurer. Paying fees in the app is coming soon; for now the club collects as it does today.' },
   { tag: 'Live now', h: 'Safeguarding and coaches', body: 'Keep coaches’ qualifications and checks in one place and in date, with junior-aware rules built in.' },
 ];
@@ -75,7 +75,7 @@ export default function ForClubsPage() {
         <section className="fc-sec">
           <p className="fc-eyebrow">Match Day</p>
           <h2 className="fc-h2">The Saturday flow.</h2>
-          <p className="fc-sub">Four steps, each one built and in use at Slough CC.</p>
+          <p className="fc-sub">Four steps for Saturday. ClubPulse is in development and is now starting to contact clubs.</p>
           <div className="fc-grid fc-grid-4">
             {SATURDAY.map((s) => (
               <div key={s.n} className="fc-card">

@@ -41,7 +41,7 @@ export default function ForPlayersPage() {
           <p className="fp2-eyebrow">For players</p>
           <h1 className="fp2-h1">Four pillars to grow with.</h1>
           <p className="fp2-lead">
-            Analysis, community, wellness and learning, in one place. You can join whether or not your club is on ShiftUp, and it is free for players.
+            Analysis, community, wellness and learning, in one place. You can join whether or not your club is on ClubPulse, and you can start on the free tier.
           </p>
           <Link href="/auth/sign-up" className="fp2-btn">Join as a player</Link>
         </section>

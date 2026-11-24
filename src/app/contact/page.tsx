@@ -170,9 +170,9 @@ export default function ContactPage() {
           <div className="contact-method">
             <div className="method-icon"><Glyph e="🏏" /></div>
             <div>
-              <p className="method-label">Currently live at</p>
-              <p className="method-val">Slough Cricket Club</p>
-              <p className="method-note">shiftup.club — see it in production</p>
+              <p className="method-label">Status</p>
+              <p className="method-val">In development</p>
+              <p className="method-note">Now starting to contact clubs</p>
             </div>
           </div>
 
@@ -239,7 +239,7 @@ export default function ContactPage() {
                 <input
                   id="club"
                   type="text"
-                  placeholder="Slough Cricket Club"
+                  placeholder="Your Cricket Club"
                   value={form.club}
                   onChange={e => setForm(f => ({ ...f, club: e.target.value }))}
                   required

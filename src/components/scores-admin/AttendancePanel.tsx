@@ -100,7 +100,7 @@ export function AttendancePanel({ clubId, data }: { clubId: string; data: Attend
           {' '}This records who has paid; it does not take payments.
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
-          <input aria-label="Fee description" value={feeDesc} maxLength={80} onChange={(e) => setFeeDesc(e.target.value)} placeholder="Match fee vs Windsor" style={{ ...input, flex: '1 1 180px' }} />
+          <input aria-label="Fee description" value={feeDesc} maxLength={80} onChange={(e) => setFeeDesc(e.target.value)} placeholder="Match fee vs Fairwick" style={{ ...input, flex: '1 1 180px' }} />
           <input aria-label="Amount in pounds" inputMode="decimal" value={feePounds} onChange={(e) => setFeePounds(e.target.value)} placeholder="£" style={{ ...input, width: '70px' }} />
           <input aria-label="Due date" type="date" value={feeDue} onChange={(e) => setFeeDue(e.target.value)} style={input} />
         </div>

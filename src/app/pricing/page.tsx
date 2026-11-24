@@ -97,7 +97,7 @@ const PLAYER_SECTIONS: Section[] = [
 ];
 
 const PLAYER_TIERS = [
-  { key: 'free',   label: 'Free',   price: '£0',     period: 'Always free',         desc: 'Get started — stats, scorecard and Bronze Scores.',              featured: false, cta: 'Join free →',    href: '/auth/sign-up' },
+  { key: 'free',   label: 'Free',   price: '£0',     period: 'Free tier',           desc: 'Get started — stats, scorecard and Bronze Scores.',              featured: false, cta: 'Start on Free →', href: '/auth/sign-up' },
   { key: 'pro',    label: 'Pro',    price: '£9.99',  period: 'per month',           desc: 'AI coaching, drills and Silver Scores rewards.',                 featured: true,  cta: 'Get Pro →',      href: PLAYER_CTA },
   { key: 'elite',  label: 'Elite',  price: '£14.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: PLAYER_CTA },
   { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: PLAYER_CTA },
@@ -536,7 +536,7 @@ export default function PricingPage() {
         <span className="cp-pricing-eyebrow">Pricing</span>
         <h1 className="cp-pricing-h1">Simple pricing.<br />Serious value.</h1>
         <p className="cp-pricing-sub">
-          Free for every player. Paid plans that unlock the full depth of your game.
+          Start on Free (£0). Move up to Pro (£9.99), Elite (£14.99) or Legend (£19.99) when you want more.
           Club plans from £29.99 a month, set up around how your club actually operates.
         </p>
 

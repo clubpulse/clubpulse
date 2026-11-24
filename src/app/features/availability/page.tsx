@@ -241,7 +241,7 @@ export default function AvailabilityPage() {
         <section className="av-hero">
           <div>
             <p className="av-eyebrow">📅 Availability</p>
-            <div className="av-tag"><span className="av-tag-dot" />Live at Slough CC</div>
+            <div className="av-tag"><span className="av-tag-dot" />In development</div>
             <h1 className="av-h1">No more <span className="red">Wednesday night</span> WhatsApp chains.</h1>
             <p className="av-sub">Players mark availability in one tap. Captains get a live squad count. The XI is confirmed and notified in seconds — not days of back-and-forth in a 30-person group chat.</p>
             <div className="av-hero-btns">
@@ -255,13 +255,13 @@ export default function AvailabilityPage() {
             <div className="av-mock-header">
               <div>
                 <div className="av-mock-title">Availability</div>
-                <div className="av-mock-meta">Sat 26 Oct · Slough CC vs Henley CC</div>
+                <div className="av-mock-meta">Sat 26 Oct · Your Club vs Fairwick CC</div>
               </div>
               <span className="av-count-chip">10 / 11 ✓</span>
             </div>
             <div className="av-match-card">
-              <div className="av-match-name">vs Henley CC — Away</div>
-              <div className="av-match-date">Saturday 26 Oct · 10:30am · Henley-on-Thames CC</div>
+              <div className="av-match-name">vs Fairwick CC — Away</div>
+              <div className="av-match-date">Saturday 26 Oct · 10:30am · Fairwick Ground</div>
               <div className="av-squad-count">
                 <span className="av-squad-n">10</span>
                 <span className="av-squad-label">confirmed · 1 awaiting</span>
@@ -270,7 +270,7 @@ export default function AvailabilityPage() {
             </div>
             <div className="av-players">
               {[
-                { name: 'I. Suresh', role: 'Batter · Captain', status: 'yes', label: 'Available' },
+                { name: 'A. Patel', role: 'Batter · Captain', status: 'yes', label: 'Available' },
                 { name: 'R. Patel', role: 'All-rounder', status: 'yes', label: 'Available' },
                 { name: 'A. Khan', role: 'Pace bowler', status: 'yes', label: 'Available' },
                 { name: 'S. Bhatt', role: 'Wicketkeeper', status: 'no', label: 'Unavailable' },
@@ -329,8 +329,8 @@ export default function AvailabilityPage() {
               </div>
               <div className="av-detail-card">
                 <div className="av-detail-icon"><Glyph e="⭐" /></div>
-                <h3 className="av-detail-h">+5 Scores for every response</h3>
-                <p className="av-detail-body">Every player who responds — available or not — earns 5 Scores automatically. This alone drives response rates up dramatically. Players are rewarded just for communicating with the club.</p>
+                <h3 className="av-detail-h">Scores for every response</h3>
+                <p className="av-detail-body">Every player who responds — available or not — is rewarded for communicating with the club.</p>
               </div>
               <div className="av-detail-card">
                 <div className="av-detail-icon"><Glyph e="📊" /></div>
@@ -387,12 +387,12 @@ export default function AvailabilityPage() {
           <h2 className="av-section-h2">Common questions about Availability.</h2>
           <div className="av-faq-list">
             {[
-              ['Do players need to download an app?', 'Yes — players download the ShiftUp app (iOS and Android). It\'s free forever for players. The captain manages everything from the web dashboard or the same app.'],
+              ['Do players need to download an app?', 'Yes — players download the ClubPulse app (iOS and Android). They can start on the free tier, with Pro, Elite and Legend if they want more. The captain manages everything from the web dashboard or the same app.'],
               ['What if a player doesn\'t have a smartphone?', 'The captain can mark players available manually from the dashboard. The system doesn\'t block selection if someone can\'t use the app — it just removes the automated workflow for them.'],
               ['Can we have multiple matches open at once?', 'Yes. If you have a first XI and a second XI playing on the same weekend, both can have separate availability polls running simultaneously. Each match has its own squad count and player list.'],
               ['What happens when someone changes their response?', 'Players can update their response right up until the captain locks the squad. The captain sees the change in real time and the squad count updates automatically.'],
               ['Can we still use WhatsApp alongside this?', 'Of course. ShiftUp doesn\'t replace your club culture — it replaces one specific workflow (the availability poll) so that WhatsApp can go back to being for banter, not admin.'],
-              ['How does the +5 Scores award work?', 'The moment a player submits their response (available, unavailable, or unsure), 5 Scores are added to their balance automatically. No action needed from the captain or admin.'],
+              ['Do players earn Scores for replying?', 'Replying is part of taking part. The amount is whatever the club has set, and 500 Scores equal £1.'],
             ].map(([q, a], i) => (
               <div key={i} className="av-faq-item">
                 <div className="av-faq-q">{q}</div>
@@ -407,9 +407,9 @@ export default function AvailabilityPage() {
           <div className="av-cta-inner">
             <div>
               <h2 className="av-cta-h">Ready to fix Saturday mornings?</h2>
-              <p className="av-cta-sub">Get in touch and we&apos;ll bring ShiftUp to your club — free for all your players.</p>
+              <p className="av-cta-sub">Get in touch and we&apos;ll bring ClubPulse to your club. Players can start on the free tier.</p>
             </div>
-            <Link href="/contact" className="av-cta-btn">Get started — it&apos;s free →</Link>
+            <Link href="/contact" className="av-cta-btn">Get started →</Link>
           </div>
         </section>
 

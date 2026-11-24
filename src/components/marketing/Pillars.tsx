@@ -21,7 +21,7 @@ const PILLARS: Pillar[] = [
     line: 'Film a shot or a delivery and see exactly what to work on.',
     items: [
       { text: 'Video analysis of your batting and bowling', status: 'live' },
-      { text: 'Coach AI that knows your progress', status: 'live' },
+      { text: 'Coach AI is in development and being validated, not biomechanically validated', status: 'soon' },
       { text: 'Your stats and a shareable Cricket CV', status: 'live' },
     ],
   },

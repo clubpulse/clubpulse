@@ -723,7 +723,7 @@ export default function HomePage() {
                 <span className="cp-live-dot-wrap" aria-hidden="true">
                   <span className="cp-sonar-ring" /><span className="cp-sonar-ring2" /><span className="cp-live-dot" />
                 </span>
-                Live at Slough CC · 2026 Season
+                In development · contacting clubs
               </div>
               <h1 className="cp-hero-h1">
                 Run Saturday.<br />
@@ -749,7 +749,7 @@ export default function HomePage() {
               </div>
               <div className="cp-hero-stats">
                 <div className="cp-hero-stat" ref={stat50Ref}><div className="cp-stat-n">{stat50Count}</div><div className="cp-stat-l">Scores = £1</div></div>
-                <div className="cp-hero-stat"><div className="cp-stat-n">£0</div><div className="cp-stat-l">Free for players</div></div>
+                <div className="cp-hero-stat"><div className="cp-stat-n">From £0</div><div className="cp-stat-l">Player plans</div></div>
                 <div className="cp-hero-stat"><div className="cp-stat-n">4</div><div className="cp-stat-l">Player pillars</div></div>
               </div>
             </div>
@@ -773,16 +773,16 @@ export default function HomePage() {
                   {phoneTab === 'dash' && (
                     <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
                       <div>
-                        <p className="cp-sc-greeting">Good morning, Ishwar 👋</p>
-                        <p className="cp-sc-sub">Slough CC · 2026 Season</p>
+                        <p className="cp-sc-greeting">Good morning 👋</p>
+                        <p className="cp-sc-sub">Your Club · 2026 Season</p>
                       </div>
                       <div className="cp-score-card">
                         <div>
-                          <div className="cp-score-n">1,250<span className="cp-score-unit"> pts</span></div>
+                          <div className="cp-score-n">1,250<span className="cp-score-unit"> Scores</span></div>
                           <div className="cp-score-label">Your Scores balance</div>
                         </div>
                         <div style={{textAlign:'right'}}>
-                          <div className="cp-score-val">≈ £25.00</div>
+                          <div className="cp-score-val">≈ £2.50</div>
                           <div className="cp-score-label">Cash value</div>
                         </div>
                       </div>
@@ -801,17 +801,17 @@ export default function HomePage() {
                   {phoneTab === 'card' && (
                     <div>
                       <div className="cp-live-chip"><span className="cp-live-chip-dot" />LIVE</div>
-                      <p className="cp-sc-match-title">Slough CC vs Henley CC</p>
-                      <p className="cp-sc-match-meta">Sun 20 Oct · Arbour Park · 2nd innings</p>
+                      <p className="cp-sc-match-title">Your Club vs Fairwick CC</p>
+                      <p className="cp-sc-match-meta">Sun 20 Oct · Home ground · 2nd innings</p>
                       <div className="cp-sc-innings">
-                        <div className="cp-sc-head"><span className="cp-sc-head-name">Slough CC batting</span><span className="cp-sc-head-score">142–3</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">I. Suresh*</span><span className="cp-sc-bat-runs">67*</span></div>
+                        <div className="cp-sc-head"><span className="cp-sc-head-name">Your Club batting</span><span className="cp-sc-head-score">142–3</span></div>
+                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">A. Patel*</span><span className="cp-sc-bat-runs">67*</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">R. Patel*</span><span className="cp-sc-bat-runs">24*</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">A. Khan (out)</span><span className="cp-sc-bat-runs">34</span></div>
                         <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">S. Bhatt (out)</span><span className="cp-sc-bat-runs">12</span></div>
                       </div>
                       <div className="cp-sc-innings">
-                        <div className="cp-sc-head"><span className="cp-sc-head-name">Henley CC</span><span className="cp-sc-head-score">178 all out</span></div>
+                        <div className="cp-sc-head"><span className="cp-sc-head-name">Fairwick CC</span><span className="cp-sc-head-score">178 all out</span></div>
                       </div>
                     </div>
                   )}
@@ -853,14 +853,14 @@ export default function HomePage() {
                     <div>
                       <div className="cp-pts-hero">
                         <div className="cp-pts-big">1,250</div>
-                        <div className="cp-pts-eq">⭐ Scores · ≈ £25.00 value</div>
+                        <div className="cp-pts-eq">⭐ Scores · ≈ £2.50 value</div>
                       </div>
                       <div className="cp-earn-list">
-                        <div className="cp-earn-row"><span className="cp-earn-label">✅ Marked available</span><span className="cp-earn-pts">+5</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🏏 Match played</span><span className="cp-earn-pts">+50</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🎯 AI session</span><span className="cp-earn-pts">+25</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">💷 Fee payment</span><span className="cp-earn-pts">+200</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">🤝 Referral bonus</span><span className="cp-earn-pts">+100</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">✅ Daily check-in</span><span className="cp-earn-pts">+5</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🎓 Academy lesson</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🏏 Training attendance</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">💷 Match fee on time</span><span className="cp-earn-pts">+10</span></div>
+                        <div className="cp-earn-row"><span className="cp-earn-label">🤝 Community post</span><span className="cp-earn-pts">+3</span></div>
                       </div>
                     </div>
                   )}
@@ -874,12 +874,12 @@ export default function HomePage() {
         {/* SOCIAL PROOF */}
         <div className="cp-social-proof">
           <div className="cp-social-proof-inner">
-            <span className="cp-social-proof-label">Live at</span>
+            <span className="cp-social-proof-label">In development</span>
             <div className="cp-social-proof-clubs">
-              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot" /><span>Slough CC</span></div>
+              <div className="cp-social-proof-club"><span className="cp-social-proof-club-dot" /><span>Contacting clubs</span></div>
               <div className="cp-social-proof-club" style={{color:'rgba(240,236,228,0.3)'}}>
                 <span className="cp-social-proof-club-dot" style={{background:'rgba(240,236,228,0.15)'}} />
-                <span>Your club next →</span>
+                <span>Talk to us →</span>
               </div>
             </div>
           </div>
@@ -895,7 +895,7 @@ export default function HomePage() {
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
           <h2 className="cp-section-h2">From first chat to first Saturday.</h2>
-          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and the squad joins free.</p>
+          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and players start on the free tier.</p>
 
           <div className="cp-steps">
             <div className="cp-step">
@@ -909,7 +909,7 @@ export default function HomePage() {
               <p className="cp-step-num">STEP 02</p>
               <div className="cp-step-icon"><Glyph e="📱" /></div>
               <h3 className="cp-step-h">Invite the squad</h3>
-              <p className="cp-step-body">Players join free, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
+              <p className="cp-step-body">Players start on the free tier, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
@@ -925,9 +925,9 @@ export default function HomePage() {
         <section className="cp-pricing">
           <div className="cp-pricing-inner" style={{ textAlign: 'center' }}>
             <p className="cp-eyebrow">Pricing</p>
-            <h2 className="cp-section-h2">Free for players. Simple for clubs.</h2>
+            <h2 className="cp-section-h2">Player plans from £0. Simple for clubs.</h2>
             <p className="cp-section-sub" style={{ margin: '0 auto 28px' }}>
-              Players join free. Club plans start from £29.99 a month and cover the whole club.
+              Players start on Free (£0), with Pro, Elite and Legend above it. Club plans start from £29.99 a month and cover the whole club.
             </p>
             <Link href="/pricing" className="cp-btn-hero-ghost">See pricing →</Link>
             <p style={{ marginTop: 28, fontSize: 13, color: 'rgba(240,236,228,0.45)' }}>
@@ -941,7 +941,7 @@ export default function HomePage() {
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
             <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Co-Founder, ShiftUp</p>
+            <p className="cp-quote-attr">— Harinarayanan J and Ishwar Suresh, Co-Founders, ClubPulse</p>
           </div>
         </section>
 
@@ -950,7 +950,7 @@ export default function HomePage() {
           <div className="cp-cta-band-inner">
             <div>
               <h2 className="cp-cta-h">Two doors in. One platform.</h2>
-              <p className="cp-cta-sub">Clubs: we set you up. Players: free to join, with or without your club.</p>
+              <p className="cp-cta-sub">Clubs: we set you up. Players: start on Free, with or without your club.</p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <Link href="/contact" className="cp-cta-btn">Register your club →</Link>

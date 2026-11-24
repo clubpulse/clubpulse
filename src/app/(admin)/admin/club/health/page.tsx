@@ -18,7 +18,7 @@ const alerts = [
     bg: 'rgba(231,76,60,0.08)',
     border: 'rgba(231,76,60,0.18)',
     title: 'Retention risk — Dev Sharma',
-    detail: 'No activity in 28 days. Last match: Coventry CC (26 Sep). Risk: churn before season end.',
+    detail: 'No activity in 28 days. Last match: Fairwick CC (26 Sep). Risk: churn before season end.',
     action: 'Send nudge',
   },
   {
@@ -38,7 +38,7 @@ const alerts = [
     bg: 'rgba(46,204,113,0.06)',
     border: 'rgba(46,204,113,0.15)',
     title: 'Availability boost opportunity',
-    detail: '6 members haven\'t responded to the Oxford CC fixture. Sending a push now historically increases response by 40%.',
+    detail: '6 members haven\'t responded to the Redwillow CC fixture. Sending a push now historically increases response.',
     action: 'Send push',
   },
 ];
@@ -66,7 +66,7 @@ export default async function ClubHealthPage() {
             </span>
           </div>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
-            AI-generated insights · Slough CC · Updated hourly
+            AI-generated insights · Your Club · Updated hourly
           </p>
         </div>
         <Link href="/admin/club" style={{ padding: '10px 18px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'rgba(255,255,255,0.7)', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>

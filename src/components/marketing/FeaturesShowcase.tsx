@@ -44,7 +44,7 @@ function MatchDemo() {
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22C55E', display: 'inline-block', animation: 'cp-blink-dot 1.5s infinite' }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Live</span>
           </div>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Slough CC vs Maidenhead CC</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Your Club vs Redwillow CC</span>
         </div>
         <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div>
@@ -364,7 +364,7 @@ function EngagementDemo() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: 'rgba(239,200,74,0.06)', border: '1px solid rgba(239,200,74,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#EFC84A' }}>2,840</div>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Your Pulse Points</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>Your Scores</div>
         </div>
         <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Bricolage Grotesque',sans-serif", color: '#f97316' }}>🔥 #1</div>
@@ -379,7 +379,7 @@ function CommunityDemo() {
   const [liked, setLiked] = useState<number[]>([]);
   const posts = [
     { author: 'Captain Sharma', avatar: '👨‍✈️', time: '2h ago', text: 'Great win today lads. 7 wicket haul from Kumar was simply unreal. Drinks on me Saturday 🍺', likes: 14, comments: 6 },
-    { author: 'Club Noticeboard', avatar: '📌', time: '5h ago', text: '⚠️ Ground will be closed for maintenance Mon–Tue next week. All net sessions moved to Farnham Road.', likes: 8, comments: 2 },
+    { author: 'Club Noticeboard', avatar: '📌', time: '5h ago', text: '⚠️ Ground will be closed for maintenance Mon–Tue next week. All net sessions moved to Fairwick Ground.', likes: 8, comments: 2 },
     { author: 'Wellbeing Check-in', avatar: '🧡', time: '1d ago', text: 'How are you feeling this week? 8 players checked in. Average score: 7.2/10.', likes: 5, comments: 0 },
   ];
 
@@ -423,7 +423,7 @@ function RewardsDemo() {
       <div style={{ background: 'rgba(239,200,74,0.07)', border: '1px solid rgba(239,200,74,0.18)', borderRadius: 12, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(239,200,74,0.6)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Your balance</div>
-          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} pts</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: 32, fontWeight: 800, color: '#EFC84A', lineHeight: 1.1 }}>{pts.toLocaleString()} Scores</div>
         </div>
         <div style={{ fontSize: 36 }}><Glyph e="⚡" /></div>
       </div>
@@ -439,7 +439,7 @@ function RewardsDemo() {
               onClick={() => { if (!redeemed.includes(i) && pts >= r.pts) { setPts(p => p - r.pts); setRedeemed(rd => [...rd, i]); }}}
               disabled={redeemed.includes(i) || pts < r.pts}
               style={{ padding: '7px 14px', background: redeemed.includes(i) ? 'rgba(34,197,94,0.15)' : pts >= r.pts ? '#2563EB' : 'rgba(255,255,255,0.05)', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, color: redeemed.includes(i) ? '#22C55E' : pts >= r.pts ? '#fff' : 'rgba(255,255,255,0.25)', cursor: redeemed.includes(i) || pts < r.pts ? 'default' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {redeemed.includes(i) ? '✓ Done' : `${r.pts.toLocaleString()} pts`}
+              {redeemed.includes(i) ? '✓ Done' : `${r.pts.toLocaleString()} Scores`}
             </button>
           </div>
         ))}
@@ -453,7 +453,7 @@ function OppositionDemo() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 14, padding: '16px 20px' }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Captain&apos;s Headline</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>Maidenhead are strong with the bat but their new-ball attack has leaked runs in 4 of their last 6 games. Put them in.</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>Redwillow are strong with the bat but their new-ball attack has leaked runs in 4 of their last 6 games. Put them in.</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)', borderRadius: 12, padding: 14 }}>
@@ -773,7 +773,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
           ))}
           <div style={{ marginTop: 32, padding: '0 12px' }}>
             <a href="/auth/sign-up" style={{ display: 'block', padding: '11px', background: '#2563EB', color: '#fff', textAlign: 'center', borderRadius: 10, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 0 20px rgba(37,99,235,0.3)' }}>
-              Start free →
+              Start on Free →
             </a>
           </div>
         </nav>
@@ -802,7 +802,7 @@ export default function FeaturesShowcase({ audience }: { audience: 'players' | '
       {/* Footer CTA */}
       <div className="fp-footer-cta">
         <h2>{audience === 'clubs' ? 'Want this for your club?' : 'Ready to join in?'}</h2>
-        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Free to join, whether or not your club is on ShiftUp yet.'}</p>
+        <p>{audience === 'clubs' ? 'Tell us about your club and we will set it up with you.' : 'Start on the free tier, whether or not your club is on ClubPulse yet.'}</p>
         <div className="fp-footer-btns">
           <a href={audience === 'clubs' ? '/contact' : '/auth/sign-up'} className="fp-footer-btn-p">{audience === 'clubs' ? 'Tell us about your club' : 'Join as a player'}</a>
           <Link href="/" className="fp-footer-btn-g">Back to home</Link>

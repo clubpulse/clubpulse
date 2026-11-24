@@ -140,11 +140,11 @@ export default function AICoachPage() {
         <section className="ai-hero">
           <div>
             <p className="ai-eyebrow">🎯 AI Coach</p>
-            <div className="ai-road-tag">✓ In the ShiftUp app</div>
+            <div className="ai-road-tag">In development · being validated</div>
             <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">Pose analysis on your phone.</span></h1>
-            <p className="ai-sub">MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
+            <p className="ai-sub">Coach AI is in development and being validated. It is not biomechanically validated. MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
             <div className="ai-btns">
-              <Link href="/auth/sign-up" className="ai-btn-red">Get started free →</Link>
+              <Link href="/auth/sign-up" className="ai-btn-red">Start on Free →</Link>
               <Link href="/features" className="ai-btn-ghost">See all features</Link>
             </div>
           </div>
@@ -301,7 +301,7 @@ export default function AICoachPage() {
               <h2 className="ai-cta-h">Try AI coaching today.</h2>
               <p className="ai-cta-sub">Sign up, open the AI Coach screen and film your first shot or delivery.</p>
             </div>
-            <Link href="/auth/sign-up" className="ai-cta-btn">Get started free →</Link>
+            <Link href="/auth/sign-up" className="ai-cta-btn">Start on Free →</Link>
           </div>
         </section>
 

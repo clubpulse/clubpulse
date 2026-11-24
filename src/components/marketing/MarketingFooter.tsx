@@ -65,7 +65,7 @@ export default function MarketingFooter() {
             </div>
           ))}
         </div>
-        <p className="mk-foot-copy">© 2026 ShiftUp. Built at Slough CC.</p>
+        <p className="mk-foot-copy">© 2026 ClubPulse.</p>
       </div>
     </footer>
   );
