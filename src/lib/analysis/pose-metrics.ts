@@ -1349,6 +1349,7 @@ export function analyseDetailed(
   const warnings: string[] = [];
   if (feetMissing) warnings.push('feet out of frame');
   if (resolved.hint) warnings.push(resolved.hint);
+  if (context?.motion === 'pan' || context?.motion === 'zoom') warnings.push('The phone moved. No pan or zoom.');
   const fps = clipFrameRate(times);
   if (fps != null && fps < 20) warnings.push(LOW_FPS_MESSAGE);
 

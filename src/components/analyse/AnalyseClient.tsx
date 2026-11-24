@@ -20,6 +20,8 @@ import {
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
 import { ComparisonPanel } from '@/components/analyse/ComparisonPanel';
+import { FilmGuide } from '@/components/analyse/FilmGuide';
+import { GUIDE_SEEN_KEY, guideCardFor, guideIndex, type GuideCardId } from '@/lib/analysis/film-guide';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
@@ -295,6 +297,8 @@ export function AnalyseClient() {
   const [bodyInFrame, setBodyInFrame] = useState<boolean | null>(null);
   const bodyCheckRef = useRef(0);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [guideStep, setGuideStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
   // The position shown in the figure under the video
@@ -342,6 +346,25 @@ export function AnalyseClient() {
     if (!prefsLoaded) return;
     localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, hand, view, facing }));
   }, [prefsLoaded, mode, hand, view, facing]);
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    let unseen = false;
+    try { unseen = localStorage.getItem(GUIDE_SEEN_KEY) !== 'seen'; } catch { unseen = false; }
+    if (!unseen) return;
+    const timer = window.setTimeout(() => {
+      setGuideStep(0);
+      setGuideOpen(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [prefsLoaded]);
+  const closeGuide = useCallback(() => {
+    try { localStorage.setItem(GUIDE_SEEN_KEY, 'seen'); } catch { /* ignore */ }
+    setGuideOpen(false);
+  }, []);
+  const openGuide = useCallback((card: GuideCardId) => {
+    setGuideStep(guideIndex(card));
+    setGuideOpen(true);
+  }, []);
 
   // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
@@ -1114,6 +1137,7 @@ export function AnalyseClient() {
 
       {/* Pose tab — existing content */}
       {tab === 'pose' && <>
+      <FilmGuide open={guideOpen} step={guideStep} onStep={setGuideStep} onClose={closeGuide} />
       {process.env.NODE_ENV === 'development' && (
         <form action={seedDemoHighlights}
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-neutral-700 px-4 py-3 text-sm">
@@ -1296,6 +1320,9 @@ export function AnalyseClient() {
               <Button variant="secondary" onClick={turnOff} disabled={phase === 'recording'}>Stop camera</Button>
             </>
           )}
+          <button type="button" onClick={() => openGuide('angle')} className="self-center text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+            How to film
+          </button>
         </div>
 
         {error && (
@@ -1354,6 +1381,9 @@ export function AnalyseClient() {
         <Card title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}>
           <p className="text-lg font-medium text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
           {detail.warnings.length > 0 && <p className="mt-3 text-sm text-amber-200/80">{detail.warnings.join(' · ')}</p>}
+          <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-4 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+            How to film this
+          </button>
         </Card>
       )}
 
@@ -1380,6 +1410,11 @@ export function AnalyseClient() {
                 <p className="mt-2 text-sm text-neutral-400">{detail?.confidence ?? 'medium'} confidence</p>
                 {detail?.warnings && detail.warnings.length > 0 && (
                   <p className="mt-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>
+                )}
+                {detail && guideCardFor(detail.warnings) && (
+                  <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-2 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+                    How to film this
+                  </button>
                 )}
                 {weak && (
                   <>
