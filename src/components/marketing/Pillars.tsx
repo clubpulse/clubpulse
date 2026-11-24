@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Glyph } from '@/components/icons/Glyph';
-// The four pillars of ClubPulse as a bento grid. Each card says plainly what is available now and
+// The four pillars of ShiftUp as a bento grid. Each card says plainly what is available now and
 // what is coming, so the page never promises more than the app does today.
 
 import { BentoCard, BentoGrid } from '@/components/magic';
@@ -21,7 +21,7 @@ const PILLARS: Pillar[] = [
     line: 'Film a shot or a delivery and see exactly what to work on.',
     items: [
       { text: 'Video analysis of your batting and bowling', status: 'live' },
-      { text: 'Coach AI that knows your progress', status: 'live' },
+      { text: 'Coach AI is in development and being validated, not biomechanically validated', status: 'soon' },
       { text: 'Your stats and a shareable Cricket CV', status: 'live' },
     ],
   },
@@ -46,7 +46,7 @@ const PILLARS: Pillar[] = [
     name: 'Academy', href: '/players/academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4,
     line: 'Short lessons, daily questions and games that make you a better cricketer.',
     items: [
-      { text: 'Two-minute lessons, a practice plan and ClubPulse certificates for finishing a track', status: 'live' },
+      { text: 'Two-minute lessons, a practice plan and ShiftUp certificates for finishing a track', status: 'live' },
       { text: 'Daily games, and a log for your ECB qualifications', status: 'live' },
       { text: 'Courses written by your coach', status: 'soon' },
     ],

@@ -1,6 +1,7 @@
 'use server';
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { parentEligibility, parentRefusalMessage } from '@/lib/admin/parent-eligibility';
 import type {
   ChildProfile,
   ChildWithConsents,
@@ -35,6 +36,10 @@ export async function registerChild(
   }
 ): Promise<ActionResult<ChildProfile>> {
   const sb = createAdminClient();
+
+  // Only an adult can register a child as their parent: a real date of birth on the profile, 18 or over, not a junior
+  const adult = await parentEligibility(parentId);
+  if (!adult.ok) return { success: false, error: parentRefusalMessage(adult.reason, 'self') };
 
   // Create child profile
   const { data: child, error } = await sb
@@ -103,8 +108,16 @@ export async function listChildren(clubId: string): Promise<ChildWithConsents[]>
     }
   }
 
+  const linkedIds = [...new Set(children.map((c) => (c as { linked_user_id?: string | null }).linked_user_id).filter((x): x is string => !!x))];
+  const linkedMap = new Map<string, { name: string; email: string }>();
+  if (linkedIds.length > 0) {
+    const { data: linked } = await sb.from('profiles').select('id, display_name, full_name, email').in('id', linkedIds);
+    for (const p of linked ?? []) linkedMap.set(p.id, { name: p.display_name || p.full_name || 'Member', email: p.email || '' });
+  }
+
   return children.map((c) => ({
     ...(c as ChildProfile),
+    linked_account: (c as { linked_user_id?: string | null }).linked_user_id ? linkedMap.get((c as { linked_user_id: string }).linked_user_id) ?? null : null,
     consents: (consents ?? []).filter((co) => co.child_id === c.id),
     links: (links ?? [])
       .filter((l) => l.child_id === c.id)

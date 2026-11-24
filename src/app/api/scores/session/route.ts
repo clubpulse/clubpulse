@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   // QR payload — merchant's app decodes this and calls /api/scores/pay
   const qr_payload = JSON.stringify({
-    type:          'clubpulse_scores_payment',
+    type:          'shiftup_scores_payment',
     session_id:    session.id,
     scores_amount: session.scores_amount,
   });

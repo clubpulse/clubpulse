@@ -4,7 +4,7 @@ import { AutoRefresh } from '@/components/match-day/AutoRefresh';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
-  title: 'Live scorecard | ClubPulse',
+  title: 'Live scorecard | ShiftUp',
   robots: { index: false, follow: false },
 };
 
@@ -35,7 +35,7 @@ export default async function LiveScorecardPage({ params }: { params: Promise<{ 
       <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 18 }}>
-            Club<span style={{ color: '#60A5FA' }}>Pulse</span>
+            Shift<span style={{ color: '#60A5FA' }}>Up</span>
           </span>
           <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 99, background: live ? 'rgba(220,38,38,0.3)' : 'rgba(34,197,94,0.2)', color: live ? '#fca5a5' : '#4ade80' }}>
             {live ? '● Live' : 'Completed'}
@@ -116,7 +116,7 @@ export default async function LiveScorecardPage({ params }: { params: Promise<{ 
         )}
 
         <p style={{ margin: 0, textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
-          {live ? 'Updates every few seconds. ' : ''}Scored with ClubPulse
+          {live ? 'Updates every few seconds. ' : ''}Scored with ShiftUp
         </p>
       </div>
     </main>

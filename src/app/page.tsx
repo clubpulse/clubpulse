@@ -729,8 +729,9 @@ export default function HomePage() {
                 Run Saturday.<br />
                 Grow every <AnimatedGradientText>player</AnimatedGradientText>.
               </h1>
+              <p className="cp-eyebrow" style={{ marginBottom: 12 }}>From Grassroots to Greatness</p>
               <p className="cp-hero-sub">
-                ClubPulse runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
+                ShiftUp runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
               </p>
 
               {/* The four pillars */}

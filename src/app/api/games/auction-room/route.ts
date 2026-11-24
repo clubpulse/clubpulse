@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   // at the end of an honest game, so the game is not started at all.
   const body = (await readJson(req)) as { engine?: unknown } | null;
   if (body?.engine !== ENGINE_VERSION) {
-    return fail("Update the ClubPulse app to play today's auction. Practice still works.", 409);
+    return fail("Update the ShiftUp app to play today's auction. Practice still works.", 409);
   }
   const started = await startAuctionRoom(user.id);
   if (!started.ok) return fail(started.error, started.status);

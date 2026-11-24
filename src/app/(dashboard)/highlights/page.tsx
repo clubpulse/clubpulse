@@ -8,7 +8,7 @@ import { ClipCard } from '@/components/highlights/ClipCard';
 import { formatSessionDate, type Highlight } from '@/lib/highlights';
 import { demoHighlight, isDemoHighlight } from '@/lib/highlights-demo';
 
-export const metadata: Metadata = { title: 'Highlights | ClubPulse', description: 'Your best clips from Analyse' };
+export const metadata: Metadata = { title: 'Highlights | ShiftUp', description: 'Your best clips from Analyse' };
 
 async function loadHighlight(id: string | undefined) {
   const user = await getCurrentUser();

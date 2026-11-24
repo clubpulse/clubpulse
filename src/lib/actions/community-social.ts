@@ -2,11 +2,16 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth/server';
-import { communityOpen, saveProfile, answerPerson, report, block } from '@/lib/community/service';
+import { communityOpen, saveProfile, answerPerson, report, block, sendMessage } from '@/lib/community/service';
 import { setFollow, saveClubProfile, parentCancelRequest, parentBlock, parentReport } from '@/lib/community/social';
 import { createPost, toggleLike, addComment, getComments } from '@/lib/community/service';
 import { requireAdmin } from '@/lib/auth/admin';
 import { resolveItem } from '@/lib/community/review';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { markRead } from '@/lib/community/notify';
+import { requestJunior, decideAsParent, endContact } from '@/lib/community/guardian';
+import { decideJuniorConnection } from '@/lib/community/junior-approval';
+import { postShortage, replyToShortage, closeShortage, getReplies, type ShortageReply } from '@/lib/community/shortages';
 import { createSession, joinSession, cancelSession } from '@/lib/community/sessions';
 
 type R = { success: boolean; error?: string; message?: string };
@@ -35,9 +40,74 @@ export async function connectAction(userId: string, yes: boolean): Promise<R> {
   return done(await answerPerson(u.id, userId, yes), yes ? 'Done.' : 'Not now.', '/community/connections');
 }
 
+/** Yes or "not now" on a card, returning whether it became a connection. */
+export async function connectAnswerAction(userId: string, yes: boolean): Promise<R & { link?: 'requested' | 'connected' | 'passed' | 'awaiting_parents' }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await answerPerson(u.id, userId, yes);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/community/connections');
+  return { success: true, link: r.data.link };
+}
+
+export async function markNotificationsReadAction(): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  await markRead(createAdminClient(), u.id);
+  revalidatePath('/community/notifications');
+  return { success: true };
+}
+
+export async function askParentAction(juniorId: string, note: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await requestJunior(u.id, juniorId, note), 'Sent to their parent. Nothing happens unless they approve.', `/community/people/${juniorId}`);
+}
+
+export async function decideRequestAction(requestId: string, approve: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await decideAsParent(u.id, requestId, approve), approve ? 'Approved. Your child will be asked next.' : 'Declined.', '/parent/community');
+}
+
+export async function endContactAction(requestId: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await endContact(u.id, requestId), 'Ended.', '/parent/community');
+}
+
+export async function postShortageAction(input: Record<string, unknown>): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await postShortage(u.id, input as never);
+  if (r.success && r.data.held) return { success: true, message: 'Thanks. ShiftUp will check this and it will go live once approved.' };
+  return done(r, 'Posted. People nearby can now say they can play.', '/community/shortages');
+}
+export async function replyShortageAction(shortageId: string, on: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await replyToShortage(u.id, shortageId, on), on ? 'Sent. They will see your name.' : 'Taken back.', '/community/shortages');
+}
+export async function closeShortageAction(shortageId: string, status: 'filled' | 'cancelled'): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await closeShortage(u.id, shortageId, status), status === 'filled' ? 'Marked as filled.' : 'Cancelled.', '/community/shortages');
+}
+export async function shortageRepliesAction(shortageId: string): Promise<{ success: boolean; error?: string; replies?: ShortageReply[] }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await getReplies(u.id, shortageId);
+  return r.success ? { success: true, replies: r.data } : { success: false, error: r.error };
+}
+
 export async function reportProfileAction(userId: string, reason: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await report(u.id, { kind: 'profile', targetId: userId, reason }), 'Thank you. We will look at this.', '/community/connections');
+}
+
+/** Send a private message. Delivered at once if the safety check passes; otherwise the sender is told why it was not. */
+export async function sendMessageAction(connectionId: string, body: string): Promise<R & { delivered?: boolean }> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await sendMessage(u.id, connectionId, body);
+  if (!r.success) return { success: false, error: r.error };
+  if (r.data.status === 'live') { revalidatePath(`/community/messages/${connectionId}`); return { success: true, delivered: true }; }
+  return { success: true, delivered: false, message: r.data.tell ?? 'This was not delivered.' };
+}
+
+export async function reportMessageAction(messageId: string, reason: string): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  return done(await report(u.id, { kind: 'message', targetId: messageId, reason }), 'Thank you. We will look at this.', '/community/connections');
 }
 
 export async function blockAction(userId: string): Promise<R> {
@@ -107,9 +177,10 @@ export async function createSessionAction(input: Record<string, unknown>): Promi
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   const r = await createSession(u.id, input as never);
   if (!r.success) return { success: false, error: r.error };
-  if (r.data.held) return { success: false, error: r.data.tell ?? 'Not created.' };
+  // held with no id: refused by a plain rule. held with an id: saved and waiting for ShiftUp staff.
+  if (r.data.held && !r.data.id) return { success: false, error: r.data.tell ?? 'Not created.' };
   revalidatePath('/community/near');
-  return { success: true, message: 'Session created.' };
+  return { success: true, message: r.data.held ? (r.data.tell ?? 'Sent for checking.') : 'Session created.' };
 }
 export async function joinSessionAction(sessionId: string, on: boolean): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
@@ -118,4 +189,13 @@ export async function joinSessionAction(sessionId: string, on: boolean): Promise
 export async function cancelSessionAction(sessionId: string): Promise<R> {
   const u = await requireUser(); if (!communityOpen()) return CLOSED;
   return done(await cancelSession(u.id, sessionId), 'Cancelled.', '/community/near');
+}
+
+/** A verified parent approves or declines a connection between their child and another young person. */
+export async function decideJuniorConnectionAction(connectionId: string, childId: string, approve: boolean): Promise<R> {
+  const u = await requireUser(); if (!communityOpen()) return CLOSED;
+  const r = await decideJuniorConnection(u.id, connectionId, childId, approve);
+  if (!r.success) return { success: false, error: r.error };
+  revalidatePath('/parent/community');
+  return { success: true, message: !approve ? 'Declined.' : r.data.state === 'opened' ? 'Approved. They are now connected.' : 'Approved. It opens once the other child’s parent approves too.' };
 }

@@ -9,11 +9,11 @@
  *
  * Destination charges:
  *   - Total goes to the platform account
- *   - 5% application_fee is retained by ClubPulse
+ *   - 5% application_fee is retained by ShiftUp
  *   - Net (95%) is transferred to the club's connected Stripe account
  *
  * But wait — the club is BUYING Scores from the platform, so the money
- * stays with ClubPulse. No transfer to the club's Connect account.
+ * stays with ShiftUp. No transfer to the club's Connect account.
  * The Connect account is for when the club's own customers pay the club.
  */
 
@@ -21,11 +21,11 @@ import { getStripe } from './client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ScoresPack } from '@/lib/types/subscription';
 
-const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co';
+const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
 /**
  * Create a Stripe Checkout session for purchasing a Scores pack.
- * Payment goes entirely to the platform (ClubPulse).
+ * Payment goes entirely to the platform (ShiftUp).
  */
 export async function createScoresPackCheckout(
   clubId: string,
@@ -81,7 +81,7 @@ export async function createScoresPackCheckout(
           product_data: {
             name: scoresPack.name,
             description: `${scoresPack.scores_amount.toLocaleString()} Scores for ${club?.name ?? 'your club'}`,
-            metadata: { pack_id: packId, platform: 'clubpulse' },
+            metadata: { pack_id: packId, platform: 'shiftup' },
           },
         },
         quantity: 1,

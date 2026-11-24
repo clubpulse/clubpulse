@@ -6,8 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Our story — ClubPulse',
-  description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',
-};
+  description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',};
 
 export default function OurStoryPage() {
   return (
@@ -152,7 +151,7 @@ export default function OurStoryPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring ClubPulse<br />to your club?</h2>
+        <h2 className="cta-h">Ready to bring ShiftUp<br />to your club?</h2>
         <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>

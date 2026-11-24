@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { InfamyCategory, InfamyNomination, InfamyWinner } from '@/lib/types/infamy';
 
@@ -34,8 +35,7 @@ export async function getNominationsForCategory(
       .from('infamy_nominations')
       .select(`
         *,
-        infamy_categories!category_id (id, club_id, name, description, emoji, is_active, created_at),
-        nominated_profile:profiles!nominated_user_id (full_name, avatar_url)
+        infamy_categories!category_id (id, club_id, name, description, emoji, is_active, created_at)
       `)
       .eq('category_id', categoryId)
       .eq('season', season)
@@ -59,9 +59,12 @@ export async function getNominationsForCategory(
       }
     }
 
+    const nomClubId = ((nominations ?? [])[0] as { club_id?: string } | undefined)?.club_id ?? '';
+    const cards = await clubNameCards(nomClubId, (nominations ?? []).map((n: Record<string, unknown>) => n.nominated_user_id));
     const result: InfamyNomination[] = (nominations ?? []).map((row: Record<string, unknown>) => {
       const cat = row.infamy_categories as InfamyCategory | null;
-      const profile = row.nominated_profile as { full_name: string; avatar_url?: string } | null;
+      const card = cards.get(row.nominated_user_id as string);
+      const profile = card ? { full_name: card.full_name ?? card.display_name ?? 'Unknown', avatar_url: card.avatar_url ?? undefined } : null;
       return {
         id: row.id as string,
         category_id: row.category_id as string,
@@ -167,8 +170,7 @@ export async function getHallOfInfamy(clubId: string): Promise<ActionResult<Infa
       .from('infamy_winners')
       .select(`
         *,
-        infamy_categories!category_id (id, club_id, name, description, emoji, is_active, created_at),
-        winner_profile:profiles!winner_user_id (full_name, avatar_url)
+        infamy_categories!category_id (id, club_id, name, description, emoji, is_active, created_at)
       `)
       .eq('club_id', clubId)
       .order('season', { ascending: false })
@@ -176,9 +178,11 @@ export async function getHallOfInfamy(clubId: string): Promise<ActionResult<Infa
 
     if (error) return { success: false, error: error.message };
 
+    const winnerCards = await clubNameCards(clubId, (data ?? []).map((r: Record<string, unknown>) => r.winner_user_id));
     const result: InfamyWinner[] = (data ?? []).map((row: Record<string, unknown>) => {
       const cat = row.infamy_categories as InfamyCategory | null;
-      const profile = row.winner_profile as { full_name: string; avatar_url?: string } | null;
+      const wc = winnerCards.get(row.winner_user_id as string);
+      const profile = wc ? { full_name: wc.full_name ?? wc.display_name ?? 'Unknown', avatar_url: wc.avatar_url ?? undefined } : null;
       return {
         id: row.id as string,
         category_id: row.category_id as string,
@@ -277,21 +281,19 @@ export async function getClubMembers(
 
     const { data, error } = await supabase
       .from('club_members')
-      .select(`
-        user_id,
-        profiles!user_id (full_name, avatar_url)
-      `)
+      .select('user_id')
       .eq('club_id', clubId);
 
     if (error) return { success: false, error: error.message };
 
+    const cards = await clubNameCards(clubId, (data ?? []).map((r: Record<string, unknown>) => r.user_id));
     const members = (data ?? [])
       .map((row: Record<string, unknown>) => {
-        const profile = row.profiles as { full_name: string; avatar_url?: string } | null;
+        const c = cards.get(row.user_id as string);
         return {
           user_id: row.user_id as string,
-          full_name: profile?.full_name ?? 'Unknown',
-          avatar_url: profile?.avatar_url,
+          full_name: c?.full_name ?? c?.display_name ?? 'Unknown',
+          avatar_url: c?.avatar_url ?? undefined,
         };
       })
       .filter((m) => m.user_id !== user.id); // exclude self

@@ -35,7 +35,7 @@ export default function ContactPage() {
       }
       setSubmitted(true);
     } catch (err) {
-      setError(`${err instanceof Error ? err.message : 'Something went wrong.'} You can also email hello@clubpulse.co.`);
+      setError(`${err instanceof Error ? err.message : 'Something went wrong.'} You can also email hello@shiftup.club.`);
     } finally {
       setSending(false);
     }
@@ -155,14 +155,14 @@ export default function ContactPage() {
         {/* Left — info */}
         <div>
           <p className="section-tag">Get in touch</p>
-          <h1 className="page-h">Bring ClubPulse<br />to your club</h1>
+          <h1 className="page-h">Bring ShiftUp<br />to your club</h1>
           <p className="page-sub">Club plans start at £29.99 a month and are set up under an agreement rather than bought online. Tell us what your club needs, we confirm the plan and a fixed term with you, and we set the platform up to match.</p>
 
           <div className="contact-method">
             <div className="method-icon">✉️</div>
             <div>
               <p className="method-label">Email</p>
-              <p className="method-val">hello@clubpulse.co</p>
+              <p className="method-val">hello@shiftup.club</p>
               <p className="method-note">We respond within 2 working days</p>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function ContactPage() {
           </p>
           <div className="onboarding-steps">
             {[
-              { n: '1', text: '<strong>You tell us what you need.</strong> Your club, its size, and what you want ClubPulse to do.' },
+              { n: '1', text: '<strong>You tell us what you need.</strong> Your club, its size, and what you want ShiftUp to do.' },
               { n: '2', text: '<strong>We talk it through.</strong> A short call to confirm your requirements and show you the platform.' },
               { n: '3', text: '<strong>We agree a plan.</strong> What is included, the price and the period, set out in a simple agreement.' },
               { n: '4', text: '<strong>We set it up for your club.</strong> Built around what you asked for, with help while you get going.' },
@@ -274,7 +274,7 @@ export default function ContactPage() {
               </div>
 
               <fieldset className="needs">
-                <legend>What do you want ClubPulse to do? Tick all that apply.</legend>
+                <legend>What do you want ShiftUp to do? Tick all that apply.</legend>
                 {NEEDS.map((need) => (
                   <label key={need.value} className="need">
                     <input type="checkbox" checked={needs.includes(need.value)} onChange={() => toggleNeed(need.value)} />

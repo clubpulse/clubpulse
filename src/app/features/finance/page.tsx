@@ -143,7 +143,7 @@ export default function FinancePage() {
           <div>
             <p className="fn-eyebrow">💷 Club Finance</p>
             <h1 className="fn-h1">Match fees tracked. <span className="green">Clearly.</span></h1>
-            <p className="fn-sub">ClubPulse tracks who owes what per match and keeps your club&apos;s income and expenses in one place, so treasurers stop chasing players on WhatsApp. Paying match fees in the app is coming soon.</p>
+            <p className="fn-sub">ShiftUp tracks who owes what per match and keeps your club&apos;s income and expenses in one place, so treasurers stop chasing players on WhatsApp. Paying match fees in the app is coming soon.</p>
             <div className="fn-btns">
               <Link href="/contact" className="fn-btn-red">Get started →</Link>
               <Link href="/features" className="fn-btn-ghost">See all features</Link>
@@ -196,7 +196,7 @@ export default function FinancePage() {
           <div className="fn-section">
             <p className="fn-section-eyebrow">How it works</p>
             <h2 className="fn-section-h2">Set the fee. We handle the rest.</h2>
-            <p className="fn-section-sub">ClubPulse automates the part of club finance that no one wants to do — collecting money and chasing people for it.</p>
+            <p className="fn-section-sub">ShiftUp automates the part of club finance that no one wants to do — collecting money and chasing people for it.</p>
             <div className="fn-steps">
               <div className="fn-step">
                 <p className="fn-step-n">01</p>
@@ -231,7 +231,7 @@ export default function FinancePage() {
           <div className="fn-features-inner">
             <p className="fn-section-eyebrow">What&apos;s included</p>
             <h2 className="fn-section-h2">Everything a club treasurer needs.</h2>
-            <p className="fn-section-sub">ClubPulse Finance covers the full financial picture — not just match fees, but expenses, budgets, and reporting.</p>
+            <p className="fn-section-sub">ShiftUp Finance covers the full financial picture — not just match fees, but expenses, budgets, and reporting.</p>
             <div className="fn-feat-grid">
               {[
                 { icon:'💳', h:'Match fee tracking', body:'Fees assigned per match, with outstanding balances tracked. Paying in the app is coming soon.' },
@@ -285,11 +285,11 @@ export default function FinancePage() {
           <h2 className="fn-section-h2">Common questions about Club Finance.</h2>
           <div className="fn-faq-list">
             {[
-              ['Can players pay match fees in the app?', 'Not yet. Online payment of match fees is coming soon. Until then ClubPulse tracks who owes what, and the club collects the money as it does today.'],
+              ['Can players pay match fees in the app?', 'Not yet. Online payment of match fees is coming soon. Until then ShiftUp tracks who owes what, and the club collects the money as it does today.'],
               ['Can we track expenses, not just income?', 'Yes. The treasurer can log any expense — ground hire, kit, umpire fees, travel, equipment. Every expense is categorised, and the dashboard shows your net position at any time.'],
               ['Is the finance data visible to all members?', 'No. Only users with the Treasurer or Admin role can see the finance dashboard. Players can see their own outstanding balance and payment history only. No one can see what anyone else has paid.'],
               ['Can we set different fees for different fixtures?', 'Yes. You can set different match fees for home matches, away matches, and cup games. You can also apply a one-off override for a specific fixture — for example, a benefit match or a tour game.'],
-              ['What happens if a player doesn\'t pay?', 'ClubPulse sends automated reminders at intervals you configure (e.g. 3 days, 7 days). If the balance stays outstanding, the treasurer is flagged and can contact the player directly. There\'s no automatic enforcement — that\'s a club decision.'],
+              ['What happens if a player doesn\'t pay?', 'ShiftUp sends automated reminders at intervals you configure (e.g. 3 days, 7 days). If the balance stays outstanding, the treasurer is flagged and can contact the player directly. There\'s no automatic enforcement — that\'s a club decision.'],
             ].map(([q, a], i) => (
               <div key={i} className="fn-faq-item">
                 <div className="fn-faq-q">{q}</div>
@@ -303,7 +303,7 @@ export default function FinancePage() {
           <div className="fn-cta-inner">
             <div>
               <h2 className="fn-cta-h">Stop chasing fees. Start the season right.</h2>
-              <p className="fn-cta-sub">Get ClubPulse Finance set up before your first match.</p>
+              <p className="fn-cta-sub">Get ShiftUp Finance set up before your first match.</p>
             </div>
             <Link href="/contact" className="fn-cta-btn">Get started →</Link>
           </div>

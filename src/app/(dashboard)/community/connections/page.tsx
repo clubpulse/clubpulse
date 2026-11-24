@@ -22,6 +22,7 @@ export default async function ConnectionsPage() {
         {list.map((x) => (
           <div key={x.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0' }}>
             <Link href={`/community/people/${x.person.id}`}>{x.person.name}{x.person.club ? ` · ${x.person.club}` : ''}</Link>
+            {state === 'connected' && <Link href={`/community/messages/${x.id}`} style={{ fontWeight: 600 }}>{x.last ? `${x.last.slice(0, 40)}${x.last.length > 40 ? '…' : ''}` : 'Message'}</Link>}
             {state === 'incoming' && <span style={{ display: 'flex', gap: 8 }}>
               <ActionButton label="Accept" run={connectAction.bind(null, x.person.id, true)} />
               <ActionButton quiet label="Not now" run={connectAction.bind(null, x.person.id, false)} /></span>}
@@ -33,7 +34,7 @@ export default async function ConnectionsPage() {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', padding: 16 }}>
       <h1>Connections</h1>
-      {group('incoming', 'Requests to you')}{group('connected', 'Connected')}{group('requested', 'Waiting for a reply')}
+      {group('incoming', 'Requests to you')}{group('connected', 'Connected')}{group('requested', 'Waiting for a reply')}{group('awaiting_parents', 'Waiting for parents to say yes')}
       {rows.length === 0 && <p>No connections yet.</p>}
     </div>
   );

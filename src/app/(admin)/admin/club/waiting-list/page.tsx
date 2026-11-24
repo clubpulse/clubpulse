@@ -60,7 +60,7 @@ export default async function WaitingListAdminPage() {
           display: 'block',
           wordBreak: 'break-all',
         }}>
-          {process.env.NEXT_PUBLIC_APP_URL ?? 'https://clubpulse.co'}/waitlist/{clubId}
+          {process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club'}/waitlist/{clubId}
         </code>
       </div>
 

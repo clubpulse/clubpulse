@@ -6,7 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api } from '../../lib/api';
-import { BLUE, LOOKING_FOR, lookingLabel, type LookingFor, type Posted, type Profile } from '../../lib/community';
+import { AVAILABILITY, BLUE, LOOKING_FOR, STANDARDS, availabilityLabel, lookingLabel, standardLabel, type Availability, type LookingFor, type Posted, type Profile, type Standard } from '../../lib/community';
 import { Avatar, Stopped, safetyMenu } from '../../components/CommunityBits';
 import { colors, display, fonts, radius, spacing } from '../../constants/theme';
 
@@ -20,6 +20,8 @@ export default function ProfileScreen() {
   const [about, setAbout] = useState('');
   const [looking, setLooking] = useState<LookingFor[]>([]);
   const [openToClub, setOpenToClub] = useState(false);
+  const [standard, setStandard] = useState<Standard | null>(null);
+  const [availability, setAvailability] = useState<Availability[]>([]);
   const [tell, setTell] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,7 @@ export default function ProfileScreen() {
   const load = useCallback(async () => {
     try {
       const p = await api<Profile>(`/api/community/profile${id ? `?id=${id}` : ''}`);
-      setProfile(p); setHeadline(p.headline); setAbout(p.about); setLooking(p.lookingFor); setOpenToClub(p.openToClub); setError(null);
+      setProfile(p); setHeadline(p.headline); setAbout(p.about); setLooking(p.lookingFor); setOpenToClub(p.openToClub); setStandard(p.standard); setAvailability(p.availability); setError(null);
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not load this profile.'); }
   }, [id]);
   useEffect(() => { load(); }, [load]);
@@ -35,7 +37,7 @@ export default function ProfileScreen() {
   const save = async () => {
     setBusy(true); setTell(null);
     try {
-      const r = await api<Posted>('/api/community/profile', { method: 'PUT', body: { headline, about, lookingFor: looking, openToClub } });
+      const r = await api<Posted>('/api/community/profile', { method: 'PUT', body: { headline, about, lookingFor: looking, openToClub, standard, availability } });
       if (r.status === 'live') { setEditing(false); await load(); } else { setTell(r.tell ?? 'This was not saved.'); }
     } catch (e) { setTell(e instanceof Error ? e.message : 'Could not save.'); }
     setBusy(false);
@@ -66,7 +68,9 @@ export default function ProfileScreen() {
           {!editing && (
             <View style={styles.tags}>
               {profile.openToClub && <View style={[styles.tag, { backgroundColor: BLUE }]}><Text style={[styles.tagText, { color: '#04091A' }]}>Open to a new club</Text></View>}
+              {profile.standard && <View style={styles.tag}><Text style={styles.tagText}>{standardLabel(profile.standard)}</Text></View>}
               {profile.lookingFor.map((k) => <View key={k} style={styles.tag}><Text style={styles.tagText}>{lookingLabel(k)}</Text></View>)}
+              {profile.availability.map((k) => <View key={k} style={styles.tag}><Text style={styles.tagText}>{availabilityLabel(k)}</Text></View>)}
               <View style={styles.tag}><Text style={styles.tagText}>{profile.connections} {profile.connections === 1 ? 'connection' : 'connections'}</Text></View>
             </View>
           )}
@@ -94,6 +98,25 @@ export default function ProfileScreen() {
                 return (
                   <Pressable key={o.key} onPress={() => setLooking(on ? looking.filter((k) => k !== o.key) : [...looking, o.key])} accessibilityRole="checkbox" accessibilityState={{ checked: on }}
                     style={[styles.tag, styles.pick, on && { backgroundColor: BLUE }]}>
+                    <Text style={[styles.tagText, on && { color: '#04091A' }]}>{o.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={fonts.small}>Standard</Text>
+            <View style={styles.row}>
+              {STANDARDS.map((o) => (
+                <Pressable key={o.key} onPress={() => setStandard(standard === o.key ? null : o.key)} accessibilityRole="radio" accessibilityState={{ selected: standard === o.key }} style={[styles.tag, styles.pick, standard === o.key && { backgroundColor: BLUE }]}>
+                  <Text style={[styles.tagText, standard === o.key && { color: '#04091A' }]}>{o.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text style={fonts.small}>When you can play</Text>
+            <View style={styles.row}>
+              {AVAILABILITY.map((o) => {
+                const on = availability.includes(o.key);
+                return (
+                  <Pressable key={o.key} onPress={() => setAvailability(on ? availability.filter((k) => k !== o.key) : [...availability, o.key])} accessibilityRole="checkbox" accessibilityState={{ checked: on }} style={[styles.tag, styles.pick, on && { backgroundColor: BLUE }]}>
                     <Text style={[styles.tagText, on && { color: '#04091A' }]}>{o.label}</Text>
                   </Pressable>
                 );

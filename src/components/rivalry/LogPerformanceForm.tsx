@@ -69,7 +69,7 @@ export function LogPerformanceForm({ clubId, members }: { clubId: string; member
         <div style={{ fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>Match Details</div>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div><label htmlFor="match_date" style={labelStyle}>Date</label><input id="match_date" name="match_date" type="date" defaultValue={today} required style={fieldStyle} /></div>
-          <div><label htmlFor="opponent" style={labelStyle}>Opponent</label><input id="opponent" name="opponent" type="text" placeholder="e.g. Windsor CC" required style={fieldStyle} /></div>
+          <div><label htmlFor="opponent" style={labelStyle}>Opponent</label><input id="opponent" name="opponent" type="text" placeholder="e.g. Fairwick CC" required style={fieldStyle} /></div>
         </div>
       </div>
 

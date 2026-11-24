@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/server';
+import { directoryCards } from '@/lib/profile/lookup';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AGE_GATE_MESSAGE, isAdultPlayer } from '@/lib/scores/context';
 import type { ActionResult } from '@/lib/types/action';
@@ -91,12 +92,18 @@ export async function getRaffleWinners(raffleId: string): Promise<ActionResult<R
 
   const { data, error } = await supabase
     .from('raffle_winners')
-    .select('*, profile:profiles(full_name)')
+    .select('*')
     .eq('raffle_id', raffleId)
     .order('prize_rank');
 
   if (error) return { success: false, error: error.message };
-  return { success: true, data: (data ?? []) as RaffleWinner[] };
+  // Adults only: a winner who is under 18 is shown without a name
+  const cards = await directoryCards((data ?? []).map((r) => (r as { user_id: string }).user_id));
+  const withNames = (data ?? []).map((r) => {
+    const c = cards.get((r as { user_id: string }).user_id);
+    return { ...r, profile: c ? { full_name: c.display_name ?? 'Unknown' } : null };
+  });
+  return { success: true, data: withNames as unknown as RaffleWinner[] };
 }
 
 export async function adminCreateRaffle(formData: {

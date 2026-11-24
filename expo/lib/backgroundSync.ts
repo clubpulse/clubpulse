@@ -9,7 +9,7 @@ import { syncSteps } from './stepsSync';
 // Power Mode or if the user has force-quit the app. Android (WorkManager) is more regular.
 // It is a safety net alongside the sync that runs every time the app is opened.
 
-const STEPS_TASK = 'clubpulse-steps-sync';
+const STEPS_TASK = 'shiftup-steps-sync';
 const MINIMUM_INTERVAL_MINUTES = 60;
 
 // Must be defined at module scope: the OS can start the app headless just to run this task,

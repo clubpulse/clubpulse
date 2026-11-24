@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { clubNameCards } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type {
   MentorProfile,
@@ -60,17 +61,19 @@ export async function getAvailableMentors(
 
   const { data, error } = await supabase
     .from('mentor_profiles')
-    .select(`
-      *,
-      profile:profiles(full_name, avatar_url)
-    `)
+    .select('*')
     .eq('club_id', clubId)
     .eq('is_available', true)
     .neq('user_id', user.id)
     .order('avg_rating', { ascending: false, nullsFirst: false });
 
   if (error) return { success: false, error: error.message };
-  return { success: true, data: (data ?? []) as MentorProfile[] };
+  const cards = await clubNameCards(clubId, (data ?? []).map((r) => (r as { user_id: string }).user_id));
+  const withNames = (data ?? []).map((r) => {
+    const c = cards.get((r as { user_id: string }).user_id);
+    return { ...r, profile: c ? { full_name: c.full_name ?? c.display_name ?? 'Unknown', avatar_url: c.avatar_url } : null };
+  });
+  return { success: true, data: withNames as unknown as MentorProfile[] };
 }
 
 // ── Request a mentor ─────────────────────────────────────────────────────────

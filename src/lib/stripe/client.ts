@@ -18,9 +18,9 @@ export function getStripe(): Stripe {
     apiVersion: '2024-12-18.acacia' as Stripe.LatestApiVersion,
     typescript: true,
     appInfo: {
-      name: 'ClubPulse',
+      name: 'ShiftUp',
       version: '1.0.0',
-      url: 'https://clubpulse.co',
+      url: 'https://shiftup.club',
     },
   });
 

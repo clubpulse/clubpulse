@@ -4,7 +4,7 @@ import MarketingNav from '@/components/marketing/MarketingNav';
 import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export const metadata: Metadata = {
-  title: 'For players | ClubPulse',
+  title: 'For players | ShiftUp',
   description: 'Four pillars for every cricketer: Player Analysis, Community, Wellness and Academy.',
 };
 
@@ -12,7 +12,7 @@ const CARDS = [
   { href: '/players/analysis', h: 'Player Analysis', colour: '#FBBF24', status: 'Live now', promise: 'Film a shot or a delivery and see exactly what to work on, with Coach AI, stats and a Cricket CV.' },
   { href: '/players/community', h: 'Community', colour: '#60A5FA', status: 'Club tools live · network opening soon', promise: 'Your club’s noticeboard and dressing room today. The wider network, built with safeguarding and moderation, opens once final safety checks are complete: find players, clubs and games next.' },
   { href: '/players/wellness', h: 'Wellness', colour: '#F472B6', status: 'Live now', promise: 'A private pre-match readiness check-in with a four-week trend, match-day checklists and your own routine, mental-skills guides, a recovery log and weekly check-in. Private by default.' },
-  { href: '/players/academy', h: 'Academy', colour: '#2DD4BF', status: 'Live now', promise: 'Two-minute lessons with progress and ClubPulse certificates, a practice plan and daily games, on the website and in the app.' },
+  { href: '/players/academy', h: 'Academy', colour: '#2DD4BF', status: 'Live now', promise: 'Two-minute lessons with progress and ShiftUp certificates, a practice plan and daily games, on the website and in the app.' },
 ];
 
 export default function ForPlayersPage() {
@@ -56,7 +56,7 @@ export default function ForPlayersPage() {
           ))}
         </div>
         <p className="fp2-foot">
-          Scores run across all four pillars. You earn them by taking part, and they are never sold. When a club joins ClubPulse, its whole squad gets the four pillars too.
+          Scores run across all four pillars. You earn them by taking part, and they are never sold. When a club joins ShiftUp, its whole squad gets the four pillars too.
           Running a club? <Link href="/for-clubs" style={{ color: '#60A5FA' }}>See what clubs get →</Link>
         </p>
       </main>

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth/server';
 import { communityOpen, getViewer } from '@/lib/community/service';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { listSessions } from '@/lib/community/sessions';
+import { listSessions, responsibleAdultOptions } from '@/lib/community/sessions';
 import { isScope, type Scope } from '@/lib/community/rules';
 import { ClosedNotice, cardStyle } from '@/components/community/ui';
 import { SessionList } from '@/components/community/SessionList';
@@ -23,8 +23,9 @@ export default async function NearPage({ searchParams }: { searchParams: Promise
   const [r, { data: clubs }, { data: staff }] = await Promise.all([
     listSessions(user.id, scope, kind),
     viewer.clubIds.length ? admin.from('clubs').select('id, name').in('id', viewer.clubIds) : Promise.resolve({ data: [] as Array<{ id: string; name: string }> }),
-    admin.from('club_members').select('role').eq('user_id', user.id).eq('is_active', true).in('role', ['coach', 'club_admin']),
+    admin.from('club_members').select('role, club_id').eq('user_id', user.id).eq('is_active', true).in('role', ['coach', 'club_admin']),
   ]);
+  const adults = await responsibleAdultOptions(admin, [...new Set((staff ?? []).map((m) => m.club_id as string))]);
   const chip = (href: string, label: string, on: boolean) => <Link key={href} href={href} style={{ padding: '6px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.25)', background: on ? 'rgba(96,165,250,0.25)' : 'transparent' }}>{label}</Link>;
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: 16 }}>
@@ -37,7 +38,7 @@ export default async function NearPage({ searchParams }: { searchParams: Promise
       {r.success ? <SessionList sessions={r.data} /> : <p>{r.error}</p>}
       {!viewer.junior && (clubs ?? []).length > 0 && (
         <div style={{ ...cardStyle, marginTop: 24 }}><h2 style={{ marginTop: 0 }}>Set one up</h2>
-          <SessionForm clubs={clubs ?? []} canHostJunior={(staff ?? []).length > 0} /></div>
+          <SessionForm clubs={clubs ?? []} canHostJunior={(staff ?? []).length > 0} adults={adults} /></div>
       )}
     </div>
   );

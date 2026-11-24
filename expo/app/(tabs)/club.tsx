@@ -371,7 +371,7 @@ function InviteSheet({ open, onClose }: { open: boolean; onClose: () => void }) 
   const share = () => {
     if (!invite) return;
     Share.share({
-      message: `Join ${invite.clubName} on ClubPulse.\n\n1. Get the ClubPulse app and create an account.\n2. Open the Club tab and enter this code: ${invite.code}\n\nA club admin will then approve you.`,
+      message: `Join ${invite.clubName} on ShiftUp.\n\n1. Get the ShiftUp app and create an account.\n2. Open the Club tab and enter this code: ${invite.code}\n\nA club admin will then approve you.`,
     }).catch(() => null);
   };
 
@@ -491,7 +491,7 @@ function JoinClub({ onJoined }: { onJoined: () => Promise<void> | void }) {
       <Pressable style={[styles.sheetPrimary, (code.length !== 6 || busy) && { opacity: 0.5 }]} onPress={submit} disabled={code.length !== 6 || busy}>
         {busy ? <ActivityIndicator color={colors.navy} /> : <Text style={styles.sheetPrimaryText}>Ask to join</Text>}
       </Pressable>
-      <Text style={[fonts.small, { textAlign: 'center', fontSize: 11 }]}>Starting a new club? Set it up at clubpulse.co.</Text>
+      <Text style={[fonts.small, { textAlign: 'center', fontSize: 11 }]}>Starting a new club? Set it up at shiftup.club.</Text>
     </View>
   );
 }

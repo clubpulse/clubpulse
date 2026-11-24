@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { listChildren, registerChild, verifyParentLink } from '@/lib/admin/parent-service';
+import { verifyParentGate } from '@/lib/admin/parent-eligibility';
 
 async function getAdminClubId(userId: string): Promise<string | null> {
   const sb = createAdminClient();
@@ -95,11 +96,16 @@ export async function PATCH(req: NextRequest) {
     // Without this an admin of one club could verify a parent link at another
     const { data: link } = await createAdminClient()
       .from('parent_child_links')
-      .select('id, child_profiles ( club_id )')
+      .select('id, parent_id, child_profiles ( club_id )')
       .eq('id', linkId)
       .maybeSingle();
     const child = Array.isArray(link?.child_profiles) ? link.child_profiles[0] : link?.child_profiles;
     if (!child || child.club_id !== clubId) return NextResponse.json({ error: 'Link not found' }, { status: 404 });
+
+    // A verified parent can approve their child's Community connections: only a DBS-checked admin may verify one, and only
+    // for an account that is an adult
+    const refused = await verifyParentGate(user.id, clubId, link!.parent_id as string);
+    if (refused) return NextResponse.json({ error: refused }, { status: 403 });
 
     const result = await verifyParentLink(linkId, user.id);
     if (!result.success) return NextResponse.json({ error: result.error }, { status: 400 });

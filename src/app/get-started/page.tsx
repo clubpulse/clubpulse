@@ -4,8 +4,8 @@ import MarketingNav from '@/components/marketing/MarketingNav';
 import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export const metadata: Metadata = {
-  title: 'Get started | ClubPulse',
-  description: 'Register your club with ClubPulse, or join as a player.',
+  title: 'Get started | ShiftUp',
+  description: 'Register your club with ShiftUp, or join as a player.',
 };
 
 export default function GetStartedPage() {

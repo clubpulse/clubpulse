@@ -22,7 +22,7 @@ export const NAV_LINKS: NavLink[] = [
 // `open` only counts on the page it was chosen on (`at`): move to another page and the menu goes
 // back to showing just the group that page lives in.
 type SidebarState = { open: string | null; at: string | null; folded: boolean };
-const STATE_KEY = 'clubpulse.sidebar';
+const STATE_KEY = 'shiftup.sidebar';
 const DEFAULT_STATE: SidebarState = { open: null, at: null, folded: false };
 const listeners = new Set<() => void>();
 let lastState: string | null = null;
@@ -67,7 +67,7 @@ function parseState(raw: string): SidebarState {
   }
 }
 
-// showAdmin: club admin (club_members). isPlatformAdmin: ClubPulse staff (profiles.role = 'admin').
+// showAdmin: club admin (club_members). isPlatformAdmin: ShiftUp staff (profiles.role = 'admin').
 export function navLinks({ showAdmin = false, isPlatformAdmin = false }: { showAdmin?: boolean; isPlatformAdmin?: boolean }) {
   return [
     ...NAV_LINKS,
@@ -122,13 +122,14 @@ function NavItem({ link, pathname, folded = false, small = false }: { link: NavL
 
 // audience: who is signed in, which decides the links they see (lib/nav/menu).
 // showSchool: the club has an active school_programs row (looked up in DashboardShell)
-export function Sidebar({ audience, isPlatformAdmin, showSchool = false }: { audience: Audience; isPlatformAdmin: boolean; showSchool?: boolean }) {
+// community: the Community is open (COMMUNITY_ENABLED), so the links across clubs are shown
+export function Sidebar({ audience, isPlatformAdmin, showSchool = false, community = false }: { audience: Audience; isPlatformAdmin: boolean; showSchool?: boolean; community?: boolean }) {
   const pathname = usePathname();
   const state = parseState(useSyncExternalStore(subscribe, readState, () => ''));
   const folded = state.folded;
   const showAdmin = audience.admin;
 
-  const groups = menuFor(audience, { showSchool });
+  const groups = menuFor(audience, { showSchool, community });
   const bottom: NavLink[] = [
     { href: '/profile', label: 'Profile', icon: '👤' },
     ...(showAdmin ? [{ href: '/admin/club', label: 'Club admin', icon: '🛡️' }] : []),

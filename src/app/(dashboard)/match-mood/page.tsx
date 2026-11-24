@@ -4,7 +4,7 @@ import { getMyMoodCorrelation, getMyMoodHistory, getUpcomingFixturesToSetMood } 
 import { MoodPicker } from '@/components/match-mood/MoodPicker';
 import { MOOD_CONFIG, type MoodType } from '@/lib/types/match-mood';
 
-export const metadata = { title: 'Match Mood — ClubPulse' };
+export const metadata = { title: 'Match Mood — ShiftUp' };
 
 export default async function MatchMoodPage() {
   const user = await requireUser();

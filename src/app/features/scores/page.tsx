@@ -244,8 +244,7 @@ export default function ScoresPage() {
               ['Are Scores a performance leaderboard?', 'No. They are not calculated from runs, wickets or catches on the scorecard.'],
               ['Can a club change the amounts?', 'Yes. A club can override an amount or switch a rule off. The defaults are the starting point, and the weekly cap starts at 300 Scores.'],
               ['Do the games cost Scores?', 'No. The games pay Scores. Nothing is staked and nothing is lost.'],
-              ['Are Scores sold, or a fifth pillar?', 'No. You earn them by taking part. They are never sold, and they are not a fifth pillar.'],
-            ].map(([q, a], i) => (
+              ['Are Scores sold, or a fifth pillar?', 'No. You earn them by taking part. They are never sold, and they are not a fifth pillar.'],            ].map(([q, a], i) => (
               <div key={i} className="sr-faq-item">
                 <div className="sr-faq-q">{q}</div>
                 <div className="sr-faq-a">{a}</div>

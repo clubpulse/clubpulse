@@ -33,9 +33,41 @@ describe('Expo routes', () => {
   });
   it('registers the new screens in the stack', () => {
     const layout = read('app/_layout.tsx');
-    for (const name of ['warmup/readiness', 'warmup/recovery', 'warmup/sharing', 'academy-certificate', 'community/sessions']) expect(layout).toContain(`name="${name}"`);
+    for (const name of ['warmup/readiness', 'warmup/recovery', 'warmup/sharing', 'academy-certificate', 'community/sessions', 'community/approvals']) expect(layout).toContain(`name="${name}"`);
   });
   it('does not switch any Expo flag on in the build profiles', () => {
+    expect(read('eas.json')).not.toMatch(/EXPO_PUBLIC_(COMMUNITY|STORE|VOLUNTEERS|DEALS)_ENABLED/);
+  });
+});
+
+describe('Expo parent approvals', () => {
+  const approvals = read('app/community/approvals.tsx');
+  it('has a screen that calls the approvals API and answers with an explicit yes or no', () => {
+    expect(approvals).toContain("'/api/community/approvals'");
+    expect(approvals).toContain('approve }'); // the body carries the boolean, never a default
+    expect(approvals).toContain('Alert.alert'); // each answer is confirmed first
+    expect(approvals).toContain('Approve');
+    expect(approvals).toContain('Decline');
+  });
+  it('is in the Community menu for parents only', () => {
+    const pillars = read('lib/pillars.ts');
+    expect(pillars).toMatch(/key: 'approvals'[^\n]*route: '\/community\/approvals', for: \['parent'\], strict: true/);
+  });
+  it('is where a parent’s approval notification leads', () => {
+    expect(read('app/community/notifications.tsx')).toContain("n.kind === 'parent_approval_needed' ? '/community/approvals'");
+  });
+  it('tells a parent what happened after they answer', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { approvalMessage } = require('../../expo/lib/community') as typeof import('../../expo/lib/community');
+    expect(approvalMessage('opened')).toMatch(/can now message/);
+    expect(approvalMessage('waiting')).toMatch(/Waiting for the other/);
+    expect(approvalMessage('declined')).toMatch(/closed/);
+  });
+  it('is at build 12 in the app config, without switching any flag on', () => {
+    const cfg = JSON.parse(read('app.json')).expo;
+    expect(cfg.ios.buildNumber).toBe('12');
+    expect(cfg.android.versionCode).toBe(12);
+    expect(cfg.version).toBe('1.0.0');
     expect(read('eas.json')).not.toMatch(/EXPO_PUBLIC_(COMMUNITY|STORE|VOLUNTEERS|DEALS)_ENABLED/);
   });
 });

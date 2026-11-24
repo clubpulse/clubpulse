@@ -38,7 +38,7 @@ type ScratchDealResponse = {
 };
 
 /**
- * Fetch deals from the ClubPulse API, optionally filtered by category.
+ * Fetch deals from the ShiftUp API, optionally filtered by category.
  */
 export function useDeals(category?: AwinCategory) {
   const [deals, setDeals] = useState<AwinDeal[]>([]);

@@ -203,3 +203,88 @@ export function checkWhen(startsAt: Date, now: Date = new Date()): Verdict {
 }
 
 export const checkCapacity = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 2 && n <= 30;
+
+// ── Cricket Connect ─────────────────────────────────────────────────────────────────────────────
+
+export const STANDARDS = ['social', 'club', 'league', 'county'] as const;
+export type Standard = (typeof STANDARDS)[number];
+export const AVAILABILITY = ['weekday_evenings', 'weekends'] as const;
+export type Availability = (typeof AVAILABILITY)[number];
+/** How far away, in miles, a card may be. Rough on purpose. */
+export const WITHIN_MILES = [5, 10, 25] as const;
+export const ROLE_FILTERS = ['player', 'coach'] as const;
+export type RoleFilter = (typeof ROLE_FILTERS)[number];
+
+export type ConnectFilters = { role?: RoleFilter; standard?: Standard; availability?: Availability; within?: number };
+
+export const isStandard = (v: unknown): v is Standard => typeof v === 'string' && (STANDARDS as readonly string[]).includes(v);
+export const isAvailability = (v: unknown): v is Availability => typeof v === 'string' && (AVAILABILITY as readonly string[]).includes(v);
+export const isRole = (v: unknown): v is RoleFilter => typeof v === 'string' && (ROLE_FILTERS as readonly string[]).includes(v);
+
+export type Card = { roles: string[]; standard: Standard | null; availability: Availability[]; miles: number | null };
+
+/** Whether a card passes the filters. A card with nothing filled in for a filter does not match it. */
+export function matchesFilters(c: Card, f: ConnectFilters): boolean {
+  if (f.role && !c.roles.includes(f.role)) return false;
+  if (f.standard && c.standard !== f.standard) return false;
+  if (f.availability && !c.availability.includes(f.availability)) return false;
+  if (f.within !== undefined && (c.miles === null || c.miles > f.within)) return false;
+  return true;
+}
+
+// ── Adult-to-junior contact, parent first ───────────────────────────────────────────────────────
+
+export type DbsRow = { check_type: string; status: string; expiry_date: string | null };
+
+/** A current enhanced DBS check: verified valid, enhanced (with or without the barred list), not past its expiry. */
+export function dbsIsCurrent(rows: DbsRow[], today: string): boolean {
+  return rows.some((r) => r.status === 'valid' && (r.check_type === 'enhanced' || r.check_type === 'enhanced_barred') && (!r.expiry_date || r.expiry_date >= today));
+}
+
+export type GuardianContext = {
+  adultJunior: boolean;
+  subjectJunior: boolean;
+  /** The adult is a coach or club admin of a club the junior belongs to */
+  staffOfSharedClub: boolean;
+  /** The adult holds a current enhanced DBS check at one of those shared clubs */
+  currentDbs: boolean;
+  /** The junior has a linked account and at least one club-verified parent */
+  juniorHasParent: boolean;
+};
+
+/** Why an adult may not ask to connect with a junior, or null if they may. */
+export function guardianBlock(c: GuardianContext): string | null {
+  if (c.adultJunior || !c.subjectJunior) return 'This is only for an adult asking to connect with someone under 18.';
+  if (!c.staffOfSharedClub) return 'You can only ask a young person from a club where you are a coach or club admin.';
+  if (!c.currentDbs) return 'You need a current enhanced DBS check recorded at that club first.';
+  if (!c.juniorHasParent) return 'This young person has no verified parent linked yet.';
+  return null;
+}
+
+export const GUARDIAN_NOTE_MAX = 300;
+/** An adult may have this many requests waiting on a parent at once, so it cannot be used to contact many children. */
+export const GUARDIAN_PENDING_MAX = 5;
+/** After a parent says no, the same adult cannot ask again for this long. */
+export const GUARDIAN_COOLDOWN_DAYS = 90;
+
+// ── Short for Saturday ──────────────────────────────────────────────────────────────────────────
+
+export const SHORTAGE_FORMATS = ['league', 'friendly', 't20', 'indoor'] as const;
+export type ShortageFormat = (typeof SHORTAGE_FORMATS)[number];
+export const SHORTAGE_NEED_MAX = 6;
+export const SHORTAGE_MAX_DAYS = 21;
+export const isShortageFormat = (v: unknown): v is ShortageFormat => typeof v === 'string' && (SHORTAGE_FORMATS as readonly string[]).includes(v);
+
+/** Only an adult who coaches or runs the club posts for it. */
+export function mayPostShortage(viewerJunior: boolean, staffAtClub: boolean): boolean {
+  return !viewerJunior && staffAtClub;
+}
+/** Under-18s never see or answer a shortage: adult games only. */
+export function maySeeShortage(viewerJunior: boolean): boolean {
+  return !viewerJunior;
+}
+export function checkShortageWhen(playAt: Date, now: Date = new Date()): Verdict {
+  if (!(playAt.getTime() > now.getTime())) return { ok: false, reason: 'Pick a time in the future.' };
+  if (playAt.getTime() > now.getTime() + SHORTAGE_MAX_DAYS * 86_400_000) return { ok: false, reason: `Post a game up to ${SHORTAGE_MAX_DAYS} days ahead.` };
+  return { ok: true };
+}

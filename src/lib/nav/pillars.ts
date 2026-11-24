@@ -1,4 +1,4 @@
-// Pure. The four pillars of ClubPulse and the page each one has. A pillar is one of the menu
+// Pure. The four pillars of ShiftUp and the page each one has. A pillar is one of the menu
 // groups; this adds its address, how it is described, its colours, and what is still to come.
 
 import { menuFor, type Audience, type NavGroup, type NavLink } from './menu';
@@ -48,8 +48,14 @@ export const PILLARS: Pillar[] = [
 
 export const pillarByKey = (key: string): Pillar | null => PILLARS.find((p) => p.key === key) ?? null;
 
+/** With the Community open, the wider network is no longer "on the way", so that line goes. */
+export function whenOpen(pillar: Pillar, communityOpen: boolean): Pillar {
+  if (pillar.key !== 'community' || !communityOpen) return pillar;
+  return { ...pillar, tagline: 'Your club, and cricket people across clubs.', soon: pillar.soon.filter((s) => !s.startsWith('The wider network')) };
+}
+
 /** A pillar's pages for this person, in sections. Links with no section come first, untitled. */
-export function pillarSections(key: PillarKey, audience: Audience, options: { showSchool?: boolean } = {}): Array<{ title: string | null; links: NavLink[] }> {
+export function pillarSections(key: PillarKey, audience: Audience, options: { showSchool?: boolean; community?: boolean } = {}): Array<{ title: string | null; links: NavLink[] }> {
   const group: NavGroup | undefined = menuFor(audience, options).find((g) => g.key === key);
   const out: Array<{ title: string | null; links: NavLink[] }> = [];
   for (const link of group?.links ?? []) {

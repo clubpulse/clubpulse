@@ -4,8 +4,10 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkContent } from './moderation';
+import { randomUUID } from 'crypto';
+import { raiseAlert } from '@/lib/safeguarding/alerts';
 import { liveRecentPostsBy } from './review';
-import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted } from './service';
+import { blockedIds, ok, no, people, getViewer, connectionBetween, type Admin, type Result, type Posted, holdFor, REPORT_KINDS } from './service';
 import { mayFollow, mayViewProfile, milesBetween, roughDistance, type CrossBandContext } from './rules';
 
 /** How two people relate across the age line, for profile and follow decisions. */
@@ -14,7 +16,7 @@ export async function crossBand(admin: Admin, viewerId: string, subjectId: strin
     people(admin, [viewerId, subjectId]),
     admin.from('club_members').select('club_id, role').eq('user_id', viewerId).eq('is_active', true),
     admin.from('club_members').select('club_id, role').eq('user_id', subjectId).eq('is_active', true),
-    admin.from('child_profiles').select('id, parent_child_links!inner ( parent_id )').eq('linked_user_id', subjectId).eq('parent_child_links.parent_id', viewerId).limit(1),
+    admin.from('child_profiles').select('id, parent_child_links!inner ( parent_id )').eq('linked_user_id', subjectId).eq('parent_child_links.parent_id', viewerId).not('parent_child_links.verified_at', 'is', null).limit(1),
   ]);
   const viewerJunior = who.get(viewerId)?.junior ?? false;
   const subjectJunior = who.get(subjectId)?.junior ?? false;
@@ -43,6 +45,8 @@ export async function setFollow(userId: string, subject: unknown, subjectId: unk
   if ((subject !== 'player' && subject !== 'club') || typeof subjectId !== 'string') return no('Nothing to follow.');
   if (subject === 'player' && subjectId === userId) return no('That is you.');
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   if (!on) {
     await admin.from('community_follows').delete().eq('follower_id', userId).eq('subject_type', subject).eq('subject_id', subjectId);
     return ok({ following: false });
@@ -77,6 +81,8 @@ export type ClubProfile = {
 
 export async function getClubProfile(userId: string, clubId: string): Promise<Result<ClubProfile>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const [{ data: club }, { data: row }, viewer, followers, { count }, state, adminRow] = await Promise.all([
     admin.from('clubs').select('id, name, county, league, ground_lat, ground_lng').eq('id', clubId).maybeSingle(),
     admin.from('community_club_profiles').select('headline, about, nets_notes').eq('club_id', clubId).maybeSingle(),
@@ -102,6 +108,8 @@ export async function getClubProfile(userId: string, clubId: string): Promise<Re
 
 export async function saveClubProfile(userId: string, clubId: string, input: unknown): Promise<Result<Posted>> {
   const admin = createAdminClient();
+  const hold = await holdFor(admin, userId);
+  if (hold) return no(hold);
   const { data: m } = await admin.from('club_members').select('role').eq('club_id', clubId).eq('user_id', userId).eq('is_active', true).maybeSingle();
   if (m?.role !== 'club_admin') return no('Only a club admin can edit the club profile.');
   const v = (input ?? {}) as Record<string, unknown>;
@@ -130,7 +138,8 @@ export type ChildOversight = {
 /** Each child the parent is linked to. A child with no linked account has nothing in Community yet. */
 export async function getChildrenOversight(parentId: string): Promise<Result<ChildOversight[]>> {
   const admin = createAdminClient();
-  const { data: links } = await admin.from('parent_child_links').select('child_profiles ( id, first_name, linked_user_id )').eq('parent_id', parentId);
+  // Only a parent a club has verified can see into a child's Community
+  const { data: links } = await admin.from('parent_child_links').select('child_profiles ( id, first_name, linked_user_id )').eq('parent_id', parentId).not('verified_at', 'is', null);
   const kids = (links ?? []).flatMap((l) => {
     const c = (Array.isArray(l.child_profiles) ? l.child_profiles[0] : l.child_profiles) as { id: string; first_name: string; linked_user_id: string | null } | null;
     return c ? [c] : [];
@@ -141,7 +150,7 @@ export async function getChildrenOversight(parentId: string): Promise<Result<Chi
     if (!uid) { out.push({ childId: k.id, name: k.first_name, linkedUserId: null, profile: null, connections: [], following: [], posts: [] }); continue; }
     const [{ data: prof }, { data: conns }, { data: follows }] = await Promise.all([
       admin.from('community_profiles').select('headline, about, looking_for').eq('user_id', uid).maybeSingle(),
-      admin.from('community_connections').select('id, requester_id, addressee_id, status').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`).in('status', ['pending', 'accepted']),
+      admin.from('community_connections').select('id, requester_id, addressee_id, status').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`).in('status', ['pending', 'awaiting_parents', 'accepted']),
       admin.from('community_follows').select('subject_type, subject_id').eq('follower_id', uid),
     ]);
     const otherIds = (conns ?? []).map((c) => (c.requester_id === uid ? c.addressee_id : c.requester_id) as string);
@@ -170,9 +179,9 @@ export async function getChildrenOversight(parentId: string): Promise<Result<Chi
   return ok(out);
 }
 
-/** The junior's account id, only if this parent is linked to that child. */
+/** The junior's account id, only if this parent is linked to that child and a club has verified the link. */
 async function childAccount(admin: Admin, parentId: string, childId: string): Promise<string | null> {
-  const { data } = await admin.from('parent_child_links').select('child_profiles ( linked_user_id )').eq('parent_id', parentId).eq('child_id', childId).maybeSingle();
+  const { data } = await admin.from('parent_child_links').select('child_profiles ( linked_user_id )').eq('parent_id', parentId).eq('child_id', childId).not('verified_at', 'is', null).maybeSingle();
   const c = (data ? (Array.isArray(data.child_profiles) ? data.child_profiles[0] : data.child_profiles) : null) as { linked_user_id: string | null } | null;
   return c?.linked_user_id ?? null;
 }
@@ -183,7 +192,7 @@ export async function parentCancelRequest(parentId: string, childId: string, con
   const uid = await childAccount(admin, parentId, childId);
   if (!uid) return no('Child not found.');
   const c = await admin.from('community_connections').select('id, requester_id, addressee_id, status').eq('id', connectionId).maybeSingle();
-  if (!c.data || c.data.status !== 'pending' || (c.data.requester_id !== uid && c.data.addressee_id !== uid)) return no('Request not found.');
+  if (!c.data || (c.data.status !== 'pending' && c.data.status !== 'awaiting_parents') || (c.data.requester_id !== uid && c.data.addressee_id !== uid)) return no('Request not found.');
   await admin.from('community_connections').update({ status: 'declined', responded_at: new Date().toISOString() }).eq('id', connectionId);
   return ok({ cancelled: true });
 }
@@ -208,9 +217,16 @@ export async function parentReport(parentId: string, childId: string, input: unk
   const uid = await childAccount(admin, parentId, childId);
   if (!uid) return no('Child not found.');
   const v = (input ?? {}) as Record<string, unknown>;
-  if (!['post', 'comment', 'message', 'profile'].includes(v.kind as string) || typeof v.targetId !== 'string') return no('Nothing to report.');
-  const { error } = await admin.from('community_reports').insert({ reporter_id: parentId, kind: v.kind, target_id: v.targetId, reason: `Reported by a parent: ${typeof v.reason === 'string' ? v.reason.trim().slice(0, 450) : ''}` });
+  if (!(REPORT_KINDS as readonly string[]).includes(v.kind as string) || typeof v.targetId !== 'string') return no('Nothing to report.');
+  if (v.kind === 'session' || v.kind === 'shortage') {
+    const { data: target } = await admin.from(v.kind === 'session' ? 'community_sessions' : 'community_shortages').select('id').eq('id', v.targetId).maybeSingle();
+    if (!target) return no('Nothing to report.');
+  }
+  const reportId = randomUUID();
+  const { error } = await admin.from('community_reports').insert({ id: reportId, reporter_id: parentId, kind: v.kind, target_id: v.targetId, reason: `Reported by a parent: ${typeof v.reason === 'string' ? v.reason.trim().slice(0, 450) : ''}` });
   if (error) return no('Could not send your report.');
+  // A parent reporting is about their child's world, so it is treated as a junior item
+  await raiseAlert(admin, { source: 'report', kind: v.kind as string, targetId: v.targetId, reportId, reason: null, junior: true });
   return ok({ sent: true });
 }
 

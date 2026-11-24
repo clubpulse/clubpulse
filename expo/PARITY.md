@@ -1,19 +1,18 @@
 # Website and app: what matches, and what does not
 
-Written 22 November 2026, updated the same day when the app caught up (build 11). It says what is on the website, what the
+Written 22 November 2026, updated the same day when the app caught up (build 12). It says what is on the website, what the
 app has, and what is behind a flag. Nothing in this file turns a flag on.
 
 ## The Expo flag
 
 The app's Community screens are behind `EXPO_PUBLIC_COMMUNITY_ENABLED`. It is read when the app is
 **built**, so changing it in Vercel does nothing for an installed app. Turning it on needs a new Expo
-build (or an OTA update that includes the new value). Build 10 is awaiting Apple review; any change
-here needs build 11. Do not set this flag until the website's Community has passed the smoke test in
+build (or an OTA update that includes the new value). Any change here needs a new build. Do not set this flag until the website's Community has passed the smoke test in
 `COMMUNITY.md` and moderation is staffed. The website flag is separate: `COMMUNITY_ENABLED` (Vercel).
 
 ## Pillar by pillar
 
-| Pillar | On the website | In the app (build 11) | Still different |
+| Pillar | On the website | In the app (build 12) | Still different |
 | --- | --- | --- | --- |
 | Analysis | Video analysis, progress, Coach AI, Cricket CV | Same, plus recording | None to note |
 | Community | Club noticeboard and dressing room (live). Profiles, feed, connections, follows, nets and pick-up games, reports and a moderation inbox are built behind `COMMUNITY_ENABLED` (off) | Feed, Partnerships, My Squad, Scorecard and now **Nets and Games**, all behind `EXPO_PUBLIC_COMMUNITY_ENABLED` (off) | The app has no follow button, club profile pages or session hosting. The website has them behind its own flag |
@@ -33,3 +32,16 @@ own lesson and daily-check-in earning is unchanged.
 ## Building and submitting
 
 See `expo/RELEASE.md`. No Expo flag is on in `eas.json`; Community stays off in this build.
+
+## Community since build 11 (website and app)
+
+| Feature | Website | App (build 12) |
+|---|---|---|
+| Find a teammate with filters (looking for, role, standard, availability, distance) | Yes | Yes (Partnerships) |
+| Clubs near you | Yes (on Find a Teammate) | Yes |
+| Notifications and push | Yes (list) | Yes (list; push to a signed-in phone) |
+| Standard and availability on the profile | Yes | Yes |
+| Short for Saturday | Read, reply, post, close | Read and reply only |
+| Chat on a connection | Yes | Yes |
+| Adult-to-junior contact, parent first (own flag) | Yes | No |
+| Held private messages in the staff queue | Yes | n/a (staff use the website) |

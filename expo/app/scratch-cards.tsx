@@ -233,7 +233,7 @@ export default function ScratchCardsScreen() {
         {/* Always shown, whatever the state above: Apple requires the rules to be reachable at all times */}
         <View style={styles.card}>
           <Text style={fonts.small}>
-            Scratch cards are a free prize draw run by ClubPulse for members aged 18 or over. Apple is not a sponsor and is not
+            Scratch cards are a free prize draw run by ShiftUp for members aged 18 or over. Apple is not a sponsor and is not
             involved in any way.
           </Text>
           <Pressable onPress={() => router.push('/scratch-rules' as never)} style={styles.outlineBtn} accessibilityRole="link">

@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { xiCreateUser } from "@/lib/xi/client";
+import { isPlausibleDob } from "@/lib/community/age";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
 
@@ -11,6 +12,7 @@ type CompleteSignupInput = {
   fullName: string;
   email: string;
   roles: Role[];
+  dateOfBirth?: string;
 };
 
 type CompleteSignupResult =
@@ -22,6 +24,7 @@ export async function completeSignup({
   fullName,
   email,
   roles,
+  dateOfBirth,
 }: CompleteSignupInput): Promise<CompleteSignupResult> {
   if (!userId || !fullName || !email || roles.length === 0) {
     return { success: false, error: "Missing required fields" };
@@ -56,6 +59,8 @@ export async function completeSignup({
     full_name: fullName,
     display_name: displayName,
     email,
+    // Only a believable date is kept; without one the Community stays closed until it is added
+    ...(isPlausibleDob(dateOfBirth) ? { date_of_birth: dateOfBirth } : {}),
   });
 
   if (profileError) {

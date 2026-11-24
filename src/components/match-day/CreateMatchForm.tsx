@@ -54,7 +54,7 @@ export function CreateMatchForm({ clubId }: Props) {
         <input
           style={inputStyle}
           type="text"
-          placeholder="e.g. Burnham CC"
+          placeholder="e.g. Redwillow CC"
           value={opposition}
           onChange={e => setOpposition(e.target.value)}
           required
@@ -65,7 +65,7 @@ export function CreateMatchForm({ clubId }: Props) {
         <input
           style={inputStyle}
           type="text"
-          placeholder="e.g. Home — Arbour Park"
+          placeholder="e.g. Home ground"
           value={venue}
           onChange={e => setVenue(e.target.value)}
         />

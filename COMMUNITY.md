@@ -5,12 +5,12 @@ The Community (feed, profiles, connections, follows, messages) is off by default
 
 ## Before you turn it on
 
-Preferably on a **preview or demo environment first**. If clubpulse.co already has real under-18 members, do not
+Preferably on a **preview or demo environment first**. If shiftup.club already has real under-18 members, do not
 enable it there until every box below is ticked and a person who handles safeguarding at the club has agreed.
 
 - [ ] All Community migrations are run in Supabase: `20261121000001_community.sql`, `20261122000002_community_follows.sql`, `20261122000003_community_moderation.sql`, `20261122000004_community_sessions.sql`
 - [ ] `ANTHROPIC_API_KEY` is set. Without it the safety check **holds every post** (it fails closed), so nothing goes live.
-- [ ] At least one ClubPulse staff account has `profiles.role = 'admin'` and can open `/admin/community/reports`
+- [ ] At least one ShiftUp staff account has `profiles.role = 'admin'` and can open `/admin/community/reports`
 - [ ] Someone has agreed to look at that inbox daily (held posts wait there until a person decides)
 - [ ] `COMMUNITY_ENABLED` is set to `true` (no quotes, no spaces). `EXPO_PUBLIC_COMMUNITY_ENABLED` is a separate flag for the phone app and needs a new app build; leave it off for now.
 
@@ -39,5 +39,69 @@ If any step fails, stop and switch it off.
 ## Known limits
 
 - The phone app has its own flag and is not covered by this checklist.
-- Linking a child record to the junior's own account (`child_profiles.linked_user_id`) has no admin screen yet.
+- Date of birth is collected at sign-up (and asked for once from existing accounts). Under 18 by date of birth, or marked junior by a club admin, makes someone a junior. The date is declared by the person, not proven, so a false date cannot be ruled out; a club admin's junior mark always wins over a date that says 18 or over.
+- The Community is closed to anyone with no date of birth, and to any junior with no verified parent linked to their account (shown as "pending"). They see nobody and nobody sees them. The services refuse them as well as the screens (`src/lib/community/age.ts`, `getViewer`, `people`).
+- A club admin links a child record to the junior's own account in Safeguarding → Registered children → Community account, and a parent verifies the link.
 - Community links are not in the main menu yet. Add them only when the flag is on.
+
+## Junior-to-junior connections
+Two juniors connect only after a verified parent of each child has approved. Both children say yes first; the connection then waits (`awaiting_parents`) and every verified parent of both children is asked in Parent Community ("Waiting for your yes"). It opens when each child has at least one approving parent; any parent declining closes it. Nothing can be sent between the two until it opens. A junior with no verified parent is shut out of the Community entirely (see the age gate above), so there is no "no parent" case to connect through. Each step is logged in `community_connection_events` (`sent_to_parents`, `parent_approved`, `parent_declined`, `accepted`). This replaces the briefer rule of notifying parents after the connection, and the earlier one that needed both parents verified before either child could say yes.
+
+## When the AI safety check is unavailable
+Posts, comments and messages are held for staff. Nets/pick-up sessions and Short for Saturday games are now held the same way: saved with status `held`, hidden from everyone but staff, and shown in `/admin/community/reports` (Allow releases them, Remove takes them down). A plain rule refusal, such as a phone number or a private address, is still refused and not stored.
+
+## Adult-to-junior contact (parent first)
+
+Off by default and separate from `COMMUNITY_ENABLED`. It needs `COMMUNITY_CROSSBAND_ENABLED` to be exactly `true` as well, and migration `20261122000009`. Leave it off until the club's safeguarding lead has agreed it.
+
+- Only a coach or club admin of a club the young person belongs to can ask, and only with a current enhanced DBS check recorded at that club (Admin → Safeguarding → DBS, status valid, not expired).
+- The request goes to the young person's club-verified parent first. The young person is asked only after a parent approves.
+- An approved contact is the only way an adult and someone under 18 can message. The parent can read the conversation (read only, each visit is logged) and end it at any time. If the adult's DBS lapses, the thread stops working.
+- A parent's "no" blocks the same adult from asking again for 90 days. An adult can have at most 5 requests waiting on a parent.
+- Every step is recorded in `community_guardian_events`.
+- To switch it off: remove the variable and redeploy. Existing contacts stop working at once.
+
+## Safeguarding controls
+- **Private messages are off for under-18s.** Nothing private is read or sent to or from a junior, whatever the connection or parent-approved contact says, until `COMMUNITY_JUNIOR_DMS=true` is set. Do not set it until messages are checked as they are sent and the safeguarding lead agrees. This is a new variable; it is unset by default, so nothing needs changing for it to stay off.
+- **Linking a child to an account needs a current enhanced DBS check.** Only a club admin with a valid, unexpired enhanced check recorded at that club (`dbs_checks`) can link a child record to an account, because linking is what makes an account a junior. Any club admin can unlink, which only makes things safer. Named safeguarding training as an alternative to a DBS check is not built.
+- **Verifying a parent also needs a current enhanced DBS check.** Verifying a parent link (web route `PATCH /api/club/children`, and the mobile approval queue) makes that person a verified parent who can approve a child's connections, so the same DBS rule applies (`hasCurrentDbsAt`).
+- **Safeguarding tables are written by the server only** (migration `20261122000020`). `parent_child_links`, `child_profiles`, `consent_records` and `dbs_checks` allow signed-in users to read their own rows but not to write through the public API; before this, a signed-in user could add a verified link to any child, read and edit that child's record, record consent for any child, or (as a club admin) add their own "valid" DBS check. DBS checks are recorded by ShiftUp with the service role or SQL editor. Anything that must write these tables has to do it server-side with the service role.
+- **Date of birth is still declared, not proven.** A junior who enters an adult date of birth is treated as an adult. Closing that needs a date of birth a club admin has confirmed against club records; it is not built.
+- **Report a concern** is on every post, comment, profile and private message, with a "call 999 if a child is in immediate danger" prompt, and a note at the foot of every Community page. Reports land in the review queue at `/admin/community/reports`. Sessions (nets and pick-up) and Short for Saturday games can be reported too, as themselves and not as their host's profile (migration `20261122000021`); staff can Remove or mark them handled from the same queue.
+- **A junior session names a responsible adult.** The host names an adult member of the club who holds a current enhanced DBS check recorded at that club (`dbs_checks`: valid, enhanced, not expired). The server checks this when the session is created and again whenever it is shown or joined, so a lapsed check takes the session out of sight. The card shows the adult's name and that they hold a current enhanced check, never certificate details (`responsible_adult_id`, migration `20261122000022`). Junior sessions created before this have no named adult and stop showing until recreated with one. Adult sessions are unchanged.
+- **A parent must be an adult.** Registering a child (web or app) and verifying a parent both need the parent's account to have a real date of birth showing 18 or over, and not be marked a junior by the club on every membership. No date of birth is a refusal. This is declared age: it stops a junior or an account with no date of birth being a parent, not someone who lies about their age. Parent oversight, and acting for a child, also need the link to be verified by a club.
+- **Posts, comments and messages record when their text was last edited** (`updated_at`, set by a trigger only when `body` changes, migration `20261122000023`). Nothing in the app edits them today; this is for scans that look for edited content.
+- **A named safeguarding lead owns the review queue.** The software cannot hold that role. Until one is appointed it is the founder. Suggested: urgent items within an hour, everything else within 24 hours; club concerns to the club welfare officer then the ECB safeguarding team; concerns about an adult who works with children to the LADO; a child in immediate danger to the police; sexual images of children to the Internet Watch Foundation; grooming to CEOP.
+
+## Safeguarding alerts
+
+When a report is filed or the safety check holds a post, comment, message, session or game, the active safeguarding **lead** and **deputy** are emailed straight away (and sent an Expo push if their account has a token). The message gives the item type, whether it involves a junior, the reason and a link to `/admin/community/reports`. It never contains the reported content, and for a junior item it leaves out what the reporter wrote.
+
+- Tables (service role only, no client policies): `safeguarding_contacts`, `safeguarding_alerts`, `safeguarding_alert_deliveries` (migration 025). One event is one alert; each recipient gets one email and, if they have a token, one push. Every delivery has `status`, `attempts` and `sent_at`.
+- Failures are retried after 1, 2, 4, 8 then 15 minutes, up to 10 attempts. Retries run when any alert is raised, when the moderation queue is opened, and from `GET /api/cron/safeguarding-alerts` with `Authorization: Bearer $CRON_SECRET`. **Something must call that URL every minute** (Vercel cron on a plan that allows it, or any pinger) for retries to happen with nobody in the queue. Nothing is scheduled by this change.
+- The queue shows a red banner when no contact is configured and an amber one when deliveries have failed.
+- Set the contacts once, in the SQL editor (email is required for email, `user_id` for push):
+
+```sql
+INSERT INTO public.safeguarding_contacts (role, name, email, user_id)
+VALUES ('lead', 'Ishwar Suresh', 'LEAD_EMAIL', NULL);   -- then the deputy: role 'deputy'
+```
+
+## Under-18s switch (`COMMUNITY_JUNIORS_ENABLED`)
+
+Under-18s can use the Community only while `COMMUNITY_JUNIORS_ENABLED` is exactly `true`. Unset, empty, `TRUE`, `1`, `yes`, `true ` and everything else mean off. **It is off by default, so juniors are shut out until it is set.** Turn it on only with the safeguarding lead's written sign-off. Adults are never affected.
+
+While it is off, enforced in the service layer (so every API route, server action and the mobile app are covered):
+- A junior (club-marked or under 18 by date of birth) is shut out like an account with no date of birth: every action returns "The Community is not open to under-18s yet." and they see no clubs.
+- Nobody else sees them or their words (feed, comments, nearby, profiles, connections).
+- Junior sessions are hidden from everyone, and cannot be created or joined.
+- Junior matching and connecting are closed; parent approval of junior connections, adult-to-junior contact (`COMMUNITY_CROSSBAND_ENABLED`) and junior messaging (`COMMUNITY_JUNIOR_DMS`) are closed even if their own flags are `true`. Turning the switch on does not turn those on; each still needs its own flag.
+- Reporting, blocking and parents' oversight still work.
+
+## Club-confirmed date of birth (`DOB_CONFIRMATION_REQUIRED`)
+
+A date of birth is typed in by the family. A club admin can confirm a junior member's date after checking it against what the club holds (Safeguarding page, "Confirm dates of birth"). The confirmation is `profiles.dob_confirmed_by` and `dob_confirmed_at` (migration 026).
+
+- Only the server action `confirmDobAction` writes it, and only for a junior who is an active member of a club where the caller is an active club admin, for the exact date the admin was shown, and never for their own. Migration 026 also stops anon and signed-in database roles from setting, changing or clearing it directly. Changing the date of birth clears the confirmation.
+- With `DOB_CONFIRMATION_REQUIRED` exactly `true`, a junior (club-marked or under 18 by date) also needs a confirmed date before any junior feature opens; adults are not affected. Off by default. **Apply migration 026 before turning it on**: only then does the app read the two columns.
+- "Confirmed" means a club admin checked it, not that ShiftUp has seen a document.

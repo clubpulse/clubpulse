@@ -51,7 +51,7 @@ export default function MarketingFooter() {
       <div className="mk-foot-inner">
         <div className="mk-foot-cols">
           <div className="mk-foot-col-brand">
-            <Link href="/" className="mk-foot-brand">Club<span>Pulse</span></Link>
+            <Link href="/" className="mk-foot-brand">Shift<span>Up</span></Link>
             <p className="mk-foot-tag">Runs a cricket club&apos;s Saturday, and gives every player four pillars to grow with.</p>
           </div>
           {GROUPS.map((g) => (

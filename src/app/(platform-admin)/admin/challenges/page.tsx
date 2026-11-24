@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { formatDate, isMissingTable } from '@/lib/platform-admin';
 import { Cell, ErrorNote, PageHeader, Table } from '@/components/platform-admin/ui';
 
-export const metadata: Metadata = { title: 'Challenges | Admin | ClubPulse' };
+export const metadata: Metadata = { title: 'Challenges | Admin | ShiftUp' };
 
 const PLANNED = [
   'Weekly club and national challenges, e.g. "fastest 10 deliveries" or "most steps this week"',

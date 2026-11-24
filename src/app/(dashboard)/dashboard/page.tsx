@@ -83,7 +83,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       {/* The four pillars: the way in to everything */}
       {playerSide && (<>
-      <h2 style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', color: '#fff', margin: '8px 0 -4px', letterSpacing: '-0.01em' }}>Explore ClubPulse</h2>
+      <h2 style={{ fontFamily: SYNE, fontWeight: 800, fontSize: '20px', color: '#fff', margin: '8px 0 -4px', letterSpacing: '-0.01em' }}>Explore ShiftUp</h2>
       <section aria-label="The four pillars" className="mg-bento mg-two">
         {PILLARS.map((p, i) => (
           <MagicCard key={p.key} href={p.href} tint={p.from} index={i} style={{ padding: '18px', '--mg-from': p.from, '--mg-to': p.to } as CSSProperties}>
