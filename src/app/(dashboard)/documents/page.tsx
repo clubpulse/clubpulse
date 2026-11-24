@@ -4,7 +4,7 @@ import { getClubDocuments, getMandatoryDocs } from '@/lib/actions/documents';
 import { CATEGORY_CONFIG, type DocumentCategory, type ClubDocument } from '@/lib/types/documents';
 import { AcknowledgeButton } from '@/components/documents/AcknowledgeButton';
 
-export const metadata = { title: 'Documents · ShiftUp' };
+export const metadata = { title: 'Documents · SHIFTUP' };
 
 const CATEGORIES = Object.keys(CATEGORY_CONFIG) as DocumentCategory[];
 

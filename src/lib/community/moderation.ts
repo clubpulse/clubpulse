@@ -5,7 +5,7 @@
 //   2. An AI read of what is left, for what a word list cannot catch: bullying, hate, grooming,
 //      asking someone to move to another app, anything unsafe for under-18s.
 //
-// If the AI cannot be reached, or ANTHROPIC_API_KEY is not set, the text is held for ShiftUp to
+// If the AI cannot be reached, or ANTHROPIC_API_KEY is not set, the text is held for SHIFTUP to
 // look at, not let through. The Community fails closed.
 
 import { MODEL_FAST, extractText, getAnthropic, parseJsonObject } from '@/lib/ai/client';
@@ -13,10 +13,10 @@ import { screenText, type CheckContext, type Verdict } from './rules';
 
 export type CheckResult =
   | { status: 'live' }
-  /** Not sent. `tell` is what the writer is told; `held` true means ShiftUp will look at it. */
+  /** Not sent. `tell` is what the writer is told; `held` true means SHIFTUP will look at it. */
   | { status: 'held'; tell: string; held: boolean };
 
-const SYSTEM = `You are the safety check for ShiftUp Community, a social platform for grassroots cricket in the UK. Members include children under 18.
+const SYSTEM = `You are the safety check for SHIFTUP Community, a social platform for grassroots cricket in the UK. Members include children under 18.
 
 Decide whether one piece of text may be shown. Block it if it contains any of:
 - swearing or vulgar language, including disguised spellings
@@ -57,7 +57,7 @@ export async function checkContent(text: string, context: CheckContext, max?: nu
   if (!first.ok) return { status: 'held', tell: first.reason, held: false };
 
   const second = await askAi(text.trim(), context);
-  if (second === null) return { status: 'held', tell: 'The safety check is busy. ShiftUp will look at this and post it if it is fine.', held: true };
+  if (second === null) return { status: 'held', tell: 'The safety check is busy. SHIFTUP will look at this and post it if it is fine.', held: true };
   if (!second.ok) return { status: 'held', tell: second.reason, held: true };
   return { status: 'live' };
 }

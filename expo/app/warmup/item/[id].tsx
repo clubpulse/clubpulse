@@ -2,7 +2,7 @@
 // shows its paragraphs and takeaways; a checklist can be ticked; tips are a short list.
 //
 // Finishing a guided session, or a week of Mind Nets, counts towards the Run Chase tasks. For
-// that the app tells ShiftUp only that a session was done today, never which one.
+// that the app tells SHIFTUP only that a session was done today, never which one.
 
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';

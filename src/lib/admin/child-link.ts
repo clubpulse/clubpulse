@@ -1,4 +1,4 @@
-// Club admins link a child record to the child's own ShiftUp account, which is what lets the Community treat the
+// Club admins link a child record to the child's own SHIFTUP account, which is what lets the Community treat the
 // account as a junior and tell the child's parents about new connections. Service role; callers must already have
 // resolved the caller's admin clubs (getAdminContext).
 
@@ -33,7 +33,7 @@ export async function clubsWithCurrentDbs(userId: string, adminClubIds: string[]
   return adminClubIds.filter((c) => dbsIsCurrent((data ?? []).filter((d) => d.club_id === c) as DbsRow[], today));
 }
 
-export const VERIFY_NEEDS_DBS = 'Verifying a parent or guardian needs a current enhanced DBS check recorded for you at this club. Ask ShiftUp to record yours.';
+export const VERIFY_NEEDS_DBS = 'Verifying a parent or guardian needs a current enhanced DBS check recorded for you at this club. Ask SHIFTUP to record yours.';
 
 /** Whether this person holds a current enhanced DBS check at this one club. */
 export async function hasCurrentDbsAt(userId: string, clubId: string): Promise<boolean> {

@@ -93,7 +93,7 @@ export default function PlayerReportPage() {
             Get your performance breakdown
           </p>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
-            ShiftUp analyses your last 10 matches and generates a coaching report with strengths, areas to focus on, and your next match target.
+            SHIFTUP analyses your last 10 matches and generates a coaching report with strengths, areas to focus on, and your next match target.
           </p>
           <button
             onClick={generate}

@@ -5,7 +5,7 @@ import { getMyCheckins, getThisWeeksCheckin } from '@/lib/actions/wellbeing';
 import { CheckinForm } from '@/components/wellbeing/CheckinForm';
 import { MyWellbeingChart } from '@/components/wellbeing/MyWellbeingChart';
 
-export const metadata = { title: 'Wellbeing · ShiftUp' };
+export const metadata = { title: 'Wellbeing · SHIFTUP' };
 
 async function getClubId(userId: string): Promise<string | null> {
   const supabase = await createClient();

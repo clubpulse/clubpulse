@@ -39,7 +39,7 @@ export async function api<T>(
       if (origin !== new URL(BASE_URL).origin) res = await fetch(`${origin}${path}`, init);
     }
   } catch {
-    throw new ApiError('Could not reach ShiftUp. Check your connection.', 0);
+    throw new ApiError('Could not reach SHIFTUP. Check your connection.', 0);
   }
 
   const json = await res.json().catch(() => null);

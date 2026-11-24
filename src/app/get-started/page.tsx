@@ -4,8 +4,8 @@ import MarketingNav from '@/components/marketing/MarketingNav';
 import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export const metadata: Metadata = {
-  title: 'Get started | ShiftUp',
-  description: 'Register your club with ShiftUp, or join as a player.',
+  title: 'Get started | SHIFTUP',
+  description: 'Register your club with SHIFTUP, or join as a player.',
 };
 
 export default function GetStartedPage() {
@@ -29,7 +29,7 @@ export default function GetStartedPage() {
           <Link href="/auth/sign-up" style={card}>
             <span style={eyebrow}>For players</span>
             <strong style={title}>Join as a player</strong>
-            <span style={body}>Start on Free (£0), whether or not your club is on ClubPulse yet. Analysis, community, wellness and the academy, with Pro, Elite and Legend when you want more.</span>
+            <span style={body}>Start on Free (£0), whether or not your club is on SHIFTUP yet. Analysis, community, wellness and the academy, with Pro, Elite and Legend when you want more.</span>
             <span style={cta}>Create your account →</span>
           </Link>
         </div>

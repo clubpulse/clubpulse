@@ -1,4 +1,4 @@
-# ShiftUp
+# SHIFTUP
 
 _From Grassroots to Greatness._
 

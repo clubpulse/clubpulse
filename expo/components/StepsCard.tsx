@@ -34,7 +34,7 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
       {status === 'denied' && (
         <Text style={fonts.small}>
           {Platform.OS === 'android'
-            ? 'Allow ShiftUp to read Steps in Health Connect to earn Scores for your steps.'
+            ? 'Allow SHIFTUP to read Steps in Health Connect to earn Scores for your steps.'
             : 'Allow Health or Motion access in Settings to earn Scores for your steps.'}
         </Text>
       )}
@@ -60,7 +60,7 @@ export function StepsCard({ steps, source, status, syncing, result, error, onSyn
           )}
           {Platform.OS === 'ios' && status === 'ready' && steps === 0 && !syncing && (
             <Text style={styles.hint}>
-              Showing 0 after a walk? In the Health app go to your profile, then Apps, then ShiftUp, and turn on Steps.
+              Showing 0 after a walk? In the Health app go to your profile, then Apps, then SHIFTUP, and turn on Steps.
             </Text>
           )}
           {result && !!result.totalScoresToday && (

@@ -192,7 +192,7 @@ export function asAdmin(audience: Audience): Audience {
   return { ...audience, admin: true, roles: audience.defaulted ? [] : audience.roles, defaulted: false };
 }
 
-/** ShiftUp staff see both sides, so they can look after everyone. */
+/** SHIFTUP staff see both sides, so they can look after everyone. */
 export function asStaff(audience: Audience): Audience {
   return { ...audience, admin: true, defaulted: false, roles: ROLES };
 }

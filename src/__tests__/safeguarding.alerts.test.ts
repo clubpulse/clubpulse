@@ -135,7 +135,7 @@ describe('a report raises exactly one alert per recipient', () => {
 
 describe('held items', () => {
   it('alerts on a held item without its content', async () => {
-    await raiseAlert(admin, { source: 'held', kind: 'message', targetId: 'm1', junior: true, reason: 'The safety check is busy. ShiftUp will look at this.' });
+    await raiseAlert(admin, { source: 'held', kind: 'message', targetId: 'm1', junior: true, reason: 'The safety check is busy. SHIFTUP will look at this.' });
     const text = (sendEmail.mock.calls[0][0] as { text: string }).text;
     expect(text).toContain('held by the safety check');
     expect(text).toContain('Reason: The safety check is busy');

@@ -20,7 +20,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
         <h1 style={{ ...h1, fontSize: '22px', marginBottom: '2px' }}>My plan</h1>
         <p style={muted}>
           {offer.kind === 'club_addon'
-            ? 'Your club is on a ShiftUp plan. Add analysis on your own phone, with coaching and AI analysis sessions.'
+            ? 'Your club is on a SHIFTUP plan. Add analysis on your own phone, with coaching and AI analysis sessions.'
             : 'Choose a plan for yourself. You can change or cancel it at any time.'}
         </p>
       </div>

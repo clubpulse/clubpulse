@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     const { onboardingUrl } = await createConnectAccount(
       clubId,
-      club?.name ?? 'ShiftUp Club',
+      club?.name ?? 'SHIFTUP Club',
       user.email ?? '',
     );
 

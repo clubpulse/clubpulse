@@ -1,7 +1,7 @@
 // A club admin confirms a junior member's date of birth. Service role, and the only writer of dob_confirmed_by and
 // dob_confirmed_at (migration 026 stops every client role from setting them). The date is still one the family gave, so
 // "confirmed" means a club admin has checked it against something they hold, such as the registration form or a passport
-// they were shown; it is not a document check by ShiftUp.
+// they were shown; it is not a document check by SHIFTUP.
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { ageOn, isPlausibleDob } from '@/lib/community/age';

@@ -1,4 +1,4 @@
-// Animated icons that stand in for emoji. <Glyph e="🏏" /> draws the matching icon in a ShiftUp
+// Animated icons that stand in for emoji. <Glyph e="🏏" /> draws the matching icon in a SHIFTUP
 // colour, with a small motion that suits it (a flame flickers, a bell rings, a heart beats). An
 // emoji with no good icon (faces, flags and so on) is shown as the emoji itself, so nothing is lost.
 //

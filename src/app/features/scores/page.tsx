@@ -214,7 +214,7 @@ export default function ScoresPage() {
                 <div className="sr-reward-icon">💷</div>
                 <div className="sr-reward-pts">The rate</div>
                 <div className="sr-reward-h">500 Scores = £1</div>
-                <div className="sr-reward-body">1,250 Scores are £2.50. The rate is the same everywhere in ClubPulse.</div>
+                <div className="sr-reward-body">1,250 Scores are £2.50. The rate is the same everywhere in SHIFTUP.</div>
               </div>
               <div className="sr-reward-card">
                 <div className="sr-reward-icon"><Glyph e="✖️" /></div>

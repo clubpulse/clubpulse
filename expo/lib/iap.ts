@@ -155,11 +155,11 @@ export const AWIN_CATEGORY_CONFIG: Record<AwinCategory, { label: string; icon: s
 
 /**
  * Example Awin deals — in production these come from the API / Supabase.
- * ShiftUp signs up as an Awin publisher and rotates deals monthly.
+ * SHIFTUP signs up as an Awin publisher and rotates deals monthly.
  */
 export const SAMPLE_AWIN_DEALS: AwinDeal[] = [
   // Sports Apparel
-  { id: 'aw-1', category: 'sports_apparel', brand: 'Castore', discountLabel: '20% off', description: 'Cricket & sportswear range', code: 'ShiftUp20', affiliateUrl: '', expiresAt: null },
+  { id: 'aw-1', category: 'sports_apparel', brand: 'Castore', discountLabel: '20% off', description: 'Cricket & sportswear range', code: 'SHIFTUP20', affiliateUrl: '', expiresAt: null },
   { id: 'aw-2', category: 'sports_apparel', brand: 'Under Armour', discountLabel: '£15 off', description: 'Orders over £75', code: 'CPULSE15', affiliateUrl: '', expiresAt: null, minSpend: 75 },
   { id: 'aw-3', category: 'sports_apparel', brand: 'New Balance', discountLabel: '15% off', description: 'Cricket shoes & trainers', code: 'PULSE15', affiliateUrl: '', expiresAt: null },
   { id: 'aw-4', category: 'sports_apparel', brand: 'Nike', discountLabel: '10% off', description: 'Full price items', code: 'CLUB10', affiliateUrl: '', expiresAt: null },
@@ -613,7 +613,7 @@ export function getUpsell(trigger: UpsellTrigger, context?: { streakDays?: numbe
       };
     case 'free_hit':
       return {
-        trigger, title: 'Welcome to ShiftUp! 🏏',
+        trigger, title: 'Welcome to SHIFTUP! 🏏',
         message: "Here's your free Net Session scratch card — scratch to win discounts and more.",
         ctaLabel: 'Scratch Your Free Card', ctaProduct: 'net_session_card',
       };

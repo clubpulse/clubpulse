@@ -1,4 +1,4 @@
-// Pure. The four pillars of ShiftUp and the page each one has. A pillar is one of the menu
+// Pure. The four pillars of SHIFTUP and the page each one has. A pillar is one of the menu
 // groups; this adds its address, how it is described, its colours, and what is still to come.
 
 import { menuFor, type Audience, type NavGroup, type NavLink } from './menu';
