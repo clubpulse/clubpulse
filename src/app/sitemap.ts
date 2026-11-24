@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
+const BASE = 'https://www.shiftup.club';
 
 // Public marketing pages only.
 const PATHS = [

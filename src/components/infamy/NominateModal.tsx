@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useDialog } from '@/components/ui/useDialog';
 import { nominateMember } from '@/lib/actions/infamy';
 import type { InfamyCategory } from '@/lib/types/infamy';
 
@@ -31,6 +32,7 @@ export function NominateModal({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const dialogRef = useDialog(true, onClose);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,6 +56,11 @@ export function NominateModal({
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="nominate-title"
+      tabIndex={-1}
       style={{
         position: 'fixed',
         inset: 0,
@@ -83,6 +90,7 @@ export function NominateModal({
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2
+            id="nominate-title"
             style={{
               margin: 0,
               fontFamily: "'Bricolage Grotesque', sans-serif",

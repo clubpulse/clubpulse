@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDialog } from '@/components/ui/useDialog';
 import { COACHING_TYPE_CONFIG, SESSION_FORMAT_LABEL, type CoachingListing } from '@/lib/types/coaching';
 import { bookSession } from '@/lib/actions/coaching';
 import { formatScores } from '@/lib/utils/format';
@@ -12,6 +13,7 @@ interface Props {
 
 export function CoachingCard({ listing, userBalance }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const dialogRef = useDialog(showModal, () => setShowModal(false));
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [loading, setLoading] = useState(false);
@@ -147,8 +149,11 @@ export function CoachingCard({ listing, userBalance }: Props) {
       {/* Book modal */}
       {showModal && (
         <div
+          ref={dialogRef}
           role="dialog"
-          aria-modal
+          aria-modal="true"
+          aria-labelledby="book-session-title"
+          tabIndex={-1}
           onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
           style={{
             position: 'fixed', inset: 0, zIndex: 50,
@@ -161,7 +166,7 @@ export function CoachingCard({ listing, userBalance }: Props) {
             borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '380px',
             fontFamily: "'Inter', sans-serif",
           }}>
-            <h3 style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
+            <h3 id="book-session-title" style={{ margin: '0 0 4px', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
               Book Session
             </h3>
             <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>
