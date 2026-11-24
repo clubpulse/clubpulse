@@ -15,7 +15,7 @@ import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
   ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, drillFor, formatRange, formatValue,
-  LOW_CONFIDENCE_MESSAGE, choosePose, overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
+  LOW_CONFIDENCE_MESSAGE, capConfidence, choosePose, overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
@@ -513,7 +513,10 @@ export function AnalyseClient() {
       if (entries.length >= 2) {
         if (recording.seen > 0 && recording.extra / recording.seen >= 0.3) {
           for (const entry of entries) {
-            if (!entry.analysis.warnings.includes('more than one person')) entry.analysis.warnings.push('more than one person');
+            if (!entry.analysis.warnings.includes('more than one person')) {
+              entry.analysis.warnings.push('more than one person');
+              entry.analysis.confidence = capConfidence(entry.analysis.confidence, 'medium');
+            }
           }
         }
         const first = bestAndWorst(entries.map((e) => e.overall))?.best ?? 0;
@@ -554,6 +557,7 @@ export function AnalyseClient() {
     const { analysis } = outcome;
     if (recording.seen > 0 && recording.extra / recording.seen >= 0.3 && !analysis.warnings.includes('more than one person')) {
       analysis.warnings.push('more than one person');
+      analysis.confidence = capConfidence(analysis.confidence, 'medium');
     }
     const metrics = analysis.metrics;
     setFrameCount(analysis.framesSeen);

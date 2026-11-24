@@ -15,7 +15,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { detectShot, shotToScore } from '../src/lib/analysis/shot-detect';
 import {
-  LOW_CONFIDENCE_MESSAGE, analyseDetailed, drillFor, lockPerson, overallScore, weakestMeasure,
+  LOW_CONFIDENCE_MESSAGE, analyseDetailed, capConfidence, drillFor, lockPerson, overallScore, weakestMeasure,
   type Hand, type Landmark, type Mode, type ShotType, type View,
 } from '../src/lib/analysis/pose-metrics';
 
@@ -69,7 +69,11 @@ async function main() {
       : null;
     const shot = discipline === 'batting' ? shotToScore(detectedShot, (shotArg as ShotType | undefined) ?? 'auto') : undefined;
     const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times);
-    if (tracked.crowded && marked.ok) marked.analysis.warnings.push('more than one person');
+    if (tracked.crowded && marked.ok) {
+      marked.analysis.warnings.push('more than one person');
+      marked.analysis.confidence = capConfidence(marked.analysis.confidence, 'medium');
+      marked.analysis.metrics.forEach((metric) => { metric.confidence = marked.analysis.confidence; });
+    }
     if (!marked.ok) {
       process.stdout.write(`${JSON.stringify({ ok: false, problem: marked.problem, frames: read.frames.length }, null, 2)}\n`);
       process.exit(2);

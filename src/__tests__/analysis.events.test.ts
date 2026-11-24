@@ -1,5 +1,6 @@
 import {
-  L, LOW_CONFIDENCE_MESSAGE, analyse, analyseDetailed, detectView, findContactFrame, findReleaseFrame, headBehindFrontKnee, headOnTrunk, headWobble,
+  L, LOW_CONFIDENCE_MESSAGE, LOW_FPS_MESSAGE, analyse, analyseDetailed, detectView, findContactFrame, findReleaseFrame, headBehindFrontKnee, headOnTrunk, headWobble,
+  readingConfidence,
   interpolateGaps, lockPerson, metricDefFor, overallScore, resolveView, scoreFor, type Landmark,
 } from '@/lib/analysis/pose-metrics';
 import { shotToScore } from '@/lib/analysis/shot-detect';
@@ -149,8 +150,10 @@ describe('tracking and view', () => {
     };
     expect(ratio(68).confident).toBe(false);
     expect(ratio(94).confident).toBe(false);
-    expect(resolveView('front', ratio(68))).toEqual({ view: 'front', hint: 'This looks side-on. Switch?' });
-    expect(resolveView('side', { view: 'front', confident: true }).view).toBe('front');
+    expect(resolveView('front', ratio(68))).toEqual({ view: 'front', hint: null });
+    expect(resolveView('side', ratio(94))).toEqual({ view: 'side', hint: null });
+    expect(resolveView('side', { view: 'front', confident: true })).toEqual({ view: 'side', hint: 'This looks front-on. Switch?' });
+    expect(resolveView('front', { view: 'side', confident: true })).toEqual({ view: 'front', hint: 'This looks side-on. Switch?' });
   });
 
   it('drops the front elbow for a pull and does not zero the head', () => {
@@ -174,6 +177,55 @@ describe('tracking and view', () => {
   it('keeps the shot the player chose when detection is unsure', () => {
     expect(shotToScore({ shot: 'drive', confident: false }, 'pull')).toBe('pull');
     expect(shotToScore({ shot: 'pull', confident: true }, 'auto')).toBe('pull');
+  });
+
+  it('takes the later extended arm, and ignores a run-up that is the only early peak', () => {
+    const frames: Landmark[][] = [];
+    const times: number[] = [];
+    for (let i = 0; i < 30; i++) {
+      const t = i / 10;
+      times.push(t);
+      const delivery = Math.abs(t - 2.2) < 0.05;
+      frames.push(person(delivery
+        ? { rWrist: [114, 12], rElbow: [112, 40] }
+        : { rWrist: [114, t < 0.15 ? 8 : 170] }));
+    }
+    const at = findReleaseFrame(frames, 'right', W, H, times);
+    expect(times[at ?? 0]).toBeCloseTo(2.2, 1);
+    const trimmed = frames.filter((_, i) => times[i] >= 0.3);
+    const trimmedTimes = times.filter((t) => t >= 0.3);
+    const later = findReleaseFrame(trimmed, 'right', W, H, trimmedTimes);
+    expect(later).not.toBeNull();
+    expect(trimmedTimes[later ?? 0]).toBeGreaterThan(2);
+    const onlyEarly = frames.map((lm, i) => (times[i] < 0.2 ? lm : person()));
+    expect(findReleaseFrame(onlyEarly, 'right', W, H, times)).toBeNull();
+  });
+
+  it('marks a folded bowling arm as low confidence and a 133° arm as medium', () => {
+    const body = Array.from({ length: 8 }, () => person());
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 30 })).toBe('low');
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 133 })).toBe('medium');
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 170, times: body.map((_, i) => i / 10) })).not.toBe('high');
+  });
+
+  it('asks for a normal-speed clip when the pictures are sparse', () => {
+    const frames = Array.from({ length: 12 }, (_, i) => person({
+      rWrist: [114, i === 8 ? 15 : 170],
+      rElbow: [112, i === 8 ? 40 : 120],
+    }));
+    const times = frames.map((_, i) => i / 10);
+    const marked = analyseDetailed(frames, 'bowling', 'right', W, H, undefined, 'side', times);
+    expect(marked.ok).toBe(true);
+    if (!marked.ok) return;
+    expect(marked.analysis.warnings).toContain(LOW_FPS_MESSAGE);
+    expect(marked.analysis.confidence === 'low' || marked.analysis.confidence === 'medium').toBe(true);
+  });
+
+  it('gives a pull its own weight tip and lets a drive elbow reach 175°', () => {
+    expect(metricDefFor('weightTransfer', 'batting', 'side', 'pull')?.tip ?? '').toMatch(/back foot/i);
+    expect(metricDefFor('frontElbow', 'batting', 'side', 'drive')?.ideal[1]).toBeGreaterThanOrEqual(175);
+    expect(scoreFor(168, [90, 175], 40)).toBeGreaterThanOrEqual(85);
+    expect(scoreFor(157, [55, 175], 35)).toBeGreaterThanOrEqual(85);
   });
 
   it('gives a pull its own elbow tip', () => {
