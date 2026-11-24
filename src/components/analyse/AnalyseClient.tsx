@@ -8,14 +8,14 @@ import type { NormalizedLandmark, PoseLandmarker } from '@mediapipe/tasks-vision
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { createClient } from '@/lib/supabase/client';
-import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
+import { HIGHLIGHT_UPLOAD_ENABLED, HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
 import { seedDemoHighlights } from '@/app/analyse/actions';
 import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
-  ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, formatRange, formatValue,
-  overallScore, segmentScore,
+  ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, drillFor, formatRange, formatValue,
+  overallScore, segmentScore, weakestMeasure, wholeBodyVisible,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
@@ -287,7 +287,11 @@ export function AnalyseClient() {
   const [source, setSource] = useState<'camera' | 'file'>('camera');
   const sourceRef = useRef<'camera' | 'file'>('camera');
   // 'user' is the selfie camera; 'environment' is the back camera, for when someone else films
-  const [facing, setFacing] = useState<'user' | 'environment'>('user');
+  const [facing, setFacing] = useState<'user' | 'environment'>('environment');
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [bodyInFrame, setBodyInFrame] = useState<boolean | null>(null);
+  const bodyCheckRef = useRef(0);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
   // The position shown in the figure under the video
@@ -318,6 +322,23 @@ export function AnalyseClient() {
   useEffect(() => {
     settingsRef.current = { mode, hand, shotType, view };
   }, [mode, hand, shotType, view]);
+
+  const PREFS_KEY = 'shiftup.analyse';
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as { mode?: Mode; hand?: Hand; view?: View; facing?: 'user' | 'environment' } | null;
+      if (saved?.mode === 'bowling' || saved?.mode === 'batting') setMode(saved.mode);
+      if (saved?.hand === 'right' || saved?.hand === 'left') setHand(saved.hand);
+      if (saved?.view === 'side' || saved?.view === 'front') setView(saved.view);
+      if (saved?.facing === 'user' || saved?.facing === 'environment') setFacing(saved.facing);
+      else if (window.matchMedia('(pointer: coarse)').matches) setFacing('environment');
+    } catch { /* a bad saved value just leaves the defaults */ }
+    setPrefsLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, hand, view, facing }));
+  }, [prefsLoaded, mode, hand, view, facing]);
 
   // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
@@ -576,6 +597,14 @@ export function AnalyseClient() {
           if (now >= recording.until) finishRecording();
         }
 
+        if (sourceRef.current === 'camera' && !recording && sessionRef.current === null) {
+          const seen = wholeBodyVisible(pose);
+          if (now - bodyCheckRef.current > 400) {
+            bodyCheckRef.current = now;
+            setBodyInFrame(pose ? seen : false);
+          }
+        }
+
         const session = sessionRef.current;
         if (session?.current) {
           session.current.totalFrames += 1;
@@ -624,7 +653,7 @@ export function AnalyseClient() {
       await video.play();
       lastVideoTimeRef.current = -1;
 
-      const mimeType = pickMimeType();
+      const mimeType = HIGHLIGHT_UPLOAD_ENABLED ? pickMimeType() : null;
       if (mimeType) {
         const now = performance.now();
         const session: Session = {
@@ -696,8 +725,11 @@ export function AnalyseClient() {
       video.muted = true;
       video.defaultMuted = true;
       video.playsInline = true;
+      video.autoplay = true;
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.setAttribute('autoplay', '');
       video.src = url;
       video.onended = () => finishRecording();
       await clipReady(video);
@@ -922,7 +954,7 @@ export function AnalyseClient() {
     }).catch(() => setReplaying(false));
   }
 
-  function startRecording() {
+  function beginRecording() {
     setError(null);
     setResults(null);
     setSecondsLeft(RECORD_MS / 1000);
@@ -930,8 +962,22 @@ export function AnalyseClient() {
     setShots(null);
     setCoaching({ state: 'idle' });
     setCompare({ state: 'idle' });
+    setCountdown(null);
     recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [] };
     setPhase('recording');
+  }
+
+  function startRecording() {
+    if (countdown !== null) return;
+    setCountdown(3);
+    let left = 3;
+    const timer = window.setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        window.clearInterval(timer);
+        beginRecording();
+      } else setCountdown(left);
+    }, 1000);
   }
 
   function turnOff() {
@@ -945,10 +991,11 @@ export function AnalyseClient() {
     const canvas = canvasRef.current;
     canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
     setPhase('idle');
-    if (session) void saveHighlights(session);
+    if (HIGHLIGHT_UPLOAD_ENABLED && session) void saveHighlights(session);
   }
 
   async function saveHighlights(session: Session) {
+    if (!HIGHLIGHT_UPLOAD_ENABLED) return;
     await Promise.all(session.pending);
     if (session.best.length === 0) {
       if (session.segments > 0) toast('No highlight clips this time. Keep your whole body in frame to get a reel.');
@@ -1114,7 +1161,9 @@ export function AnalyseClient() {
         <div className="relative mx-auto overflow-hidden rounded-xl bg-black"
           style={{ aspectRatio: String(aspect), maxHeight: '70vh', maxWidth: `calc(70vh * ${aspect})` }}>
           {/* Mirrored so it behaves like a mirror; landmarks are computed on the unmirrored frame */}
-          <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-contain"
+          <video ref={videoRef} playsInline muted autoPlay className="absolute inset-0 h-full w-full object-contain"
+            // iOS Safari and the Expo web view only autoplay a silent clip that stays inside the page.
+            {...{ 'webkit-playsinline': 'true' }}
             onLoadedMetadata={(event) => {
               const { videoWidth, videoHeight } = event.currentTarget;
               if (videoWidth && videoHeight) setAspect(videoWidth / videoHeight);
@@ -1131,6 +1180,24 @@ export function AnalyseClient() {
                 Set your phone or laptop {view === 'side' ? 'side-on' : 'front-on, looking straight down the pitch'}, step back so your whole body is in frame, then start the camera.
                 Or upload a clip you have already filmed.
               </p>
+            </div>
+          )}
+
+          {(phase === 'ready' || countdown !== null) && source === 'camera' && (
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end pb-4">
+              <svg viewBox="0 0 120 220" className="h-[78%] w-auto opacity-70" aria-hidden>
+                <ellipse cx="60" cy="28" rx="16" ry="18" fill="none" stroke="white" strokeWidth="3" />
+                <path d="M60 46 L60 120 M60 70 L28 110 M60 70 L92 108 M60 120 L36 190 M60 120 L86 190" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+              <p className="mt-2 rounded-full bg-black/70 px-3 py-1 text-center text-sm font-medium text-white">
+                {bodyInFrame === false ? 'We can\'t see your whole body. Step back until your head and feet are inside.' : 'Step back until your whole body is inside'}
+              </p>
+            </div>
+          )}
+
+          {countdown !== null && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-7xl font-bold text-white" aria-live="assertive">
+              {countdown}
             </div>
           )}
 
@@ -1172,12 +1239,11 @@ export function AnalyseClient() {
         <div className="mt-4 flex flex-wrap gap-3">
           {!cameraOn && (
             <>
-              <Button onClick={() => startCamera()} loading={phase === 'loading'} disabled={phase === 'recording'}>
-                {phase === 'loading' ? 'Loading pose model…' : 'Start camera'}
+              <Button onClick={() => fileInputRef.current?.click()} loading={phase === 'loading' && source === 'file'} disabled={phase === 'loading' || phase === 'recording'}>
+                {phase === 'loading' && source === 'file' ? 'Reading your clip…' : 'Film or choose a clip'}
               </Button>
-              <Button variant="secondary" onClick={() => fileInputRef.current?.click()}
-                disabled={phase === 'loading' || phase === 'recording'}>
-                {fileShown && phase === 'done' ? 'Upload another video' : 'Upload a video'}
+              <Button variant="secondary" onClick={() => startCamera()} disabled={phase === 'loading' || phase === 'recording'}>
+                Use the live camera
               </Button>
               {fileShown && phase === 'done' && (
                 <>
@@ -1185,7 +1251,7 @@ export function AnalyseClient() {
                   <Button variant="secondary" onClick={() => replay(0.25)} disabled={replaying}>Slow motion</Button>
                 </>
               )}
-              <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
+              <input ref={fileInputRef} type="file" accept="video/*" capture="environment" className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   event.target.value = '';
@@ -1195,11 +1261,11 @@ export function AnalyseClient() {
           )}
           {cameraOn && (
             <>
-              <Button onClick={startRecording} disabled={phase === 'recording'}>
-                {phase === 'done' ? 'Record again' : 'Record 5 seconds'}
+              <Button onClick={startRecording} disabled={phase === 'recording' || countdown !== null}>
+                {countdown !== null ? countdown : phase === 'done' ? 'Record again' : 'Record 5 seconds'}
               </Button>
-              <Button variant="secondary" onClick={flipCamera} disabled={phase === 'recording'}>
-                {facing === 'user' ? 'Use back camera' : 'Use front camera'}
+              <Button variant="secondary" onClick={flipCamera} disabled={phase === 'recording' || countdown !== null}>
+                {facing === 'environment' ? 'Use front camera' : 'Use back camera'}
               </Button>
               <Button variant="secondary" onClick={turnOff} disabled={phase === 'recording'}>Stop camera</Button>
             </>
@@ -1271,6 +1337,38 @@ export function AnalyseClient() {
             </div>
           }
         >
+          {(() => {
+            const weak = weakestMeasure(results);
+            return (
+              <div className="mb-6">
+                <p className="text-5xl font-bold leading-none" style={{ color: scoreColour(overall) }}>
+                  {overall}<span className="ml-1 text-lg font-medium text-neutral-400">/100</span>
+                </p>
+                {weak && (
+                  <>
+                    <p className="mt-5 text-sm font-semibold text-white">Work on {weak.label}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-neutral-200">{weak.tip}</p>
+                    <p className="mt-4 text-sm leading-relaxed text-neutral-200">
+                      <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
+                    </p>
+                  </>
+                )}
+                {coaching.state !== 'idle' && (
+                  <div className="mt-4 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
+                    <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
+                      {coaching.state === 'loading' ? 'Writing a longer read…' : coaching.text}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <details className="rounded-lg border border-neutral-800 bg-neutral-950/40 px-4 py-3">
+            <summary className="cursor-pointer text-sm font-medium text-white">More detail</summary>
+            <div className="mt-4">
+
           {mode === 'batting' && reading && (
             <p className="mb-4 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-neutral-300">
               We read this as a <strong className="text-white">{SHOT_TYPE_LABELS[reading.shot].replace(/^\S+\s/, '')}</strong>
@@ -1340,7 +1438,7 @@ export function AnalyseClient() {
                   </p>
                 </div>
 
-                <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3" open>
+                <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3">
                   <summary className="cursor-pointer text-sm font-medium text-white">What the textbook says</summary>
                   <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-neutral-300">
                     {reference.checkpoints.map((point) => <li key={point}>{point}</li>)}
@@ -1441,16 +1539,9 @@ export function AnalyseClient() {
             );
           })()}
 
-          {coaching.state !== 'idle' && (
-            <div className="mt-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
-              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI&apos;s read</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
-                {coaching.state === 'loading' ? 'Writing your feedback…' : coaching.text}
-              </p>
-            </div>
-          )}
-
           {compare.state === 'ready' && <ComparisonPanel comparison={compare.data ?? null} trend={compare.trend ?? null} />}
+            </div>
+          </details>
 
           <p className="mt-5 text-xs text-neutral-600">
             Scores are estimates from a single camera angle. 100 is only given for the textbook position itself; anything inside the

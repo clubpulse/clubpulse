@@ -470,6 +470,31 @@ export function overallScore(metrics: MetricResult[]) {
   return Math.round(mean(pool.map((m) => m.score)));
 }
 
+/** The measure with the most room to improve. Excused unique-action measures are left out. */
+export function weakestMeasure(metrics: MetricResult[]): MetricResult | null {
+  const counted = metrics.filter((m) => !m.excused);
+  if (counted.length === 0) return null;
+  return counted.reduce((worst, metric) => (metric.score < worst.score ? metric : worst));
+}
+
+/** One thing to practise for the weakest measure. The wording comes from the coaching rule, not from a model. */
+export function drillFor(metric: MetricResult): string {
+  const focus = metric.label.toLowerCase();
+  return `Film yourself again and look only at your ${focus}. Do it slowly five times: ${metric.tip}`;
+}
+
+const FULL_BODY = [L.nose, L.lShoulder, L.rShoulder, L.lHip, L.rHip, L.lAnkle, L.rAnkle];
+
+/** True when the head and both feet are in the picture, so the player has stepped back far enough. */
+export function wholeBodyVisible(lm: Landmark[] | undefined): boolean {
+  if (!lm) return false;
+  const seen = (i: number) => (lm[i]?.visibility ?? 0) >= MIN_VISIBILITY;
+  if (!FULL_BODY.every(seen)) return false;
+  const head = lm[L.nose].y ?? 1;
+  const feet = Math.max(lm[L.lAnkle].y ?? 0, lm[L.rAnkle].y ?? 0);
+  return head > 0.02 && feet < 0.98;
+}
+
 /* ── Bowling: measured at release ──────────────────────────────────────────── */
 
 /**
