@@ -726,12 +726,12 @@ export default function HomePage() {
                 In development · contacting clubs
               </div>
               <h1 className="cp-hero-h1">
-                Run Saturday.<br />
+                Run the club.<br />
                 Grow every <AnimatedGradientText>player</AnimatedGradientText>.
               </h1>
               <p className="cp-eyebrow" style={{ marginBottom: 12 }}>From Grassroots to Greatness</p>
               <p className="cp-hero-sub">
-                SHIFTUP runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
+                SHIFTUP runs a cricket club, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
               </p>
 
               {/* The four pillars */}
@@ -793,7 +793,7 @@ export default function HomePage() {
                         <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="💷" /></div><div className="cp-tile-label">Finance</div></div>
                       </div>
                       <div className="cp-avail-bar">
-                        <span className="cp-avail-label">✓ Available Saturday</span>
+                        <span className="cp-avail-label">✓ Available</span>
                         <div className="cp-avail-toggle" />
                       </div>
                     </div>
@@ -894,7 +894,7 @@ export default function HomePage() {
         {/* ── HOW IT WORKS ── */}
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
-          <h2 className="cp-section-h2">From first chat to first Saturday.</h2>
+          <h2 className="cp-section-h2">From first chat to the first fixture.</h2>
           <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and players start on the free tier.</p>
 
           <div className="cp-steps">
@@ -915,7 +915,7 @@ export default function HomePage() {
             <div className="cp-step">
               <p className="cp-step-num">STEP 03</p>
               <div className="cp-step-icon"><Glyph e="🏏" /></div>
-              <h3 className="cp-step-h">Run Saturday</h3>
+              <h3 className="cp-step-h">Run the club</h3>
               <p className="cp-step-body">Players mark availability, captains pick the XI, scorers record every ball, and stats build up from there.</p>
             </div>
           </div>
@@ -940,7 +940,7 @@ export default function HomePage() {
         <section className="cp-quote">
           <div className="cp-quote-inner">
             <div className="cp-quote-mark">&ldquo;</div>
-            <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
+            <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed the week back, and to stop losing the squad thread three days before a fixture.</p>
             <p className="cp-quote-attr">— Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</p>
           </div>
         </section>

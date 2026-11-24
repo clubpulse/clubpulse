@@ -9,7 +9,7 @@ import { ShortageForm, ShortageList } from '@/components/community/ShortageBoard
 import { ClosedNotice, cardStyle } from '@/components/community/ui';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Short for Saturday' };
+export const metadata: Metadata = { title: 'Looking for players' };
 
 export default async function ShortagesPage({ searchParams }: { searchParams: Promise<{ scope?: string; within?: string }> }) {
   const user = await requireUser();
@@ -19,7 +19,7 @@ export default async function ShortagesPage({ searchParams }: { searchParams: Pr
   const within = (WITHIN_MILES as readonly number[]).includes(Number(sp.within)) ? Number(sp.within) : undefined;
   const admin = createAdminClient();
   const viewer = await getViewer(admin, user.id);
-  if (viewer.junior) return <div style={{ maxWidth: 640, margin: '0 auto', padding: 16 }}><h1>Short for Saturday</h1><p>This is for adult games. Your coach will tell you about junior fixtures.</p></div>;
+  if (viewer.junior) return <div style={{ maxWidth: 640, margin: '0 auto', padding: 16 }}><h1>Looking for players</h1><p>This is for adult games. Your coach will tell you about junior fixtures.</p></div>;
   const [r, { data: staffClubs }] = await Promise.all([
     listShortages(user.id, scope, within),
     admin.from('club_members').select('club_id, clubs ( id, name )').eq('user_id', user.id).eq('is_active', true).in('role', ['coach', 'club_admin']),
@@ -28,7 +28,7 @@ export default async function ShortagesPage({ searchParams }: { searchParams: Pr
   const chip = (href: string, label: string, on: boolean) => <Link key={href} href={href} style={{ padding: '6px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.25)', background: on ? 'rgba(96,165,250,0.25)' : 'transparent' }}>{label}</Link>;
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: 16 }}>
-      <h1>Short for Saturday</h1>
+      <h1>Looking for players</h1>
       <p>Clubs that need players for a game. Say you can play and they will see your name and club. Adults only.</p>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         {chip('/community/shortages?scope=club', 'My club', scope === 'club')}{chip('/community/shortages?scope=miles', 'Near me', scope === 'miles')}{chip('/community/shortages?scope=county', 'My county', scope === 'county')}

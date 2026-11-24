@@ -27,7 +27,7 @@ describe('GET /api/community/approvals', () => {
   });
   it('returns what is waiting on this parent only', async () => {
     open();
-    getApprovalsForParent.mockResolvedValue({ success: true, data: [{ connectionId: 'c1', childId: 'k1', childName: 'Kit', otherName: 'Kay', otherClub: 'Slough CC', decided: null }] });
+    getApprovalsForParent.mockResolvedValue({ success: true, data: [{ connectionId: 'c1', childId: 'k1', childName: 'Kit', otherName: 'Kay', otherClub: 'Fairwick CC', decided: null }] });
     const r = await call('GET', 'mum');
     expect(r.status).toBe(200);
     expect(await r.json()).toEqual({ approvals: [expect.objectContaining({ connectionId: 'c1', childName: 'Kit' })] });

@@ -15,10 +15,10 @@ const later = () => new Date(Date.now() + 5 * 86400000).toISOString();
 const dbs = (user_id: string, over: Record<string, unknown> = {}) => ({ user_id, club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: '2999-01-01', ...over });
 const member = (user_id: string, over: Record<string, unknown> = {}) => ({ user_id, club_id: 'c1', role: 'player', is_junior: false, is_active: true, joined_at: '2024-01-01', ...over });
 const profile = (id: string, name: string, dob = '1985-01-01') => ({ id, full_name: name, display_name: null, date_of_birth: dob, push_token: null });
-const sess = (id: string, over: Record<string, unknown> = {}) => ({ id, host_id: 'me', club_id: 'c1', kind: 'nets', age_band: 'junior', title: id, note: null, place: 'Slough CC main ground', starts_at: soon(), capacity: 10, status: 'open', responsible_adult_id: 'carla', ...over });
+const sess = (id: string, over: Record<string, unknown> = {}) => ({ id, host_id: 'me', club_id: 'c1', kind: 'nets', age_band: 'junior', title: id, note: null, place: 'Fairwick Ground', starts_at: soon(), capacity: 10, status: 'open', responsible_adult_id: 'carla', ...over });
 
 const world = () => memdb.reset({
-  clubs: [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+  clubs: [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }],
   club_members: [
     member('me', { role: 'coach' }), member('carla'), member('dan'), member('ed'), member('fay'), member('kid', { is_junior: true }),
     member('teen', { is_junior: true }), member('outsider', { club_id: 'c2' }),
@@ -33,7 +33,7 @@ const world = () => memdb.reset({
     sess('adult', { age_band: 'adult', responsible_adult_id: null, starts_at: later() }),
   ],
 });
-const input = (over: Record<string, unknown> = {}) => ({ clubId: 'c1', kind: 'nets', band: 'junior', title: 'Under-12 nets', note: '', place: 'Slough CC main ground', startsAt: soon(), capacity: 8, responsibleAdultId: 'carla', ...over });
+const input = (over: Record<string, unknown> = {}) => ({ clubId: 'c1', kind: 'nets', band: 'junior', title: 'Under-12 nets', note: '', place: 'Fairwick Ground', startsAt: soon(), capacity: 8, responsibleAdultId: 'carla', ...over });
 const inserts = () => memdb.writes.filter((w) => w.table === 'community_sessions' && w.op === 'insert');
 beforeEach(() => { process.env.COMMUNITY_ENABLED = 'true'; world(); });
 

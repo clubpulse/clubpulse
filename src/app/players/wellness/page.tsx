@@ -3,7 +3,7 @@ import PillarPage from '@/components/marketing/PillarPage';
 
 export const metadata: Metadata = {
   title: 'Wellness | SHIFTUP',
-  description: 'Private check-ins, match mood, an injury log and match-day preparation for cricketers.',
+  description: 'Private check-ins, match mood, an injury log and preparation for cricketers.',
 };
 
 export default function WellnessPage() {
@@ -19,7 +19,7 @@ export default function WellnessPage() {
           status: 'live',
           items: [
             { h: 'Pre-match readiness and trend', body: 'A quick private check on sleep, mood, soreness and stress, and a four-week trend of how you have been.' },
-            { h: 'Match-day checklists and your routine', body: 'The night before, the morning, at the ground and between balls, with ticks saved for the day and a routine you build yourself.' },
+            { h: 'Checklists and your routine', body: 'The night before, the morning, at the ground and between balls, with ticks saved for the day and a routine you build yourself.' },
             { h: 'Mental skills', body: 'Written guides on breathing, focus, self-talk, imagery and pressure, including a six-week programme.' },
             { h: 'Recovery log', body: 'A private note of how your body feels and what you did about it. It does not diagnose or suggest treatment.' },
             { h: 'Weekly check-in, match mood and injury log', body: 'A private weekly check-in (coaches see only anonymous club averages), how you feel going into a fixture, and a record of knocks and niggles.' },

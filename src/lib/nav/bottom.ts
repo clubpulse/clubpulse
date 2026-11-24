@@ -6,7 +6,7 @@ import type { Audience } from './menu';
 export type BottomLink = { href: string; label: string; icon: string };
 
 const HOME: BottomLink = { href: '/dashboard', label: 'Home', icon: '🏠' };
-const MATCH_DAY: BottomLink = { href: '/match-day', label: 'Match Day', icon: '🏟️' };
+const MATCH_DAY: BottomLink = { href: '/match-day', label: 'Fixtures', icon: '🏟️' };
 const PROFILE: BottomLink = { href: '/profile', label: 'Profile', icon: '👤' };
 
 export function bottomLinksFor(audience: Audience): BottomLink[] {
@@ -15,7 +15,7 @@ export function bottomLinksFor(audience: Audience): BottomLink[] {
   if (audience.admin && !plays) {
     return [
       { href: '/admin/club', label: 'Club', icon: '🛡️' },
-      { href: '/admin/club/availability', label: 'Match Day', icon: '🏟️' },
+      { href: '/admin/club/availability', label: 'Fixtures', icon: '🏟️' },
       { href: '/admin/club/members', label: 'Members', icon: '👥' },
       { href: '/admin/club/finance', label: 'Finance', icon: '💷' },
       PROFILE,

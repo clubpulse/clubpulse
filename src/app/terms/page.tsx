@@ -28,7 +28,7 @@ const SECTIONS: LegalSection[] = [
           Clubs use SHIFTUP under a signed agreement for a fixed period, and what a club pays is set out in that agreement. Our{' '}
           <Link href="/refunds">refund policy</Link> covers payments made by individual players.
         </p>
-        <p>Scores are earned by taking part: walking, checking in, volunteering, learning, playing the games and other club activity. They are a thank-you for taking part.</p>
+        <p>Scores are earned by taking part: walking, checking in, taking part, learning, playing the games and other club activity. They are a thank-you for taking part.</p>
         <ul>
           <li>Scores are not money. They have no cash value, cannot be bought, sold or transferred, and cannot be exchanged for cash.</li>
           <li>Rewards are subject to availability and to any conditions shown with the reward.</li>
@@ -94,7 +94,7 @@ const SECTIONS: LegalSection[] = [
     heading: 'Your club',
     body: (
       <p>
-        Your club decides who its members are, what its fees are and how it runs its teams, sessions and volunteering. Those matters
+        Your club decides who its members are, what its fees are and how it runs its teams and sessions. Those matters
         are between you and your club. SHIFTUP provides the tools the club uses.
       </p>
     ),

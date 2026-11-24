@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { FOR_CLUBS_HREF, FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
-/** The two front doors on the homepage: clubs run Saturday, players get four pillars. */
+/** The two front doors on the homepage: clubs run the week, players get four pillars. */
 export default function FrontDoors() {
   return (
     <section id="front-doors" style={{ padding: '80px 24px 24px', background: '#05080f' }} aria-label="Two front doors">
@@ -19,7 +19,7 @@ export default function FrontDoors() {
       <div className="fd-grid">
         <Link href={FOR_CLUBS_HREF} className="fd-card">
           <span className="fd-eyebrow">For clubs</span>
-          <span className="fd-title">Match Day, run end to end.</span>
+          <span className="fd-title">Fixtures, run end to end.</span>
           <ul className="fd-list">
             <li>Availability and picking the XI</li>
             <li>Ball-by-ball scoring and a shareable scorecard</li>

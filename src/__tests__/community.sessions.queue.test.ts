@@ -25,13 +25,13 @@ const world = () => {
       if (has(ops, 'in', 'role')) return [{ role: 'coach' }];
       return [{ user_id: 'me', club_id: 'c1', role: 'coach', is_junior: false, is_active: true }];
     },
-    clubs: () => [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+    clubs: () => [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }],
     profiles: () => [{ id: 'me', full_name: 'Coach Carla', display_name: null, push_token: null, date_of_birth: '1985-01-01' }],
     community_blocks: () => [],
     community_sessions: () => [{ id: 's1' }],
   };
 };
-const input = () => ({ clubId: 'c1', kind: 'nets', band: 'adult', title: 'Tuesday nets', note: 'Bring a bat', place: 'Slough CC main ground', startsAt: soon(), capacity: 8 });
+const input = () => ({ clubId: 'c1', kind: 'nets', band: 'adult', title: 'Tuesday nets', note: 'Bring a bat', place: 'Fairwick Ground', startsAt: soon(), capacity: 8 });
 beforeEach(() => { process.env.COMMUNITY_ENABLED = 'true'; });
 
 describe('createSession and the safety check', () => {

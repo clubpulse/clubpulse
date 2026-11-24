@@ -6,7 +6,7 @@ import { FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
 export const metadata: Metadata = {
   title: 'For clubs | SHIFTUP',
-  description: 'Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
+  description: 'Run the club: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
 };
 
 const SATURDAY = [
@@ -61,7 +61,7 @@ export default function ForClubsPage() {
       <main className="fc-wrap">
         <section className="fc-hero">
           <p className="fc-eyebrow">For clubs</p>
-          <h1 className="fc-h1">Run Saturday <em>end to end.</em></h1>
+          <h1 className="fc-h1">Run the club <em>end to end.</em></h1>
           <p className="fc-lead">
             Invite the squad, mark availability, pick the XI and score every ball. Fees and safeguarding sit in the same place,
             so the committee stops living in WhatsApp.
@@ -73,9 +73,9 @@ export default function ForClubsPage() {
         </section>
 
         <section className="fc-sec">
-          <p className="fc-eyebrow">Match Day</p>
-          <h2 className="fc-h2">The Saturday flow.</h2>
-          <p className="fc-sub">Four steps for Saturday. SHIFTUP is in development and is now starting to contact clubs.</p>
+          <p className="fc-eyebrow">Fixtures</p>
+          <h2 className="fc-h2">How a fixture runs.</h2>
+          <p className="fc-sub">Four steps for a fixture. SHIFTUP is in development and is now starting to contact clubs.</p>
           <div className="fc-grid fc-grid-4">
             {SATURDAY.map((s) => (
               <div key={s.n} className="fc-card">
@@ -105,7 +105,7 @@ export default function ForClubsPage() {
         </section>
 
         <section className="fc-sec">
-          <p className="fc-eyebrow">Beyond Saturday</p>
+          <p className="fc-eyebrow">Around the club</p>
           <h2 className="fc-h2">Every player you add gets more.</h2>
           <p className="fc-loop">
             Players who join through your club also get the four player pillars: analysis, community, wellness and the academy.

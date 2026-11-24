@@ -108,7 +108,7 @@ export default function AboutPage() {
           <div className="values-grid">
             {[
               { icon: '🏏', title: 'Cricket first', desc: 'Every decision starts with one question: does this make playing and managing cricket better? Engagement metrics are secondary.' },
-              { icon: '🌱', title: 'Grassroots, not glamour', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
+              { icon: '🌱', title: 'Grassroots, not glamour', desc: 'We build for the club with 40 members and one person running the admin, not for the county academies that already have full-time staff.' },
               { icon: '🤝', title: 'Built with cricketers', desc: 'Built with input from cricketers. The roadmap follows the game, not investor decks.' },
               { icon: '⚡', title: 'Actually useful', desc: 'No bloat. No feature graveyards. If a feature doesn\'t save time or add real value, it doesn\'t ship. Simple as that.' },
               { icon: '🔒', title: 'Privacy by default', desc: 'Your club data belongs to your club. We never sell it, never train on it without consent, and we make it easy to export.' },

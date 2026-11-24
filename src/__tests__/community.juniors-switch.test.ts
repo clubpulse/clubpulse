@@ -20,10 +20,10 @@ const soon = () => new Date(Date.now() + 3 * 86400000).toISOString();
 const member = (user_id: string, over: Record<string, unknown> = {}) => ({ user_id, club_id: 'c1', role: 'player', is_junior: false, is_active: true, joined_at: '2024-01-01', ...over });
 const profile = (id: string, name: string, dob = '1985-01-01') => ({ id, full_name: name, display_name: null, date_of_birth: dob, push_token: null });
 const dbs = (user_id: string) => ({ user_id, club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: '2999-01-01' });
-const sess = (id: string, over: Record<string, unknown> = {}) => ({ id, host_id: 'coach', club_id: 'c1', kind: 'nets', age_band: 'junior', title: id, note: null, place: 'Slough CC main ground', starts_at: soon(), capacity: 10, status: 'open', responsible_adult_id: 'carla', ...over });
+const sess = (id: string, over: Record<string, unknown> = {}) => ({ id, host_id: 'coach', club_id: 'c1', kind: 'nets', age_band: 'junior', title: id, note: null, place: 'Fairwick Ground', starts_at: soon(), capacity: 10, status: 'open', responsible_adult_id: 'carla', ...over });
 
 const world = () => memdb.reset({
-  clubs: [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+  clubs: [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }],
   club_members: [member('coach', { role: 'coach' }), member('carla'), member('dan'), member('kid', { is_junior: true }), member('kid2', { is_junior: true })],
   dbs_checks: [dbs('coach'), dbs('carla')],
   profiles: [profile('coach', 'Coach C'), profile('carla', 'Carla Adult'), profile('dan', 'Dan Adult'), profile('kid', 'Kit Young', '2012-06-01'), profile('kid2', 'Kay Young', '2012-07-01')],
@@ -130,7 +130,7 @@ describe('sessions', () => {
     expect(r2.success && r2.data.map((s) => s.id).sort()).toEqual(['adult-1', 'junior-1']);
   });
   it('cannot create a junior session, and can still create an adult one', async () => {
-    const base = { clubId: 'c1', kind: 'nets', title: 'Under-12 nets', note: '', place: 'Slough CC main ground', startsAt: soon(), capacity: 8, responsibleAdultId: 'carla' };
+    const base = { clubId: 'c1', kind: 'nets', title: 'Under-12 nets', note: '', place: 'Fairwick Ground', startsAt: soon(), capacity: 8, responsibleAdultId: 'carla' };
     expect(await createSession('coach', { ...base, band: 'junior' } as never)).toEqual({ success: false, error: JUNIORS_OFF });
     expect(wrote('community_sessions', 'insert')).toHaveLength(0);
     expect((await createSession('coach', { ...base, band: 'adult', responsibleAdultId: undefined } as never)).success).toBe(true);

@@ -25,7 +25,7 @@ const world = (o: { dob: string | null; junior: boolean; parent: boolean }) => {
   tables = {
     profiles: [{ id: 'me', full_name: 'Me', display_name: null, date_of_birth: o.dob }],
     club_members: [{ user_id: 'me', club_id: 'c1', role: 'member', is_junior: o.junior, is_active: true, joined_at: '2026-01-01' }],
-    clubs: [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+    clubs: [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }],
     child_profiles: o.parent ? [{ linked_user_id: 'me', parent_child_links: [{ parent_id: 'mum', verified_at: 'x' }] }] : [],
     community_blocks: [],
   };

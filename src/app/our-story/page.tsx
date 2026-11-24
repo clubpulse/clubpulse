@@ -103,12 +103,12 @@ export default function OurStoryPage() {
       <section className="story-wrap">
         <div className="story-block">
           <h2 className="story-h">The problem every club knows</h2>
-          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two volunteers who burn out.</p>
+          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two people who run the club and burn out.</p>
           <p className="story-p">We lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
         </div>
 
         <div className="pull-quote">
-          <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
+          <p>&ldquo;We didn&apos;t set out to build a software company. We just needed the week back.&rdquo;</p>
           <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</cite>
         </div>
 

@@ -54,7 +54,7 @@ describe('who may message whom', () => {
 
 describe('distance and names', () => {
   it('measures miles between two grounds', () => {
-    // Slough to Reading is roughly 17 miles
+    // The two grounds are roughly 17 miles apart
     expect(Math.round(milesBetween({ lat: 51.5105, lng: -0.595 }, { lat: 51.4543, lng: -0.9781 }))).toBeGreaterThan(15);
     expect(Math.round(milesBetween({ lat: 51.5105, lng: -0.595 }, { lat: 51.4543, lng: -0.9781 }))).toBeLessThan(19);
   });

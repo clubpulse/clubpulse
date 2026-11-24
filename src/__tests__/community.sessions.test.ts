@@ -40,7 +40,7 @@ describe('maySignUp and maySeeSession', () => {
 
 describe('checkPlace', () => {
   it('accepts a club ground or public venue', () => {
-    expect(checkPlace('Slough CC main ground').ok).toBe(true);
+    expect(checkPlace('Fairwick Ground').ok).toBe(true);
     expect(checkPlace('Upton Court Park nets').ok).toBe(true);
   });
   it('refuses homes, contact details and nothing', () => {

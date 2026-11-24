@@ -18,7 +18,7 @@ const prof = (id: string, dob: string, over: Record<string, unknown> = {}) => ({
 beforeEach(() => {
   process.env.COMMUNITY_ENABLED = 'true'; process.env.COMMUNITY_JUNIORS_ENABLED = 'true'; delete process.env.DOB_CONFIRMATION_REQUIRED;
   memdb.reset({
-    clubs: [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+    clubs: [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }],
     club_members: [member('kid', { is_junior: true }), member('kid2', { is_junior: true }), member('teen'), member('dan')],
     profiles: [prof('kid', '2012-06-01'), prof('kid2', '2012-07-01', confirmed), prof('teen', '2010-01-01'), prof('dan', '1985-01-01')],
     child_profiles: ['kid', 'kid2', 'teen'].map((u) => ({ linked_user_id: u, parent_child_links: [{ parent_id: `p-${u}`, verified_at: '2026-01-01' }] })),

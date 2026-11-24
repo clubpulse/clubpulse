@@ -238,7 +238,7 @@ export default function ScorecardPage() {
           <h2 className="sc-section-h2">Common questions about Live Scorecard.</h2>
           <div className="sc-faq-list">
             {[
-              ['Who scores? Does it need special training?', 'Any player, volunteer, or parent with a phone can score. The interface is designed to be intuitive — wide, no-ball, dot, run, boundary. No training required, though we provide a short guide.'],
+              ['Who scores? Does it need special training?', 'Any player or parent with a phone can score. The interface is designed to be intuitive — wide, no-ball, dot, run, boundary. No training required, though we provide a short guide.'],
               ['What happens if the scorer loses signal mid-match?', 'Scoring needs a connection to save each ball. Offline scoring is not available yet. If signal drops, wait for it to return and carry on; balls already recorded are saved.'],
               ['Can opposition teams or the league use this too?', 'The shareable link works for anyone — opposition clubs, league administrators, or journalists. They see a read-only live view. You control your own data.'],
               ['Does this integrate with Play-Cricket or other ECB systems?', 'Not yet — ECB integration is on our roadmap. Currently, match data lives in SHIFTUP. We\'re exploring Play-Cricket integration.'],

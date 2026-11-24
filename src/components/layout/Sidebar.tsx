@@ -11,7 +11,7 @@ import { pillarByKey } from '@/lib/nav/pillars';
 // Top-level links, also used for the short list on phones
 export const NAV_LINKS: NavLink[] = [
   { href: '/dashboard',   label: 'Home',        icon: '🏠' },
-  { href: '/match-day',   label: 'Match Day',   icon: '🏟️' },
+  { href: '/match-day',   label: 'Fixtures',   icon: '🏟️' },
   { href: '/analyse',     label: 'Analysis',    icon: '🎯' },
   { href: '/companion',   label: 'Coach AI',    icon: '🧠' },
   { href: '/profile',     label: 'Profile',     icon: '👤' },

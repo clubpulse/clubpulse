@@ -105,7 +105,7 @@ function AIDemo() {
   const CANNED: Record<string, string> = {
     default: "Based on the last 8 matches, **Rahul Patel** leads batting with an average of 47.2. His consistency over the last 4 games (scores of 34, 67, 28, 55) puts him ahead of the pack.",
     bowl: "Your best economy bowler this season is **James Kumar** at 4.8 runs/over across 12 spells. He's taken 18 wickets — most in the club.",
-    avail: "3 players haven't responded to this Saturday's availability: **D. Singh**, **T. Okafor** and **M. Chen**. Last week they were all available.",
+    avail: "3 players haven't responded to this week's availability: **D. Singh**, **T. Okafor** and **M. Chen**. Last week they were all available.",
     form: "**A. Williams** is your most improved player — form rating up 22 points in 6 weeks, moving from 'average' to 'good'. His strike rate has jumped from 71 to 94.",
   };
 
@@ -378,7 +378,7 @@ function EngagementDemo() {
 function CommunityDemo() {
   const [liked, setLiked] = useState<number[]>([]);
   const posts = [
-    { author: 'Captain Sharma', avatar: '👨‍✈️', time: '2h ago', text: 'Great win today lads. 7 wicket haul from Kumar was simply unreal. Drinks on me Saturday 🍺', likes: 14, comments: 6 },
+    { author: 'Captain Sharma', avatar: '👨‍✈️', time: '2h ago', text: 'Great win today lads. 7 wicket haul from Kumar was simply unreal. Drinks after the game 🍺', likes: 14, comments: 6 },
     { author: 'Club Noticeboard', avatar: '📌', time: '5h ago', text: '⚠️ Ground will be closed for maintenance Mon–Tue next week. All net sessions moved to Fairwick Ground.', likes: 8, comments: 2 },
     { author: 'Wellbeing Check-in', avatar: '🧡', time: '1d ago', text: 'How are you feeling this week? 8 players checked in. Average score: 7.2/10.', likes: 5, comments: 0 },
   ];
@@ -558,7 +558,7 @@ const HUB_ITEMS = [
 const WELLNESS_ITEMS = [
   li('🫁','Breathing and focus','Short guided sessions with a breathing circle and a timer',['Choose a short breathing or focus session.','Follow the breathing circle on screen.','The timer ends the session and it counts towards your Run Chase.']),
   li('🎯','Mind Nets','Six weeks: breathing, focus, routines, self-talk, imagery, pressure',['Start week one: breathing.','Each week adds a new mental skill: focus, routines, self-talk, imagery, then pressure.','By week six you have a toolkit you can use in a match.']),
-  li('✅','Match-day checklists','The night before, the morning, at the ground and between balls',['Open the checklist for where you are in the day.','Tick things off as you go: the night before, the morning, at the ground, between balls.','You walk out calm, with nothing forgotten.']),
+  li('✅','Checklists','The night before, the morning, at the ground and between balls',['Open the checklist for where you are in the day.','Tick things off as you go: the night before, the morning, at the ground, between balls.','You walk out calm, with nothing forgotten.']),
   li('🔁','My routine','Build your own pre-ball routine and keep it on your phone',['Pick the steps you want before each ball.','Put them in your order.','Keep the routine on your phone and practise it until it is automatic.']),
   li('💬','Thought for the day','One short thought every day',['Open the app.','Read the day\'s thought.','Carry it into training or the match.']),
 ];
@@ -602,7 +602,7 @@ const COPY = {
   players: {
     eyebrow: 'For players',
     h1: <>Everything a player<br /><em>needs to improve.</em></>,
-    sub: (n: number, c: number) => `${n} features across ${c} categories: match day, AI coaching, rewards, mindset and learning. Pick a category and try the live demo.`,
+    sub: (n: number, c: number) => `${n} features across ${c} categories: fixtures, AI coaching, rewards, mindset and learning. Pick a category and try the live demo.`,
     other: { href: '/features/clubs', label: 'Running a club? See the club features →' },
   },
   clubs: {

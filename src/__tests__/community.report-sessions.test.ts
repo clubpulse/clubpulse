@@ -11,8 +11,8 @@ import { getReviewQueue, resolveItem } from '@/lib/community/review';
 const reports = () => memdb.writes.filter((w) => w.table === 'community_reports' && w.op === 'insert');
 beforeEach(() => {
   memdb.reset({
-    community_sessions: [{ id: 's1', host_id: 'host', title: 'Under-12 nets', note: null, place: 'Slough CC main ground', status: 'open' }],
-    community_shortages: [{ id: 'g1', posted_by: 'poster', note: 'Need two for Saturday', place: 'Slough CC main ground', status: 'open' }],
+    community_sessions: [{ id: 's1', host_id: 'host', title: 'Under-12 nets', note: null, place: 'Fairwick Ground', status: 'open' }],
+    community_shortages: [{ id: 'g1', posted_by: 'poster', note: 'Need two for the fixture', place: 'Fairwick Ground', status: 'open' }],
     community_posts: [], community_comments: [], community_messages: [], community_reports: [],
     parent_child_links: [
       { parent_id: 'mum', child_id: 'k1', verified_at: '2026-01-01', child_profiles: { linked_user_id: 'kid' } },

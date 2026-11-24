@@ -261,7 +261,7 @@ export default function AvailabilityPage() {
             </div>
             <div className="av-match-card">
               <div className="av-match-name">vs Fairwick CC — Away</div>
-              <div className="av-match-date">Saturday 26 Oct · 10:30am · Fairwick Ground</div>
+              <div className="av-match-date">26 Oct · 10:30am · Fairwick Ground</div>
               <div className="av-squad-count">
                 <span className="av-squad-n">10</span>
                 <span className="av-squad-label">confirmed · 1 awaiting</span>
@@ -293,7 +293,7 @@ export default function AvailabilityPage() {
         <div style={{borderTop:'1px solid rgba(255,255,255,0.07)'}}>
           <div className="av-section">
             <p className="av-section-eyebrow">How it works</p>
-            <h2 className="av-section-h2">Three steps. Saturday morning sorted.</h2>
+            <h2 className="av-section-h2">Three steps. The week sorted.</h2>
             <p className="av-section-sub">The entire availability workflow — from squad poll to confirmed XI — takes under 2 minutes of admin time.</p>
             <div className="av-steps">
               <div className="av-step">
@@ -345,7 +345,7 @@ export default function AvailabilityPage() {
         <div className="av-compare">
           <div className="av-compare-inner">
             <p className="av-section-eyebrow">The difference</p>
-            <h2 className="av-section-h2">What Saturday mornings used to look like.</h2>
+            <h2 className="av-section-h2">What the week used to look like.</h2>
             <div className="av-compare-grid">
               <div className="av-compare-col before">
                 <p className="av-compare-label before">Without SHIFTUP</p>
@@ -355,7 +355,7 @@ export default function AvailabilityPage() {
                   ['😩', 'Captain manually counts responses by scrolling up'],
                   ['😩', 'Three people haven\'t replied — captain messages them individually'],
                   ['😩', 'Two players drop out Friday night — reshuffling begins'],
-                  ['😩', 'XI announced Saturday morning, half the squad missed it'],
+                  ['😩', 'XI announced late, half the squad missed it'],
                 ].map(([ico, text], i) => (
                   <div key={i} className="av-compare-item">
                     <span className="ico">{ico}</span><span>{text}</span>
@@ -406,7 +406,7 @@ export default function AvailabilityPage() {
         <section className="av-cta">
           <div className="av-cta-inner">
             <div>
-              <h2 className="av-cta-h">Ready to fix Saturday mornings?</h2>
+              <h2 className="av-cta-h">Ready to fix the week?</h2>
               <p className="av-cta-sub">Get in touch and we&apos;ll bring SHIFTUP to your club. Players can start on the free tier.</p>
             </div>
             <Link href="/contact" className="av-cta-btn">Get started →</Link>
