@@ -8,7 +8,7 @@
 
 import { consistentArmAngle } from '@/lib/analysis/arm-check';
 import { repairBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
-import { UNMEASURED_MESSAGE, judgeMetric } from '@/lib/analysis/metric-confidence';
+import { CLEAR_IMAGE, clearReasonFrom, judgeMetric, type ClearReason } from '@/lib/analysis/metric-confidence';
 
 /** One body point: x and y as a share of the frame (0 to 1), and how sure the model is it can see it */
 export type Landmark = { x: number; y: number; z?: number; visibility?: number };
@@ -60,6 +60,8 @@ export type MetricResult = MetricDef & {
   excused?: boolean;
   /** How much to trust this number, from the tracking and the event detection. */
   confidence?: ScoreConfidence;
+  /** Why a low reading was dropped, so the retake line can name it. */
+  clearReason?: ClearReason;
 };
 
 /** Where the camera is: square of the wicket (side-on), or looking straight down the pitch (front-on) */
@@ -1243,7 +1245,9 @@ function annotateConfidence(metrics: MetricResult[], pool: Landmark[][], w: numb
       jumps.push(worst);
     }
     const reading = judgeMetric({ visibility, jumps, spread: null, spreadLimit: metric.unit === '°' ? 40 : 0.5 });
-    if (reading === 'low') return { ...metric, confidence: 'low', excused: true, tip: UNMEASURED_MESSAGE };
+    if (reading === 'low') {
+      return { ...metric, confidence: 'low', excused: true, tip: CLEAR_IMAGE, clearReason: clearReasonFrom({ visibility, jumps }) };
+    }
     return { ...metric, confidence: reading };
   });
 }
@@ -1354,7 +1358,7 @@ export function bowlingAnalysis(
     }));
   const checked = annotateConfidence(metrics, around.length > 0 ? around : [atRelease], w, h, hand)
     .map((metric) => metric.key === 'armStraightness' && armReading.unreliable
-      ? { ...metric, confidence: 'low' as const, excused: true, tip: UNMEASURED_MESSAGE }
+      ? { ...metric, confidence: 'low' as const, excused: true, tip: CLEAR_IMAGE, clearReason: 'blur' as const }
       : metric);
   return checked.length >= 2 ? { metrics: checked, keyFrame: release, elbow: elbowCheck(frames, release, side, p), unique } : null;
 }
@@ -1656,7 +1660,7 @@ export function analyseDetailed(
       frames, keyFrame, times, ratio: detected.ratio, armAngle: arm, motion: context?.motion, view: resolved.view,
       crowded: resolved.view === 'side' && leanAt != null && leanAt > 55,
     });
-    result.metrics.forEach((metric) => { metric.confidence = confidence; });
+    result.metrics.forEach((metric) => { if (metric.confidence !== 'low') metric.confidence = confidence; });
     const sizes = frames.map((lm) => playerSize(lm)).filter((size) => size > 0.05);
     const medSize = sizes.length ? [...sizes].sort((a, b) => a - b)[Math.floor(sizes.length / 2)] : 1;
     const far = medSize < 0.42 || playerSize(frames[keyFrame] ?? []) < 0.28;
@@ -1681,7 +1685,7 @@ export function analyseDetailed(
     readingConfidence({ frames, keyFrame, times, ratio: detected.ratio, motion: context?.motion }),
     contact.confidence,
   );
-  metrics.forEach((metric) => { metric.confidence = confidence; });
+  metrics.forEach((metric) => { if (metric.confidence !== 'low') metric.confidence = confidence; });
   return {
     ok: true,
     analysis: {

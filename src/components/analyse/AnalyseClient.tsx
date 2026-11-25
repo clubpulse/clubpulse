@@ -27,7 +27,8 @@ import {
 } from '@/lib/analysis/pose-overlay';
 import { framingPrompt } from '@/lib/analysis/framing';
 import { estimateBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
-import { UNMEASURED_MESSAGE, heavyFrameIndexes, preferLiteModel } from '@/lib/analysis/metric-confidence';
+import { CLEAR_IMAGE, heavyFrameIndexes, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
+import { scoreMeaning, topFix, coachingChains } from '@/lib/analysis/coaching-causes';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
@@ -725,6 +726,19 @@ export function AnalyseClient() {
       runningMode: 'VIDEO',
       numPoses: 3,
     });
+  }
+
+  async function retake() {
+    setResults(null);
+    setDetail(null);
+    setShots(null);
+    setShotPick(0);
+    setCoaching({ state: 'idle' });
+    setFramingHint(null);
+    setFrameAt(null);
+    replayRef.current = null;
+    videoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await startCamera(facing);
   }
 
   async function startCamera(useFacing: 'user' | 'environment' = facing) {
@@ -1474,28 +1488,47 @@ export function AnalyseClient() {
           title={shots ? `${mode === 'bowling' ? 'Ball' : 'Shot'} ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
         >
           {(() => {
-            const hidden = detail.confidence === 'low';
+            const viewMismatch = detail.warnings.some((warning) => /front-on|side-on|Turn the phone|Face the camera/i.test(warning));
+            const plan = retakePlan(results, mode, view, { playerSize: detail.playerSize, viewMismatch });
+            const clipLine = detail.confidence === 'low'
+              ? retakeLine('head', detail.playerSize < 0.36 ? 'small' : viewMismatch ? 'angle' : detail.warnings.some((warning) => /feet|whole body/i.test(warning)) ? 'hidden' : 'blur', view)
+              : null;
+            const retakeText = clipLine ?? plan.line;
+            const hidden = detail.confidence === 'low' || plan.withhold;
+            const fix = topFix(results);
             const weak = weakestMeasure(results);
             const strong = strongestMeasure(results);
             return (
               <div className="rounded-xl px-4 py-4" style={{ background: 'rgba(11,11,11,0.88)' }}>
                 <p className="text-4xl font-bold leading-none" style={{ color: hidden ? '#BEBEC4' : scoreColour(overall) }}>
-                  {hidden ? 'Score hidden' : overall}
+                  {hidden ? 'Let’s film that again' : overall}
                 </p>
-                {hidden && (
-                  <>
-                    <p className="mt-3 text-sm leading-relaxed text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
-                    <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-3 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
-                      How to film this
-                    </button>
-                  </>
+                {!hidden && (
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-300">
+                    <span className="text-[#BEBEC4]">What does this score mean? </span>{scoreMeaning(overall)}
+                  </p>
+                )}
+                {retakeText && (
+                  <div className="mt-4 rounded-lg border border-amber-900/80 bg-amber-950/40 px-3 py-3">
+                    <p className="text-sm font-medium text-white">Retake recommended</p>
+                    <p className="mt-1 text-sm leading-relaxed text-amber-100">{retakeText}</p>
+                    <Button className="mt-3" onClick={() => void retake()}>Retake</Button>
+                  </div>
+                )}
+                {hidden && !retakeText && (
+                  <p className="mt-3 text-sm leading-relaxed text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
                 )}
                 {!hidden && strong && (
                   <p className="mt-4 text-sm leading-relaxed text-white">
                     <span className="text-[#BEBEC4]">Strength. </span>{strengthPhrase(strong)}
                   </p>
                 )}
-                {!hidden && weak && (
+                {!hidden && fix && (
+                  <p className="mt-2 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">One fix. </span>{fix.fix}
+                  </p>
+                )}
+                {!hidden && !fix && weak && (
                   <p className="mt-2 text-sm leading-relaxed text-white">
                     <span className="text-[#BEBEC4]">{weak.score >= ON_TARGET ? 'Keep an eye on' : 'Work on'}. </span>{workOnPhrase(weak)}
                   </p>
@@ -1515,12 +1548,26 @@ export function AnalyseClient() {
             </button>
           )}
           {(() => {
-            const weak = weakestMeasure(results);
-            return weak ? (
-              <p className="mb-4 text-sm leading-relaxed text-neutral-200">
-                <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
-              </p>
-            ) : null;
+            const chains = coachingChains(results);
+            if (chains.length === 0) {
+              const weak = weakestMeasure(results);
+              return weak ? (
+                <p className="mb-4 text-sm leading-relaxed text-neutral-200">
+                  <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
+                </p>
+              ) : null;
+            }
+            return (
+              <ul className="mb-4 space-y-3">
+                {chains.map((chain) => (
+                  <li key={chain.key} className="rounded-lg border border-white/10 px-3 py-2 text-sm leading-relaxed text-neutral-200">
+                    <p><span className="font-medium text-white">Problem. </span>{chain.problem}</p>
+                    <p className="mt-1"><span className="font-medium text-white">Likely cause. </span>{chain.likelyCause}</p>
+                    <p className="mt-1"><span className="font-medium text-white">Fix. </span>{chain.fix}</p>
+                  </li>
+                ))}
+              </ul>
+            );
           })()}
           {coaching.state !== 'idle' && (
             <div className="mb-4 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
@@ -1626,7 +1673,9 @@ export function AnalyseClient() {
           })()}
 
           <ul className="space-y-5">
-            {results.map((m) => (
+            {results.map((m) => {
+              const offerOptionalRetake = m.confidence === 'low' && retakePlan(results, mode, view).keyFails.length === 0;
+              return (
               <li key={m.key}>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
                   <span className="font-medium text-white">
@@ -1639,11 +1688,16 @@ export function AnalyseClient() {
                   </span>
                   <span className="text-right text-neutral-400">
                     {m.confidence === 'low'
-                      ? UNMEASURED_MESSAGE
+                      ? CLEAR_IMAGE
                       : <>{formatValue(m)} · <span className="font-semibold" style={{ color: m.excused ? '#93C5FD' : scoreColour(m.score) }}>{m.score}/100</span>
                         <span className="text-neutral-500"> · {m.confidence ?? detail?.confidence ?? 'medium'}</span></>}
                   </span>
                 </div>
+                {offerOptionalRetake && (
+                  <button type="button" onClick={() => void retake()} className="mt-1 text-xs font-medium text-sky-400 underline-offset-2 hover:underline">
+                    Retake if you like
+                  </button>
+                )}
                 {m.confidence !== 'low' && (
                   <>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-800">
@@ -1657,7 +1711,8 @@ export function AnalyseClient() {
                   </>
                 )}
               </li>
-            ))}
+            );
+            })}
           </ul>
 
           {mode === 'bowling' && detail?.elbow && (() => {

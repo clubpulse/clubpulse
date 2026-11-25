@@ -2,7 +2,7 @@ import { L, type Landmark } from '@/lib/analysis/pose-metrics';
 import { framingPrompt } from '@/lib/analysis/framing';
 import { consistentArmAngle } from '@/lib/analysis/arm-check';
 import { estimateBoneLengths, repairBoneLengths, type LengthPoint } from '@/lib/analysis/bone-length';
-import { UNMEASURED_MESSAGE, heavyFrameIndexes, judgeMetric, preferLiteModel } from '@/lib/analysis/metric-confidence';
+import { CLEAR_IMAGE, heavyFrameIndexes, judgeMetric, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
 import { pickHighlights } from '@/lib/analysis/pose-overlay';
 import type { MetricResult } from '@/lib/analysis/pose-metrics';
 
@@ -53,7 +53,7 @@ describe('per-number confidence', () => {
     expect(judgeMetric({ visibility: [0.3, 0.4], jumps: [0.05], spread: 4, spreadLimit: 40 })).toBe('low');
     expect(judgeMetric({ visibility: [0.9], jumps: [0.7], spread: 4, spreadLimit: 40 })).toBe('low');
     expect(judgeMetric({ visibility: [0.9], jumps: [0.05], spread: 80, spreadLimit: 40 })).toBe('low');
-    expect(UNMEASURED_MESSAGE).toContain('filming closer');
+    expect(CLEAR_IMAGE).toBe('Clear image not obtained');
   });
 
   it('does not draw a low-confidence measure on the skeleton', () => {
@@ -65,6 +65,36 @@ describe('per-number confidence', () => {
       metric('frontKnee', 'high'),
     ], 'bowling', 'right', 'side');
     expect(marks.map((mark) => mark.key)).toEqual(['frontKnee']);
+  });
+});
+
+describe('retake when a key reading is unclear', () => {
+  const metric = (key: string, confidence: 'high' | 'low' = 'high') => ({ key, confidence, clearReason: 'blur' as const });
+
+  it('names the failure and hides the score only when too many key readings fail', () => {
+    expect(retakeLine('armStraightness', 'blur', 'side')).toBe('Arm was blurred: film in brighter light, use slow-mo/60fps if available');
+    expect(retakeLine('frontKnee', 'small', 'side')).toBe('You were too small: step closer so you fill most of the screen');
+    expect(retakeLine('headStability', 'angle', 'front')).toBe('Body was side-on: film from front-on for this check');
+    expect(retakeLine('headOverKnee', 'hidden', 'side')).toBe('Joint hidden: make sure the whole body stays in view');
+
+    const one = retakePlan([
+      metric('armStraightness', 'low'),
+      metric('frontKnee'),
+      metric('headStability'),
+      metric('trunkTilt', 'low'),
+    ], 'bowling', 'side', { playerSize: 0.2 });
+    expect(one.withhold).toBe(false);
+    expect(one.line).toBe('You were too small: step closer so you fill most of the screen');
+    expect(one.others).toEqual(['trunkTilt']);
+
+    const many = retakePlan([
+      metric('armStraightness', 'low'),
+      metric('frontKnee', 'low'),
+      metric('headStability'),
+    ], 'bowling', 'side');
+    expect(many.withhold).toBe(true);
+    expect(many.line).toBe('Arm was blurred: film in brighter light, use slow-mo/60fps if available');
+    expect(many.line).not.toMatch(/°/);
   });
 });
 
