@@ -231,7 +231,7 @@ export default function AICoachPage() {
                 <p className="ai-step-n">04</p>
                 <div className="ai-step-icon"><Glyph e="📈" /></div>
                 <h3 className="ai-step-h">Progress tracked</h3>
-                <p className="ai-step-body">Every session is logged. You can see improvement over time — whether your head is staying stiller, your elbow dropping less, your follow-through extending further.</p>
+                <p className="ai-step-body">Every session is logged. You can see improvement over time, whether your head is staying stiller, your elbow dropping less, your follow-through extending further.</p>
               </div>
             </div>
           </div>
@@ -284,7 +284,7 @@ export default function AICoachPage() {
               ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose runs on-device, so a reasonably recent phone gives the smoothest results.'],
               ['Can it be used without an internet connection?', 'Pose tracking runs on your phone, but ball tracking and session reports need a connection, so AI Coach is not fully offline.'],
               ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],
-              ['Who provides the coaching logic — is it a real coach?', 'MediaPipe provides the raw pose data. The coaching rules sit on top of it and are still being tested, which is why Coach AI is in development.'],
+              ['Who provides the coaching logic? Is it a real coach?', 'MediaPipe provides the raw pose data. The coaching rules sit on top of it and are still being tested, which is why Coach AI is in development.'],
               ['Is this only for the nets?', 'A tripod or a phone propped up at the nets is the usual setup. It should work anywhere the camera can see the batter’s full body, such as a garden or sports hall.'],
             ].map(([q, a], i) => (
               <div key={i} className="ai-faq-item">

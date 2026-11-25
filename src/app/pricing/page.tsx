@@ -35,7 +35,7 @@ const PLAYER_SECTIONS: Section[] = [
     title: 'Core',
     rows: [
       { label: 'Basic career stats', desc: 'Runs, wickets, averages and strike rates across all seasons', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
-      { label: 'Shareable stats card', desc: 'Public profile link with your season highlights — share anywhere', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Shareable stats card', desc: 'Public profile link with your season highlights. Share anywhere', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Achievement badges', desc: 'First fifty, hat-trick, season milestones and more', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Club leaderboard', desc: 'See where you rank among teammates across all metrics', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Scores: Bronze (1×)', desc: 'Earn Scores by taking part', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
@@ -47,7 +47,7 @@ const PLAYER_SECTIONS: Section[] = [
       { label: 'AI coaching sessions', desc: 'Coach AI feedback in plain English, specific to your game. Coach AI is still in development.', free: '2/month', pro: '8/month', elite: '20/month', legend: 'Unlimited' },
       { label: 'Role-based coaching', desc: 'Tailored advice based on your batting or bowling role in the team', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Drill recommendations', desc: 'Targeted practice drills generated from your performance weaknesses', free: '✕', pro: '2/month', elite: '8/month', legend: 'Unlimited' },
-      { label: 'Post-match self-assessment', desc: 'Log how you felt after each game — feeds directly into your AI coaching', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Post-match self-assessment', desc: 'Log how you felt after each game. Feeds directly into your AI coaching', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Match notes & journal', desc: 'Private per-match notes and reflections stored on your profile', free: '✕', pro: '3 saved', elite: '15 saved', legend: 'Unlimited' },
       { label: 'Target setting', desc: 'Set and track seasonal batting or bowling goals with AI check-ins', free: '✕', pro: '1 active', elite: '3 active', legend: 'Unlimited' },
       { label: 'Session history & progress', desc: 'Track your improvement over time with coaching session archives', free: '✕', pro: 'Last 30 days', elite: 'Last 3 months', legend: 'Full history' },
@@ -85,7 +85,7 @@ const PLAYER_SECTIONS: Section[] = [
   {
     title: 'Legend Only',
     rows: [
-      { label: 'vs club & regional avg comparison', desc: 'See how your stats stack up beyond your own club — across the region', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
+      { label: 'vs club & regional avg comparison', desc: 'See how your stats stack up beyond your own club, across the region', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Early feature access', desc: 'Try new SHIFTUP features before they launch to everyone else', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Legend badge & profile flair', desc: 'Exclusive profile distinction that sets you apart on the leaderboard', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Direct support line', desc: 'Priority support from a person', free: '✕', pro: '✕', elite: '✕', legend: '✓' },

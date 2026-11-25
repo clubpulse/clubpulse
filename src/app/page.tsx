@@ -783,10 +783,10 @@ export default function HomePage() {
                       </div>
                       <div className="cp-coach-feedback">
                         <p className="cp-coach-fb-title">Coaching feedback</p>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Head position — <span>level &amp; still ✓</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot warn"/><span className="cp-fb-text">Elbow height — <span>drop slightly</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Front foot — <span>straight ✓</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot bad"/><span className="cp-fb-text">Follow-through — <span>cut short</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Head position: <span>level &amp; still ✓</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot warn"/><span className="cp-fb-text">Elbow height: <span>drop slightly</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Front foot: <span>straight ✓</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot bad"/><span className="cp-fb-text">Follow-through: <span>cut short</span></span></div>
                       </div>
                     </div>
                   )}
