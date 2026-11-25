@@ -31,12 +31,14 @@ describe('view RLS against local Postgres', () => {
     psql(db, ['-f', bootstrap]);
 
     const files = fs.readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort();
-    expect(files.at(-1)).toBe(followUp);
+    expect(files).toContain(followUp);
     for (const name of files) psql(db, ['-f', path.join(migrations, name)]);
 
-    // A later broad grant must not put anon back on these views. Applying the follow-up again restores it.
+    // A later broad grant must not put anon back on these views. Applying the follow-up again restores it,
+    // then any migration after that follow-up is applied again so its own revokes are not left undone.
     psql(db, ['-c', 'GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role']);
     psql(db, ['-f', path.join(migrations, followUp)]);
+    for (const name of files.filter((file) => file > followUp)) psql(db, ['-f', path.join(migrations, name)]);
     psql(db, ['-f', assertions]);
   });
 });
