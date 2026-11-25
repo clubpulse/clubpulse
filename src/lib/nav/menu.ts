@@ -158,7 +158,14 @@ export const NAV_GROUPS: NavGroup[] = [
 // Volunteering is parked for now: its pages still exist, but nothing links to them. Set
 // NEXT_PUBLIC_VOLUNTEERS_ENABLED=true to bring the links back.
 export const VOLUNTEERS_ENABLED = process.env.NEXT_PUBLIC_VOLUNTEERS_ENABLED === 'true';
-const PARKED = VOLUNTEERS_ENABLED ? [] : ['/volunteer'];
+// Paid scratch cards and raffles stay off until a Gambling Act review and age verification.
+// TODO: Gambling Act review and age verification before either flag is turned on.
+export const PAID_SCRATCH_CARDS_ENABLED = process.env.NEXT_PUBLIC_PAID_SCRATCH_CARDS_ENABLED === 'true';
+export const RAFFLES_ENABLED = process.env.NEXT_PUBLIC_RAFFLES_ENABLED === 'true';
+const PARKED = [
+  ...(VOLUNTEERS_ENABLED ? [] : ['/volunteer']),
+  ...(RAFFLES_ENABLED ? [] : ['/raffle']),
+];
 
 export const SCHOOL_LINK: NavLink = { href: '/school', label: 'School', icon: '🏫', section: 'My club' };
 

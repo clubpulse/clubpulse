@@ -9,7 +9,7 @@ import {
   IAP_PRODUCTS_099,
   type IAPProduct,
 } from '../lib/iap';
-import { DEALS_ENABLED, STORE_ENABLED } from '../constants/features';
+import { DEALS_ENABLED, PAID_SCRATCH_CARDS_ENABLED, STORE_ENABLED } from '../constants/features';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 export default function StoreScreen() {
@@ -30,7 +30,8 @@ function StoreScreenContent() {
         }}
       />
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Hero — Scratch Cards */}
+        {/* Paid scratch cards stay hidden until the flag is on. */}
+        {PAID_SCRATCH_CARDS_ENABLED && <>
         <View style={{ gap: spacing.sm }}>
           <Text style={fonts.heading}>Scratch & Win 🏏</Text>
           <Text style={fonts.small}>
@@ -65,6 +66,7 @@ function StoreScreenContent() {
         <Pressable onPress={() => router.push('/odds')} hitSlop={8}>
           <Text style={styles.oddsLink}>See the odds of every prize</Text>
         </Pressable>
+        </>}
 
         {/* Awin discount categories preview */}
         <View style={{ gap: spacing.md }}>

@@ -5,11 +5,11 @@
 | | |
 |---|---|
 | Policy owner | Ishwar Suresh, Co-founder and Safeguarding Lead |
-| Deputy Safeguarding Lead | **[PLACEHOLDER: DEPUTY NAME]** |
-| Independent reviewer | **[PLACEHOLDER: INDEPENDENT REVIEWER NAME AND QUALIFICATION]**, review date **[PLACEHOLDER: INDEPENDENT REVIEW DATE]** |
-| Next review | **[PLACEHOLDER: REVIEW DATE – suggest no later than 12 months after approval, or sooner after any serious incident]** |
+| Deputy Safeguarding Lead | **[NEEDS ISHWAR: deputy safeguarding lead name]** |
+| Independent reviewer | **[NEEDS ISHWAR: independent reviewer name and qualification]**, review date **[NEEDS ISHWAR: independent review date]** |
+| Next review | Within 12 months of approval, or sooner after a serious incident. **[NEEDS ISHWAR: the approval date this is counted from]** |
 
-Items marked **[PLACEHOLDER: …]** must be completed before this policy is approved. Items marked **[VERIFY: …]** are statements about the platform that must be checked as true on the day of approval.
+Items marked **[NEEDS ISHWAR: …]** need a fact only Ishwar can supply. Items marked **[VERIFY: …]** are statements about the platform that must be checked as true on the day of approval.
 
 > **Remove this box before approval. What changed in v0.2 and what must be true first.**
 > v0.1 described some controls as if they were live. They are built but, as of 22 November 2026, **not all are merged or applied to production**. This policy describes the controls as they will be once the pull requests below are merged and their database migrations applied. Before approval, the Safeguarding Lead confirms each row.
@@ -28,7 +28,7 @@ Items marked **[PLACEHOLDER: …]** must be completed before this policy is appr
 
 ## 1. Purpose, scope and commitment
 
-SHIFTUP is a UK cricket club platform. Its Community feature lets members use a feed, posts, comments, connections, direct messages, nets and pickup sessions, and 'Short for Saturday' games (finding players for a match). Members include adults and juniors (under 18). This policy sets out how SHIFTUP keeps children and adults at risk safe online, and what everyone involved must do when there is a concern.
+SHIFTUP is a UK cricket club platform. Its Community feature lets members use a feed, posts, comments, connections, direct messages, nets and pickup sessions, and games where a club is looking for players. Members include adults and juniors (under 18). This policy sets out how SHIFTUP keeps children and adults at risk safe online, and what everyone involved must do when there is a concern.
 
 **Scope.** This policy applies to everyone at SHIFTUP, including founders, staff, contractors and volunteers. It also applies to club admins and club welfare officers when they use SHIFTUP, and to all Community content and features. It sits alongside each club's own safeguarding policy, not in place of it.
 
@@ -37,7 +37,7 @@ SHIFTUP is a UK cricket club platform. Its Community feature lets members use a 
 - The welfare of the child is paramount. This is the core principle of the Children Act 1989 and the Children Act 2004.
 - Safeguarding is everyone's responsibility. Concerns are shared promptly with the right people, as set out in the statutory guidance *Working Together to Safeguard Children*.
 - We follow the ECB's Safe Hands safeguarding policy and guidance for cricket. Club-related concerns are routed through club welfare officers, county safeguarding officers and the ECB.
-- We aim to reduce the risk of illegal and harmful content, protect children from harmful content and contact, provide easy reporting, and act on reports. We are taking legal advice on how the Online Safety Act 2023 and the ICO's Children's Code apply to SHIFTUP. This policy is not itself a statement of compliance with them. **[PLACEHOLDER: LEGAL ADVICE TAKEN, BY WHOM, DATE]**
+- We aim to reduce the risk of illegal and harmful content, protect children from harmful content and contact, provide easy reporting, and act on reports. We are taking legal advice on how the Online Safety Act 2023 and the ICO's Children's Code apply to SHIFTUP. This policy is not itself a statement of compliance with them. **[NEEDS ISHWAR: whether legal advice on the Online Safety Act and the Children's Code has been taken, by whom, and the date]**
 - All children have an equal right to protection, whatever their age, disability, gender, race, religion or belief, sex or sexual orientation.
 - When we are unsure, we act. If in doubt, we hold the content, record it and escalate.
 
@@ -46,10 +46,10 @@ SHIFTUP is a UK cricket club platform. Its Community feature lets members use a 
 | Role | Who | Responsibilities |
 |---|---|---|
 | Safeguarding Lead | Ishwar Suresh (ECB Safeguarding Level 2; enhanced DBS issued February 2026) | Owns this policy. Receives and decides concerns. Makes referrals. Keeps records. Gives written sign-off for any change to the switched-off features (section 7). Makes sure the response times are met. |
-| Deputy Safeguarding Lead | **[PLACEHOLDER: DEPUTY NAME]** (**[PLACEHOLDER: DEPUTY QUALIFICATION AND DBS DETAILS]**) | Covers when the Lead is unavailable. Receives every alert the Lead receives. Decides any concern that involves the Lead, or the SHIFTUP project or company itself, without the Lead's involvement. |
+| Deputy Safeguarding Lead | **[NEEDS ISHWAR: deputy safeguarding lead name]** (**[NEEDS ISHWAR: deputy qualification and DBS details]**) | Covers when the Lead is unavailable. Receives every alert the Lead receives. Decides any concern that involves the Lead, or the SHIFTUP project or company itself, without the Lead's involvement. |
 | Club admins | Named per club | Must hold a current enhanced DBS at their club to verify parents or link child records. Confirm juniors' dates of birth. Mark juniors. Pass concerns to the club welfare officer and SHIFTUP. |
 | Club welfare officers | Named per club | The club's safeguarding contact under Safe Hands. Receive club-related concerns and escalate to the county safeguarding officer. |
-| Human moderators | **[PLACEHOLDER: MODERATOR NAMES / ROLES]** | Review held content. Remove or allow it. Escalate to the Lead. Only a person can release held content. |
+| Human moderators | **[NEEDS ISHWAR: moderator names and roles. None are appointed in the product today.]** | Review held content. Remove or allow it. Escalate to the Lead. Only a person can release held content. |
 | Automated moderation tools | Platform systems | Check and HOLD content. They support people but never make final decisions. They never delete content and cannot release it. |
 
 ## 3. What counts as a concern
@@ -85,9 +85,9 @@ An alert is a prompt to act, not a response. Response times must be realistic, a
 | Type of concern | Response target |
 |---|---|
 | **URGENT:** risk to a child, sexual content involving a minor, grooming, threats | Within 1 hour, at any time. If someone is in immediate danger, call 999 first. |
-| All other concerns | **[PLACEHOLDER: OTHER RESPONSE TIMES – Ishwar to set only what he can meet]** |
-| Review of the held content queue | **[PLACEHOLDER: FREQUENCY]** |
-| Cover when the Lead is unavailable | Deputy Safeguarding Lead. Cover arrangements: **[PLACEHOLDER: COVER / ROTA ARRANGEMENTS]** |
+| All other concerns | **[NEEDS ISHWAR: response time for concerns that are not urgent. Do not publish a time that cannot be met.]** |
+| Review of the held content queue | **[NEEDS ISHWAR: how often the held-content queue is reviewed]** |
+| Cover when the Lead is unavailable | Deputy Safeguarding Lead. Cover arrangements: **[NEEDS ISHWAR: cover rota when the lead is unavailable]** |
 
 If a target is missed, record why. The Lead reviews missed targets monthly. If urgent concerns cannot be covered reliably, the under-18s switch (section 7) must be turned off until they can be.
 
@@ -98,13 +98,13 @@ Follow this order. More than one route may apply. For example, grooming by a coa
 | # | Who | When | Contact |
 |---|---|---|---|
 | 1 | 999 / police | Immediate danger to anyone, or a crime in progress. Use 101 for non-emergency police. | 999 / 101 |
-| 2 | Club welfare officer | Any concern about a member, session or game linked to a club. | Per club: **[PLACEHOLDER: CONTACT DETAILS]** |
-| 3 | **[PLACEHOLDER: COUNTY CRICKET BOARD NAME]** county safeguarding officer | Club-related concerns needing county involvement, or if the club welfare officer is unavailable or implicated. | **[PLACEHOLDER: CONTACT DETAILS]** |
-| 4 | ECB safeguarding team | Serious or cross-club concerns, or if the county is unavailable or implicated. | **[PLACEHOLDER: CONTACT DETAILS]** |
-| 5 | Local authority designated officer (LADO) | Allegations against adults who work or volunteer with children (section 8). Use the LADO for the child's local area. | **[PLACEHOLDER: CONTACT DETAILS – by local authority]** |
-| – | CEOP (National Crime Agency's child protection command) | Online grooming or online sexual abuse of a child. | **[PLACEHOLDER: CONTACT DETAILS]** |
-| – | Internet Watch Foundation (IWF) | Sexual images or videos of children. NEVER download, screenshot, share or forward such images. Hold the content and report it. | **[PLACEHOLDER: CONTACT DETAILS]** |
-| – | NSPCC helpline | Advice for anyone unsure what to do. | **[PLACEHOLDER: CONTACT DETAILS]** |
+| 2 | Club welfare officer | Any concern about a member, session or game linked to a club. | **[NEEDS ISHWAR: each club's welfare officer contact]** |
+| 3 | County safeguarding officer | Club-related concerns needing county involvement, or if the club welfare officer is unavailable or implicated. | **[NEEDS ISHWAR: county cricket board and its safeguarding officer contact]** |
+| 4 | ECB / Cricket Regulator safeguarding team | Serious or cross-club concerns, or if the county is unavailable or implicated. | safeguarding@cricketregulator.co.uk, 020 7432 1200, as published at https://www.ecb.co.uk/about/policies/safeguarding |
+| 5 | Local authority designated officer (LADO) | Allegations against adults who work or volunteer with children (section 8). Use the LADO for the child's local area. | **[NEEDS ISHWAR: LADO contact for each local authority a child may live in]** |
+| – | CEOP (National Crime Agency's child protection command) | Online grooming or online sexual abuse of a child. | https://www.ceop.police.uk/ceop-reporting/ |
+| – | Internet Watch Foundation (IWF) | Sexual images or videos of children. NEVER download, screenshot, share or forward such images. Hold the content and report it. | https://report.iwf.org.uk/ |
+| – | NSPCC helpline | Advice for anyone unsure what to do. | 0808 800 5000, https://www.nspcc.org.uk/keeping-children-safe/reporting-abuse/ |
 
 If a child is at risk, do not wait for consent before referring. Do not investigate yourself. Do not contact the alleged abuser or warn them.
 
@@ -114,7 +114,7 @@ If a child is at risk, do not wait for consent before referring. Do not investig
 - Every concern is recorded in the community reports and moderation log. Serious club-related cases are also recorded in the safeguarding incident log.
 - Record the facts, not opinions. Include who reported it, the date and time, what was seen or said (using the person's own words where possible), the content and accounts involved, the actions taken and by whom, referrals made (with reference numbers), and decisions with reasons.
 - Records are confidential and shared only on a need-to-know basis with those named in section 5, or as the law requires.
-- Records are handled under UK GDPR and the Data Protection Act 2018. Safeguarding can be a lawful reason to share information without consent. Retention period: **[PLACEHOLDER: RETENTION PERIOD]**. Access is limited to **[PLACEHOLDER: WHO HAS ACCESS TO LOGS]**.
+- Records are handled under UK GDPR and the Data Protection Act 2018. Safeguarding can be a lawful reason to share information without consent. Retention period: **[NEEDS ISHWAR: how long safeguarding records are kept]**. Access is limited to the Safeguarding Lead, the Deputy, and the server process that sends alerts. **[NEEDS ISHWAR: anyone else who should have access]**.
 
 ## 7. Platform safeguards
 
@@ -142,7 +142,7 @@ Adult-to-junior contact, direct messages to or from under-18s, and the under-18s
 - The sign-off must be based on a documented risk assessment and recorded with its date.
 - A change involving the Lead's own conflict of interest is decided by the Deputy.
 - Until this policy has been independently reviewed, none of them will be turned on.
-- The settings are environment variables, so a person with access to the hosting account could change them. **[PLACEHOLDER: WHO HAS ACCESS TO PRODUCTION SETTINGS, AND HOW A CHANGE IS RECORDED AND CHECKED]**
+- The settings are environment variables, so a person with access to the hosting account could change them. **[NEEDS ISHWAR: who can change production environment variables, and how a change is recorded and checked]**
 - Any change to the safeguards above must be reviewed by the Lead before release.
 
 ## 8. Allegations against staff, volunteers or club admins
@@ -157,8 +157,8 @@ Adult-to-junior contact, direct messages to or from under-18s, and the under-18s
 
 | Role | Training | DBS |
 |---|---|---|
-| Safeguarding Lead and Deputy | ECB Safeguarding Level 2 (or equivalent), refreshed **[PLACEHOLDER: REFRESH PERIOD]** | Enhanced DBS with Children's Barred List check, renewed **[PLACEHOLDER: DBS RENEWAL PERIOD]** |
-| Human moderators | **[PLACEHOLDER: MODERATOR TRAINING REQUIREMENT]** plus training on this policy | **[PLACEHOLDER: MODERATOR DBS REQUIREMENT]** |
+| Safeguarding Lead and Deputy | ECB Safeguarding Level 2 (or equivalent), refreshed **[NEEDS ISHWAR: how often the lead and deputy refresh ECB safeguarding training]** | Enhanced DBS with Children's Barred List check, renewed **[NEEDS ISHWAR: how often the enhanced DBS is renewed]** |
+| Human moderators | **[NEEDS ISHWAR: moderator training requirement]** plus training on this policy | **[NEEDS ISHWAR: moderator DBS requirement]** |
 | Club admins who verify parents or link children | Club safeguarding training under Safe Hands, plus a briefing on this policy | Current enhanced DBS at that club (enforced by the platform) |
 | Named adults for junior sessions | As required by the club and the ECB | Current enhanced DBS at that club (enforced by the platform) |
 
@@ -166,8 +166,8 @@ The platform checks DBS status when a session is created, shown or joined, and w
 
 ## 10. Review
 
-- This policy will be reviewed by **[PLACEHOLDER: REVIEW DATE – suggest within 12 months]**, or sooner after any serious incident, a change in law or ECB guidance, or a change to the platform safeguards.
-- An independent, suitably qualified safeguarding person outside the SHIFTUP project must review it before any junior is invited. Their name, date and comments will be recorded here. **[PLACEHOLDER: INDEPENDENT REVIEWER NAME, QUALIFICATION, DATE, COMMENTS]**
+- This policy will be reviewed by within 12 months of approval. **[NEEDS ISHWAR: the approval date]**, or sooner after any serious incident, a change in law or ECB guidance, or a change to the platform safeguards.
+- An independent, suitably qualified safeguarding person outside the SHIFTUP project must review it before any junior is invited. Their name, date and comments will be recorded here. **[NEEDS ISHWAR: independent reviewer name, qualification, date and comments]**
 - Response times (section 4) are reviewed at every policy review, and at any time they are not being met.
 
 | Version | Date | Change | Approved by |
@@ -180,11 +180,11 @@ The platform checks DBS status when a session is created, shown or joined, and w
 | Step | What to do |
 |---|---|
 | 1. Is anyone in immediate danger? | YES: call 999 now, then tell the Safeguarding Lead. NO: go to step 2. |
-| 2. Report it | Use 'Report a concern' on the post, comment, profile, session or game, or contact the Safeguarding Lead directly at **[PLACEHOLDER: CONTACT DETAILS]**. |
+| 2. Report it | Use 'Report a concern' on the post, comment, profile, session or game, or email hello@shiftup.club, marked for the Safeguarding Lead. **[NEEDS ISHWAR: a dedicated safeguarding address if hello@shiftup.club is not the one to use]** |
 | 3. Hold, don't delete | Moderators HOLD the content. Never delete it, and never download, screenshot, share or forward sexual images of children. |
-| 4. Is it urgent? | Risk to a child, sexual content involving a minor, grooming or threats: the Lead or Deputy responds within 1 hour. Other concerns: **[PLACEHOLDER: OTHER RESPONSE TIMES]**. |
-| 5. Does it involve the Lead or SHIFTUP? | YES: send it to the Deputy Safeguarding Lead, **[PLACEHOLDER: DEPUTY NAME]**, at **[PLACEHOLDER: CONTACT DETAILS]**. |
-| 6. Escalate | Club welfare officer, then the **[PLACEHOLDER: COUNTY CRICKET BOARD NAME]** county safeguarding officer, then the ECB safeguarding team. Allegation against an adult working with children: LADO. Online grooming or sexual abuse: CEOP. Sexual images of children: IWF. Need advice: NSPCC helpline. |
+| 4. Is it urgent? | Risk to a child, sexual content involving a minor, grooming or threats: the Lead or Deputy responds within 1 hour. Other concerns: **[NEEDS ISHWAR: response time for concerns that are not urgent]**. |
+| 5. Does it involve the Lead or SHIFTUP? | YES: send it to the Deputy Safeguarding Lead. **[NEEDS ISHWAR: deputy name and contact]** |
+| 6. Escalate | Club welfare officer, then the **[NEEDS ISHWAR: county cricket board, which depends on the club]** county safeguarding officer, then the ECB safeguarding team. Allegation against an adult working with children: LADO. Online grooming or sexual abuse: CEOP. Sexual images of children: IWF. Need advice: NSPCC helpline. |
 | 7. Record it | Log the facts, times, actions and decisions in the community reports and moderation log, and in the safeguarding incident log if the case is serious and club-related. |
 | 8. Follow up | Check that actions are done, the child is safe, and lessons are fed into the next review. |
 

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, Stack } from 'expo-router';
 import { Card } from '../components/Card';
 import { type CardTier, IAP_PRODUCTS, formatOdds, getCardOdds } from '../lib/iap';
-import { STORE_ENABLED } from '../constants/features';
+import { PAID_SCRATCH_CARDS_ENABLED, STORE_ENABLED } from '../constants/features';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 
 const CARDS: { tier: CardTier; title: string; price: number; how: string }[] = [
@@ -24,7 +24,7 @@ const CARDS: { tier: CardTier; title: string; price: number; how: string }[] = [
 
 export default function OddsScreen() {
   // Reachable by deep link even with the Store switched off
-  if (!STORE_ENABLED) return <Redirect href="/" />;
+  if (!STORE_ENABLED || !PAID_SCRATCH_CARDS_ENABLED) return <Redirect href="/" />;
   return <OddsScreenContent />;
 }
 

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { requireUser } from '@/lib/auth/server';
 import { getAdminContext } from '@/lib/auth/admin';
+import { RAFFLES_ENABLED } from '@/lib/nav/menu';
 
 // Guard: club admins (club_members.role = 'admin'), merchants, and platform admins may enter.
 // Each page then checks the specific right it needs.
@@ -35,7 +36,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             { href: '/admin/club/fee-offset', label: 'Fee offset' },
             { href: '/admin/club/community-pot', label: 'Community pot' },
             { href: '/admin/club/sponsor-a-kid', label: 'Sponsor a kid' },
-            { href: '/admin/club/raffle', label: 'Raffle' },
+            ...(RAFFLES_ENABLED ? [{ href: '/admin/club/raffle', label: 'Raffle' }] : []),
             { href: '/admin/club/scratch-cards', label: 'Scratch cards 🎰' },
           ],
         },
