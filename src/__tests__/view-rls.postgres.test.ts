@@ -10,10 +10,16 @@ const assertions = path.join(__dirname, 'sql/view-rls.sql');
 const followUp = '20261125000001_view_rls_followup.sql';
 
 function psql(database: string, args: string[]) {
-  execFileSync('sudo', ['-u', 'postgres', 'psql', '-d', database, '-v', 'ON_ERROR_STOP=1', '-q', ...args], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
+  const command = ['-u', 'postgres', 'psql', '-d', database, '-v', 'ON_ERROR_STOP=1', '-q'];
+  const fileAt = args.indexOf('-f');
+  // Read the SQL as the test user and pass it on stdin. The postgres account
+  // cannot open files in a private CI checkout.
+  if (fileAt >= 0) {
+    const sql = fs.readFileSync(args[fileAt + 1], 'utf8');
+    execFileSync('sudo', command, { input: sql, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+    return;
+  }
+  execFileSync('sudo', [...command, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 
 describe('view RLS against local Postgres', () => {
