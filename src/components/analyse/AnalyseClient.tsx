@@ -22,6 +22,9 @@ import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type T
 import { ComparisonPanel } from '@/components/analyse/ComparisonPanel';
 import { FilmGuide } from '@/components/analyse/FilmGuide';
 import { GUIDE_SEEN_KEY, guideCardFor, guideIndex, type GuideCardId } from '@/lib/analysis/film-guide';
+import {
+  highlightsVisible, paintOverlay, paintTimeBadge, pickHighlights, smoothOverlayFrame, strengthPhrase, strongestMeasure, workOnPhrase,
+} from '@/lib/analysis/pose-overlay';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
@@ -195,42 +198,27 @@ function screenScale(canvas: HTMLCanvasElement) {
   return Math.max(1, canvas.width / canvas.clientWidth, canvas.height / canvas.clientHeight);
 }
 
-function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], connections: { start: number; end: number }[]) {
+function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], options?: {
+  mode: Mode; hand: Hand; view: View; shot?: ShotType; metrics?: MetricResult[]; highlights?: boolean; badge?: number;
+}) {
   const { width: w, height: h } = ctx.canvas;
   const k = screenScale(ctx.canvas);
-  // Skip the face mesh points (1–10); the nose alone marks the head
-  const isBody = (i: number) => i === 0 || i >= 11;
-
-  ctx.lineWidth = 3 * k;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = GOLD;
-  for (const { start, end } of connections) {
-    if (!isBody(start) || !isBody(end)) continue;
-    const a = lm[start];
-    const b = lm[end];
-    if (a.visibility < MIN_VISIBILITY || b.visibility < MIN_VISIBILITY) continue;
-    ctx.beginPath();
-    ctx.moveTo(a.x * w, a.y * h);
-    ctx.lineTo(b.x * w, b.y * h);
-    ctx.stroke();
-  }
-
-  const radius = 4.5 * k;
-  lm.forEach((point, i) => {
-    if (!isBody(i) || point.visibility < MIN_VISIBILITY) return;
-    ctx.beginPath();
-    ctx.arc(point.x * w, point.y * h, radius, 0, Math.PI * 2);
-    ctx.fillStyle = CRIMSON;
-    ctx.fill();
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5 * k;
-    ctx.stroke();
+  const points = lm.map((point) => ({ x: point.x * w, y: point.y * h, visibility: point.visibility }));
+  paintOverlay(ctx, points, {
+    mode: options?.mode ?? 'batting',
+    hand: options?.hand ?? 'right',
+    highlights: options?.highlights && options.metrics
+      ? pickHighlights(options.metrics, options.mode, options.hand, options.view, options.shot)
+      : [],
+    scale: k,
+    headCap: 22 * k,
   });
+  if (options?.badge != null) paintTimeBadge(ctx, options.badge, k);
 }
 
 function scoreColour(score: number) {
   if (score >= ON_TARGET) return GOLD;
-  if (score >= 60) return '#d97706';
+  if (score >= 60) return '#f59e0b';
   return '#ef4444';
 }
 
@@ -265,7 +253,6 @@ export function AnalyseClient() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const connectionsRef = useRef<{ start: number; end: number }[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
@@ -332,15 +319,18 @@ export function AnalyseClient() {
 
   const PREFS_KEY = 'shiftup.analyse';
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as { mode?: Mode; hand?: Hand; view?: View; facing?: 'user' | 'environment' } | null;
-      if (saved?.mode === 'bowling' || saved?.mode === 'batting') setMode(saved.mode);
-      if (saved?.hand === 'right' || saved?.hand === 'left') setHand(saved.hand);
-      if (saved?.view === 'side' || saved?.view === 'front') setView(saved.view);
-      if (saved?.facing === 'user' || saved?.facing === 'environment') setFacing(saved.facing);
-      else if (window.matchMedia('(pointer: coarse)').matches) setFacing('environment');
-    } catch { /* a bad saved value just leaves the defaults */ }
-    setPrefsLoaded(true);
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as { mode?: Mode; hand?: Hand; view?: View; facing?: 'user' | 'environment' } | null;
+        if (saved?.mode === 'bowling' || saved?.mode === 'batting') setMode(saved.mode);
+        if (saved?.hand === 'right' || saved?.hand === 'left') setHand(saved.hand);
+        if (saved?.view === 'side' || saved?.view === 'front') setView(saved.view);
+        if (saved?.facing === 'user' || saved?.facing === 'environment') setFacing(saved.facing);
+        else if (window.matchMedia('(pointer: coarse)').matches) setFacing('environment');
+      } catch { /* a bad saved value just leaves the defaults */ }
+      setPrefsLoaded(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
     if (!prefsLoaded) return;
@@ -501,7 +491,11 @@ export function AnalyseClient() {
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPose(ctx, data.frames[entry.key], connectionsRef.current);
+      const settings = settingsRef.current;
+      drawPose(ctx, smoothOverlayFrame(data.frames, entry.key), {
+        mode: settings.mode, hand: settings.hand, view: settings.view, shot: entry.shot,
+        metrics: entry.analysis.metrics, highlights: true,
+      });
     };
     if (Math.abs(video.currentTime - data.times[entry.key]) < 0.001) draw();
     else {
@@ -597,7 +591,12 @@ export function AnalyseClient() {
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawPose(ctx, recording.frames[analysis.keyFrame], connectionsRef.current);
+        const settings = settingsRef.current;
+        drawPose(ctx, smoothOverlayFrame(recording.frames, analysis.keyFrame), {
+          mode: settings.mode, hand: settings.hand, view: settings.view,
+          shot: settings.mode === 'batting' ? st : undefined,
+          metrics: analysis.metrics, highlights: true,
+        });
       };
       video.addEventListener('seeked', show, { once: true });
       video.currentTime = recording.times[analysis.keyFrame];
@@ -626,7 +625,7 @@ export function AnalyseClient() {
         const bodies = (result.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          if (pose) drawPose(ctx, pose, connectionsRef.current);
+          if (pose) drawPose(ctx, pose, { mode: settingsRef.current.mode, hand: settingsRef.current.hand, view: settingsRef.current.view });
         }
 
         const recording = recordingRef.current;
@@ -674,7 +673,6 @@ export function AnalyseClient() {
       runningMode: 'VIDEO',
       numPoses: 3,
     });
-    connectionsRef.current = PoseLandmarker.POSE_CONNECTIONS;
   }
 
   async function startCamera(useFacing: 'user' | 'environment' = facing) {
@@ -833,7 +831,7 @@ export function AnalyseClient() {
       if (bodies.length > 1) recording.extra += 1;
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (pose) drawPose(ctx, pose, connectionsRef.current);
+        if (pose) drawPose(ctx, pose, { mode: settingsRef.current.mode, hand: settingsRef.current.hand, view: settingsRef.current.view });
       }
       if (pose) {
         recording.frames.push(pose);
@@ -958,7 +956,12 @@ export function AnalyseClient() {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPose(ctx, data.frames[at], connectionsRef.current);
+      const key = frameAt?.key;
+      const near = key != null && highlightsVisible(data.times[at] ?? 0, data.times[key] ?? 0);
+      drawPose(ctx, smoothOverlayFrame(data.frames, at), {
+        mode, hand, view, shot: mode === 'batting' ? (shots?.[shotPick]?.shot ?? (shotType === 'auto' ? reading?.shot : shotType)) : undefined,
+        metrics: results ?? undefined, highlights: near || at === key, badge: data.times[at],
+      });
     };
     if (Math.abs(video.currentTime - data.times[at]) < 0.001) draw();
     else {
@@ -982,7 +985,14 @@ export function AnalyseClient() {
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Only draw a pose that belongs to this moment of the clip
-        if (Math.abs(data.times[cursor] - time) < 0.12) drawPose(ctx, data.frames[cursor], connectionsRef.current);
+        if (Math.abs(data.times[cursor] - time) < 0.12) {
+          const key = frameAt?.key;
+          const near = key != null && highlightsVisible(time, data.times[key] ?? time);
+          drawPose(ctx, smoothOverlayFrame(data.frames, cursor), {
+            mode, hand, view, shot: mode === 'batting' ? (shots?.[shotPick]?.shot ?? (shotType === 'auto' ? reading?.shot : shotType)) : undefined,
+            metrics: results ?? undefined, highlights: near, badge: time,
+          });
+        }
       }
       const lastTime = data.times[data.times.length - 1];
       if (video.ended || video.paused || time > lastTime + 0.1) {
@@ -1377,69 +1387,67 @@ export function AnalyseClient() {
           </Card>
       )}
 
-      {results && overall !== null && detail?.confidence === 'low' && (
-        <Card title={`${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}>
-          <p className="text-lg font-medium text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
-          {detail.warnings.length > 0 && <p className="mt-3 text-sm text-amber-200/80">{detail.warnings.join(' · ')}</p>}
-          <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-4 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
-            How to film this
-          </button>
-        </Card>
-      )}
-
-      {results && overall !== null && detail?.confidence !== 'low' && (
+      {results && overall !== null && detail && (
         <Card
           title={shots ? `${mode === 'bowling' ? 'Ball' : 'Shot'} ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
-          description={mode === 'bowling'
-            ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
-            : `Measured around contact, from ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
-          action={
-            <div className="text-right">
-              <div className="text-3xl font-bold" style={{ color: scoreColour(overall) }}>{overall}</div>
-              <div className="text-xs text-neutral-500">{detail?.confidence ?? 'medium'} confidence</div>
-            </div>
-          }
         >
           {(() => {
+            const hidden = detail.confidence === 'low';
             const weak = weakestMeasure(results);
+            const strong = strongestMeasure(results);
             return (
-              <div className="mb-6">
-                <p className="text-5xl font-bold leading-none" style={{ color: scoreColour(overall) }}>
-                  {overall}<span className="ml-1 text-lg font-medium text-neutral-400">/100</span>
+              <div className="rounded-xl px-4 py-4" style={{ background: 'rgba(11,11,11,0.88)' }}>
+                <p className="text-4xl font-bold leading-none" style={{ color: hidden ? '#BEBEC4' : scoreColour(overall) }}>
+                  {hidden ? 'Score hidden' : overall}
                 </p>
-                <p className="mt-2 text-sm text-neutral-400">{detail?.confidence ?? 'medium'} confidence</p>
-                {detail?.warnings && detail.warnings.length > 0 && (
-                  <p className="mt-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>
-                )}
-                {detail && guideCardFor(detail.warnings) && (
-                  <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-2 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
-                    How to film this
-                  </button>
-                )}
-                {weak && (
+                {hidden && (
                   <>
-                    <p className="mt-5 text-sm font-semibold text-white">Work on {weak.label}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-neutral-200">{weak.tip}</p>
-                    <p className="mt-4 text-sm leading-relaxed text-neutral-200">
-                      <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
-                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
+                    <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mt-3 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+                      How to film this
+                    </button>
                   </>
                 )}
-                {coaching.state !== 'idle' && (
-                  <div className="mt-4 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
-                    <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI</p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
-                      {coaching.state === 'loading' ? 'Writing a longer read…' : coaching.text}
-                    </p>
-                  </div>
+                {!hidden && strong && (
+                  <p className="mt-4 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">Strength. </span>{strengthPhrase(strong)}
+                  </p>
+                )}
+                {!hidden && weak && (
+                  <p className="mt-2 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">{weak.score >= ON_TARGET ? 'Keep an eye on' : 'Work on'}. </span>{workOnPhrase(weak)}
+                  </p>
                 )}
               </div>
             );
           })()}
 
-          <details className="rounded-lg border border-neutral-800 bg-neutral-950/40 px-4 py-3">
+          <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/40 px-4 py-3">
             <summary className="cursor-pointer text-sm font-medium text-white">More detail</summary>
             <div className="mt-4">
+          <p className="mb-3 text-sm text-neutral-400">{detail.confidence} confidence · player seen in {frameCount} frames</p>
+          {detail.warnings.length > 0 && <p className="mb-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>}
+          {guideCardFor(detail.warnings) && (
+            <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mb-4 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+              How to film this
+            </button>
+          )}
+          {(() => {
+            const weak = weakestMeasure(results);
+            return weak ? (
+              <p className="mb-4 text-sm leading-relaxed text-neutral-200">
+                <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
+              </p>
+            ) : null;
+          })()}
+          {coaching.state !== 'idle' && (
+            <div className="mb-4 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
+              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
+                {coaching.state === 'loading' ? 'Writing a longer read…' : coaching.text}
+              </p>
+            </div>
+          )}
 
           {mode === 'batting' && reading && (
             <p className="mb-4 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-neutral-300">
@@ -1481,14 +1489,14 @@ export function AnalyseClient() {
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">You · {detail.keyLabel}</p>
                     <PoseFigure pose={detail.pose} width={detail.width} height={detail.height} metrics={results} mode={mode} hand={hand}
-                      mirrored={mirrored} size={300} />
+                      view={view} shot={mode === 'batting' ? shownShot : undefined} mirrored={mirrored} size={300} />
                   </div>
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>
                       {reference.title} · {reference.moment}
                     </p>
                     <PoseFigure pose={referencePose(reference, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={results}
-                      mode={mode} hand={hand} labels="target" bat={referenceBat(reference, hand)} size={300}
+                      mode={mode} hand={hand} view={view} shot={mode === 'batting' ? shownShot : undefined} labels="target" bat={referenceBat(reference, hand)} size={300}
                       label={`Diagram of the ${reference.title.toLowerCase()} with the target joint angles marked`} />
                   </div>
                 </div>
@@ -1503,7 +1511,7 @@ export function AnalyseClient() {
                     The same position from {otherView === 'side' ? 'side-on' : 'front-on'}
                   </p>
                   <PoseFigure pose={referencePose(other, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={[]}
-                    mode={mode} hand={hand} labels="target" bat={referenceBat(other, hand)} size={240}
+                    mode={mode} hand={hand} view={otherView} labels="target" bat={referenceBat(other, hand)} size={240}
                     label={`Diagram of the ${other.title.toLowerCase()}`} />
                   <p className="mt-2 text-xs text-neutral-500">
                     Film a {otherView === 'side' ? 'side-on' : 'front-on'} clip and switch Camera view to have this side of your technique measured too.
