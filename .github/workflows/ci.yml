@@ -17,6 +17,11 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npx eslint . --quiet
+      - name: Start Postgres for the view checks
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql
+          sudo service postgresql start
       - run: npm test
       - run: npm run build
         env:
