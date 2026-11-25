@@ -1,0 +1,144 @@
+// Server-side club-member pricing. Reads the database. Does not create Stripe prices.
+// The flag gates every path here. Callers keep the older offer when the flag is off.
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { ageOn } from '@/lib/community/age';
+import { isLive } from '@/lib/billing/player-plans';
+import {
+  clubSeatLine,
+  decidePayer,
+  isPaidPlan,
+  memberDiscountEligible,
+  penceFor,
+  priceIdFor,
+  renewalDecision,
+  renewalEmail,
+  type PaidPlan,
+  type Payer,
+  type RateKind,
+} from '@/lib/billing/member-pricing';
+
+type Admin = SupabaseClient;
+
+const PAID_TIERS = new Set(['starter', 'pro', 'elite']);
+
+export type MemberAssessment = {
+  claimedClubId: string | null;
+  eligible: boolean;
+  under18: boolean;
+  clubPaysSeats: boolean;
+  verifiedParentId: string | null;
+  rate: RateKind;
+  pence: Record<PaidPlan, number>;
+};
+
+export async function assessMemberPricing(admin: Admin, userId: string, now = new Date()): Promise<MemberAssessment> {
+  const { data: profile } = await admin.from('profiles').select('claimed_club_id, date_of_birth').eq('id', userId).maybeSingle();
+  const claimedClubId = (profile?.claimed_club_id as string | null) ?? null;
+  const age = ageOn((profile?.date_of_birth as string | null) ?? null, now);
+
+  const [{ data: memberships }, { data: links }] = await Promise.all([
+    admin.from('club_members').select('club_id, is_active, is_junior').eq('user_id', userId),
+    admin.from('child_profiles').select('linked_user_id, parent_child_links ( parent_id, verified_at )').eq('linked_user_id', userId),
+  ]);
+
+  const confirmedHere = (memberships ?? []).some((m) => m.club_id === claimedClubId && m.is_active === true);
+  const markedJunior = (memberships ?? []).some((m) => m.is_junior === true && m.is_active === true);
+
+  let clubRegistered = false;
+  let clubPaidPlanActive = false;
+  let clubPaysSeats = false;
+  if (claimedClubId) {
+    const [{ data: club }, { data: sub }] = await Promise.all([
+      admin.from('clubs').select('id').eq('id', claimedClubId).maybeSingle(),
+      admin.from('club_subscriptions').select('tier, status, pays_member_seats').eq('club_id', claimedClubId).maybeSingle(),
+    ]);
+    clubRegistered = !!club;
+    clubPaidPlanActive = !!sub && PAID_TIERS.has(sub.tier as string) && isLive(sub.status as string);
+    clubPaysSeats = clubPaidPlanActive && sub?.pays_member_seats === true;
+  }
+
+  const eligible = memberDiscountEligible({
+    claimedClubId,
+    clubRegistered,
+    clubPaidPlanActive,
+    confirmedMember: confirmedHere,
+  });
+
+  const parents = (links ?? []).flatMap((row) => {
+    const raw = row.parent_child_links as { parent_id?: string; verified_at?: string | null } | Array<{ parent_id?: string; verified_at?: string | null }> | null;
+    const list = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    return list.filter((l) => l.verified_at && l.parent_id).map((l) => l.parent_id as string);
+  });
+
+  const rate: RateKind = eligible ? 'club_member' : 'individual';
+  return {
+    claimedClubId,
+    eligible,
+    under18: (age !== null && age < 18) || markedJunior,
+    clubPaysSeats,
+    verifiedParentId: parents[0] ?? null,
+    rate,
+    pence: {
+      pro: penceFor('pro', eligible),
+      elite: penceFor('elite', eligible),
+      legend: penceFor('legend', eligible),
+    },
+  };
+}
+
+export type CheckoutPrep =
+  | { ok: true; payer: Payer; chargeUserId: string | null; priceId: string | null; pence: number; rate: RateKind; seat: ReturnType<typeof clubSeatLine> }
+  | { ok: false; error: string; status: number };
+
+/** What to charge, or the club-invoice line. Never creates a Stripe Price. */
+export function prepareMemberCheckout(input: {
+  plan: unknown;
+  assessment: MemberAssessment;
+  playerId: string;
+  callerId: string;
+  env?: Record<string, string | undefined>;
+}): CheckoutPrep {
+  if (!isPaidPlan(input.plan)) return { ok: false, error: 'Choose a plan.', status: 400 };
+  const payer = decidePayer({
+    under18: input.assessment.under18,
+    clubPaysSeats: input.assessment.clubPaysSeats,
+    playerId: input.playerId,
+    callerId: input.callerId,
+    verifiedParentId: input.assessment.verifiedParentId,
+  });
+  if (!payer.ok) return { ok: false, error: payer.error, status: 403 };
+  const rate = input.assessment.rate;
+  const pence = input.assessment.pence[input.plan];
+  if (payer.payer === 'club') {
+    const seat = clubSeatLine(input.plan, input.env);
+    if (!seat) return { ok: false, error: 'The club seat price is not configured yet.', status: 503 };
+    return { ok: true, payer: 'club', chargeUserId: null, priceId: seat.price, pence, rate, seat };
+  }
+  const priceId = priceIdFor(rate, input.plan, input.env);
+  if (!priceId) return { ok: false, error: 'That plan is not configured yet.', status: 503 };
+  return { ok: true, payer: payer.payer, chargeUserId: payer.chargeUserId, priceId, pence, rate, seat: null };
+}
+
+export type RenewalRow = {
+  userId: string;
+  email: string | null;
+  plan: PaidPlan;
+  onMemberRate: boolean;
+  periodEnd: string | null;
+  eligibleNow: boolean;
+  stripeSubscriptionId: string | null;
+};
+
+export function renewalWork(row: RenewalRow, now: Date): { notify: { to: string; subject: string; text: string } | null; switchTo: string | null } {
+  const decision = renewalDecision({
+    now,
+    periodEnd: row.periodEnd ? new Date(row.periodEnd) : null,
+    onMemberRate: row.onMemberRate,
+    eligibleNow: row.eligibleNow,
+  });
+  const renewsOn = row.periodEnd ? new Date(row.periodEnd).toISOString().slice(0, 10) : '';
+  const notify = decision.notify && row.email ? { to: row.email, ...renewalEmail({ plan: row.plan, renewsOn }) } : null;
+  const switchTo = decision.switchNow ? priceIdFor('individual', row.plan) : null;
+  return { notify, switchTo };
+}

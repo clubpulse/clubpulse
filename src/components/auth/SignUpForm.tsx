@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { VOLUNTEERS_ENABLED } from '@/lib/nav/menu';
 import { isPlausibleDob } from '@/lib/community/age';
+import { clubMemberPricingEnabled } from '@/lib/billing/member-pricing';
 
 type Role = 'player' | 'volunteer' | 'parent' | 'coach';
 
@@ -30,6 +31,8 @@ export function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState('');
+  const [clubCode, setClubCode] = useState('');
+  const memberPricing = clubMemberPricingEnabled();
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +72,7 @@ export function SignUpForm() {
       return;
     }
 
-    const result = await completeSignup({ userId: data.user.id, fullName: fullName.trim(), email, roles, dateOfBirth: dob });
+    const result = await completeSignup({ userId: data.user.id, fullName: fullName.trim(), email, roles, dateOfBirth: dob, clubCode: memberPricing ? clubCode : undefined });
     setLoading(false);
     if (!result.success) {
       toast.error(result.error);
@@ -88,6 +91,10 @@ export function SignUpForm() {
           onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         <Input label="Date of birth" type="date" required autoComplete="bday" value={dob} max={new Date().toISOString().slice(0, 10)}
           onChange={(e) => setDob(e.target.value)} />
+        {memberPricing && (
+          <Input label="Club code (optional)" value={clubCode} autoComplete="off"
+            onChange={(e) => setClubCode(e.target.value)} placeholder="From your club" />
+        )}
         <Input label="Password" type="password" required minLength={8} autoComplete="new-password" value={password}
           onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
         <Button type="submit" className="w-full">Continue</Button>

@@ -19,7 +19,9 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
       <div>
         <h1 style={{ ...h1, fontSize: '22px', marginBottom: '2px' }}>My plan</h1>
         <p style={muted}>
-          {offer.kind === 'club_addon'
+          {offer.kind === 'club_member'
+            ? 'Confirmed members of a club on a paid SHIFTUP plan pay the member price. It is the same for juniors and adults.'
+            : offer.kind === 'club_addon'
             ? 'Your club is on a SHIFTUP plan. Add analysis on your own phone, with coaching and AI analysis sessions.'
             : 'Choose a plan for yourself. You can change or cancel it at any time.'}
         </p>
@@ -35,7 +37,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
       {current ? (
         <div style={{ ...card, borderColor: '#EFC84A' }}>
           <p style={cardTitle}>
-            {PLAYER_PLANS[current.plan].label}{current.kind === 'club_addon' ? ' member add-on' : ''}
+            {PLAYER_PLANS[current.plan].label}{current.kind === 'club_addon' ? ' member add-on' : ''}{current.kind === 'club_member' ? ' member price' : ''}
             {current.pence ? ` · ${pounds(current.pence)} a month` : ''}
           </p>
           <p style={{ ...muted, marginBottom: '12px' }}>
@@ -46,6 +48,11 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
                 : current.renews ? `Renews on ${formatDate(current.renews)}.` : 'Active.'}
           </p>
           <ManagePlanButton />
+        </div>
+      ) : view.clubPays ? (
+        <div style={card}>
+          <p style={cardTitle}>Your club pays</p>
+          <p style={muted}>Your club pays for members&apos; seats on its own invoice. You do not enter a card.</p>
         </div>
       ) : view.junior ? (
         <div style={card}>

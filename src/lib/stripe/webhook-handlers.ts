@@ -145,7 +145,7 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
 // ── A player's own plan ─────────────────────────────────────────────────────
 
 const PLAYER_PLANS = ['pro', 'elite', 'legend'];
-const PLAYER_KINDS = ['individual', 'club_addon'];
+const PLAYER_KINDS = ['individual', 'club_addon', 'club_member'];
 
 async function handlePlayerCheckout(session: Stripe.Checkout.Session) {
   const meta = session.metadata ?? {};
@@ -157,6 +157,8 @@ async function handlePlayerCheckout(session: Stripe.Checkout.Session) {
     kind: meta.kind,
     status: 'active',
     price_pence: Number(meta.price_pence) || null,
+    payer: meta.payer === 'parent' || meta.payer === 'club' || meta.payer === 'player' ? meta.payer : null,
+    member_club_id: meta.member_club_id || null,
     stripe_customer_id: typeof session.customer === 'string' ? session.customer : session.customer?.id ?? null,
     stripe_subscription_id: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id ?? null,
     updated_at: new Date().toISOString(),
@@ -173,10 +175,12 @@ async function syncPlayerSubscription(subscription: Stripe.Subscription, forceSt
   const item = subscription.items?.data?.[0] as unknown as { current_period_end?: number } | undefined;
   const periodEnd = raw.current_period_end ?? item?.current_period_end ?? null;
 
+  const periodIso = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
   await admin().from('player_subscriptions').update({
     status: forceStatus ?? (subscription.status as string),
     stripe_subscription_id: subscription.id,
-    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    current_period_end: periodIso,
+    member_rate_until: meta.kind === 'club_member' ? periodIso : null,
     cancel_at_period_end: forceStatus ? false : subscription.cancel_at_period_end,
     updated_at: new Date().toISOString(),
   }).eq('user_id', meta.user_id);
