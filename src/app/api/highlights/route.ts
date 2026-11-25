@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
-import { HIGHLIGHTS_BUCKET, clipLabel, parseHighlightRequest, type HighlightClip } from '@/lib/highlights';
+import { HIGHLIGHTS_BUCKET, SIGNED_URL_SECONDS, clipLabel, parseHighlightRequest, type HighlightClip } from '@/lib/highlights';
 import { fail, readJson, unauthorized } from '@/lib/utils/http';
 
 export async function POST(req: NextRequest) {
@@ -25,11 +25,12 @@ export async function POST(req: NextRequest) {
   const uploaded = new Set((files ?? []).map((file) => `${folder}/${file.name}`));
   if (input.some((clip) => !uploaded.has(clip.path))) return fail('Clip not found in storage');
 
-  const clips: HighlightClip[] = input.map((clip, rank) => ({
-    ...clip,
-    url: supabase.storage.from(HIGHLIGHTS_BUCKET).getPublicUrl(clip.path).data.publicUrl,
-    label: clipLabel(mode, rank),
-  }));
+  const clips: HighlightClip[] = [];
+  for (const [rank, clip] of input.entries()) {
+    const { data: signed, error: signError } = await supabase.storage.from(HIGHLIGHTS_BUCKET).createSignedUrl(clip.path, SIGNED_URL_SECONDS);
+    if (signError || !signed?.signedUrl) return fail(signError?.message ?? 'Could not sign the clip', 500);
+    clips.push({ ...clip, url: signed.signedUrl, label: clipLabel(mode, rank) });
+  }
 
   const { data, error } = await supabase
     .from('highlights')

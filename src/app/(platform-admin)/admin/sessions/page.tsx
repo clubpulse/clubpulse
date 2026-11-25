@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth/admin';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { formatDate, pageFromParam, pageRange, profilesById } from '@/lib/platform-admin';
-import type { Highlight } from '@/lib/highlights';
+import { withSignedUrls, type Highlight } from '@/lib/highlights';
 import { Cell, EmptyState, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 
 export const metadata: Metadata = { title: 'Sessions & Highlights | Admin' };
@@ -20,7 +20,7 @@ export default async function AdminSessionsPage({ searchParams }: { searchParams
     .order('created_at', { ascending: false })
     .range(...pageRange(page))
     .returns<Row[]>();
-  const rows = data ?? [];
+  const rows = await Promise.all((data ?? []).map((row) => withSignedUrls(service, row)));
   const profiles = await profilesById(service, rows.map((row) => row.user_id));
 
   return (
