@@ -87,7 +87,7 @@ export async function createPlayerCheckout(userId: string, email: string | null,
   if (!isPlayerPlan(plan)) return { ok: false, error: 'Choose a plan.', status: 400 };
 
   const [{ offer, junior }, row] = await Promise.all([loadOffer(userId), loadRow(userId)]);
-  if (clubMemberPricingEnabled()) return createMemberCheckout(userId, email, plan, userId);
+  if (clubMemberPricingEnabled()) return createMemberCheckout(userId, email, plan, userId, undefined);
   if (junior) return { ok: false, error: 'Ask your parent or guardian to do this for you.', status: 403 };
   if (row && isLive(row.status)) return { ok: false, error: 'You already have a plan. Use "Manage my plan" to change or cancel it.', status: 409 };
 
@@ -137,12 +137,12 @@ export async function createPlayerCheckout(userId: string, email: string | null,
  * Club-member prices. Uses Stripe Price IDs from the environment and never creates a Price or Product.
  * `payerId` is the signed-in person. For a child that must be their verified parent, or the club pays the seat.
  */
-export async function createMemberCheckout(playerId: string, email: string | null, plan: unknown, payerId: string): Promise<Result> {
+export async function createMemberCheckout(playerId: string, email: string | null, plan: unknown, payerId: string, term?: unknown): Promise<Result> {
   const admin = createAdminClient();
   const row = await loadRow(playerId);
   if (row && isLive(row.status)) return { ok: false, error: 'You already have a plan. Use "Manage my plan" to change or cancel it.', status: 409 };
   const assessment = await assessMemberPricing(admin, playerId);
-  const prep = prepareMemberCheckout({ plan, assessment, playerId, callerId: payerId });
+  const prep = prepareMemberCheckout({ plan, term, assessment, playerId, callerId: payerId });
   if (!prep.ok) return prep;
 
   if (prep.payer === 'club') {
@@ -153,6 +153,7 @@ export async function createMemberCheckout(playerId: string, email: string | nul
       status: 'active',
       price_pence: prep.pence,
       payer: 'club',
+      billing_interval: prep.term ?? 'month',
       member_club_id: assessment.claimedClubId,
       member_rate_until: null,
       updated_at: new Date().toISOString(),
@@ -182,6 +183,7 @@ export async function createMemberCheckout(playerId: string, email: string | nul
     kind: prep.rate,
     price_pence: String(prep.pence),
     payer: prep.payer,
+    billing_interval: prep.term ?? 'month',
     member_club_id: assessment.claimedClubId ?? '',
   };
   const session = await stripe.checkout.sessions.create({

@@ -21,6 +21,7 @@ import {
   createBillingPortal,
 } from '@/lib/stripe/subscriptions';
 import type { SubscriptionTier } from '@/lib/types/subscription';
+import { clubMemberPricingEnabled } from '@/lib/billing/member-pricing';
 
 const VALID_TIERS: SubscriptionTier[] = ['starter', 'pro', 'elite'];
 
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   const clubId = body.club_id;
   const tier = body.tier as SubscriptionTier | undefined;
-  const billingCycle = (body.billing_cycle ?? 'monthly') as 'monthly' | 'annual';
+  const billingCycle = (body.billing_cycle ?? 'monthly') as 'monthly' | 'quarterly' | 'annual';
 
   if (!clubId || !tier) {
     return NextResponse.json({ error: 'Missing club_id or tier' }, { status: 400 });
@@ -94,9 +95,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (billingCycle !== 'monthly' && billingCycle !== 'annual') {
+  const allowedCycles = clubMemberPricingEnabled()
+    ? ['monthly', 'quarterly', 'annual']
+    : ['monthly', 'annual'];
+  if (!allowedCycles.includes(billingCycle)) {
     return NextResponse.json(
-      { error: 'billing_cycle must be monthly or annual' },
+      { error: `billing_cycle must be ${allowedCycles.join(' or ')}` },
       { status: 400 },
     );
   }

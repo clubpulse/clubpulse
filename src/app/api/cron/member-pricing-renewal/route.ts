@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
   const admin = createAdminClient();
   const { data } = await admin.from('player_subscriptions')
-    .select('user_id, plan, kind, status, current_period_end, stripe_subscription_id, billing_interval, term_end, member_club_id')
+    .select('user_id, plan, kind, status, payer, current_period_end, stripe_subscription_id, billing_interval, term_end, member_club_id')
     .eq('kind', 'club_member')
     .in('status', ['active', 'trialing', 'past_due']);
 
@@ -38,7 +38,8 @@ export async function GET(req: Request) {
       periodEnd: (row.current_period_end as string | null) ?? null,
       qualifiesNow: assessed.eligible,
       cause: assessed.cause,
-      interval: row.billing_interval === 'year' || row.billing_interval === 'season' ? row.billing_interval : 'month',
+      interval: row.billing_interval === 'quarter' || row.billing_interval === 'year' ? row.billing_interval : 'month',
+      chargedToParent: row.payer === 'parent',
       termEnd: (row.term_end as string | null) ?? null,
       stripeSubscriptionId: (row.stripe_subscription_id as string | null) ?? null,
     } satisfies RenewalRow, now);

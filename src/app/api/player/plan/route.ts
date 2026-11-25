@@ -17,12 +17,12 @@ export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
 
-  const body = (await readJson(req)) as { plan?: unknown; forUserId?: unknown } | null;
+  const body = (await readJson(req)) as { plan?: unknown; forUserId?: unknown; term?: unknown } | null;
   const plan = body?.plan;
   const forUserId = typeof body?.forUserId === 'string' ? body.forUserId : null;
   try {
-    const res = clubMemberPricingEnabled() && forUserId
-      ? await createMemberCheckout(forUserId, user.email ?? null, plan, user.id)
+    const res = clubMemberPricingEnabled()
+      ? await createMemberCheckout(forUserId ?? user.id, user.email ?? null, plan, user.id, body?.term)
       : await createPlayerCheckout(user.id, user.email ?? null, plan);
     if (!res.ok) return fail(res.error, res.status);
     return NextResponse.json({ url: res.url });

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth/server';
 import { getPlayerPlan } from '@/lib/billing/player';
 import { PLAYER_PLANS, pounds } from '@/lib/billing/player-plans';
+import { clubMemberPricingEnabled } from '@/lib/billing/member-pricing';
 import { ManagePlanButton, PlanOptions } from '@/components/plan/PlanOptions';
 import { card, cardTitle, h1, muted } from '@/components/play/ui';
 import { formatDate } from '@/lib/utils/format';
@@ -60,7 +61,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
           <p style={muted}>A parent or guardian needs to choose and pay for a plan. Ask them to sign in to their own account.</p>
         </div>
       ) : view.enabled ? (
-        <PlanOptions offer={offer} />
+        <PlanOptions offer={offer} under18={view.junior} terms={clubMemberPricingEnabled()} />
       ) : (
         <div style={card}>
           <p style={cardTitle}>Online payment opens soon</p>

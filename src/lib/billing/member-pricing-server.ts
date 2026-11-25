@@ -7,11 +7,14 @@ import { isLive } from '@/lib/billing/player-plans';
 import {
   clubSeatLine,
   decidePayer,
+  defaultTerm,
+  isBillingTerm,
   isPaidPlan,
   penceFor,
   priceIdFor,
   renewalDecision,
   renewalEmail,
+  type BillingTerm,
   type BillingInterval,
   confirmationCarries,
   seasonKey,
@@ -106,12 +109,14 @@ export type CheckoutPrep =
 /** What to charge, or the club-invoice line. Never creates a Stripe Price. */
 export function prepareMemberCheckout(input: {
   plan: unknown;
+  term?: unknown;
   assessment: MemberAssessment;
   playerId: string;
   callerId: string;
   env?: Record<string, string | undefined>;
-}): CheckoutPrep {
+}): CheckoutPrep & { term?: BillingTerm } {
   if (!isPaidPlan(input.plan)) return { ok: false, error: 'Choose a plan.', status: 400 };
+  const term = isBillingTerm(input.term) ? input.term : defaultTerm(input.assessment.under18);
   const payer = decidePayer({
     under18: input.assessment.under18,
     clubPaysSeats: input.assessment.clubPaysSeats,
@@ -120,16 +125,16 @@ export function prepareMemberCheckout(input: {
     verifiedParentId: input.assessment.verifiedParentId,
   });
   if (!payer.ok) return { ok: false, error: payer.error, status: 403 };
-  const rate = input.assessment.rate;
-  const pence = input.assessment.pence[input.plan];
+  const memberRate = input.assessment.rate === 'club_member';
+  const pence = penceFor(input.plan, memberRate, term);
   if (payer.payer === 'club') {
-    const seat = clubSeatLine(input.plan, input.env);
+    const seat = clubSeatLine(input.plan, input.env, term);
     if (!seat) return { ok: false, error: 'The club seat price is not configured yet.', status: 503 };
-    return { ok: true, payer: 'club', chargeUserId: null, priceId: seat.price, pence, rate, seat };
+    return { ok: true, payer: 'club', chargeUserId: null, priceId: seat.price, pence, rate: input.assessment.rate, seat, term };
   }
-  const priceId = priceIdFor(rate, input.plan, input.env);
+  const priceId = priceIdFor(input.assessment.rate, input.plan, input.env, term);
   if (!priceId) return { ok: false, error: 'That plan is not configured yet.', status: 503 };
-  return { ok: true, payer: payer.payer, chargeUserId: payer.chargeUserId, priceId, pence, rate, seat: null };
+  return { ok: true, payer: payer.payer, chargeUserId: payer.chargeUserId, priceId, pence, rate: input.assessment.rate, seat: null, term };
 }
 
 export type RenewalRow = {
@@ -142,6 +147,7 @@ export type RenewalRow = {
   cause: RateCause;
   interval?: BillingInterval;
   termEnd?: string | null;
+  chargedToParent?: boolean;
   stripeSubscriptionId: string | null;
 };
 
@@ -155,9 +161,10 @@ export function renewalWork(row: RenewalRow, now: Date): { notify: { to: string;
     cause: row.cause,
     interval: row.interval,
     termEnd: row.termEnd ? new Date(row.termEnd) : null,
+    chargedToParent: row.chargedToParent,
   });
   const renewsOn = (decision.protectedUntil ?? periodEnd)?.toISOString().slice(0, 10) ?? '';
-  const notify = decision.notify && row.email ? { to: row.email, ...renewalEmail({ plan: row.plan, renewsOn }) } : null;
+  const notify = decision.notify && row.email ? { to: row.email, ...renewalEmail({ plan: row.plan, renewsOn, term: row.interval, chargedToParent: row.chargedToParent }) } : null;
   const switchTo = decision.switchNow ? priceIdFor('individual', row.plan) : null;
   return { notify, switchTo };
 }

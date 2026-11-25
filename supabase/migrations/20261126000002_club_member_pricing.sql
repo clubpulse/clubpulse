@@ -23,7 +23,7 @@ ALTER TABLE public.player_subscriptions
 ALTER TABLE public.player_subscriptions DROP CONSTRAINT IF EXISTS player_subscriptions_billing_interval_check;
 ALTER TABLE public.player_subscriptions
   ADD CONSTRAINT player_subscriptions_billing_interval_check
-  CHECK (billing_interval IS NULL OR billing_interval IN ('month', 'year', 'season'));
+  CHECK (billing_interval IS NULL OR billing_interval IN ('month', 'quarter', 'year'));
 
 ALTER TABLE public.club_members
   ADD COLUMN IF NOT EXISTS confirmed_at TIMESTAMPTZ,

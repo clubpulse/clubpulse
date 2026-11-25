@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import MarketingNav from '@/components/marketing/MarketingNav';
 import MarketingFooter from '@/components/marketing/MarketingFooter';
-import { clubMemberPricingEnabled, pricingCopy } from '@/lib/billing/member-pricing';
+import { BILLING_TERMS, clubMemberPricingEnabled, clubPlanPence, pricingCopy, type BillingTerm } from '@/lib/billing/member-pricing';
 
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
 const PLAYER_CTA = process.env.NEXT_PUBLIC_PLAYER_CHECKOUT === 'on' ? '/plan' : '/contact';
@@ -114,7 +114,10 @@ function cellValue(val: Limit, tier: TierKey) {
 export default function PricingPage() {
   const [audience, setAudience] = useState<Audience>('player');
   const [showFullTable, setShowFullTable] = useState(false);
-  const copy = pricingCopy(clubMemberPricingEnabled());
+  const [term, setTerm] = useState<BillingTerm>('month');
+  const memberRates = clubMemberPricingEnabled();
+  const copy = pricingCopy(memberRates, term);
+  const pounds = (pence: number) => `£${(pence / 100).toFixed(2)}`;
   const tiers = PLAYER_TIERS.map((tier) => {
     const priced = copy.tiers.find((t) => t.key === tier.key);
     return priced?.memberPrice ? { ...tier, memberPrice: priced.memberPrice } : { ...tier, memberPrice: null as string | null };
@@ -552,6 +555,15 @@ export default function PricingPage() {
             onClick={() => setAudience('club')}
           >🏟️ Clubs</button>
         </div>
+        {memberRates && (
+          <div className="cp-audience-toggle" role="group" aria-label="Billing term">
+            {BILLING_TERMS.map((choice) => (
+              <button key={choice} type="button" className={`cp-audience-btn${term === choice ? ' active' : ''}`} onClick={() => setTerm(choice)}>
+                {choice === 'month' ? 'Monthly' : choice === 'quarter' ? 'Quarterly' : 'Annual'}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── PLAYER PRICING ── */}
@@ -637,6 +649,13 @@ export default function PricingPage() {
           <div className="cp-coming-soon">
             <div style={{ fontSize: '40px', marginBottom: '16px' }}><Glyph e="🏟️" /></div>
             <h3>Club plans from £29.99 a month</h3>
+            {memberRates && (
+              <p>
+                £29.99 a month, £79.99 a quarter or £299.99 a year.
+                The next club plans are {pounds(clubPlanPence('pro', 'month'))} / {pounds(clubPlanPence('pro', 'quarter'))} / {pounds(clubPlanPence('pro', 'year'))}
+                and {pounds(clubPlanPence('elite', 'month'))} / {pounds(clubPlanPence('elite', 'quarter'))} / {pounds(clubPlanPence('elite', 'year'))}.
+              </p>
+            )}
             <p>
               One plan covers the whole club and comes with the club dashboard for the four pillars. Club plans are not bought online.
               Tell us what your club needs, we confirm it with you, and we sign an agreement for a set period.
