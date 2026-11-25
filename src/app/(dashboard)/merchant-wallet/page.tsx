@@ -204,7 +204,7 @@ export default function MerchantWalletPage() {
         {scanStep === 'scanning' && (
           <div>
             <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 8 }}>
-              Scan the player's QR code with your camera, then paste the result below:
+              Scan the player&apos;s QR code with your camera, then paste the result below:
             </p>
             <textarea
               ref={textareaRef}
@@ -336,7 +336,7 @@ export default function MerchantWalletPage() {
         </div>
         {cashoutAmt && parseInt(cashoutAmt) >= 100 && (
           <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 8px' }}>
-            You'll receive ≈ £{(cashoutPence(parseInt(cashoutAmt)) / 100).toFixed(2)}
+            You&apos;ll receive ≈ £{(cashoutPence(parseInt(cashoutAmt)) / 100).toFixed(2)}
           </p>
         )}
         {cashoutMsg && <p style={{ fontSize: 13, margin: 0 }}>{cashoutMsg}</p>}

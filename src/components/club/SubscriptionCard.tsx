@@ -32,7 +32,7 @@ export function SubscriptionCard({ clubId, subscription }: Props) {
       });
       const data = await res.json();
       if (data.checkout_url) {
-        window.location.href = data.checkout_url;
+        window.location.assign(data.checkout_url);
       }
     } catch (err) {
       console.error('Upgrade error:', err);

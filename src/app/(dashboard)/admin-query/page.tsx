@@ -115,7 +115,7 @@ export default function AdminQueryPage() {
           Club Intelligence
         </h1>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-          Ask anything about your club's stats, players and form. Answers come from your real data.
+          Ask anything about your club&apos;s stats, players and form. Answers come from your real data.
         </p>
       </div>
 

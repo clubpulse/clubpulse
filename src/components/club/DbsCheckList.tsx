@@ -4,6 +4,8 @@ import type { DbsCheck } from '@/lib/types/parent';
 import { DBS_TYPE_LABELS } from '@/lib/types/parent';
 import { card, cardTitle, muted } from '@/components/play/ui';
 
+const CHECKED_AT = Date.now();
+
 interface Props {
   checks: (DbsCheck & { user_name: string })[];
 }
@@ -11,7 +13,7 @@ interface Props {
 export default function DbsCheckList({ checks }: Props) {
   const expiringSoon = checks.filter(c => {
     if (c.status !== 'valid' || !c.expiry_date) return false;
-    const daysLeft = (new Date(c.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    const daysLeft = (new Date(c.expiry_date).getTime() - CHECKED_AT) / (1000 * 60 * 60 * 24);
     return daysLeft <= 90;
   });
 
@@ -62,7 +64,7 @@ export default function DbsCheckList({ checks }: Props) {
             <tbody>
               {checks.map(c => {
                 const isExpiring = c.status === 'valid' && c.expiry_date &&
-                  (new Date(c.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24) <= 90;
+                  (new Date(c.expiry_date).getTime() - CHECKED_AT) / (1000 * 60 * 60 * 24) <= 90;
                 return (
                   <tr key={c.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <td style={{ ...td, color: '#fff', fontWeight: 500 }}>{c.user_name}</td>

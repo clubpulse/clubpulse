@@ -24,7 +24,7 @@ export function ScoresPacksPanel({ clubId, packs, poolBalance, recentPurchases }
       });
       const data = await res.json();
       if (data.checkout_url) {
-        window.location.href = data.checkout_url;
+        window.location.assign(data.checkout_url);
       }
     } catch (err) {
       console.error('Purchase error:', err);
