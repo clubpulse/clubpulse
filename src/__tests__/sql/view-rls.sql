@@ -379,3 +379,63 @@ BEGIN
 END $$;
 
 RESET ROLE;
+
+-- Play-Cricket cache is club-scoped. The API key table is not readable by a signed-in user.
+INSERT INTO public.playcricket_connections (club_id, site_id, key_ciphertext, key_iv)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '1001', 'v1.secret', 'aXY=');
+INSERT INTO public.playcricket_matches (club_id, play_match_id, home_team_name, away_team_name)
+VALUES
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'm1', 'Home XI', 'Away XI'),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'm2', 'Other XI', 'Away XI');
+INSERT INTO public.playcricket_player_links (club_id, player_name, team_id, user_id)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Alex Player', 't1', '11111111-1111-1111-1111-111111111111');
+
+SELECT set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.playcricket_matches WHERE play_match_id = 'm1') THEN
+    RAISE EXCEPTION 'club member cannot read their own Play-Cricket fixtures';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.playcricket_matches WHERE play_match_id = 'm2') THEN
+    RAISE EXCEPTION 'club member can read another club Play-Cricket fixture';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.playcricket_player_links) THEN
+    RAISE EXCEPTION 'a player can read Play-Cricket account links';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.playcricket_connection_status) THEN
+    RAISE EXCEPTION 'a player can read the Play-Cricket connection';
+  END IF;
+  BEGIN
+    PERFORM key_ciphertext FROM public.playcricket_connections;
+    RAISE EXCEPTION 'a player read the Play-Cricket key table';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.playcricket_connection_status WHERE site_id = '1001') THEN
+    RAISE EXCEPTION 'club admin cannot see that Play-Cricket is connected';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'playcricket_connection_status' AND column_name = 'key_ciphertext'
+  ) THEN
+    RAISE EXCEPTION 'Play-Cricket status view exposes the key';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE anon;
+DO $$
+BEGIN
+  BEGIN
+    PERFORM 1 FROM public.playcricket_matches;
+    RAISE EXCEPTION 'anon read Play-Cricket fixtures';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;

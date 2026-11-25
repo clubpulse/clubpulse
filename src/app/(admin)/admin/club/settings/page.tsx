@@ -5,12 +5,15 @@ import { StripeConnectCard } from '@/components/club/StripeConnectCard';
 import { OnboardingChecklist } from '@/components/club/OnboardingChecklist';
 import { ClubProfileForm } from '@/components/club/ClubProfileForm';
 import { h1, muted, twoCol } from '@/components/play/ui';
+import { PlayCricketCard } from '@/components/club/PlayCricketCard';
+import { getPlayCricketStatus } from '@/lib/actions/playcricket';
 
 export default async function ClubSettingsPage() {
   const { user, clubId } = await requireClubAdminPage();
-  const [settings, checklist] = await Promise.all([
+  const [settings, checklist, playCricket] = await Promise.all([
     getClubSettings(user.id, clubId),
     getOnboardingChecklist(user.id, clubId),
+    getPlayCricketStatus(clubId),
   ]);
 
   if (!settings.success) {
@@ -118,6 +121,7 @@ export default async function ClubSettingsPage() {
 
       {/* Club profile */}
       <ClubProfileForm clubId={clubId} club={club} />
+      <PlayCricketCard clubId={clubId} status={playCricket} />
     </div>
   );
 }

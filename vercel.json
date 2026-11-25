@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/safeguarding-alerts",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/playcricket-sync",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/playcricket-sync",
+      "schedule": "0 21 * * *"
     }
   ]
 }
