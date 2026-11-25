@@ -2,6 +2,8 @@
 
 export const HIGHLIGHTS_BUCKET = 'session-videos';
 export const SIGNED_URL_SECONDS = 60 * 60;
+/** Highlight clips stay on the phone until private storage is live. */
+export const HIGHLIGHT_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_HIGHLIGHT_UPLOAD_ENABLED === 'true';
 export const SEGMENT_SECONDS = 5;
 export const MAX_CLIPS = 3;
 

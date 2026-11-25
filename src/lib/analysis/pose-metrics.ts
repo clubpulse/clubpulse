@@ -1,9 +1,14 @@
 // Technique scoring from body landmarks (MediaPipe Pose). Pure functions, no browser needed.
 //
-// Batting is averaged over the clip. Bowling is measured at the moment of release: averaging a
-// bowler's knee and arm angles over the run-up says nothing about the action itself.
+// Batting is measured in a short window around contact. Bowling is measured at release, after the
+// front foot lands. Averaging a whole clip, including the run-up or the walk back, says nothing
+// about the action itself.
 //
 // The ideal ranges are coaching rules of thumb, not validated biomechanics. Treat scores as a guide.
+
+import { consistentArmAngle } from '@/lib/analysis/arm-check';
+import { repairBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
+import { CLEAR_IMAGE, clearReasonFrom, judgeMetric, type ClearReason } from '@/lib/analysis/metric-confidence';
 
 /** One body point: x and y as a share of the frame (0 to 1), and how sure the model is it can see it */
 export type Landmark = { x: number; y: number; z?: number; visibility?: number };
@@ -41,10 +46,22 @@ export type MetricDef = {
   tolerance: number;
   tip: string;
 };
+export type ScoreConfidence = 'high' | 'medium' | 'low';
+
+/** Shown instead of a number when the picture is too unclear to trust a score. */
+export const LOW_CONFIDENCE_MESSAGE = 'try again: film side-on with your whole body in frame';
+
+/** Shown with the score when the clip was shot below about 20 frames a second. */
+export const LOW_FPS_MESSAGE = 'film at normal speed for a better reading';
+
 export type MetricResult = MetricDef & {
   value: number; score: number;
   /** Shown, but left out of the overall score, because it is part of a unique action */
   excused?: boolean;
+  /** How much to trust this number, from the tracking and the event detection. */
+  confidence?: ScoreConfidence;
+  /** Why a low reading was dropped, so the retake line can name it. */
+  clearReason?: ClearReason;
 };
 
 /** Where the camera is: square of the wicket (side-on), or looking straight down the pitch (front-on) */
@@ -58,10 +75,13 @@ export const ON_TARGET = 85;
 // Keys match the metric keys in METRICS.batting.
 const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, number]>>>> = {
   pull: {
-    batSwingPlane:  [50, 90],    // a cross-bat shot: the bat is meant to be near level
+    batSwingPlane:  [25, 90],    // a cross-bat shot: the hands only approximate the bat, so level down to a diagonal still counts
     // Pull/hook: weight on back foot, front arm higher, big hip rotation, shoulder dips
-    frontElbow:     [100, 145],
-    kneeFlex:       [130, 155],  // more loaded back leg
+    // A pull folds the front arm across the body. The 2D elbow angle collapses, so a wide
+    // range keeps a real pull from scoring zero. The metric is also left out of the score.
+    frontElbow:     [20, 150],
+    headStability:  [0, 0.65],
+    kneeFlex:       [120, 175],  // loaded, but a tall base at contact is still the shot
     shoulderLevel:  [5, 20],     // natural tilt playing a short ball
     hipRotation:    [30, 60],    // powerful rotation through the ball
     weightTransfer: [0.3, 0.6],  // weight stays back or only slightly transfers
@@ -90,11 +110,15 @@ const SHOT_OVERRIDES: Partial<Record<ShotType, Partial<Record<string, [number, n
     headOverKnee:   [0, 0.15],  // tighter — head must be right over it
   },
   drive: {
-    // Classic straight/cover drive: full extension, weight fully transferred
-    frontElbow:     [90, 125],
-    kneeFlex:       [150, 170],
+    // An extended front-foot drive straightens both elbows. 157° and 168° are still the shot.
+    frontElbow:     [90, 175],
+    backElbow:      [55, 175],
+    // A braced front knee is bent, not locked. About 129° is a normal front-foot drive.
+    kneeFlex:       [110, 170],
     hipRotation:    [25, 50],
     weightTransfer: [0.65, 0.9],
+    // From the side the front shoulder drops as the chest opens through the ball.
+    shoulderLevel:  [0, 45],
   },
   leave: {
     // Leave: balanced, minimal movement, head still, weight centred
@@ -111,9 +135,36 @@ export // Worked out but not scored: from one side-on camera these two cannot be
 const NOT_SCORED = ['hipRotation', 'wristCock'];
 
 // Measures that say nothing about a shot are left out of its score
+/** Tips that replace the drive wording when the shot is not a drive. */
+const SHOT_TIPS: Partial<Record<ShotType, Partial<Record<string, string>>>> = {
+  pull: {
+    frontElbow: 'For a pull, the front elbow stays lower while the shoulders tilt. Do not chase a high straight elbow.',
+    batSwingPlane: 'A pull is played across the line. Let the bat come through level, not straight down.',
+    shoulderLevel: 'A pull tilts the shoulders. Level shoulders are for a straight drive, not this shot.',
+    headOverKnee: 'On a pull the head stays over the back foot, not the front knee.',
+    weightTransfer: 'On a pull, move back and across. Keep the weight on the back foot.',
+  },
+  cut: {
+    frontElbow: 'For a cut, the front elbow is lower and the bat is thrown at the ball. A high elbow is a drive shape.',
+    batSwingPlane: 'A cut is a cross-bat shot. The bat is meant to be nearer level than vertical.',
+  },
+  sweep: {
+    frontElbow: 'A sweep reaches out with a low front elbow as the front knee drops. A high elbow is not the shape.',
+    kneeFlex: 'A sweep needs a deep bend in the front knee. Standing tall is a drive, not a sweep.',
+  },
+  defence: {
+    batSwingPlane: 'In defence the bat stays straight and close to the pad. There is no full swing.',
+    frontElbow: 'Defence uses a soft, high front elbow and a short push, not a full drive.',
+  },
+  drive: {
+    kneeFlex: 'A flexed front knee is normal in a front-foot drive. Brace it as it lands, rather than locking it straight.',
+  },
+};
+
 const SHOT_SKIPS: Partial<Record<ShotType, string[]>> = {
   // Back foot shots: the head is not meant to be over the front knee
-  pull: ['headOverKnee', 'headOverFront'],
+  // The front elbow's 2D angle collapses as the shoulders turn, and the head is not over the front knee.
+  pull: ['headOverKnee', 'headOverFront', 'frontElbow'],
   cut: ['headOverKnee', 'headOverFront'],
   // No shot is played, so there is nothing to measure in the arms or bat
   leave: ['frontElbow', 'backElbow', 'wristCock', 'batSwingPlane'],
@@ -122,9 +173,12 @@ const SHOT_SKIPS: Partial<Record<ShotType, string[]>> = {
 const METRICS: Record<Mode, MetricDef[]> = {
   // Bowling is measured at the moment of release, not averaged over the run-up (see bowlingAnalysis)
   bowling: [
-    { key: 'frontKnee', label: 'Front knee brace', unit: '°', ideal: [165, 180], best: 176, tolerance: 30,
-      tip: 'Land on a firm, straight front leg to transfer momentum into the ball.' },
-    { key: 'armStraightness', label: 'Bowling arm straightness', unit: '°', ideal: [165, 180], best: 180, tolerance: 25,
+    // Portus et al. 2004: the front knee at release is about 150°, give or take 20°. A braced
+    // leg can still be straighter than that, so the top of the range stays at straight.
+    { key: 'frontKnee', label: 'Front knee brace', unit: '°', ideal: [130, 180], best: 150, tolerance: 25,
+      tip: 'Land on a firm front leg, around 150° at the knee, to transfer momentum into the ball.' },
+    // About 10° of what looks like a bend is pose-estimation error, so 159° is still a straight arm.
+    { key: 'armStraightness', label: 'Bowling arm straightness', unit: '°', ideal: [150, 180], best: 170, tolerance: 20,
       tip: 'Keep the bowling arm as straight as possible from shoulder height to release.' },
     { key: 'armUpright', label: 'Arm position at release', unit: '°', ideal: [0, 20], best: 5, tolerance: 35,
       tip: 'Release with the arm at the top of its arc, close to vertical from the side. Letting go early or late costs bounce and accuracy.' },
@@ -203,7 +257,8 @@ export function metricDefFor(key: string, mode: Mode, view: View = 'side', shotT
   const def = METRICS_BY_VIEW[view]?.[mode]?.find((d) => d.key === key);
   if (!def) return null;
   const ideal = mode === 'batting' && shotType ? SHOT_OVERRIDES[shotType]?.[key] : undefined;
-  return ideal ? { ...def, ideal } : def;
+  const tip = mode === 'batting' && shotType ? SHOT_TIPS[shotType]?.[key] : undefined;
+  return { ...def, ...(ideal ? { ideal } : {}), ...(tip ? { tip } : {}) };
 }
 
 export function angleAt(a: Point, b: Point, c: Point) {
@@ -330,45 +385,713 @@ export function frameMetrics(lm: Landmark[], mode: Mode, hand: Hand, w: number, 
   };
 }
 
-// Averages each metric across all usable frames; head stability is the spread of head position over the clip.
-// For batting, shotType-aware ideal ranges override the defaults via SHOT_OVERRIDES.
-export function analyse(frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side'): MetricResult[] | null {
-  if (mode === 'bowling') return bowlingAnalysis(frames, hand, w, h, view)?.metrics ?? null;
-  if (view === 'front') return battingFront(frames, hand, w, h, shotType);
+const SG = [-3, 12, 17, 12, -3];
 
-  const usable = frames.map((lm) => frameMetrics(lm, mode, hand, w, h)).filter((f) => f !== null);
-  if (usable.length < MIN_FRAMES) return null;
-
-  const noseMean = mean(usable.map((f) => f.noseX));
-  const headSpread = Math.sqrt(mean(usable.map((f) => (f.noseX - noseMean) ** 2)));
-
-  // Phase detection from wrist vertical velocity: high wrist = backswing, low wrist = contact/follow-through
-  // We score contact-phase frames more heavily for batting metrics
-  const wristYValues = usable.map((f) => f.wristY).filter((y): y is number => y !== null);
-  const wristPeak = wristYValues.length > 0 ? Math.min(...wristYValues) : null; // smallest y = highest point (screen coords)
-
-  const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
-
-  const skipped = shotType ? (SHOT_SKIPS[shotType] ?? []) : [];
-
-  return METRICS[mode].filter((def) => !skipped.includes(def.key) && !NOT_SCORED.includes(def.key)).map((def) => {
-    let value: number;
-    if (def.key === 'headStability') {
-      value = headSpread;
-    } else if (mode === 'batting' && def.key === 'batSwingPlane' && wristPeak !== null) {
-      // For swing plane, weight the contact phase (wrist descending) more than the backswing
-      const contactFrames = usable.filter((f) => f.wristY !== null && f.wristY > wristPeak + 0.05);
-      const pool = contactFrames.length >= MIN_FRAMES / 2 ? contactFrames : usable;
-      value = mean(pool.map((f) => f.values[def.key]).filter((v) => !isNaN(v)));
-    } else {
-      const raw = usable.map((f) => f.values[def.key]).filter((v) => v !== undefined && !isNaN(v));
-      value = raw.length > 0 ? mean(raw) : 0;
+/** Fills landmark gaps of up to three frames so a blink does not drop the joint. */
+export function interpolateGaps(frames: Landmark[][], maxGap = 3): Landmark[][] {
+  const out = frames.map((frame) => frame.map((point) => ({ ...point })));
+  const count = out[0]?.length ?? 0;
+  for (let joint = 0; joint < count; joint++) {
+    let i = 0;
+    while (i < out.length) {
+      if ((out[i][joint]?.visibility ?? 0) >= MIN_VISIBILITY) { i++; continue; }
+      const before = i - 1;
+      while (i < out.length && (out[i][joint]?.visibility ?? 0) < MIN_VISIBILITY) i++;
+      const after = i;
+      const gap = after - before - 1;
+      if (before >= 0 && after < out.length && gap > 0 && gap <= maxGap) {
+        const a = out[before][joint];
+        const b = out[after][joint];
+        for (let step = 1; step <= gap; step++) {
+          const t = step / (gap + 1);
+          out[before + step][joint] = {
+            x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t,
+            z: (a.z ?? 0) + ((b.z ?? 0) - (a.z ?? 0)) * t,
+            visibility: Math.min(a.visibility ?? 0, b.visibility ?? 0),
+          };
+        }
+      }
     }
+  }
+  return out;
+}
 
-    // Apply shot-type override if present
-    const ideal: [number, number] = overrides[def.key] ?? def.ideal;
-    return { ...def, ideal, value, score: scoreFor(value, ideal, def.tolerance, def.best) };
+/** Savitzky–Golay (window 5, quadratic) on x and y. A half-resolution clip jitters less after this. */
+export function smoothKeypoints(frames: Landmark[][]): Landmark[][] {
+  if (frames.length < 5) return frames.map((frame) => frame.map((point) => ({ ...point })));
+  const out = frames.map((frame) => frame.map((point) => ({ ...point })));
+  const joints = frames[0]?.length ?? 0;
+  for (let joint = 0; joint < joints; joint++) {
+    for (let i = 2; i < frames.length - 2; i++) {
+      if ([-2, -1, 0, 1, 2].some((k) => (frames[i + k][joint]?.visibility ?? 0) < MIN_VISIBILITY)) continue;
+      let x = 0, y = 0;
+      for (let k = -2; k <= 2; k++) {
+        x += SG[k + 2] * frames[i + k][joint].x;
+        y += SG[k + 2] * frames[i + k][joint].y;
+      }
+      out[i][joint] = { ...out[i][joint], x: x / 35, y: y / 35 };
+    }
+  }
+  return out;
+}
+
+/** Gap-fill then smooth. Both the page and the clip script score this, not the raw points. */
+export function prepareFrames(frames: Landmark[][]): Landmark[][] {
+  return smoothKeypoints(interpolateGaps(frames));
+}
+
+/** Shoulder width divided by trunk length. Front-on is wide; side-on the shoulders overlap. */
+export function detectView(frames: Landmark[][], w: number, h: number): { view: View; confident: boolean; ratio: number } {
+  const ratios: number[] = [];
+  for (const lm of frames) {
+    if (!coreVisible(lm)) continue;
+    const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+    const torso = Math.max(1, dist(mid(px(L.lShoulder), px(L.rShoulder)), mid(px(L.lHip), px(L.rHip))));
+    ratios.push(dist(px(L.lShoulder), px(L.rShoulder)) / torso);
+  }
+  if (ratios.length < 3) return { view: 'side', confident: false, ratio: 0 };
+  const ratio = median(ratios);
+  // A front-on chest is often only about 0.7 of the trunk. Side-on shoulders almost overlap.
+  // Only those extremes contradict a chosen view. 0.68 and 0.94 do not.
+  const view: View = ratio >= 1.15 ? 'front' : 'side';
+  const confident = ratio >= 1.45 || ratio <= 0.28;
+  return { view, confident, ratio };
+}
+
+/**
+ * The chosen view is always what gets scored. A hint is only added when the shoulders clearly
+ * contradict that choice, and the hint says which way. A clear picture never switches in silence.
+ */
+export function resolveView(chosen: View, detected: { view: View; confident: boolean }): { view: View; hint: string | null } {
+  if (!detected.confident || detected.view === chosen) return { view: chosen, hint: null };
+  return {
+    view: chosen,
+    hint: detected.view === 'front' ? 'This looks front-on. Switch?' : 'This looks side-on. Switch?',
+  };
+}
+
+const torsoOf = (lm: Landmark[], w: number, h: number) => {
+  if (!coreVisible(lm)) return null;
+  const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  return Math.max(1, dist(mid(px(L.lShoulder), px(L.rShoulder)), mid(px(L.lHip), px(L.rHip))));
+};
+
+export type FramePick = { frame: number; confidence: ScoreConfidence };
+
+/**
+ * Release is the first high, near-vertical peak of the bowling wrist.
+ * A later peak 0.2s or more after that is the follow-through. A collapsed
+ * trunk is ignored. If the arm is too short in the picture to pass the
+ * straight-arm test, the highest wrist after the run-up is used instead.
+ */
+export function findRelease(frames: Landmark[][], hand: Hand, w: number, h: number, times?: number[]): FramePick | null {
+  const arm = hand === 'right'
+    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist }
+    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist };
+  const px = (lm: Landmark[], i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  const clock = times && times.length === frames.length ? times : frames.map((_, i) => i / 30);
+  const duration = clock.length >= 2 ? Math.max(0, (clock[clock.length - 1] ?? 0) - (clock[0] ?? 0)) : 0;
+  const at = (i: number) => (clock[i] ?? 0) - (clock[0] ?? 0);
+  const early = (i: number) => duration >= 1 && at(i) < 0.35;
+  const torsoPx = (lm: Landmark[]) => {
+    if (!visible(lm, L.lShoulder, L.rShoulder, L.lHip, L.rHip)) return null;
+    return Math.hypot(
+      ((lm[L.lShoulder].x + lm[L.rShoulder].x) / 2 - (lm[L.lHip].x + lm[L.rHip].x) / 2) * w,
+      ((lm[L.lShoulder].y + lm[L.rShoulder].y) / 2 - (lm[L.lHip].y + lm[L.rHip].y) / 2) * h,
+    );
+  };
+  const torsos = frames.map(torsoPx).filter((value): value is number => value != null && value > 1);
+  const medianTorso = torsos.length ? [...torsos].sort((a, b) => a - b)[Math.floor(torsos.length / 2)] : 1;
+
+  const sample = (i: number) => {
+    const lm = frames[i];
+    if (!lm || !visible(lm, arm.shoulder, arm.wrist)) return null;
+    const torso = torsoPx(lm);
+    if (torso == null || torso < medianTorso * 0.7) return null;
+    const wrist = px(lm, arm.wrist);
+    const shoulder = px(lm, arm.shoulder);
+    const dy = shoulder.y - wrist.y;
+    const reach = dist(wrist, shoulder) / torso;
+    const elbow = visible(lm, arm.elbow) ? angleAt(shoulder, px(lm, arm.elbow), wrist) : null;
+    const angle = Math.abs((Math.atan2(wrist.x - shoulder.x, dy) * 180) / Math.PI);
+    const extended = dy > torso * 0.08 && (reach >= 0.28 || (elbow != null && elbow >= 130));
+    return { dy, angle, extended };
+  };
+
+  const peaks: number[] = [];
+  for (let i = 1; i < frames.length - 1; i++) {
+    const here = sample(i);
+    const prev = sample(i - 1);
+    const next = sample(i + 1);
+    if (!here || here.dy <= 0) continue;
+    if (prev && here.dy < prev.dy - medianTorso * 0.04) continue;
+    if (next && next.dy > here.dy + medianTorso * 0.03) continue;
+    peaks.push(i);
+  }
+
+  // The delivery stride is when the feet are spread. A high hand in the run-up, before that
+  // spread, is not the release. If the feet never spread, a front foot that comes down out of
+  // the jump marks the same moment.
+  const frontAnkle = hand === 'right' ? L.lAnkle : L.rAnkle;
+  const backAnkle = hand === 'right' ? L.rAnkle : L.lAnkle;
+  const feet: { i: number; sep: number; frontY: number }[] = [];
+  frames.forEach((lm, i) => {
+    if (!lm || !visible(lm, frontAnkle, backAnkle)) return;
+    feet.push({ i, sep: dist(px(lm, frontAnkle), px(lm, backAnkle)), frontY: px(lm, frontAnkle).y });
   });
+  let stride: { start: number; end: number } | null = null;
+  if (feet.length >= 5) {
+    const seps = feet.map((foot) => foot.sep).sort((a, b) => a - b);
+    const medSep = seps[Math.floor(seps.length / 2)] ?? 0;
+    const maxSep = seps[seps.length - 1] ?? 0;
+    if (maxSep > medSep * 1.45 && maxSep > medSep + medianTorso * 0.35) {
+      const inside = feet.filter((foot) => foot.sep >= maxSep * 0.72);
+      if (inside.length >= 2) stride = { start: inside[0].i, end: inside[inside.length - 1].i };
+    } else {
+      const ys = feet.map((foot) => foot.frontY).sort((a, b) => a - b);
+      const lifted = (ys[ys.length - 1] ?? 0) - (ys[0] ?? 0);
+      // A small rise and fall of the foot is not a jump. The run-up has the front foot clearly off the ground.
+      if (lifted > medianTorso * 0.65) {
+        const down = (ys[ys.length - 1] ?? 0) - lifted * 0.25;
+        const plant = feet.find((foot) => foot.frontY >= down);
+        if (plant && plant.i > 2) stride = { start: plant.i, end: frames.length - 1 };
+      }
+    }
+  }
+  const inStride = (i: number) => stride == null || (i >= stride.start && i <= stride.end);
+  const isVertical = (i: number) => {
+    const armAt = sample(i);
+    return armAt != null && armAt.extended && armAt.angle <= 55;
+  };
+  const inWindow = peaks.filter((i) => inStride(i) && isVertical(i));
+  const vertical = inWindow.length > 0 ? inWindow : peaks.filter(isVertical);
+  const later = vertical.some((i) => !early(i));
+  const usable = vertical.filter((i) => !(early(i) && (later || duration >= 1)));
+  if (usable.length > 0) {
+    const tallest = Math.max(...usable.map((i) => sample(i)?.dy ?? 0));
+    // Inside a clear stride the first near-vertical peak is the release, and a peak 0.2s
+    // later is the follow-through. Without a stride, only a peak close to the tallest counts,
+    // so a lower pump in the run-up is left out.
+    const fraction = stride && inWindow.length > 0 ? 0.82 : 0.9;
+    const strong = usable.filter((i) => (sample(i)?.dy ?? 0) >= tallest * fraction);
+    const first = (strong.length > 0 ? strong : usable)[0];
+    return { frame: first, confidence: 'high' };
+  }
+
+  let fallback = -1;
+  let best = -Infinity;
+  frames.forEach((_, i) => {
+    if (duration >= 1 && early(i)) return;
+    const armAt = sample(i);
+    if (!armAt || armAt.dy <= best) return;
+    best = armAt.dy;
+    fallback = i;
+  });
+  // A short or foreshortened arm never passes the straight-arm test. The highest wrist after the run-up is still the release, at medium confidence.
+  if (fallback >= 0 && best > medianTorso * 0.04) return { frame: fallback, confidence: 'medium' };
+  return null;
+}
+
+export function findReleaseFrame(frames: Landmark[][], hand: Hand, w: number, h: number, times?: number[]): number | null {
+  return findRelease(frames, hand, w, h, times)?.frame ?? null;
+}
+
+/**
+ * Contact is on the downswing after the first backlift, at or just before the hand is fastest.
+ * The finish can be faster, so a later swing is not used once the first downswing has peaked.
+ */
+export function findContact(frames: Landmark[][], hand: Hand, w: number, h: number, times?: number[], shot?: ShotType): FramePick {
+  const wrist = hand === 'right' ? L.rWrist : L.lWrist;
+  const n = frames.length;
+  if (n === 0) return { frame: 0, confidence: 'low' };
+  const clock = times && times.length === n ? times : frames.map((_, i) => i / 30);
+  const point = (i: number): Point | null => {
+    const lm = frames[i];
+    if (!lm || (lm[wrist]?.visibility ?? 0) < MIN_VISIBILITY) return null;
+    return { x: lm[wrist].x * w, y: lm[wrist].y * h };
+  };
+  const trunks = frames.map((lm) => (lm ? torsoOf(lm, w, h) : null)).filter((value): value is number => value != null && value > 1);
+  const trunk = trunks.length ? [...trunks].sort((a, b) => a - b)[Math.floor(trunks.length / 2)] : h * 0.25;
+  const heights = frames.map((lm) => playerSize(lm)).filter((value) => value > 0.05).sort((a, b) => a - b);
+  const personPx = (heights.length ? heights[Math.floor(heights.length / 2)] : 0.3) * h;
+  // A small figure is a noisy figure. Average the wrist over a wider window before reading its speed.
+  const radius = personPx < 180 ? 2 : 0;
+  const rawPts = frames.map((_, i) => point(i));
+  const smoothAt = (i: number): Point | null => {
+    let sx = 0;
+    let sy = 0;
+    let count = 0;
+    for (let k = -radius; k <= radius; k++) {
+      const sample = rawPts[i + k];
+      if (!sample) continue;
+      sx += sample.x;
+      sy += sample.y;
+      count++;
+    }
+    return count > 0 ? { x: sx / count, y: sy / count } : null;
+  };
+  const yAt = (i: number): number | null => smoothAt(i)?.y ?? null;
+  // A fixed margin, not a fraction of the clip. A trim can put contact near either end.
+  const t0 = clock[0] ?? 0;
+  const t1 = clock[n - 1] ?? t0;
+  const span = Math.max(0, t1 - t0);
+  const margin = span > 0.6 ? 0.15 : Math.min(0.15, span * 0.08);
+  let lo = 0;
+  let hi = n - 1;
+  for (let i = 0; i < n; i++) {
+    if ((clock[i] ?? 0) - t0 >= margin - 1e-6) { lo = i; break; }
+  }
+  for (let i = n - 1; i >= 0; i--) {
+    if (t1 - (clock[i] ?? 0) >= margin - 1e-6) { hi = i; break; }
+  }
+  if (hi <= lo) { lo = 0; hi = n - 1; }
+  // The first backlift leaves the stance and reaches its first high. A later, higher finish is not it.
+  // A trim can start with the hands already up. That opening is the backlift; it does not have to be seen rising.
+  const seenY: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const y = yAt(i);
+    if (y != null) seenY.push(y);
+  }
+  seenY.sort((a, b) => a - b);
+  const handsHigh = seenY[0] ?? 0;
+  const handsLow = seenY[seenY.length - 1] ?? handsHigh;
+  let open = 0;
+  while (open < n - 1 && yAt(open) == null) open++;
+  const opening = yAt(open);
+  let dropsSoon = false;
+  if (opening != null) {
+    for (let i = open; i < n && (clock[i] ?? 0) - (clock[open] ?? 0) <= 0.45; i++) {
+      const y = yAt(i);
+      if (y != null && y > opening + h * 0.05) { dropsSoon = true; break; }
+    }
+  }
+  // Only a clip that opens high and then comes down is mid-backlift. A long rise is the backlift itself.
+  const startedUp = opening != null
+    && dropsSoon
+    && handsLow - handsHigh > h * 0.04
+    && handsLow - opening >= (handsLow - handsHigh) * 0.55;
+  let lowY = yAt(lo) ?? opening ?? 0;
+  let rising = startedUp;
+  let top = startedUp ? open : lo;
+  let topY = startedUp ? (opening ?? lowY) : lowY;
+  let peakRise = 0;
+  if (!startedUp) {
+    for (let i = lo; i <= hi; i++) {
+      const y = yAt(i);
+      if (y == null) continue;
+      if (!rising) {
+        if (y >= lowY) { lowY = y; top = i; topY = y; continue; }
+        if (lowY - y >= h * 0.045) { rising = true; top = i; topY = y; }
+        continue;
+      }
+      const prev = yAt(i - 1);
+      const rise = prev == null ? 0 : prev - y;
+      if (rise > peakRise) peakRise = rise;
+      if (y < topY) { topY = y; top = i; }
+      const gained = lowY - topY;
+      const stalled = gained > h * 0.05 && peakRise > h * 0.015 && rise < peakRise * 0.35 && i > top;
+      if (stalled || y > topY + h * 0.04) break;
+    }
+  }
+  if (startedUp || !rising) {
+    // Hands already up, or they never left the stance into a clear lift. Take the first top, then the drop.
+    top = startedUp ? open : lo;
+    topY = yAt(top) ?? Infinity;
+    for (let i = top; i <= hi; i++) {
+      const y = yAt(i);
+      if (y == null) continue;
+      if (y < topY) { topY = y; top = i; }
+      if (i > top && y > topY + h * 0.04) break;
+    }
+  }
+  const speeds: { i: number; speed: number }[] = [];
+  const end = Math.min(hi, top + Math.max(4, Math.round(n * 0.5)));
+  for (let i = Math.max(1, top + 1); i <= end; i++) {
+    const prev = smoothAt(i - 1);
+    const here = smoothAt(i);
+    if (!prev || !here) continue;
+    const y = yAt(i);
+    // Speed on the way down only. Movement while the hands are still at the top is the backlift.
+    // A small dip off the top is still the backlift. The downswing has clearly left it.
+    if (y == null || y < topY + h * 0.05) continue;
+    const dt = Math.max(1 / 240, Math.abs((clock[i] ?? i) - (clock[i - 1] ?? i - 1)) || 1 / 30);
+    const elapsed = (clock[i] ?? 0) - (clock[top] ?? 0);
+    if (elapsed > 0.9 && speeds.length > 2) break;
+    // Trunks per second, so a small figure is not a slower swing.
+    speeds.push({ i, speed: dist(here, prev) / dt / trunk });
+  }
+  if (shot === 'drive') {
+    const arrived = driveArrival();
+    if (arrived != null) return { frame: arrived, confidence: 'medium' };
+  }
+  if (speeds.length === 0) {
+    let frame = Math.min(hi, Math.max(lo, top));
+    if (rising) frame = arrivalFrame(frame);
+    frame = levelBat(frame);
+    return { frame, confidence: 'medium' };
+  }
+  const peak = speeds.reduce((a, b) => (b.speed > a.speed ? b : a));
+  const band = speeds.filter((sample) => sample.i <= peak.i && sample.speed >= peak.speed * 0.9);
+  let best = (band.length > 0 ? band : [peak]).reduce((a, b) => (a.i <= b.i ? a : b));
+  best = { i: levelBat(best.i), speed: peak.speed };
+  const sorted = [...speeds].sort((a, b) => a.speed - b.speed);
+  const mid = sorted[Math.floor(sorted.length / 2)].speed;
+  const confidence: ScoreConfidence = peak.speed >= Math.max(mid * 1.4, 1) ? 'high' : 'medium';
+  return { frame: best.i, confidence };
+
+  // A drive meets the ball as the hands first arrive at the front shoulder and check.
+  function driveArrival(): number | null {
+    const frontWrist = hand === 'right' ? L.lWrist : L.rWrist;
+    const backWrist = hand === 'right' ? L.rWrist : L.lWrist;
+    const frontShoulder = hand === 'right' ? L.lShoulder : L.rShoulder;
+    const body = frames.map((lm) => playerSize(lm)).filter((value) => value > 0.05).sort((a, b) => a - b);
+    const typical = body.length ? body[Math.floor(body.length / 2)] : 0;
+    const frontSeen = (lm: Landmark[] | undefined) => !!lm
+      && (lm[frontWrist]?.visibility ?? 0) >= 0.45
+      && (lm[frontShoulder]?.visibility ?? 0) >= MIN_VISIBILITY
+      && (typical <= 0 || playerSize(lm) >= typical * 0.75);
+    let crossAt = -1;
+    for (let i = lo; i <= hi; i++) {
+      const lm = frames[i];
+      if (!frontSeen(lm)) continue;
+      if ((clock[i] ?? 0) - (clock[0] ?? 0) < 0.5) continue;
+      if ((lm[frontWrist].y - lm[frontShoulder].y) * h < h * 0.03) { crossAt = i; break; }
+    }
+    if (crossAt < 0) return null;
+    // In that short arrival the bat is nearest vertical. A frozen, half-missing pose is not quieter, it is wrong.
+    let best = crossAt;
+    let upright = Infinity;
+    for (let i = crossAt; i <= hi && (clock[i] ?? 0) - (clock[crossAt] ?? 0) <= 0.2; i++) {
+      const lm = frames[i];
+      if (!lm || (lm[frontWrist]?.visibility ?? 0) < 0.45 || (lm[backWrist]?.visibility ?? 0) < 0.45) continue;
+      if (typical > 0 && playerSize(lm) < typical * 0.75) continue;
+      const ang = Math.abs((Math.atan2((lm[backWrist].x - lm[frontWrist].x) * w, (lm[backWrist].y - lm[frontWrist].y) * h) * 180) / Math.PI);
+      const plane = Math.min(ang, 180 - ang);
+      if (plane < upright) { upright = plane; best = i; }
+    }
+    return best;
+  }
+
+  function batPlane(i: number): number | null {
+    const other = hand === 'right' ? L.lWrist : L.rWrist;
+    const lm = frames[i];
+    if (!lm) return null;
+    if ((lm[wrist]?.visibility ?? 0) < 0.35 || (lm[other]?.visibility ?? 0) < 0.35) return null;
+    const ang = Math.abs((Math.atan2((lm[wrist].x - lm[other].x) * w, (lm[wrist].y - lm[other].y) * h) * 180) / Math.PI);
+    return Math.min(ang, 180 - ang);
+  }
+
+  // A pull meets the ball as the bat first levels and stays level. A level bat that
+  // drops back to vertical was the backlift. One bad frame does not reset it.
+  function levelBat(candidate: number): number {
+    if (shot !== 'pull' && shot !== 'cut' && shot !== 'sweep') return candidate;
+    // A small figure foreshortens the bat, so the same level shot reads lower.
+    const hit = personPx < 180 ? 52 : 68;
+    const support = personPx < 180 ? 48 : 60;
+    const readings: { i: number; plane: number }[] = [];
+    for (let i = 0; i <= candidate; i++) {
+      const plane = batPlane(i);
+      if (plane != null) readings.push({ i, plane });
+    }
+    for (let r = 0; r < readings.length; r++) {
+      const here = readings[r];
+      if (here.plane < hit) continue;
+      const span = personPx < 180 ? 0.2 : 0.119;
+      const near = readings.slice(r, r + 4).filter((item) => (clock[item.i] ?? 0) - (clock[here.i] ?? 0) <= span);
+      const backed = near.filter((item) => item.plane >= support).length >= 2;
+      if (!backed) continue;
+      // A one-frame flick during the backlift is not the shot. This one is held.
+      if ((clock[candidate] ?? 0) - (clock[here.i] ?? 0) > 0.13) return here.i;
+    }
+    return candidate;
+  }
+
+  // The hands ran up and never came down, so the last high is the follow-through.
+  // A cross-bat shot arrives when the bat first levels.
+  function arrivalFrame(fallback: number): number {
+    const cross = shot === 'pull' || shot === 'cut' || shot === 'sweep';
+    if (cross) {
+      const other = hand === 'right' ? L.lWrist : L.rWrist;
+      for (let i = lo; i <= fallback; i++) {
+        const lm = frames[i];
+        if (!lm) continue;
+        if ((lm[wrist]?.visibility ?? 0) < MIN_VISIBILITY || (lm[other]?.visibility ?? 0) < MIN_VISIBILITY) continue;
+        const ang = Math.abs((Math.atan2((lm[wrist].x - lm[other].x) * w, (lm[wrist].y - lm[other].y) * h) * 180) / Math.PI);
+        const plane = Math.min(ang, 180 - ang);
+        if (plane >= 70 && (clock[fallback] ?? 0) - (clock[i] ?? 0) > 0.12) return i;
+      }
+      return fallback;
+    }
+    return fallback;
+  }
+}
+
+export function findContactFrame(frames: Landmark[][], hand: Hand, w: number, h: number, times?: number[]): number {
+  return findContact(frames, hand, w, h, times).frame;
+}
+
+/** How far the head sits to the side of the front foot, in trunk lengths. Front-on only. */
+export function headOverFrontFoot(lm: Landmark[], hand: Hand, w: number, h: number): number | null {
+  const frontAnkle = hand === 'right' ? L.lAnkle : L.rAnkle;
+  if (!visible(lm, L.nose, frontAnkle) || !coreVisible(lm)) return null;
+  const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  const size = torsoOf(lm, w, h);
+  return size ? Math.abs(px(L.nose).x - px(frontAnkle).x) / size : null;
+}
+
+/**
+ * How far the head sits behind the front leg, in trunk lengths. Forward of that leg counts as 0.
+ * A knee that has lunged past the foot is not the marker: the head is behind only when it trails
+ * both the knee and the ankle. Leaning toward the ball does not count.
+ */
+export function headBehindFrontKnee(lm: Landmark[], hand: Hand, w: number, h: number): number | null {
+  const frontKnee = hand === 'right' ? L.lKnee : L.rKnee;
+  const frontAnkle = hand === 'right' ? L.lAnkle : L.rAnkle;
+  const backAnkle = hand === 'right' ? L.rAnkle : L.lAnkle;
+  if (!visible(lm, L.nose, frontKnee) || !coreVisible(lm)) return null;
+  const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  const size = torsoOf(lm, w, h);
+  if (!size) return null;
+  let forward = { x: 1, y: 0 };
+  if (visible(lm, frontAnkle, backAnkle)) {
+    const step = { x: px(frontAnkle).x - px(backAnkle).x, y: px(frontAnkle).y - px(backAnkle).y };
+    const length = Math.hypot(step.x, step.y);
+    if (length > size * 0.2) forward = { x: step.x / length, y: step.y / length };
+  }
+  const aheadOf = (joint: number) => {
+    const from = { x: px(L.nose).x - px(joint).x, y: px(L.nose).y - px(joint).y };
+    return from.x * forward.x + from.y * forward.y;
+  };
+  let ahead = aheadOf(frontKnee);
+  if (visible(lm, frontAnkle)) ahead = Math.max(ahead, aheadOf(frontAnkle));
+  return Math.max(0, -ahead) / size;
+}
+
+/**
+ * How much the head moves relative to the hips, in trunk lengths.
+ * A stride or a camera pan moves the whole body and does not count. Leaning the head forward,
+ * which skilled batters do, is along the pitch and does not count either. What remains is the
+ * head bobbing or swaying off the body.
+ */
+export function headWobble(frames: Landmark[][], w: number, h: number): number | null {
+  const rows: { size: number; across: number; along: number; rise: number }[] = [];
+  for (const lm of frames) {
+    if (!visible(lm, L.nose) || !coreVisible(lm)) continue;
+    const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+    const size = torsoOf(lm, w, h);
+    if (!size) continue;
+    const hips = mid(px(L.lHip), px(L.rHip));
+    const offset = { x: (px(L.nose).x - hips.x) / size, y: (px(L.nose).y - hips.y) / size };
+    const across = { x: px(L.rShoulder).x - px(L.lShoulder).x, y: px(L.rShoulder).y - px(L.lShoulder).y };
+    const acrossLen = Math.hypot(across.x, across.y);
+    rows.push({
+      size,
+      across: acrossLen,
+      along: acrossLen > 1 ? (offset.x * across.x + offset.y * across.y) / acrossLen : offset.y,
+      rise: offset.y,
+    });
+  }
+  // One collapsed frame, or a shoulder line that folds in, is a bad pose. It is not the head moving.
+  // The whole window uses one measure. Mixing a side-on rise with a front-on sway makes a still head look wild.
+  const trunk = median(rows.map((row) => row.size));
+  const shoulder = median(rows.map((row) => row.across));
+  const kept = rows.filter((row) => row.size >= trunk * 0.7 && row.across >= shoulder * 0.6);
+  const frontOn = shoulder >= trunk * 0.45;
+  const samples = kept.map((row) => (frontOn ? row.along : row.rise));
+  if (samples.length < 3) return null;
+  const centre = mean(samples);
+  return Math.sqrt(mean(samples.map((value) => (value - centre) ** 2)));
+}
+
+/**
+ * How far the head slides along the trunk, as a fraction of trunk length.
+ * A pull turns the body under the head, so movement against the hips is expected.
+ * Movement along the trunk is the part that is actually unstable.
+ */
+export function headOnTrunk(frames: Landmark[][], w: number, h: number): number | null {
+  const samples: number[] = [];
+  for (const lm of frames) {
+    if (!visible(lm, L.nose) || !coreVisible(lm)) continue;
+    const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+    const hips = mid(px(L.lHip), px(L.rHip));
+    const shoulders = mid(px(L.lShoulder), px(L.rShoulder));
+    const trunk = { x: shoulders.x - hips.x, y: shoulders.y - hips.y };
+    const length = Math.hypot(trunk.x, trunk.y);
+    if (length < 1) continue;
+    const nose = px(L.nose);
+    samples.push(((nose.x - hips.x) * trunk.x + (nose.y - hips.y) * trunk.y) / (length * length));
+  }
+  if (samples.length < 3) return null;
+  const centre = mean(samples);
+  return Math.sqrt(mean(samples.map((value) => (value - centre) ** 2)));
+}
+
+/** Largest body nearest the middle, then the one closest to the person already being followed. */
+export function choosePose(people: Landmark[][], previous: Landmark[] | null, w = 1, h = 1): Landmark[] | null {
+  const bodies = people.filter((lm) => lm.some((point) => (point.visibility ?? 0) >= MIN_VISIBILITY));
+  if (bodies.length === 0) return null;
+  const score = (lm: Landmark[]) => {
+    const size = playerSize(lm);
+    const hips = coreVisible(lm) ? mid(
+      { x: lm[L.lHip].x, y: lm[L.lHip].y },
+      { x: lm[L.rHip].x, y: lm[L.rHip].y },
+    ) : { x: 0.5, y: 0.5 };
+    const central = 1 - Math.min(1, Math.hypot(hips.x - 0.5, hips.y - 0.5) * 1.4);
+    let track = 1;
+    if (previous && coreVisible(previous) && coreVisible(lm)) {
+      const before = mid({ x: previous[L.lHip].x * w, y: previous[L.lHip].y * h }, { x: previous[L.rHip].x * w, y: previous[L.rHip].y * h });
+      const now = mid({ x: lm[L.lHip].x * w, y: lm[L.lHip].y * h }, { x: lm[L.rHip].x * w, y: lm[L.rHip].y * h });
+      const sizePx = torsoOf(lm, w, h) ?? 1;
+      track = 1 / (1 + dist(before, now) / sizePx);
+    }
+    return size * (0.45 + central) * (0.5 + track);
+  };
+  return bodies.reduce((best, lm) => (score(lm) > score(best) ? lm : best));
+}
+
+/** One person across the clip. `crowded` is true when another person is in frame often enough to matter. */
+export function lockPerson(frames: Landmark[][][]): { frames: Landmark[][]; crowded: boolean; index: number[]; which: number[] } {
+  const chosen: Landmark[][] = [];
+  const index: number[] = [];
+  const which: number[] = [];
+  let previous: Landmark[] | null = null;
+  let crowdedFrames = 0;
+  let seen = 0;
+  frames.forEach((people, i) => {
+    const visiblePeople = people.filter((lm) => playerSize(lm) > 0.05);
+    if (visiblePeople.length > 0) seen++;
+    if (visiblePeople.length > 1) crowdedFrames++;
+    const pose = choosePose(people, previous);
+    if (pose) {
+      chosen.push(pose);
+      index.push(i);
+      which.push(Math.max(0, people.indexOf(pose)));
+      previous = pose;
+    }
+  });
+  return { frames: chosen, index, which, crowded: seen > 0 && crowdedFrames / seen >= 0.3 };
+}
+
+function shotTip(def: MetricDef, shotType?: ShotType): string {
+  return (shotType && SHOT_TIPS[shotType]?.[def.key]) || def.tip;
+}
+
+function medianOrNull(values: number[]): number | null {
+  const finite = values.filter((value) => Number.isFinite(value));
+  return finite.length > 0 ? median(finite) : null;
+}
+
+// Averages each metric across the contact window, not the whole clip. Each measure uses only the
+// joints it needs. Shot-type ranges and tips override the drive defaults.
+export function analyse(frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side', times?: number[], lengths?: BoneLengths): MetricResult[] | null {
+  if (mode === 'bowling') return bowlingAnalysis(frames, hand, w, h, view, times, lengths)?.metrics ?? null;
+  return scoreBatting(frames, hand, w, h, shotType, view, times, lengths);
+}
+
+/** Joints a batting measure needs. Missing feet do not throw away an elbow reading. */
+function battingNeeds(key: string, hand: Hand): number[] {
+  const front = hand === 'right'
+    ? { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist, knee: L.lKnee, ankle: L.lAnkle }
+    : { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist, knee: L.rKnee, ankle: L.rAnkle };
+  const back = hand === 'right'
+    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist }
+    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist };
+  switch (key) {
+    case 'frontElbow': return [front.shoulder, front.elbow, front.wrist];
+    case 'kneeFlex': return [L.lHip, L.lKnee, L.lAnkle, L.rHip, L.rKnee, L.rAnkle];
+    case 'headOverKnee':
+    case 'headOverFront': return [L.nose, front.knee];
+    case 'shoulderLevel': return [L.lShoulder, L.rShoulder];
+    case 'headStability': return [L.nose, L.lHip, L.rHip];
+    case 'batSwingPlane': return [L.lWrist, L.rWrist];
+    case 'backElbow': return [back.shoulder, back.elbow, back.wrist];
+    case 'balance': return [L.lHip, L.rHip, L.lAnkle, L.rAnkle];
+    case 'headLevel': return [2, 5];
+    default: return [L.lShoulder, L.rShoulder, L.lHip, L.rHip];
+  }
+}
+
+function battingValue(lm: Landmark[], key: string, hand: Hand, w: number, h: number): number | null {
+  if (key === 'headOverKnee') return headBehindFrontKnee(lm, hand, w, h);
+  if (key === 'headOverFront') return headOverFrontFoot(lm, hand, w, h);
+  if (key === 'weightTransfer') {
+    if (!visible(lm, L.lHip, L.rHip, L.lAnkle, L.rAnkle)) return null;
+    const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+    const size = torsoOf(lm, w, h);
+    const frontAnkle = hand === 'right' ? L.lAnkle : L.rAnkle;
+    const backAnkle = hand === 'right' ? L.rAnkle : L.lAnkle;
+    const span = Math.abs(px(frontAnkle).x - px(backAnkle).x);
+    // From the side the feet often overlap. A stride that narrow is not a readable weight shift,
+    // so it is treated as a balanced base rather than as a guess.
+    if (!size || span < size * 0.35) return 0.5;
+    const hipMid = mid(px(L.lHip), px(L.rHip));
+    return Math.min(1, Math.max(0, Math.abs(hipMid.x - px(backAnkle).x) / span));
+  }
+  if (key === 'batSwingPlane' && visible(lm, L.lWrist, L.rWrist)) {
+    const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+    const size = torsoOf(lm, w, h);
+    // The hands sit together on the handle. A gap of a trunk or more is a lost hand, not the bat.
+    if (size && dist(px(L.lWrist), px(L.rWrist)) > size * 0.9) return null;
+  }
+  const sample = frameMetrics(lm, 'batting', hand, w, h);
+  // frameMetrics still wants a full body. Read the one angle when only its joints are there.
+  if (sample && Object.prototype.hasOwnProperty.call(sample.values, key) && sample.values[key] != null) return sample.values[key];
+  if (!visible(lm, ...battingNeeds(key, hand).filter((i) => i !== L.nose))) return null;
+  const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  const front = hand === 'right'
+    ? { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist }
+    : { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist };
+  const back = hand === 'right'
+    ? { shoulder: L.rShoulder, elbow: L.rElbow, wrist: L.rWrist }
+    : { shoulder: L.lShoulder, elbow: L.lElbow, wrist: L.lWrist };
+  if (key === 'frontElbow' && visible(lm, front.shoulder, front.elbow, front.wrist)) return angleAt(px(front.shoulder), px(front.elbow), px(front.wrist));
+  if (key === 'backElbow' && visible(lm, back.shoulder, back.elbow, back.wrist)) return angleAt(px(back.shoulder), px(back.elbow), px(back.wrist));
+  if (key === 'shoulderLevel' && visible(lm, L.lShoulder, L.rShoulder)) return tilt(px(L.lShoulder), px(L.rShoulder));
+  if (key === 'headLevel' && visible(lm, 2, 5)) return tilt(px(2), px(5));
+  if (key === 'kneeFlex' && visible(lm, L.lHip, L.lKnee, L.lAnkle, L.rHip, L.rKnee, L.rAnkle)) {
+    return mean([angleAt(px(L.lHip), px(L.lKnee), px(L.lAnkle)), angleAt(px(L.rHip), px(L.rKnee), px(L.rAnkle))]);
+  }
+  if (key === 'batSwingPlane' && visible(lm, L.lWrist, L.rWrist)) {
+    const size = torsoOf(lm, w, h);
+    const sep = dist(px(L.lWrist), px(L.rWrist));
+    // The hands sit together on the handle. A gap of a trunk or more is a lost hand, not the bat.
+    if (size && sep > size * 0.9) return null;
+    const line = Math.abs((Math.atan2(px(L.rWrist).x - px(L.lWrist).x, px(L.rWrist).y - px(L.lWrist).y) * 180) / Math.PI);
+    return Math.min(line, 180 - line);
+  }
+  if (key === 'balance' && visible(lm, L.lHip, L.rHip, L.lAnkle, L.rAnkle)) {
+    const hips = mid(px(L.lHip), px(L.rHip));
+    const feet = mid(px(L.lAnkle), px(L.rAnkle));
+    const size = torsoOf(lm, w, h);
+    return size ? Math.abs(hips.x - feet.x) / size : null;
+  }
+  return null;
+}
+
+function scoreBatting(framesIn: Landmark[][], hand: Hand, w: number, h: number, shotType: ShotType | undefined, view: View, times?: number[], lengths?: BoneLengths): MetricResult[] | null {
+  const repaired = repairBoneLengths(framesIn, w, h, lengths);
+  const frames = prepareFrames(repaired);
+  if (frames.length < 4) return null;
+  // Contact is read on the raw wrists. Smoothing a one-frame bat angle hides the hit on a mirrored clip.
+  const contactPick = findContact(framesIn, hand, w, h, times, shotType);
+  const contact = contactPick.frame;
+  const clock = times && times.length === frames.length ? times : frames.map((_, i) => i / 30);
+  const at = clock[contact] ?? 0;
+  const window = frames.filter((_, i) => Math.abs((clock[i] ?? 0) - at) <= 0.1);
+  const scored = window.length > 0 ? window : [frames[contact]];
+  const defs = METRICS_BY_VIEW[view][ 'batting' ].filter((def) => !NOT_SCORED.includes(def.key) && !(shotType && (SHOT_SKIPS[shotType] ?? []).includes(def.key)));
+  const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
+  const metrics: MetricResult[] = [];
+  for (const def of defs) {
+    let value: number | null;
+    if (def.key === 'headStability') value = shotType === 'pull' ? headOnTrunk(scored, w, h) : headWobble(scored, w, h);
+    else value = medianOrNull(scored.map((lm) => battingValue(lm, def.key, hand, w, h)).filter((v): v is number => v !== null));
+    if (value === null) continue;
+    const ideal: [number, number] = overrides[def.key] ?? def.ideal;
+    metrics.push({ ...def, tip: shotTip(def, shotType), ideal, value, score: scoreFor(value, ideal, def.tolerance, def.best) });
+  }
+  const checked = annotateConfidence(metrics, scored, w, h, hand);
+  return checked.length >= 2 ? checked : null;
 }
 
 // Highlight score for one segment: technique score scaled by the share of frames with a clearly visible pose,
@@ -470,6 +1193,65 @@ export function overallScore(metrics: MetricResult[]) {
   return Math.round(mean(pool.map((m) => m.score)));
 }
 
+/** The measure with the most room to improve. Excused unique-action measures are left out. */
+export function weakestMeasure(metrics: MetricResult[]): MetricResult | null {
+  const counted = metrics.filter((m) => !m.excused);
+  if (counted.length === 0) return null;
+  return counted.reduce((worst, metric) => (metric.score < worst.score ? metric : worst));
+}
+
+/** One thing to practise for the weakest measure. The wording comes from the coaching rule, not from a model. */
+export function drillFor(metric: MetricResult): string {
+  const focus = metric.label.toLowerCase();
+  return `Film yourself again and look only at your ${focus}. Do it slowly five times: ${metric.tip}`;
+}
+
+const FULL_BODY = [L.nose, L.lShoulder, L.rShoulder, L.lHip, L.rHip, L.lAnkle, L.rAnkle];
+
+/** True when the head and both feet are in the picture, so the player has stepped back far enough. */
+export function wholeBodyVisible(lm: Landmark[] | undefined): boolean {
+  if (!lm) return false;
+  const seen = (i: number) => (lm[i]?.visibility ?? 0) >= MIN_VISIBILITY;
+  if (!FULL_BODY.every(seen)) return false;
+  const head = lm[L.nose].y ?? 1;
+  const feet = Math.max(lm[L.lAnkle].y ?? 0, lm[L.rAnkle].y ?? 0);
+  return head > 0.02 && feet < 0.98;
+}
+
+/**
+ * One number's confidence, from how well its joints were seen and whether a frame jumps off the path.
+ * A low number is left out of the overall score and is not shown as a firm reading.
+ */
+function annotateConfidence(metrics: MetricResult[], pool: Landmark[][], w: number, h: number, hand: Hand): MetricResult[] {
+  return metrics.map((metric) => {
+    const chains = metricJoints(metric.key, 'batting', hand).flat();
+    const joints = chains.length > 0 ? chains : [L.lShoulder, L.rShoulder, L.lHip, L.rHip];
+    const visibility = pool.map((lm) => {
+      const values = joints.map((index) => lm[index]?.visibility ?? 0);
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    });
+    const jumps: number[] = [];
+    for (let i = 1; i < pool.length - 1; i++) {
+      const torso = torsoOf(pool[i], w, h) ?? 1;
+      let worst = 0;
+      for (const joint of joints) {
+        const prev = pool[i - 1]?.[joint];
+        const here = pool[i]?.[joint];
+        const next = pool[i + 1]?.[joint];
+        if (!prev || !here || !next) continue;
+        const mid = { x: (prev.x + next.x) / 2, y: (prev.y + next.y) / 2 };
+        worst = Math.max(worst, Math.hypot((here.x - mid.x) * w, (here.y - mid.y) * h) / torso);
+      }
+      jumps.push(worst);
+    }
+    const reading = judgeMetric({ visibility, jumps, spread: null, spreadLimit: metric.unit === '°' ? 40 : 0.5 });
+    if (reading === 'low') {
+      return { ...metric, confidence: 'low', excused: true, tip: CLEAR_IMAGE, clearReason: clearReasonFrom({ visibility, jumps }) };
+    }
+    return { ...metric, confidence: reading };
+  });
+}
+
 /* ── Bowling: measured at release ──────────────────────────────────────────── */
 
 /**
@@ -477,32 +1259,26 @@ export function overallScore(metrics: MetricResult[]) {
  * Returns null when no bowling action can be seen, e.g. someone standing or walking.
  */
 export function bowlingAnalysis(
-  frames: Landmark[][], hand: Hand, w: number, h: number, view: View = 'side',
+  frames: Landmark[][], hand: Hand, w: number, h: number, view: View = 'side', times?: number[], lengths?: BoneLengths,
 ): { metrics: MetricResult[]; keyFrame: number; elbow: ElbowCheck; unique: UniqueKey[] } | null {
+  const smoothed = prepareFrames(frames);
   const arm = sides(hand);
   const p = (lm: Landmark[], i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
   const shoulderMid = (lm: Landmark[]) => mid(p(lm, L.lShoulder), p(lm, L.rShoulder));
   const hipMid = (lm: Landmark[]) => mid(p(lm, L.lHip), p(lm, L.rHip));
   const torso = (lm: Landmark[]) => Math.max(1, dist(shoulderMid(lm), hipMid(lm)));
 
-  // Release: the frame where the bowling hand is highest above its shoulder, with the arm reaching
-  // out. It does not have to be above the head, or a round-arm bowler would never be found.
-  let release = -1;
-  let best = 0;
-  frames.forEach((lm, i) => {
-    if (!coreVisible(lm) || !visible(lm, L.nose, arm.shoulder, arm.elbow, arm.wrist)) return;
-    const wrist = p(lm, arm.wrist);
-    const shoulder = p(lm, arm.shoulder);
-    const size = torso(lm);
-    const height = (shoulder.y - wrist.y) / size;
-    // A hand clearly above the shoulder on a reaching arm, or it is not a delivery
-    if (height < 0.15 || dist(wrist, shoulder) / size < 0.6) return;
-    if (height > best) {
-      best = height;
-      release = i;
-    }
-  });
+  // Release is inside the delivery stride, after the front foot lands and the arm comes up.
+  // The highest hand in the run-up is not the release.
+  const release = findReleaseFrame(frames, hand, w, h, times) ?? -1;
   if (release < 0) return null;
+  // Lengths repair glitch frames for the angles only. The release frame itself was chosen on the raw points.
+  const measured = repairBoneLengths(frames, w, h, lengths);
+  const releaseLm = measured[release] ?? frames[release];
+  const releaseSize = torso(releaseLm);
+  const best = visible(releaseLm, arm.wrist, arm.shoulder) && releaseSize > 0
+    ? (p(releaseLm, arm.shoulder).y - p(releaseLm, arm.wrist).y) / releaseSize
+    : 0;
   const atRelease = frames[release];
 
   // Which foot is down at release? Normally the one opposite the bowling arm.
@@ -514,7 +1290,13 @@ export function bowlingAnalysis(
   }
   const side = sides(hand, unique.includes('wrong-footed'));
 
-  const window = (before: number, after: number) => frames.slice(Math.max(0, release - before), release + after + 1);
+  const clock = times && times.length === frames.length ? times : frames.map((_, i) => i / 30);
+  const aroundTime = (before: number, after: number) => measured.filter((_, i) => {
+    const t = clock[i] ?? 0;
+    const at = clock[release] ?? 0;
+    return t >= at - before && t <= at + after;
+  });
+  const window = (before: number, after: number) => aroundTime(before / 30, after / 30);
   const measure = (pool: Landmark[][], needed: number[], fn: (lm: Landmark[]) => number) => {
     const values = pool.filter((lm) => visible(lm, ...needed)).map(fn).filter((v) => Number.isFinite(v));
     return values.length > 0 ? median(values) : null;
@@ -524,25 +1306,27 @@ export function bowlingAnalysis(
   const armLean = measure([atRelease], [side.shoulder, side.wrist], (lm) => lean(p(lm, side.wrist), p(lm, side.shoulder)));
   const trunkLean = measure(around, core, (lm) => lean(shoulderMid(lm), hipMid(lm)));
 
-  // Head stability: how much the head moves relative to the shoulders through the delivery stride.
-  // Measured against the body, not the picture, because the bowler is running across it.
-  const stride = window(12, 2).filter((lm) => coreVisible(lm) && visible(lm, L.nose));
-  let headStability: number | null = null;
-  if (stride.length >= 4) {
-    const offsets = stride.map((lm) => (p(lm, L.nose).x - shoulderMid(lm).x) / torso(lm));
-    const centre = mean(offsets);
-    headStability = Math.sqrt(mean(offsets.map((o) => (o - centre) ** 2)));
-  }
+  // Head stability through the delivery stride, relative to the hips, not the picture.
+  // Smoothed so a noisy or smaller picture does not swing this one number.
+  const smoothRelease = Math.min(smoothed.length - 1, Math.max(0, release));
+  const headStability = headWobble(aroundTime(0.25, 0.1).length >= 3
+    ? aroundTime(0.25, 0.1)
+    : smoothed.slice(Math.max(0, smoothRelease - 8), smoothRelease + 3), w, h);
 
+  const armReading = consistentArmAngle(
+    window(4, 0)
+      .filter((lm) => visible(lm, side.shoulder, side.elbow, side.wrist) && p(lm, side.wrist).y < p(lm, side.shoulder).y)
+      .map((lm) => ({
+        angle: angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)),
+        upper: dist(p(lm, side.shoulder), p(lm, side.elbow)),
+        fore: dist(p(lm, side.elbow), p(lm, side.wrist)),
+      })),
+  );
   const values: Record<string, number | null> = view === 'side'
     ? {
-        frontKnee: measure(around, [side.hip, side.knee, side.ankle], (lm) => angleAt(p(lm, side.hip), p(lm, side.knee), p(lm, side.ankle))),
-        // From the arm coming over the shoulder up to release
-        armStraightness: measure(
-          window(4, 0).filter((lm) => visible(lm, side.shoulder, side.wrist) && p(lm, side.wrist).y < p(lm, side.shoulder).y),
-          [side.shoulder, side.elbow, side.wrist],
-          (lm) => angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)),
-        ),
+        frontKnee: measure([atRelease], [side.hip, side.knee, side.ankle], (lm) => angleAt(p(lm, side.hip), p(lm, side.knee), p(lm, side.ankle))),
+        // From the arm coming over the shoulder up to release. A collapsed frame is left out.
+        armStraightness: armReading.angle,
         armUpright: armLean,
         trunkTilt: trunkLean,
         headStability,
@@ -557,10 +1341,9 @@ export function bowlingAnalysis(
         headStability,
       };
 
-  if (view === 'side' && values.frontKnee !== null && values.frontKnee < 145) unique.push('bent-front-knee');
-  if (view === 'front' && values.armHeight !== null && values.armHeight > 40) unique.push('round-arm');
-  // From side-on a round arm points towards or away from the camera, so it looks short: the hand
-  // is well above the shoulder in a normal action, and barely above it in a slinging one
+  if (view === 'side' && values.frontKnee !== null && values.frontKnee < 125) unique.push('bent-front-knee');
+  // A round arm is a side-on reading: the hand stays low because the arm points at the camera.
+  // From in front that same shape is just the arm coming past the ear, so it is not flagged here.
   if (view === 'side' && best < 0.6) unique.push('round-arm');
   if (view === 'front' && values.sideBend !== null && values.sideBend > 45) unique.push('big-side-bend');
   const excused = unique.filter((key) => UNIQUE_ACTIONS[key].excused).map((key) => UNIQUE_ACTIONS[key].metric);
@@ -573,7 +1356,11 @@ export function bowlingAnalysis(
       score: scoreFor(values[def.key] as number, def.ideal, def.tolerance, def.best),
       ...(excused.includes(def.key) ? { excused: true } : {}),
     }));
-  return metrics.length >= 2 ? { metrics, keyFrame: release, elbow: elbowCheck(frames, release, side, p), unique } : null;
+  const checked = annotateConfidence(metrics, around.length > 0 ? around : [atRelease], w, h, hand)
+    .map((metric) => metric.key === 'armStraightness' && armReading.unreliable
+      ? { ...metric, confidence: 'low' as const, excused: true, tip: CLEAR_IMAGE, clearReason: 'blur' as const }
+      : metric);
+  return checked.length >= 2 ? { metrics: checked, keyFrame: release, elbow: elbowCheck(frames, release, side, p), unique } : null;
 }
 
 /* ── Bowling arm reference check ───────────────────────────────────────────── */
@@ -693,48 +1480,6 @@ function elbowCheck(
   return { extension, frames: bends.length, mostBent, atRelease, hyperextension, kind: elbowKind(extension, hyperextension) };
 }
 
-/* ── Batting from front-on ─────────────────────────────────────────────────── */
-
-/** Averaged over the clip, like side-on batting, using what a camera at the bowler's end can see. */
-function battingFront(frames: Landmark[][], hand: Hand, w: number, h: number, shotType?: ShotType): MetricResult[] | null {
-  const p = (lm: Landmark[], i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
-  const usable = frames.filter(coreVisible);
-  if (usable.length < MIN_FRAMES) return null;
-  const shoulderMid = (lm: Landmark[]) => mid(p(lm, L.lShoulder), p(lm, L.rShoulder));
-  const hipMid = (lm: Landmark[]) => mid(p(lm, L.lHip), p(lm, L.rHip));
-  const torso = (lm: Landmark[]) => Math.max(1, dist(shoulderMid(lm), hipMid(lm)));
-  const frontAnkle = hand === 'right' ? L.lAnkle : L.rAnkle;
-  const average = (needed: number[], fn: (lm: Landmark[]) => number) => {
-    const values = usable.filter((lm) => visible(lm, ...needed)).map(fn).filter((v) => Number.isFinite(v));
-    return values.length >= MIN_FRAMES / 2 ? mean(values) : null;
-  };
-
-  const headOffsets = usable.filter((lm) => visible(lm, L.nose)).map((lm) => (p(lm, L.nose).x - shoulderMid(lm).x) / torso(lm));
-  const headCentre = headOffsets.length > 0 ? mean(headOffsets) : 0;
-  const values: Record<string, number | null> = {
-    headLevel: average([EYES.left, EYES.right], (lm) => tilt(p(lm, EYES.left), p(lm, EYES.right))),
-    headOverFront: average([L.nose, frontAnkle], (lm) => Math.abs(p(lm, L.nose).x - p(lm, frontAnkle).x) / torso(lm)),
-    // 0 = hands one above the other (bat straight up and down), 90 = hands level (bat across the line)
-    batSwingPlane: average([L.lWrist, L.rWrist], (lm) => {
-      const fromVertical = lean(p(lm, L.lWrist), p(lm, L.rWrist));
-      return Math.min(fromVertical, 180 - fromVertical);
-    }),
-    shoulderLevel: average([L.lShoulder, L.rShoulder], (lm) => tilt(p(lm, L.lShoulder), p(lm, L.rShoulder))),
-    balance: average([L.lAnkle, L.rAnkle], (lm) => Math.abs(hipMid(lm).x - mid(p(lm, L.lAnkle), p(lm, L.rAnkle)).x) / torso(lm)),
-    headStability: headOffsets.length >= MIN_FRAMES / 2 ? Math.sqrt(mean(headOffsets.map((o) => (o - headCentre) ** 2))) : null,
-  };
-
-  const overrides = shotType ? (SHOT_OVERRIDES[shotType] ?? {}) : {};
-  const skipped = shotType ? (SHOT_SKIPS[shotType] ?? []) : [];
-  const metrics = METRICS_BY_VIEW.front.batting
-    .filter((def) => !skipped.includes(def.key) && values[def.key] !== null)
-    .map((def) => {
-      const ideal: [number, number] = overrides[def.key] ?? def.ideal;
-      return { ...def, ideal, value: values[def.key] as number, score: scoreFor(values[def.key] as number, ideal, def.tolerance, def.best) };
-    });
-  return metrics.length >= 2 ? metrics : null;
-}
-
 /* ── Full result for the screen ────────────────────────────────────────────── */
 
 export type Analysis = {
@@ -750,9 +1495,19 @@ export type Analysis = {
   elbow?: ElbowCheck;
   /** Styles noticed that differ from the textbook */
   unique: UniqueKey[];
+  /** Plain reasons the picture was hard to read. The scores still stand when there are any. */
+  warnings: string[];
+  /** High, medium or low, from how well the body was tracked and how sure the event was. */
+  confidence: ScoreConfidence;
 };
 
-export type AnalysisProblem = 'no-body' | 'no-action';
+export type AnalysisProblem = 'no-body' | 'no-action' | 'feet-out-of-frame';
+
+export const ANALYSIS_PROBLEMS: Record<AnalysisProblem, string> = {
+  'no-body': 'No one is clearly in frame.',
+  'no-action': 'No bowling action was found after the front foot landed.',
+  'feet-out-of-frame': 'Feet out of frame.',
+};
 
 /** Height from the highest to the lowest visible body point, as a share of the frame */
 export function playerSize(lm: Landmark[]) {
@@ -760,36 +1515,249 @@ export function playerSize(lm: Landmark[]) {
   return ys.length >= 2 ? Math.max(...ys) - Math.min(...ys) : 0;
 }
 
-/** Scores a clip and picks the position to show. Says why when it cannot. */
-export function analyseDetailed(
-  frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side',
-): { ok: true; analysis: Analysis } | { ok: false; problem: AnalysisProblem } {
-  const framesSeen = frames.filter(coreVisible).length;
-  if (framesSeen < MIN_FRAMES) return { ok: false, problem: 'no-body' };
+/** Frames per second implied by the timestamps, or null when the clip did not say. */
+export function clipFrameRate(times?: number[]): number | null {
+  if (!times || times.length < 2) return null;
+  const span = (times[times.length - 1] ?? 0) - (times[0] ?? 0);
+  if (span <= 0.05) return null;
+  return (times.length - 1) / span;
+}
 
+export function capConfidence(value: ScoreConfidence, cap: ScoreConfidence): ScoreConfidence {
+  return combineConfidence(value, cap);
+}
+
+/** How much to trust the number at the release or the contact, not at the last frame of the clip. */
+export type CameraMotion = 'still' | 'pan' | 'zoom';
+
+/** How far the picture must be enlarged so a person of `personPx` becomes at least 256px tall. */
+export function upscaleFactor(personPx: number): number {
+  if (!(personPx > 0)) return 1;
+  return personPx >= 256 ? 1 : 256 / personPx;
+}
+
+/** Elbow angle in degrees. 180 is straight. Uses metres when MediaPipe world landmarks are present. */
+export function elbowAngle3D(world: Landmark[] | undefined, hand: Hand): number | null {
+  if (!world) return null;
+  const shoulder = world[hand === 'right' ? L.rShoulder : L.lShoulder];
+  const elbow = world[hand === 'right' ? L.rElbow : L.lElbow];
+  const wrist = world[hand === 'right' ? L.rWrist : L.lWrist];
+  if (!shoulder || !elbow || !wrist) return null;
+  const v1 = { x: shoulder.x - elbow.x, y: shoulder.y - elbow.y, z: (shoulder.z ?? 0) - (elbow.z ?? 0) };
+  const v2 = { x: wrist.x - elbow.x, y: wrist.y - elbow.y, z: (wrist.z ?? 0) - (elbow.z ?? 0) };
+  const size = Math.hypot(v1.x, v1.y, v1.z) * Math.hypot(v2.x, v2.y, v2.z);
+  if (size < 1e-8) return null;
+  const cos = Math.min(1, Math.max(-1, (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / size));
+  return (Math.acos(cos) * 180) / Math.PI;
+}
+
+/** The picture elbow, used when world landmarks were not captured. Same check from either camera. */
+export function elbowAngle2D(lm: Landmark[] | undefined, hand: Hand, w: number, h: number): number | null {
+  if (!lm) return null;
+  const shoulder = hand === 'right' ? L.rShoulder : L.lShoulder;
+  const elbow = hand === 'right' ? L.rElbow : L.lElbow;
+  const wrist = hand === 'right' ? L.rWrist : L.lWrist;
+  if (!visible(lm, shoulder, elbow, wrist)) return null;
+  const px = (i: number): Point => ({ x: lm[i].x * w, y: lm[i].y * h });
+  return angleAt(px(shoulder), px(elbow), px(wrist));
+}
+
+export function readingConfidence(input: {
+  frames: Landmark[][];
+  keyFrame: number;
+  times?: number[];
+  ratio?: number;
+  armAngle?: number | null;
+  crowded?: boolean;
+  motion?: CameraMotion;
+  view?: View;
+}): ScoreConfidence {
+  let confidence: ScoreConfidence = 'high';
+  const worse = (next: ScoreConfidence) => { confidence = combineConfidence(confidence, next); };
+  const frame = input.frames[Math.min(input.frames.length - 1, Math.max(0, input.keyFrame))];
+  const sizes = input.frames.map((lm) => playerSize(lm)).filter((value) => value > 0.05).sort((a, b) => a - b);
+  const typical = sizes.length ? sizes[Math.floor(sizes.length / 2)] : 0;
+  const frameSize = frame ? playerSize(frame) : 0;
+  // One collapsed frame is not a player who was far away. Use the size the rest of the clip shows.
+  const size = frameSize > 0 && typical > 0 && frameSize < typical * 0.75 ? typical : frameSize;
+  // A small figure, or a moving broadcast camera, is not a net close-up.
+  if (size < 0.25 || input.motion === 'pan' || input.motion === 'zoom') worse('low');
+  else if (size < 0.36) worse('medium');
+  if (frame) {
+    const joints = [L.lShoulder, L.rShoulder, L.lElbow, L.rElbow, L.lWrist, L.rWrist, L.lHip, L.rHip, L.lKnee, L.rKnee];
+    const seen = joints.map((i) => frame[i]?.visibility ?? 0);
+    const meanVis = seen.reduce((sum, v) => sum + v, 0) / seen.length;
+    if (meanVis < 0.5) worse('low');
+    else if (meanVis < 0.7) worse('medium');
+    if (!visible(frame, L.lAnkle) && !visible(frame, L.rAnkle)) worse('low');
+  }
+  if (input.armAngle != null) {
+    // Side-on, a bowling arm under about 140° is not a readable release. Front-on foreshortens
+    // a straight arm, so only a clearly folded elbow hides the score.
+    const lowCut = input.view === 'front' ? 95 : 140;
+    const midCut = input.view === 'front' ? 115 : 155;
+    if (input.armAngle < lowCut) worse('low');
+    else if (input.armAngle < midCut) worse('medium');
+  }
+  if (input.crowded && input.ratio != null && input.ratio < 0.5) worse('low');
+  // Between a clear side-on and a clear front-on is a three-quarter view.
+  if (input.ratio != null && input.ratio > 0.28 && input.ratio < 0.48) worse('medium');
+  const fps = clipFrameRate(input.times);
+  if (fps != null && fps < 12) worse('low');
+  else if (fps != null && fps < 20) worse('medium');
+  if (input.crowded) worse('medium');
+  return confidence;
+}
+
+/** Scores a clip and picks the position to show. Says why when it cannot. */
+export type ClipContext = {
+  /** MediaPipe world landmarks, one body per frame, in metres. Same order as `frames`. */
+  world?: Landmark[][];
+  /** Camera movement seen in the background, not in the player. */
+  motion?: CameraMotion;
+  /** Another person stays in frame. A bowling release cannot be timed cleanly then. */
+  crowded?: boolean;
+  /** Segment lengths from a T-pose. Without them the clip's own middle lengths are used. */
+  lengths?: BoneLengths;
+};
+
+export function analyseDetailed(
+  frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side', times?: number[], context?: ClipContext,
+): { ok: true; analysis: Analysis } | { ok: false; problem: AnalysisProblem } {
+  const framesSeen = frames.filter((lm) => visible(lm, L.lShoulder, L.rShoulder) || visible(lm, L.lHip, L.rHip)).length;
+  const feet = frames.filter((lm) => visible(lm, L.lAnkle) || visible(lm, L.rAnkle)).length;
+  const feetMissing = frames.length > 0 && feet < frames.length * 0.4;
+  if (framesSeen < 4) return { ok: false, problem: feetMissing ? 'feet-out-of-frame' : 'no-body' };
+
+  const detected = detectView(frames, w, h);
+  const resolved = resolveView(view, detected);
+  const warnings: string[] = [];
+  if (feetMissing) warnings.push('feet out of frame');
+  if (resolved.hint) warnings.push(resolved.hint);
+  if (context?.motion === 'pan' || context?.motion === 'zoom') warnings.push('The phone moved. No pan or zoom.');
+  const fps = clipFrameRate(times);
+  if (fps != null && fps < 20) warnings.push(LOW_FPS_MESSAGE);
+
+  const sampled = resampleClip(frames, times);
   if (mode === 'bowling') {
-    const result = bowlingAnalysis(frames, hand, w, h, view);
-    if (!result) return { ok: false, problem: 'no-action' };
+    const result = bowlingAnalysis(sampled.frames, hand, w, h, resolved.view, sampled.times, context?.lengths);
+    if (!result) return { ok: false, problem: framesSeen < MIN_FRAMES ? 'no-body' : 'no-action' };
+    const keyFrame = sampled.toOriginal(result.keyFrame);
+    const arm = elbowAngle3D(context?.world?.[keyFrame], hand)
+      ?? elbowAngle2D(frames[keyFrame], hand, w, h)
+      ?? result.metrics.find((metric) => metric.key === 'armStraightness')?.value
+      ?? null;
+    const shoulder = hand === 'right' ? L.rShoulder : L.lShoulder;
+    const wrist = hand === 'right' ? L.rWrist : L.lWrist;
+    const leanAt = frames[keyFrame] && visible(frames[keyFrame], shoulder, wrist)
+      ? lean(
+        { x: frames[keyFrame][wrist].x * w, y: frames[keyFrame][wrist].y * h },
+        { x: frames[keyFrame][shoulder].x * w, y: frames[keyFrame][shoulder].y * h },
+      )
+      : null;
+    if (resolved.view === 'side' && leanAt != null && leanAt > 55) warnings.push('The bowling arm is not coming over the shoulder.');
+    const confidence = readingConfidence({
+      frames, keyFrame, times, ratio: detected.ratio, armAngle: arm, motion: context?.motion, view: resolved.view,
+      crowded: resolved.view === 'side' && leanAt != null && leanAt > 55,
+    });
+    result.metrics.forEach((metric) => { if (metric.confidence !== 'low') metric.confidence = confidence; });
+    const sizes = frames.map((lm) => playerSize(lm)).filter((size) => size > 0.05);
+    const medSize = sizes.length ? [...sizes].sort((a, b) => a - b)[Math.floor(sizes.length / 2)] : 1;
+    const far = medSize < 0.42 || playerSize(frames[keyFrame] ?? []) < 0.28;
+    const folded = resolved.view !== 'front' && arm != null && arm < 140;
+    const panning = context?.motion === 'pan' || context?.motion === 'zoom';
+    // A far, folded, crowded or panning bowler has no release we can time. The number stays hidden.
+    if (panning || far || folded || context?.crowded) return { ok: false, problem: 'no-action' };
     return {
       ok: true,
-      analysis: { ...result, keyLabel: 'At release', framesSeen, playerSize: playerSize(frames[result.keyFrame]) },
+      analysis: {
+        ...result, keyFrame, keyLabel: 'At release', framesSeen,
+        playerSize: playerSize(frames[keyFrame] ?? frames[0]), warnings, unique: result.unique, confidence,
+      },
     };
   }
 
-  const metrics = analyse(frames, mode, hand, w, h, shotType, view);
-  if (!metrics) return { ok: false, problem: 'no-body' };
-  // Top of the backswing: the back hand at its highest
-  const backWrist = hand === 'right' ? L.rWrist : L.lWrist;
-  let keyFrame = -1;
-  frames.forEach((lm, i) => {
-    if (!coreVisible(lm) || !visible(lm, backWrist)) return;
-    if (keyFrame < 0 || lm[backWrist].y < frames[keyFrame][backWrist].y) keyFrame = i;
-  });
-  if (keyFrame < 0) keyFrame = frames.findIndex(coreVisible);
+  const metrics = analyse(sampled.frames, 'batting', hand, w, h, shotType, resolved.view, sampled.times, context?.lengths);
+  if (!metrics) return { ok: false, problem: feetMissing ? 'feet-out-of-frame' : 'no-body' };
+  const contact = findContact(sampled.frames, hand, w, h, sampled.times, shotType);
+  const keyFrame = sampled.toOriginal(contact.frame);
+  const confidence = combineConfidence(
+    readingConfidence({ frames, keyFrame, times, ratio: detected.ratio, motion: context?.motion }),
+    contact.confidence,
+  );
+  metrics.forEach((metric) => { if (metric.confidence !== 'low') metric.confidence = confidence; });
   return {
     ok: true,
-    analysis: { metrics, keyFrame, keyLabel: 'Top of the backswing', framesSeen, playerSize: playerSize(frames[keyFrame]), unique: [] },
+    analysis: {
+      metrics, keyFrame, keyLabel: 'At contact', framesSeen,
+      playerSize: playerSize(frames[keyFrame] ?? frames[0]), warnings, unique: [], confidence,
+    },
   };
+}
+
+const SAMPLE_FPS = 30;
+
+function lerpLandmark(a: Landmark, b: Landmark, u: number): Landmark {
+  const av = a?.visibility ?? 0;
+  const bv = b?.visibility ?? 0;
+  if (av >= MIN_VISIBILITY && bv < MIN_VISIBILITY) return { ...a };
+  if (bv >= MIN_VISIBILITY && av < MIN_VISIBILITY) return { ...b };
+  return {
+    x: (a?.x ?? 0) + ((b?.x ?? 0) - (a?.x ?? 0)) * u,
+    y: (a?.y ?? 0) + ((b?.y ?? 0) - (a?.y ?? 0)) * u,
+    z: (a?.z ?? 0) + ((b?.z ?? 0) - (a?.z ?? 0)) * u,
+    visibility: Math.min(av, bv),
+  };
+}
+
+/** Even samples at 30fps so a 10fps clip is not scored on a different clock from a 50fps one. */
+export function resampleClip(frames: Landmark[][], times?: number[]): {
+  frames: Landmark[][];
+  times: number[];
+  toOriginal: (index: number) => number;
+} {
+  const identity = {
+    frames,
+    times: times && times.length === frames.length ? times : frames.map((_, i) => i / SAMPLE_FPS),
+    toOriginal: (index: number) => Math.min(frames.length - 1, Math.max(0, index)),
+  };
+  const fps = clipFrameRate(times);
+  if (!times || times.length !== frames.length || frames.length < 2 || fps == null || fps >= 24) return identity;
+  const start = times[0] ?? 0;
+  const end = times[times.length - 1] ?? start;
+  const step = 1 / SAMPLE_FPS;
+  const outFrames: Landmark[][] = [];
+  const outTimes: number[] = [];
+  for (let t = start; t <= end + 1e-6; t += step) {
+    let hi = times.findIndex((time) => time >= t - 1e-6);
+    if (hi < 0) hi = times.length - 1;
+    const lo = Math.max(0, hi === 0 ? 0 : hi - 1);
+    const span = (times[hi] ?? 0) - (times[lo] ?? 0);
+    const u = hi === lo || span <= 0 ? 0 : ((t - (times[lo] ?? 0)) / span);
+    const count = Math.max(frames[lo]?.length ?? 0, frames[hi]?.length ?? 0);
+    outFrames.push(Array.from({ length: count }, (_, joint) => lerpLandmark(frames[lo][joint], frames[hi][joint], Math.min(1, Math.max(0, u)))));
+    outTimes.push(Math.min(end, t));
+  }
+  if (outFrames.length < 4) return identity;
+  return {
+    frames: outFrames,
+    times: outTimes,
+    toOriginal: (index: number) => {
+      const at = outTimes[Math.min(outTimes.length - 1, Math.max(0, index))] ?? start;
+      let best = 0;
+      let bestGap = Infinity;
+      times.forEach((time, i) => {
+        const gap = Math.abs(time - at);
+        if (gap < bestGap) { bestGap = gap; best = i; }
+      });
+      return best;
+    },
+  };
+}
+
+function combineConfidence(a: ScoreConfidence, b: ScoreConfidence): ScoreConfidence {
+  const rank: Record<ScoreConfidence, number> = { low: 0, medium: 1, high: 2 };
+  return rank[a] <= rank[b] ? a : b;
 }
 
 /* ── For drawing the figure ────────────────────────────────────────────────── */

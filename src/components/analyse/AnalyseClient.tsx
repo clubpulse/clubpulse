@@ -8,22 +8,31 @@ import type { NormalizedLandmark, PoseLandmarker } from '@mediapipe/tasks-vision
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { createClient } from '@/lib/supabase/client';
-import { HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
+import { HIGHLIGHT_UPLOAD_ENABLED, HIGHLIGHTS_BUCKET, MAX_CLIPS, SEGMENT_SECONDS } from '@/lib/highlights';
 import { seedDemoHighlights } from '@/app/analyse/actions';
 import { BallTrackClient } from '@/components/analyse/BallTrackClient';
 import { PoseFigure } from '@/components/analyse/PoseFigure';
 import { REFERENCE_SIZE, getReference, referenceBat, referencePose } from '@/lib/analysis/reference';
 import {
-  ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, formatRange, formatValue,
-  overallScore, segmentScore,
+  ELBOW_EXTENSION_LIMIT, ELBOW_KIND_LABELS, MIN_VISIBILITY, ON_TARGET, SHOT_TYPE_LABELS, UNIQUE_ACTIONS, analyseDetailed, drillFor, formatRange, formatValue,
+  LOW_CONFIDENCE_MESSAGE, capConfidence, choosePose, overallScore, segmentScore, weakestMeasure,
   type Analysis, type Hand, type MetricResult, type Mode, type ShotType, type View,
 } from '@/lib/analysis/pose-metrics';
 import { compareAnalyses, trendOver, type Comparison, type SavedAnalysis, type Trend } from '@/lib/analysis/compare';
 import { ComparisonPanel } from '@/components/analyse/ComparisonPanel';
+import { FilmGuide } from '@/components/analyse/FilmGuide';
+import { GUIDE_SEEN_KEY, guideCardFor, guideIndex, type GuideCardId } from '@/lib/analysis/film-guide';
+import {
+  highlightsVisible, paintOverlay, paintTimeBadge, pickHighlights, smoothOverlayFrame, strengthPhrase, strongestMeasure, workOnPhrase,
+} from '@/lib/analysis/pose-overlay';
+import { framingPrompt } from '@/lib/analysis/framing';
+import { estimateBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
+import { CLEAR_IMAGE, heavyFrameIndexes, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
+import { scoreMeaning, topFix, coachingChains } from '@/lib/analysis/coaching-causes';
 
 /** An earlier analysis, tagged with the recording it came from */
 type PastAnalysis = SavedAnalysis & { token: string };
-import { detectShot, type ShotReading } from '@/lib/analysis/shot-detect';
+import { detectShot, shotToScore, type ShotReading } from '@/lib/analysis/shot-detect';
 import { bestAndWorst, clipTime, splitDeliveries, splitShots, windowAround, type ShotWindow } from '@/lib/analysis/shot-split';
 
 type AnalyseTab = 'pose' | 'ball';
@@ -35,6 +44,8 @@ const CRIMSON = '#1D4ED8';
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
 const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+const HEAVY_URL =
+  'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task';
 
 const RECORD_MS = 5000;
 // An uploaded clip is analysed from the start up to this length
@@ -64,12 +75,13 @@ type ShotEntry = {
 function markWindow(
   data: { frames: NormalizedLandmark[][]; times: number[] }, win: ShotWindow,
   settings: { mode: Mode; hand: Hand; view: View; shotType: ShotChoice }, w: number, h: number,
+  lengths?: BoneLengths,
 ): ShotEntry | null {
   const part = data.frames.slice(win.start, win.end + 1);
   const batting = settings.mode === 'batting';
-  const read = batting && settings.shotType === 'auto' ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
-  const shot: ShotType | undefined = !batting ? undefined : settings.shotType === 'auto' ? (read?.shot ?? 'drive') : settings.shotType;
-  const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view);
+  const read = batting ? detectShot(part, w, h, { view: settings.view, hand: settings.hand }) : null;
+  const shot: ShotType | undefined = batting ? shotToScore(read, settings.shotType) : undefined;
+  const marked = analyseDetailed(part, settings.mode, settings.hand, w, h, shot, settings.view, data.times.slice(win.start, win.end + 1), { lengths });
   if (!marked.ok) return null;
   return {
     win, key: win.start + marked.analysis.keyFrame, time: data.times[win.peak], shot, read,
@@ -155,10 +167,12 @@ function startSegment(session: Session, now: number): Segment {
 }
 
 function finishSegment(session: Session, segment: Segment, mode: Mode, hand: Hand, now = performance.now(), choice?: ShotChoice, view: View = 'side') {
-  const shotType = choice === 'auto' ? detectShot(segment.frames, session.width, session.height).shot : choice;
+  const shotType: ShotType | undefined = mode === 'batting'
+    ? shotToScore(detectShot(segment.frames, session.width, session.height, { view, hand }), choice ?? 'auto')
+    : undefined;
   const seconds = (now - segment.startedAt) / 1000;
   const long = seconds >= MIN_CLIP_SECONDS;
-  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, mode === 'batting' ? shotType : undefined, view) : 0;
+  const score = long ? segmentScore(segment.frames, segment.totalFrames, mode, hand, session.width, session.height, shotType, view) : 0;
   if (long) session.segments += 1;
   segment.frames = [];
 
@@ -191,42 +205,27 @@ function screenScale(canvas: HTMLCanvasElement) {
   return Math.max(1, canvas.width / canvas.clientWidth, canvas.height / canvas.clientHeight);
 }
 
-function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], connections: { start: number; end: number }[]) {
+function drawPose(ctx: CanvasRenderingContext2D, lm: NormalizedLandmark[], options?: {
+  mode: Mode; hand: Hand; view: View; shot?: ShotType; metrics?: MetricResult[]; highlights?: boolean; badge?: number;
+}) {
   const { width: w, height: h } = ctx.canvas;
   const k = screenScale(ctx.canvas);
-  // Skip the face mesh points (1–10); the nose alone marks the head
-  const isBody = (i: number) => i === 0 || i >= 11;
-
-  ctx.lineWidth = 3 * k;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = GOLD;
-  for (const { start, end } of connections) {
-    if (!isBody(start) || !isBody(end)) continue;
-    const a = lm[start];
-    const b = lm[end];
-    if (a.visibility < MIN_VISIBILITY || b.visibility < MIN_VISIBILITY) continue;
-    ctx.beginPath();
-    ctx.moveTo(a.x * w, a.y * h);
-    ctx.lineTo(b.x * w, b.y * h);
-    ctx.stroke();
-  }
-
-  const radius = 4.5 * k;
-  lm.forEach((point, i) => {
-    if (!isBody(i) || point.visibility < MIN_VISIBILITY) return;
-    ctx.beginPath();
-    ctx.arc(point.x * w, point.y * h, radius, 0, Math.PI * 2);
-    ctx.fillStyle = CRIMSON;
-    ctx.fill();
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5 * k;
-    ctx.stroke();
+  const points = lm.map((point) => ({ x: point.x * w, y: point.y * h, visibility: point.visibility }));
+  paintOverlay(ctx, points, {
+    mode: options?.mode ?? 'batting',
+    hand: options?.hand ?? 'right',
+    highlights: options?.highlights && options.metrics
+      ? pickHighlights(options.metrics, options.mode, options.hand, options.view, options.shot)
+      : [],
+    scale: k,
+    headCap: 22 * k,
   });
+  if (options?.badge != null) paintTimeBadge(ctx, options.badge, k);
 }
 
 function scoreColour(score: number) {
   if (score >= ON_TARGET) return GOLD;
-  if (score >= 60) return '#d97706';
+  if (score >= 60) return '#f59e0b';
   return '#ef4444';
 }
 
@@ -261,14 +260,14 @@ export function AnalyseClient() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const connectionsRef = useRef<{ start: number; end: number }[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
-  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][]; times: number[] } | null>(null);
+  const recordingRef = useRef<{ until: number; frames: NormalizedLandmark[][]; times: number[]; seen: number; extra: number } | null>(null);
   // The last analysed clip's poses and when each was seen, for replaying an uploaded video with the skeleton
-  const replayRef = useRef<{ frames: NormalizedLandmark[][]; times: number[] } | null>(null);
+  const replayRef = useRef<{ frames: NormalizedLandmark[][]; times: number[]; seen: number; extra: number } | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const trackedPose = useRef<NormalizedLandmark[] | null>(null);
 
   const [mode, setMode] = useState<Mode>('bowling');
   const [hand, setHand] = useState<Hand>('right');
@@ -287,7 +286,14 @@ export function AnalyseClient() {
   const [source, setSource] = useState<'camera' | 'file'>('camera');
   const sourceRef = useRef<'camera' | 'file'>('camera');
   // 'user' is the selfie camera; 'environment' is the back camera, for when someone else films
-  const [facing, setFacing] = useState<'user' | 'environment'>('user');
+  const [facing, setFacing] = useState<'user' | 'environment'>('environment');
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [framingHint, setFramingHint] = useState<string | null>(null);
+  const [sizing, setSizing] = useState(false);
+  const [refining, setRefining] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [guideStep, setGuideStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
   // The position shown in the figure under the video
@@ -315,9 +321,53 @@ export function AnalyseClient() {
   // Where the camera is standing: square of the wicket, or looking straight down the pitch
   const [view, setView] = useState<View>('side');
   const settingsRef = useRef({ mode, hand, shotType, view });
+  const lengthsRef = useRef<BoneLengths | undefined>(undefined);
+  const sizingRef = useRef(false);
+  const sizeFrames = useRef<NormalizedLandmark[][]>([]);
+  const heavyRef = useRef<PoseLandmarker | null>(null);
+  const sizeTimer = useRef<number | null>(null);
   useEffect(() => {
     settingsRef.current = { mode, hand, shotType, view };
   }, [mode, hand, shotType, view]);
+
+  const PREFS_KEY = 'shiftup.analyse';
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as { mode?: Mode; hand?: Hand; view?: View; facing?: 'user' | 'environment' } | null;
+        if (saved?.mode === 'bowling' || saved?.mode === 'batting') setMode(saved.mode);
+        if (saved?.hand === 'right' || saved?.hand === 'left') setHand(saved.hand);
+        if (saved?.view === 'side' || saved?.view === 'front') setView(saved.view);
+        if (saved?.facing === 'user' || saved?.facing === 'environment') setFacing(saved.facing);
+        else if (window.matchMedia('(pointer: coarse)').matches) setFacing('environment');
+      } catch { /* a bad saved value just leaves the defaults */ }
+      setPrefsLoaded(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, hand, view, facing }));
+  }, [prefsLoaded, mode, hand, view, facing]);
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    let unseen = false;
+    try { unseen = localStorage.getItem(GUIDE_SEEN_KEY) !== 'seen'; } catch { unseen = false; }
+    if (!unseen) return;
+    const timer = window.setTimeout(() => {
+      setGuideStep(0);
+      setGuideOpen(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [prefsLoaded]);
+  const closeGuide = useCallback(() => {
+    try { localStorage.setItem(GUIDE_SEEN_KEY, 'seen'); } catch { /* ignore */ }
+    setGuideOpen(false);
+  }, []);
+  const openGuide = useCallback((card: GuideCardId) => {
+    setGuideStep(guideIndex(card));
+    setGuideOpen(true);
+  }, []);
 
   // Tears everything down; a highlight session still in sessionRef is discarded (turnOff takes it out first to keep it)
   const stopCamera = useCallback(() => {
@@ -454,12 +504,55 @@ export function AnalyseClient() {
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPose(ctx, data.frames[entry.key], connectionsRef.current);
+      const settings = settingsRef.current;
+      drawPose(ctx, smoothOverlayFrame(data.frames, entry.key), {
+        mode: settings.mode, hand: settings.hand, view: settings.view, shot: entry.shot,
+        metrics: entry.analysis.metrics, highlights: true,
+      });
     };
     if (Math.abs(video.currentTime - data.times[entry.key]) < 0.001) draw();
     else {
       video.addEventListener('seeked', draw, { once: true });
       video.currentTime = data.times[entry.key];
+    }
+  }, []);
+
+  const refineUpload = useCallback(async (
+    video: HTMLVideoElement, frames: NormalizedLandmark[][], times: number[], key: number, shot: ShotType,
+  ) => {
+    const device = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+    if (preferLiteModel({ cores: device.hardwareConcurrency, memory: device.deviceMemory, saveData: device.connection?.saveData })) return;
+    setRefining(true);
+    try {
+      if (!heavyRef.current) {
+        const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
+        const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+        heavyRef.current = await PoseLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: HEAVY_URL, delegate: 'GPU' },
+          runningMode: 'IMAGE',
+          numPoses: 1,
+        });
+      }
+      const next = frames.map((frame) => frame.map((point) => ({ ...point })));
+      for (const index of heavyFrameIndexes(key, frames.length, 3)) {
+        await seekTo(video, times[index] ?? 0);
+        const found = heavyRef.current.detect(video);
+        const pose = choosePose(found.landmarks as NormalizedLandmark[][], null, video.videoWidth, video.videoHeight);
+        if (pose) next[index] = pose as NormalizedLandmark[];
+      }
+      const settings = settingsRef.current;
+      const outcome = analyseDetailed(
+        next, settings.mode, settings.hand, video.videoWidth, video.videoHeight,
+        settings.mode === 'batting' ? shot : undefined, settings.view, times, { lengths: lengthsRef.current },
+      );
+      if (!outcome.ok) return;
+      setResults(outcome.analysis.metrics);
+      setDetail({ ...outcome.analysis, pose: next[outcome.analysis.keyFrame], width: video.videoWidth, height: video.videoHeight });
+      replayRef.current = { frames: next, times, seen: frames.length, extra: 0 };
+    } catch {
+      // The lite reading stays. A failed heavy model must not wipe the result.
+    } finally {
+      setRefining(false);
     }
   }, []);
 
@@ -485,11 +578,19 @@ export function AnalyseClient() {
       const found = m === 'batting'
         ? splitShots(data.frames, data.times, video.videoWidth, video.videoHeight)
         : splitDeliveries(data.frames, data.times, hd, video.videoWidth, video.videoHeight);
-      const entries = found.flatMap((win) => markWindow(data, win, settingsRef.current, video.videoWidth, video.videoHeight) ?? []);
+      const entries = found.flatMap((win) => markWindow(data, win, settingsRef.current, video.videoWidth, video.videoHeight, lengthsRef.current) ?? []);
       if (entries.length >= 2) {
+        if (recording.seen > 0 && recording.extra / recording.seen >= 0.3) {
+          for (const entry of entries) {
+            if (!entry.analysis.warnings.includes('more than one person')) {
+              entry.analysis.warnings.push('more than one person');
+              entry.analysis.confidence = capConfidence(entry.analysis.confidence, 'medium');
+            }
+          }
+        }
         const first = bestAndWorst(entries.map((e) => e.overall))?.best ?? 0;
         coachCache.current.clear();
-        replayRef.current = data;
+        replayRef.current = { frames: recording.frames, times: recording.times, seen: recording.seen, extra: recording.extra };
         setShots(entries);
         setPhase('done');
         presentShot(entries[first], first);
@@ -502,16 +603,18 @@ export function AnalyseClient() {
     }
     setShots(null);
 
-    const read = m === 'batting' && choice === 'auto' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
-    const st: ShotType = choice === 'auto' ? (read?.shot ?? 'drive') : choice;
+    const read = m === 'batting' ? detectShot(recording.frames, video.videoWidth, video.videoHeight, { view: vw, hand: hd }) : null;
+    const st: ShotType = m === 'batting' ? shotToScore(read, choice) : 'drive';
     setReading(read);
-    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw);
+    const outcome = analyseDetailed(recording.frames, m, hd, video.videoWidth, video.videoHeight, m === 'batting' ? st : undefined, vw, recording.times, { lengths: lengthsRef.current });
     if (!outcome.ok) {
       setError(outcome.problem === 'no-action'
-        ? `We could see a player but not a bowling action. The ${hd === 'right' ? 'right' : 'left'} arm never came up above the shoulder. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed are the right settings, and that the clip includes the delivery.`
-        : fromFile
-          ? "We couldn't see a player clearly enough in that video. Use a clip with head to ankles in the picture, in good light, with the player filling at least a third of the height."
-          : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
+        ? `We could see a player but not a bowling action after the front foot landed. Check Bowling and ${hd === 'right' ? 'Right' : 'Left'}-handed, and that the clip includes the delivery.`
+        : outcome.problem === 'feet-out-of-frame'
+          ? 'Feet out of frame. Step back until your head and both feet are inside the picture.'
+          : fromFile
+            ? "We couldn't see a player clearly enough in that video. Use a clip with one person, head to ankles, in good light."
+            : "We couldn't see your whole body clearly enough. Step back so head to ankles are in frame, and try again in better light.");
       if (fromFile) {
         // Take the clip off screen so the starting message is not drawn over it
         stopCamera();
@@ -521,11 +624,18 @@ export function AnalyseClient() {
       return;
     }
     const { analysis } = outcome;
+    if (recording.seen > 0 && recording.extra / recording.seen >= 0.3 && !analysis.warnings.includes('more than one person')) {
+      analysis.warnings.push('more than one person');
+      analysis.confidence = capConfidence(analysis.confidence, 'medium');
+    }
+    const framing = framingPrompt(recording.frames[analysis.keyFrame], vw);
+    if (framing && !analysis.warnings.includes(framing)) analysis.warnings.push(framing);
+    setFramingHint(framing);
     const metrics = analysis.metrics;
     setFrameCount(analysis.framesSeen);
     setResults(metrics);
     setDetail({ ...analysis, pose: recording.frames[analysis.keyFrame], width: video.videoWidth, height: video.videoHeight });
-    replayRef.current = fromFile ? { frames: recording.frames, times: recording.times } : null;
+    replayRef.current = fromFile ? { frames: recording.frames, times: recording.times, seen: recording.seen, extra: recording.extra } : null;
     setFrameAt(fromFile ? { index: analysis.keyFrame, total: recording.frames.length, key: analysis.keyFrame } : null);
     setPhase('done');
 
@@ -536,7 +646,12 @@ export function AnalyseClient() {
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawPose(ctx, recording.frames[analysis.keyFrame], connectionsRef.current);
+        const settings = settingsRef.current;
+        drawPose(ctx, smoothOverlayFrame(recording.frames, analysis.keyFrame), {
+          mode: settings.mode, hand: settings.hand, view: settings.view,
+          shot: settings.mode === 'batting' ? st : undefined,
+          metrics: analysis.metrics, highlights: true,
+        });
       };
       video.addEventListener('seeked', show, { once: true });
       video.currentTime = recording.times[analysis.keyFrame];
@@ -544,7 +659,8 @@ export function AnalyseClient() {
 
     // Written feedback, saved to history with the result
     requestCoaching(analysis, m === 'batting' ? st : undefined, recording.frames.length, null, true);
-  }, [stopCamera, presentShot, requestCoaching]);
+    if (fromFile) void refineUpload(video, recording.frames, recording.times, analysis.keyFrame, st);
+  }, [stopCamera, presentShot, requestCoaching, refineUpload]);
 
   const startLoop = useCallback(() => {
     const tick = () => {
@@ -560,14 +676,23 @@ export function AnalyseClient() {
         const now = performance.now();
         const result = landmarker.detectForVideo(video, now);
         const ctx = canvas.getContext('2d');
-        const pose = result.landmarks[0];
+        const pose = choosePose(result.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
+        if (pose) trackedPose.current = pose;
+        if (pose && sizingRef.current) sizeFrames.current.push(pose);
+        if (sourceRef.current === 'camera') {
+          const hint = framingPrompt(pose, settingsRef.current.view);
+          setFramingHint((current) => (current === hint ? current : hint));
+        }
+        const bodies = (result.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          if (pose) drawPose(ctx, pose, connectionsRef.current);
+          if (pose) drawPose(ctx, pose, { mode: settingsRef.current.mode, hand: settingsRef.current.hand, view: settingsRef.current.view });
         }
 
         const recording = recordingRef.current;
         if (recording) {
+          if (bodies.length > 0) recording.seen += 1;
+          if (bodies.length > 1) recording.extra += 1;
           if (pose) {
             recording.frames.push(pose);
             recording.times.push(video.currentTime);
@@ -599,9 +724,21 @@ export function AnalyseClient() {
     landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
       runningMode: 'VIDEO',
-      numPoses: 1,
+      numPoses: 3,
     });
-    connectionsRef.current = PoseLandmarker.POSE_CONNECTIONS;
+  }
+
+  async function retake() {
+    setResults(null);
+    setDetail(null);
+    setShots(null);
+    setShotPick(0);
+    setCoaching({ state: 'idle' });
+    setFramingHint(null);
+    setFrameAt(null);
+    replayRef.current = null;
+    videoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await startCamera(facing);
   }
 
   async function startCamera(useFacing: 'user' | 'environment' = facing) {
@@ -624,7 +761,7 @@ export function AnalyseClient() {
       await video.play();
       lastVideoTimeRef.current = -1;
 
-      const mimeType = pickMimeType();
+      const mimeType = HIGHLIGHT_UPLOAD_ENABLED ? pickMimeType() : null;
       if (mimeType) {
         const now = performance.now();
         const session: Session = {
@@ -696,8 +833,11 @@ export function AnalyseClient() {
       video.muted = true;
       video.defaultMuted = true;
       video.playsInline = true;
+      video.autoplay = true;
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.setAttribute('autoplay', '');
       video.src = url;
       video.onended = () => finishRecording();
       await clipReady(video);
@@ -725,7 +865,7 @@ export function AnalyseClient() {
   // The clip is playing: collect poses from it as it goes
   function readWhilePlaying() {
     lastVideoTimeRef.current = -1;
-    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [] };
+    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [], seen: 0, extra: 0 };
     setPhase('recording');
     startLoop();
   }
@@ -736,7 +876,7 @@ export function AnalyseClient() {
     const landmarker = landmarkerRef.current;
     const canvas = canvasRef.current;
     if (!landmarker || !canvas || !Number.isFinite(video.duration) || video.duration <= 0) throw new Error('unreadable');
-    const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[] };
+    const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[], seen: 0, extra: 0 };
     recordingRef.current = recording;
     setProgress(0);
     setPhase('recording');
@@ -749,10 +889,15 @@ export function AnalyseClient() {
       await seekTo(video, time);
       // Someone started the camera or chose another clip while this one was being read
       if (recordingRef.current !== recording) return;
-      const pose = landmarker.detectForVideo(video, performance.now()).landmarks[0];
+      const found = landmarker.detectForVideo(video, performance.now());
+      const pose = choosePose(found.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
+      if (pose) trackedPose.current = pose;
+      const bodies = (found.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
+      if (bodies.length > 0) recording.seen += 1;
+      if (bodies.length > 1) recording.extra += 1;
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (pose) drawPose(ctx, pose, connectionsRef.current);
+        if (pose) drawPose(ctx, pose, { mode: settingsRef.current.mode, hand: settingsRef.current.hand, view: settingsRef.current.view });
       }
       if (pose) {
         recording.frames.push(pose);
@@ -772,7 +917,7 @@ export function AnalyseClient() {
     const data = replayRef.current;
     if (!data) return;
     settingsRef.current = settings;
-    recordingRef.current = { until: 0, frames: data.frames, times: data.times };
+    recordingRef.current = { until: 0, frames: data.frames, times: data.times, seen: data.seen, extra: data.extra };
     finishRecording();
   }
 
@@ -821,7 +966,7 @@ export function AnalyseClient() {
       reanalyse({ mode, hand, view, shotType: next });
       return;
     }
-    const again = markWindow(data, shots[shotPick].win, { mode, hand, view, shotType: next }, video.videoWidth, video.videoHeight);
+    const again = markWindow(data, shots[shotPick].win, { mode, hand, view, shotType: next }, video.videoWidth, video.videoHeight, lengthsRef.current);
     if (!again) return;
     coachCache.current.delete(shotPick);
     setShots(shots.map((e, i) => (i === shotPick ? again : e)));
@@ -834,7 +979,7 @@ export function AnalyseClient() {
     const video = videoRef.current;
     const index = frameAt?.index;
     if (!data || !video || index === null || index === undefined) return;
-    const entry = markWindow(data, windowAround(data.times, index, mode), { mode, hand, view, shotType }, video.videoWidth, video.videoHeight);
+    const entry = markWindow(data, windowAround(data.times, index, mode), { mode, hand, view, shotType }, video.videoWidth, video.videoHeight, lengthsRef.current);
     if (!entry) {
       toast('We could not see the player clearly enough around that frame.');
       return;
@@ -877,7 +1022,12 @@ export function AnalyseClient() {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawPose(ctx, data.frames[at], connectionsRef.current);
+      const key = frameAt?.key;
+      const near = key != null && highlightsVisible(data.times[at] ?? 0, data.times[key] ?? 0);
+      drawPose(ctx, smoothOverlayFrame(data.frames, at), {
+        mode, hand, view, shot: mode === 'batting' ? (shots?.[shotPick]?.shot ?? (shotType === 'auto' ? reading?.shot : shotType)) : undefined,
+        metrics: results ?? undefined, highlights: near || at === key, badge: data.times[at],
+      });
     };
     if (Math.abs(video.currentTime - data.times[at]) < 0.001) draw();
     else {
@@ -901,7 +1051,14 @@ export function AnalyseClient() {
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Only draw a pose that belongs to this moment of the clip
-        if (Math.abs(data.times[cursor] - time) < 0.12) drawPose(ctx, data.frames[cursor], connectionsRef.current);
+        if (Math.abs(data.times[cursor] - time) < 0.12) {
+          const key = frameAt?.key;
+          const near = key != null && highlightsVisible(time, data.times[key] ?? time);
+          drawPose(ctx, smoothOverlayFrame(data.frames, cursor), {
+            mode, hand, view, shot: mode === 'batting' ? (shots?.[shotPick]?.shot ?? (shotType === 'auto' ? reading?.shot : shotType)) : undefined,
+            metrics: results ?? undefined, highlights: near, badge: time,
+          });
+        }
       }
       const lastTime = data.times[data.times.length - 1];
       if (video.ended || video.paused || time > lastTime + 0.1) {
@@ -922,7 +1079,7 @@ export function AnalyseClient() {
     }).catch(() => setReplaying(false));
   }
 
-  function startRecording() {
+  function beginRecording() {
     setError(null);
     setResults(null);
     setSecondsLeft(RECORD_MS / 1000);
@@ -930,8 +1087,44 @@ export function AnalyseClient() {
     setShots(null);
     setCoaching({ state: 'idle' });
     setCompare({ state: 'idle' });
-    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [] };
+    setCountdown(null);
+    recordingRef.current = { until: performance.now() + RECORD_MS, frames: [], times: [], seen: 0, extra: 0 };
     setPhase('recording');
+  }
+
+  function startSizeCheck() {
+    sizeFrames.current = [];
+    sizingRef.current = true;
+    setSizing(true);
+    if (sizeTimer.current) window.clearTimeout(sizeTimer.current);
+    sizeTimer.current = window.setTimeout(() => {
+      sizingRef.current = false;
+      setSizing(false);
+      const video = videoRef.current;
+      if (sizeFrames.current.length >= 5 && video) {
+        lengthsRef.current = estimateBoneLengths(sizeFrames.current, video.videoWidth || 1, video.videoHeight || 1);
+      }
+    }, 2000);
+  }
+
+  function skipSizeCheck() {
+    sizingRef.current = false;
+    setSizing(false);
+    sizeFrames.current = [];
+    if (sizeTimer.current) window.clearTimeout(sizeTimer.current);
+  }
+
+  function startRecording() {
+    if (countdown !== null) return;
+    setCountdown(3);
+    let left = 3;
+    const timer = window.setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        window.clearInterval(timer);
+        beginRecording();
+      } else setCountdown(left);
+    }, 1000);
   }
 
   function turnOff() {
@@ -945,10 +1138,11 @@ export function AnalyseClient() {
     const canvas = canvasRef.current;
     canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
     setPhase('idle');
-    if (session) void saveHighlights(session);
+    if (HIGHLIGHT_UPLOAD_ENABLED && session) void saveHighlights(session);
   }
 
   async function saveHighlights(session: Session) {
+    if (!HIGHLIGHT_UPLOAD_ENABLED) return;
     await Promise.all(session.pending);
     if (session.best.length === 0) {
       if (session.segments > 0) toast('No highlight clips this time. Keep your whole body in frame to get a reel.');
@@ -1041,6 +1235,7 @@ export function AnalyseClient() {
 
       {/* Pose tab — existing content */}
       {tab === 'pose' && <>
+      <FilmGuide open={guideOpen} step={guideStep} onStep={setGuideStep} onClose={closeGuide} />
       {process.env.NODE_ENV === 'development' && (
         <form action={seedDemoHighlights}
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-neutral-700 px-4 py-3 text-sm">
@@ -1114,7 +1309,9 @@ export function AnalyseClient() {
         <div className="relative mx-auto overflow-hidden rounded-xl bg-black"
           style={{ aspectRatio: String(aspect), maxHeight: '70vh', maxWidth: `calc(70vh * ${aspect})` }}>
           {/* Mirrored so it behaves like a mirror; landmarks are computed on the unmirrored frame */}
-          <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-contain"
+          <video ref={videoRef} playsInline muted autoPlay className="absolute inset-0 h-full w-full object-contain"
+            // iOS Safari and the Expo web view only autoplay a silent clip that stays inside the page.
+            {...{ 'webkit-playsinline': 'true' }}
             onLoadedMetadata={(event) => {
               const { videoWidth, videoHeight } = event.currentTarget;
               if (videoWidth && videoHeight) setAspect(videoWidth / videoHeight);
@@ -1132,6 +1329,22 @@ export function AnalyseClient() {
                 Or upload a clip you have already filmed.
               </p>
             </div>
+          )}
+
+          {source === 'camera' && framingHint && (phase === 'ready' || phase === 'recording' || countdown !== null) && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-3">
+              <p className="rounded-full bg-black/70 px-3 py-1 text-center text-sm font-medium text-white">{sizing ? 'Hold a T-pose' : framingHint}</p>
+            </div>
+          )}
+
+          {countdown !== null && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-7xl font-bold text-white" aria-live="assertive">
+              {countdown}
+            </div>
+          )}
+
+          {refining && (
+            <div className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-sm font-medium text-white">Refining…</div>
           )}
 
           {phase === 'recording' && (
@@ -1172,12 +1385,11 @@ export function AnalyseClient() {
         <div className="mt-4 flex flex-wrap gap-3">
           {!cameraOn && (
             <>
-              <Button onClick={() => startCamera()} loading={phase === 'loading'} disabled={phase === 'recording'}>
-                {phase === 'loading' ? 'Loading pose model…' : 'Start camera'}
+              <Button onClick={() => fileInputRef.current?.click()} loading={phase === 'loading' && source === 'file'} disabled={phase === 'loading' || phase === 'recording'}>
+                {phase === 'loading' && source === 'file' ? 'Reading your clip…' : 'Film or choose a clip'}
               </Button>
-              <Button variant="secondary" onClick={() => fileInputRef.current?.click()}
-                disabled={phase === 'loading' || phase === 'recording'}>
-                {fileShown && phase === 'done' ? 'Upload another video' : 'Upload a video'}
+              <Button variant="secondary" onClick={() => startCamera()} disabled={phase === 'loading' || phase === 'recording'}>
+                Use the live camera
               </Button>
               {fileShown && phase === 'done' && (
                 <>
@@ -1185,7 +1397,7 @@ export function AnalyseClient() {
                   <Button variant="secondary" onClick={() => replay(0.25)} disabled={replaying}>Slow motion</Button>
                 </>
               )}
-              <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
+              <input ref={fileInputRef} type="file" accept="video/*" capture="environment" className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   event.target.value = '';
@@ -1195,15 +1407,28 @@ export function AnalyseClient() {
           )}
           {cameraOn && (
             <>
-              <Button onClick={startRecording} disabled={phase === 'recording'}>
-                {phase === 'done' ? 'Record again' : 'Record 5 seconds'}
+              <Button onClick={startRecording} disabled={phase === 'recording' || countdown !== null}>
+                {countdown !== null ? countdown : phase === 'done' ? 'Record again' : 'Record 5 seconds'}
               </Button>
-              <Button variant="secondary" onClick={flipCamera} disabled={phase === 'recording'}>
-                {facing === 'user' ? 'Use back camera' : 'Use front camera'}
+              {phase === 'ready' && !sizing && (
+                <button type="button" onClick={startSizeCheck} className="self-center text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+                  Stand in a T for 2 seconds
+                </button>
+              )}
+              {sizing && (
+                <button type="button" onClick={skipSizeCheck} className="self-center text-sm font-medium text-neutral-300 underline-offset-2 hover:underline">
+                  Skip the T-pose
+                </button>
+              )}
+              <Button variant="secondary" onClick={flipCamera} disabled={phase === 'recording' || countdown !== null}>
+                {facing === 'environment' ? 'Use front camera' : 'Use back camera'}
               </Button>
               <Button variant="secondary" onClick={turnOff} disabled={phase === 'recording'}>Stop camera</Button>
             </>
           )}
+          <button type="button" onClick={() => openGuide('angle')} className="self-center text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+            How to film
+          </button>
         </div>
 
         {error && (
@@ -1258,19 +1483,101 @@ export function AnalyseClient() {
           </Card>
       )}
 
-      {results && overall !== null && (
+      {results && overall !== null && detail && (
         <Card
           title={shots ? `${mode === 'bowling' ? 'Ball' : 'Shot'} ${shotPick + 1} of ${shots.length}` : `${mode === 'bowling' ? 'Bowling' : 'Batting'} analysis`}
-          description={mode === 'bowling'
-            ? `Measured at the moment of release. Player seen in ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`
-            : `Averaged over ${frameCount} frames${source === 'file' ? ' of your video' : ''}.`}
-          action={
-            <div className="text-right">
-              <div className="text-3xl font-bold" style={{ color: scoreColour(overall) }}>{overall}</div>
-              <div className="text-xs text-neutral-500">overall / 100</div>
-            </div>
-          }
         >
+          {(() => {
+            const viewMismatch = detail.warnings.some((warning) => /front-on|side-on|Turn the phone|Face the camera/i.test(warning));
+            const plan = retakePlan(results, mode, view, { playerSize: detail.playerSize, viewMismatch });
+            const clipLine = detail.confidence === 'low'
+              ? retakeLine('head', detail.playerSize < 0.36 ? 'small' : viewMismatch ? 'angle' : detail.warnings.some((warning) => /feet|whole body/i.test(warning)) ? 'hidden' : 'blur', view)
+              : null;
+            const retakeText = clipLine ?? plan.line;
+            const hidden = detail.confidence === 'low' || plan.withhold;
+            const fix = topFix(results);
+            const weak = weakestMeasure(results);
+            const strong = strongestMeasure(results);
+            return (
+              <div className="rounded-xl px-4 py-4" style={{ background: 'rgba(11,11,11,0.88)' }}>
+                <p className="text-4xl font-bold leading-none" style={{ color: hidden ? '#BEBEC4' : scoreColour(overall) }}>
+                  {hidden ? 'Let’s film that again' : overall}
+                </p>
+                {!hidden && (
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-300">
+                    <span className="text-[#BEBEC4]">What does this score mean? </span>{scoreMeaning(overall)}
+                  </p>
+                )}
+                {retakeText && (
+                  <div className="mt-4 rounded-lg border border-amber-900/80 bg-amber-950/40 px-3 py-3">
+                    <p className="text-sm font-medium text-white">Retake recommended</p>
+                    <p className="mt-1 text-sm leading-relaxed text-amber-100">{retakeText}</p>
+                    <Button className="mt-3" onClick={() => void retake()}>Retake</Button>
+                  </div>
+                )}
+                {hidden && !retakeText && (
+                  <p className="mt-3 text-sm leading-relaxed text-amber-200">{LOW_CONFIDENCE_MESSAGE}</p>
+                )}
+                {!hidden && strong && (
+                  <p className="mt-4 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">Strength. </span>{strengthPhrase(strong)}
+                  </p>
+                )}
+                {!hidden && fix && (
+                  <p className="mt-2 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">One fix. </span>{fix.fix}
+                  </p>
+                )}
+                {!hidden && !fix && weak && (
+                  <p className="mt-2 text-sm leading-relaxed text-white">
+                    <span className="text-[#BEBEC4]">{weak.score >= ON_TARGET ? 'Keep an eye on' : 'Work on'}. </span>{workOnPhrase(weak)}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+
+          <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/40 px-4 py-3">
+            <summary className="cursor-pointer text-sm font-medium text-white">More detail</summary>
+            <div className="mt-4">
+          <p className="mb-3 text-sm text-neutral-400">{detail.confidence} confidence · player seen in {frameCount} frames</p>
+          {detail.warnings.length > 0 && <p className="mb-3 text-sm text-amber-200">{detail.warnings.join(' · ')}</p>}
+          {guideCardFor(detail.warnings) && (
+            <button type="button" onClick={() => openGuide(guideCardFor(detail.warnings) ?? 'angle')} className="mb-4 text-sm font-medium text-sky-400 underline-offset-2 hover:underline">
+              How to film this
+            </button>
+          )}
+          {(() => {
+            const chains = coachingChains(results);
+            if (chains.length === 0) {
+              const weak = weakestMeasure(results);
+              return weak ? (
+                <p className="mb-4 text-sm leading-relaxed text-neutral-200">
+                  <span className="font-semibold text-white">One drill. </span>{drillFor(weak)}
+                </p>
+              ) : null;
+            }
+            return (
+              <ul className="mb-4 space-y-3">
+                {chains.map((chain) => (
+                  <li key={chain.key} className="rounded-lg border border-white/10 px-3 py-2 text-sm leading-relaxed text-neutral-200">
+                    <p><span className="font-medium text-white">Problem. </span>{chain.problem}</p>
+                    <p className="mt-1"><span className="font-medium text-white">Likely cause. </span>{chain.likelyCause}</p>
+                    <p className="mt-1"><span className="font-medium text-white">Fix. </span>{chain.fix}</p>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
+          {coaching.state !== 'idle' && (
+            <div className="mb-4 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
+              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
+                {coaching.state === 'loading' ? 'Writing a longer read…' : coaching.text}
+              </p>
+            </div>
+          )}
+
           {mode === 'batting' && reading && (
             <p className="mb-4 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-neutral-300">
               We read this as a <strong className="text-white">{SHOT_TYPE_LABELS[reading.shot].replace(/^\S+\s/, '')}</strong>
@@ -1311,14 +1618,14 @@ export function AnalyseClient() {
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">You · {detail.keyLabel}</p>
                     <PoseFigure pose={detail.pose} width={detail.width} height={detail.height} metrics={results} mode={mode} hand={hand}
-                      mirrored={mirrored} size={300} />
+                      view={view} shot={mode === 'batting' ? shownShot : undefined} mirrored={mirrored} size={300} />
                   </div>
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>
                       {reference.title} · {reference.moment}
                     </p>
                     <PoseFigure pose={referencePose(reference, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={results}
-                      mode={mode} hand={hand} labels="target" bat={referenceBat(reference, hand)} size={300}
+                      mode={mode} hand={hand} view={view} shot={mode === 'batting' ? shownShot : undefined} labels="target" bat={referenceBat(reference, hand)} size={300}
                       label={`Diagram of the ${reference.title.toLowerCase()} with the target joint angles marked`} />
                   </div>
                 </div>
@@ -1333,14 +1640,14 @@ export function AnalyseClient() {
                     The same position from {otherView === 'side' ? 'side-on' : 'front-on'}
                   </p>
                   <PoseFigure pose={referencePose(other, hand)} width={REFERENCE_SIZE} height={REFERENCE_SIZE} metrics={[]}
-                    mode={mode} hand={hand} labels="target" bat={referenceBat(other, hand)} size={240}
+                    mode={mode} hand={hand} view={otherView} labels="target" bat={referenceBat(other, hand)} size={240}
                     label={`Diagram of the ${other.title.toLowerCase()}`} />
                   <p className="mt-2 text-xs text-neutral-500">
                     Film a {otherView === 'side' ? 'side-on' : 'front-on'} clip and switch Camera view to have this side of your technique measured too.
                   </p>
                 </div>
 
-                <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3" open>
+                <details className="mt-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-4 py-3">
                   <summary className="cursor-pointer text-sm font-medium text-white">What the textbook says</summary>
                   <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-neutral-300">
                     {reference.checkpoints.map((point) => <li key={point}>{point}</li>)}
@@ -1366,21 +1673,33 @@ export function AnalyseClient() {
           })()}
 
           <ul className="space-y-5">
-            {results.map((m) => (
+            {results.map((m) => {
+              const offerOptionalRetake = m.confidence === 'low' && retakePlan(results, mode, view).keyFails.length === 0;
+              return (
               <li key={m.key}>
                 <div className="flex items-baseline justify-between gap-3 text-sm">
                   <span className="font-medium text-white">
                     {m.label}
-                    {m.excused && (
+                    {m.excused && m.confidence !== 'low' && (
                       <span className="ml-2 rounded-full px-2 py-0.5 text-[11px] font-medium" style={{ background: 'rgba(96,165,250,0.15)', color: '#93C5FD' }}>
                         unique action · not counted
                       </span>
                     )}
                   </span>
-                  <span className="whitespace-nowrap text-neutral-400">
-                    {formatValue(m)} · <span className="font-semibold" style={{ color: m.excused ? '#93C5FD' : scoreColour(m.score) }}>{m.score}/100</span>
+                  <span className="text-right text-neutral-400">
+                    {m.confidence === 'low'
+                      ? CLEAR_IMAGE
+                      : <>{formatValue(m)} · <span className="font-semibold" style={{ color: m.excused ? '#93C5FD' : scoreColour(m.score) }}>{m.score}/100</span>
+                        <span className="text-neutral-500"> · {m.confidence ?? detail?.confidence ?? 'medium'}</span></>}
                   </span>
                 </div>
+                {offerOptionalRetake && (
+                  <button type="button" onClick={() => void retake()} className="mt-1 text-xs font-medium text-sky-400 underline-offset-2 hover:underline">
+                    Retake if you like
+                  </button>
+                )}
+                {m.confidence !== 'low' && (
+                  <>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-neutral-800">
                   <div className="h-full rounded-full" style={{ width: `${m.score}%`, background: m.excused ? '#60A5FA' : scoreColour(m.score) }} />
                 </div>
@@ -1389,8 +1708,11 @@ export function AnalyseClient() {
                   {m.best !== undefined && m.best >= m.ideal[0] && m.best <= m.ideal[1] ? `, best at ${m.best}${m.unit}` : ''}.{' '}
                   {m.score >= 97 ? 'Textbook.' : m.score >= ON_TARGET ? `Inside the range. ${m.tip}` : m.tip}
                 </p>
+                  </>
+                )}
               </li>
-            ))}
+            );
+            })}
           </ul>
 
           {mode === 'bowling' && detail?.elbow && (() => {
@@ -1441,16 +1763,9 @@ export function AnalyseClient() {
             );
           })()}
 
-          {coaching.state !== 'idle' && (
-            <div className="mt-5 rounded-lg border px-4 py-3" style={{ borderColor: 'rgba(239,200,74,0.3)', background: 'rgba(239,200,74,0.06)' }}>
-              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: GOLD }}>Coach AI&apos;s read</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-neutral-200">
-                {coaching.state === 'loading' ? 'Writing your feedback…' : coaching.text}
-              </p>
-            </div>
-          )}
-
           {compare.state === 'ready' && <ComparisonPanel comparison={compare.data ?? null} trend={compare.trend ?? null} />}
+            </div>
+          </details>
 
           <p className="mt-5 text-xs text-neutral-600">
             Scores are estimates from a single camera angle. 100 is only given for the textbook position itself; anything inside the

@@ -67,9 +67,16 @@ describe('bowlingAnalysis', () => {
     frames[15] = pose({ ...bent, rElbow: [690, 560], rWrist: [650, 470] });
     const result = bowlingAnalysis(frames, 'right', W, H);
     const byKey = Object.fromEntries(result!.metrics.map((m) => [m.key, m]));
-    expect(byKey.frontKnee.value).toBeLessThan(150);
-    expect(byKey.frontKnee.score).toBeLessThan(60);
+    // About 130° is the edge of the 150±20 research range, so it stays on target.
+    expect(byKey.frontKnee.value).toBeGreaterThan(125);
+    expect(byKey.frontKnee.value).toBeLessThan(155);
+    expect(byKey.frontKnee.score).toBeGreaterThanOrEqual(ON_TARGET);
     expect(byKey.armStraightness.score).toBeLessThan(60);
+    const collapsed = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [780, 1400], lAnkle: [620, 1545] });
+    const badKnee = bowlingAnalysis(collapsed, 'right', W, H)!;
+    const knee = badKnee.metrics.find((m) => m.key === 'frontKnee')!;
+    expect(knee.value).toBeLessThan(110);
+    expect(knee.score).toBeLessThan(60);
   });
 
   it('sees no action in someone standing still, or with the wrong arm chosen', () => {
@@ -193,7 +200,7 @@ describe('analyseDetailed', () => {
     const outcome = analyseDetailed(frames, 'batting', 'right', W, H, 'drive');
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
-    expect(outcome.analysis.keyFrame).toBe(7);
+    expect(outcome.analysis.keyLabel).toBe('At contact');
     expect(outcome.analysis.metrics).toHaveLength(8);
   });
 });
@@ -242,7 +249,7 @@ describe('strict scoring', () => {
 
 describe('unique actions', () => {
   it('names a bent front knee, shows it and leaves it out of the overall score', () => {
-    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [690, 1260], lAnkle: [640, 1545] });
+    const frames = delivery({ rElbow: [562, 550], rWrist: [565, 400], lKnee: [780, 1400], lAnkle: [640, 1545] });
     const result = bowlingAnalysis(frames, 'right', W, H)!;
     expect(result.unique).toEqual(['bent-front-knee']);
     const knee = result.metrics.find((m) => m.key === 'frontKnee')!;
@@ -263,9 +270,9 @@ describe('unique actions', () => {
 
   it('names a round-arm action from front-on, and does not excuse a big side bend', () => {
     const roundArm = (extra: Joints = {}) => Array.from({ length: 14 }, () => pose({ rElbow: [667, 602], rWrist: [775, 505], lKnee: [522, 1300], ...extra }));
+    // From in front a high arm that is not perfectly vertical is not a round arm.
     const slinger = bowlingAnalysis(roundArm(), 'right', W, H, 'front')!;
-    expect(slinger.unique).toEqual(['round-arm']);
-    expect(slinger.metrics.find((m) => m.key === 'armHeight')!.excused).toBe(true);
+    expect(slinger.unique).not.toContain('round-arm');
     expect(UNIQUE_ACTIONS['round-arm'].excused).toBe(true);
 
     // Shoulders carried far to one side of the hips
@@ -282,9 +289,17 @@ describe('unique actions', () => {
   });
 });
 
+function facing(frames: Landmark[][], left: number, right: number): Landmark[][] {
+  return frames.map((lm) => lm.map((point, index) => {
+    if (index === L.lShoulder) return { ...point, x: left / W };
+    if (index === L.rShoulder) return { ...point, x: right / W };
+    return point;
+  }));
+}
+
 describe('front-on view', () => {
-  it('uses its own measures for bowling', () => {
-    const outcome = analyseDetailed(delivery(), 'bowling', 'right', W, H, undefined, 'front');
+  it('uses its own measures when the picture is front-on', () => {
+    const outcome = analyseDetailed(facing(delivery(), 180, 900), 'bowling', 'right', W, H, undefined, 'front');
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
     const keys = outcome.analysis.metrics.map((m) => m.key);
@@ -292,8 +307,17 @@ describe('front-on view', () => {
     expect(keys).not.toContain('frontKnee');
   });
 
+  it('keeps the chosen view when the picture is not clearly the other way', () => {
+    // Shoulders a bit wide of side-on, not wide enough to be sure it is front-on.
+    const outcome = analyseDetailed(facing(delivery(), 400, 680), 'bowling', 'right', W, H, undefined, 'front');
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    expect(outcome.analysis.metrics.map((m) => m.key)).toEqual(expect.arrayContaining(['armHeight', 'frontFootLine']));
+    expect(outcome.analysis.warnings.join(' ')).not.toMatch(/Switch/);
+  });
+
   it('uses its own measures for batting, and skips the bat for a leave', () => {
-    const frames = Array.from({ length: 20 }, () => pose());
+    const frames = facing(Array.from({ length: 20 }, () => pose()), 180, 900);
     const drive = analyseDetailed(frames, 'batting', 'right', W, H, 'drive', 'front');
     expect(drive.ok).toBe(true);
     if (!drive.ok) return;
