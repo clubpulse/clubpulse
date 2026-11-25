@@ -46,6 +46,7 @@ const world = (w: World = {}) => {
     dbs_checks: () => w.dbs ?? [{ club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: future }],
     child_profiles: () => parents.length ? [{ linked_user_id: KID, parent_child_links: parents.map((p) => ({ parent_id: p, verified_at: 'x' })) }] : [],
     community_blocks: () => [],
+    guardian_consents: () => [{ user_id: KID, confirmed_at: '2026-01-01' }],
     community_guardian_requests: (ops) => {
       if (has(ops, 'eq', 'status', 'declined') && ops.some((o) => o[0] === 'gte')) return w.declinedRecently ? [{ id: 'old' }] : [];
       if (has(ops, 'eq', 'status', 'pending_parent') && ops.some((o) => o[0] === 'select' && typeof o[2] === 'object')) return Array.from({ length: w.pendingCount ?? 0 }, () => ({}));
