@@ -87,7 +87,13 @@ body {
 .mg-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
   background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--mg-tint, #60A5FA) 26%, transparent), transparent 62%); }
 .mg-card:hover::before, .mg-card:focus-visible::before { opacity: 1; }
-a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-color: color-mix(in srgb, var(--mg-tint, #60A5FA) 55%, transparent); box-shadow: 0 18px 44px -18px color-mix(in srgb, var(--mg-tint, #60A5FA) 60%, transparent); outline: none; }
+a.mg-card:hover, a.mg-card:focus-visible { transform: translateY(-3px); border-color: color-mix(in srgb, var(--mg-tint, #60A5FA) 55%, transparent); box-shadow: 0 18px 44px -18px color-mix(in srgb, var(--mg-tint, #60A5FA) 60%, transparent); }
+
+/* Tailwind and many controls set outline: none. Keyboard focus stays visible. */
+:focus-visible {
+  outline: 2px solid #60A5FA !important;
+  outline-offset: 2px;
+}
 .mg-card > * { position: relative; }
 
 /* Headline with colour moving through it */

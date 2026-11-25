@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDialog } from '@/components/ui/useDialog';
 import { COACHING_TYPE_CONFIG, type CoachingType, type SessionFormat } from '@/lib/types/coaching';
 import { createListing } from '@/lib/actions/coaching';
 
@@ -18,6 +19,7 @@ const FORMATS: { value: SessionFormat; label: string }[] = [
 
 export function CreateListingForm({ clubId, onCreated }: Props) {
   const [open, setOpen] = useState(false);
+  const dialogRef = useDialog(open, () => setOpen(false));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -66,8 +68,11 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
 
       {open && (
         <div
+          ref={dialogRef}
           role="dialog"
-          aria-modal
+          aria-modal="true"
+          aria-labelledby="list-session-title"
+          tabIndex={-1}
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
           style={{
             position: 'fixed', inset: 0, zIndex: 50,
@@ -83,7 +88,7 @@ export function CreateListingForm({ clubId, onCreated }: Props) {
               fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column', gap: '16px',
             }}
           >
-            <h3 style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
+            <h3 id="list-session-title" style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: '18px', color: '#fff' }}>
               List a Coaching Session
             </h3>
 

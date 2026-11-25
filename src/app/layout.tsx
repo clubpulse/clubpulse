@@ -16,7 +16,8 @@ const syne = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://shiftup.club"),
+  metadataBase: new URL("https://www.shiftup.club"),
+  alternates: { canonical: "./" },
   title: { default: "SHIFTUP: From Grassroots to Greatness", template: "%s | SHIFTUP" },
   description: "SHIFTUP: From Grassroots to Greatness. Four pillars to help every grassroots cricketer get better: Player Analysis, Community, Wellness and Academy, for players and their clubs.",
   openGraph: { siteName: "SHIFTUP", title: "SHIFTUP: From Grassroots to Greatness", description: "From Grassroots to Greatness." },
