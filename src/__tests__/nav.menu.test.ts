@@ -145,7 +145,7 @@ describe('menu by role', () => {
       expect(links).toHaveLength(5);
       expect(links.map((l) => l.href)).not.toContain('/marketplace');
     }
-    expect(bottomLinksFor(aud(['player'])).map((l) => l.label)).toEqual(['Home', 'Match Day', 'Analysis', 'Academy', 'Profile']);
+    expect(bottomLinksFor(aud(['player'])).map((l) => l.label)).toEqual(['Home', 'Fixtures', 'Analysis', 'Academy', 'Profile']);
     expect(bottomLinksFor(aud(['parent'])).map((l) => l.href)).not.toContain('/technique');
     expect(bottomLinksFor(aud([], { admin: true }))[0].href).toBe('/admin/club');
   });

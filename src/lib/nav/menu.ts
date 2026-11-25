@@ -35,12 +35,12 @@ const PLAYING: Role[] = ['player', 'coach'];
 export const NAV_GROUPS: NavGroup[] = [
   {
     key: 'matchday',
-    label: 'Match Day',
+    label: 'Fixtures',
     icon: '🏟️',
     tint: '#22C55E',
     links: [
       { href: '/availability', label: 'Availability', icon: '📅', for: PLAYING },
-      { href: '/match-day', label: 'Match Day', icon: '🏟️' },
+      { href: '/match-day', label: 'Fixtures', icon: '🏟️' },
       { href: '/team-selection', label: 'Team Selection', icon: '🧢', for: PLAYING },
       { href: '/gut-feeling', label: 'Gut Feeling', icon: '⚡' },
       { href: '/season-wrap', label: 'Season Wrap', icon: '🏆', for: PLAYING },
@@ -139,7 +139,7 @@ export const NAV_GROUPS: NavGroup[] = [
     adminOnly: true,
     links: [
       { href: '/admin/club', label: 'Club home', icon: '🛡️' },
-      { href: '/admin/club/availability', label: 'Match Day', icon: '🏟️' },
+      { href: '/admin/club/availability', label: 'Fixtures', icon: '🏟️' },
       { href: '/admin/club/members', label: 'Members', icon: '👥' },
       { href: '/admin/club/finance', label: 'Finance', icon: '💷' },
       { href: '/admin/club/safeguarding', label: 'Safeguarding', icon: '🧷' },
@@ -217,7 +217,7 @@ export function playsCricket(audience: Audience): boolean {
 export const NETWORK_LINKS: NavLink[] = [
   { href: '/community/feed', label: 'Commentary Box', icon: '🎙️', for: PLAYING, section: 'Across clubs' },
   { href: '/community/match', label: 'Find a Teammate', icon: '🤝', for: PLAYING, section: 'Across clubs' },
-  { href: '/community/shortages', label: 'Short for Saturday', icon: '📣', for: PLAYING, adult: true, section: 'Across clubs' },
+  { href: '/community/shortages', label: 'Looking for players', icon: '📣', for: PLAYING, adult: true, section: 'Across clubs' },
   { href: '/community/match?want=coach&role=coach', label: 'Find a Coach', icon: '🎓', for: ['player'], adult: true, section: 'Across clubs' },
   { href: '/community/near', label: 'Nets and Games', icon: '🏏', for: PLAYING, section: 'Across clubs' },
   { href: '/community/connections', label: 'Connections', icon: '🧢', for: PLAYING, section: 'Across clubs' },

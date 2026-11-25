@@ -30,7 +30,7 @@ const world = (o: { junior?: boolean; staff?: boolean; shortage?: Record<string,
       return [{ club_id: 'c1', role: 'member', is_junior: !!o.junior }];
     },
     child_profiles: () => [{ linked_user_id: 'me', parent_child_links: [{ parent_id: 'mum', verified_at: 'x' }] }],
-    clubs: () => [{ id: 'c1', name: 'Slough CC', county: null, league: null, ground_lat: null, ground_lng: null }, { id: 'c2', name: 'Eton CC', county: null, league: null, ground_lat: null, ground_lng: null }],
+    clubs: () => [{ id: 'c1', name: 'Fairwick CC', county: null, league: null, ground_lat: null, ground_lng: null }, { id: 'c2', name: 'Redwillow CC', county: null, league: null, ground_lat: null, ground_lng: null }],
     profiles: () => [{ id: 'me', full_name: 'Mo Player', display_name: null, push_token: null, date_of_birth: '1990-01-01' }, { id: 'p', full_name: 'Pat Poster', display_name: null, push_token: null, date_of_birth: '1990-01-01' }],
     community_blocks: () => [],
     community_shortages: (ops) => ops.some((x) => x[0] === 'select' && typeof x[1] === 'string' && x[1].includes('posted_by') && !x[1].includes('play_at') && !x[1].includes('format'))
@@ -60,7 +60,7 @@ describe('listing', () => {
   it('shows an adult the open games, with their own reply marked', async () => {
     world();
     const r = await listShortages('me', 'all');
-    expect(r.success && r.data.shortages).toEqual([expect.objectContaining({ id: 's1', club: 'Eton CC', need: 2, replied: true, canReply: false, mine: false })]);
+    expect(r.success && r.data.shortages).toEqual([expect.objectContaining({ id: 's1', club: 'Redwillow CC', need: 2, replied: true, canReply: false, mine: false })]);
   });
   it('shows a junior nothing at all', async () => {
     world({ junior: true });

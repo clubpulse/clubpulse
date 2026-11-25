@@ -43,7 +43,7 @@ beforeEach(() => {
   ];
   db.profiles = [{ id: A, full_name: 'Amy Ng', date_of_birth: '2012-01-01' }, { id: B, full_name: 'Ben Ode', date_of_birth: '2012-01-01' }];
   db.club_members = [{ user_id: A, club_id: 'c', role: 'member', is_junior: true, is_active: true }, { user_id: B, club_id: 'c', role: 'member', is_junior: true, is_active: true }];
-  db.clubs = [{ id: 'c', name: 'Slough CC' }];
+  db.clubs = [{ id: 'c', name: 'Fairwick CC' }];
 });
 const status = () => db.community_connections[0].status;
 

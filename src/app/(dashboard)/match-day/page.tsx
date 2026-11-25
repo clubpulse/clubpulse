@@ -34,7 +34,7 @@ export default async function MatchDayPage() {
           fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px',
           color: '#fff', margin: 0, letterSpacing: '-0.3px',
         }}>
-          Match Day 🏏
+          Fixtures 🏏
         </h1>
         <div style={{
           background: 'rgba(255,255,255,0.05)', borderRadius: '16px',
@@ -64,7 +64,7 @@ export default async function MatchDayPage() {
           fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: '26px',
           color: '#fff', margin: 0, letterSpacing: '-0.3px',
         }}>
-          Match Day 🏏
+          Fixtures 🏏
         </h1>
         {isAdmin && (
           <Link href="/team-selection" style={{ fontSize: '13px', color: '#60A5FA', fontWeight: 600, textDecoration: 'none' }}>

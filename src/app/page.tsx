@@ -751,7 +751,7 @@ export default function HomePage() {
                         <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="💷" /></div><div className="cp-tile-label">Community</div></div>
                       </div>
                       <div className="cp-avail-bar">
-                        <span className="cp-avail-label">✓ Ready for Saturday</span>
+                        <span className="cp-avail-label">✓ Available</span>
                         <div className="cp-avail-toggle" />
                       </div>
                     </div>

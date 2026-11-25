@@ -27,7 +27,7 @@ const setup = (o: { juniors: boolean; pending?: boolean; parents?: Record<string
   tables = {
     profiles: () => [{ id: 'a', full_name: 'Amy Ng', display_name: null, push_token: 'ExponentPushToken[abc]', date_of_birth: '1990-01-01' }, { id: 'b', full_name: 'Ben Ode', display_name: null, push_token: null, date_of_birth: '1990-01-01' }],
     club_members: () => [member('a', o.juniors), member('b', o.juniors)],
-    clubs: () => [{ id: 'c1', name: 'Slough CC', county: 'Berks', league: 'L', ground_lat: null, ground_lng: null }],
+    clubs: () => [{ id: 'c1', name: 'Fairwick CC', county: 'Berks', league: 'L', ground_lat: null, ground_lng: null }],
     community_blocks: () => [],
     community_connections: () => (o.pending ? [{ id: 'x1', requester_id: 'b', addressee_id: 'a', status: 'pending' }] : []),
     // parentsOf asks for one junior's linked child record (eq), people() for several at once (in)

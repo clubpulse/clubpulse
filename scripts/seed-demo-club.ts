@@ -129,7 +129,7 @@ async function main() {
   const { count: postCount } = await db.from('community_posts').select('id', { count: 'exact', head: true }).eq('club_id', main);
   if (!postCount) {
     await tolerate('posts', db.from('community_posts').insert([
-      { author_id: id.captain, club_id: main, body: 'Great session in the nets tonight. Saturday’s XI is up on ShiftUp.', status: 'live' },
+      { author_id: id.captain, club_id: main, body: 'Great session in the nets tonight. The XI is up on SHIFTUP.', status: 'live' },
       { author_id: id.spinner, club_id: main, body: 'Anyone up for early nets on Thursday before work?', status: 'live' },
       { author_id: id.keeper, club_id: main, body: 'Thank you to everyone who helped with the working party at the ground.', status: 'live' },
       { author_id: id.opener, club_id: main, body: 'This post is held to show the moderation inbox (demo).', status: 'held', held_reason: 'Held by the safety check (demo)' },

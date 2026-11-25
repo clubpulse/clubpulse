@@ -108,9 +108,9 @@ export default function AboutPage() {
           <div className="values-grid">
             {[
               { icon: '🏏', title: 'Cricket first', desc: 'Before we build anything we ask one thing: does it make playing or running cricket easier? If not, it waits.' },
-              { icon: '🌱', title: 'Small clubs first', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
+              { icon: '🌱', title: 'Small clubs first', desc: 'We build for the club with 40 members and one person running the admin, not for the county academies that already have full-time staff.' },
               { icon: '🤝', title: 'Listening to clubs', desc: 'We are talking to clubs now, and what they tell us decides what we build next.' },
-              { icon: '⚡', title: 'Actually useful', desc: 'If a feature does not save a volunteer some time, it does not ship.' },
+              { icon: '⚡', title: 'Actually useful', desc: 'If a feature does not save someone some time, it does not ship.' },
               { icon: '🔒', title: 'Privacy by default', desc: 'Your club’s data belongs to your club. We do not sell it.' },
               { icon: '💷', title: 'Plain pricing', desc: 'Club plans from £29.99 a month, set up with you. Players start on Free (£0).' },
             ].map(v => (

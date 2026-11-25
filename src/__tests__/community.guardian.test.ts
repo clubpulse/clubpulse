@@ -42,7 +42,7 @@ const world = (w: World = {}) => {
       if (has(ops, 'eq', 'user_id', ADULT)) return [{ club_id: 'c1', role: w.coachRole ?? 'coach' }];
       return [{ club_id: 'c1', role: 'member' }];
     },
-    clubs: () => [{ id: 'c1', name: 'Slough CC' }],
+    clubs: () => [{ id: 'c1', name: 'Fairwick CC' }],
     dbs_checks: () => w.dbs ?? [{ club_id: 'c1', check_type: 'enhanced', status: 'valid', expiry_date: future }],
     child_profiles: () => parents.length ? [{ linked_user_id: KID, parent_child_links: parents.map((p) => ({ parent_id: p, verified_at: 'x' })) }] : [],
     community_blocks: () => [],

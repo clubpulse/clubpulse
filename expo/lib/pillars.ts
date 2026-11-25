@@ -61,7 +61,7 @@ export const PILLARS: Pillar[] = [
     extra: [
       { key: 'training', label: 'Mind Nets', detail: 'Psychological training: six weeks, one skill a week', icon: '🎯', route: '/warmup/training' },
       { key: 'routine', label: 'My Routine', detail: 'Build what you do before every ball', icon: '🔁', route: '/warmup/routine' },
-      { key: 'matchday', label: 'Match Day', detail: 'Game preparation: the night before to walking out', icon: '🏏', route: '/warmup/matchday' },
+      { key: 'matchday', label: 'Fixtures', detail: 'Game preparation: the night before to walking out', icon: '🏏', route: '/warmup/matchday' },
       { key: 'mindfulness', label: 'Watch the Ball', detail: 'Mindfulness: stay in the moment', icon: '👁️', route: '/warmup/mindfulness' },
       { key: 'meditation', label: 'Still Head', detail: 'Meditation: guided and timed', icon: '🧘', route: '/warmup/meditation' },
       { key: 'mindset', label: 'Between the Ears', detail: 'Mindset: nerves, confidence, pressure', icon: '🧠', route: '/warmup/mindset' },
@@ -96,7 +96,7 @@ export const PILLARS: Pillar[] = [
 const SOCIAL: MenuLink[] = [
   { key: 'feed', label: 'Commentary Box', detail: 'The feed: what cricket people near you are sharing', icon: '🎙️', route: '/community/feed' },
   { key: 'nearby', label: 'Partnerships', detail: 'Meet cricket people around you', icon: '🤝', route: '/community/nearby' },
-  { key: 'shortages', label: 'Short for Saturday', detail: 'Clubs that need players for a game', icon: '📣', route: '/community/shortages' },
+  { key: 'shortages', label: 'Looking for players', detail: 'Clubs that need players for a game', icon: '📣', route: '/community/shortages' },
   { key: 'clubs-nearby', label: 'Clubs near you', detail: 'Find a club to join or visit', icon: '🏟️', route: '/community/clubs-nearby' },
   { key: 'notifications', label: 'Notifications', detail: 'Requests and replies', icon: '🔔', route: '/community/notifications' },
   { key: 'sessions', label: 'Nets and Games', detail: 'Nets sessions and pick-up games near you', icon: '🏏', route: '/community/sessions' },
