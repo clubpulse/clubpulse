@@ -2,7 +2,7 @@ import { timingSafeEqual } from 'crypto';
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email/resend';
-import { clubMemberPricingEnabled, INDIVIDUAL_PENCE, isPaidPlan } from '@/lib/billing/member-pricing';
+import { clubLapseEmail, clubLapseNotices, clubMemberPricingEnabled, INDIVIDUAL_PENCE, isPaidPlan, type LapseNotice } from '@/lib/billing/member-pricing';
 import { assessMemberPricing, renewalWork, type RenewalRow } from '@/lib/billing/member-pricing-server';
 import { getStripe } from '@/lib/stripe/client';
 
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
   const admin = createAdminClient();
   const { data } = await admin.from('player_subscriptions')
-    .select('user_id, plan, kind, status, current_period_end, stripe_subscription_id')
+    .select('user_id, plan, kind, status, current_period_end, stripe_subscription_id, billing_interval, term_end, member_club_id')
     .eq('kind', 'club_member')
     .in('status', ['active', 'trialing', 'past_due']);
 
@@ -36,7 +36,10 @@ export async function GET(req: Request) {
       plan: row.plan,
       onMemberRate: true,
       periodEnd: (row.current_period_end as string | null) ?? null,
-      eligibleNow: assessed.eligible,
+      qualifiesNow: assessed.eligible,
+      cause: assessed.cause,
+      interval: row.billing_interval === 'year' || row.billing_interval === 'season' ? row.billing_interval : 'month',
+      termEnd: (row.term_end as string | null) ?? null,
       stripeSubscriptionId: (row.stripe_subscription_id as string | null) ?? null,
     } satisfies RenewalRow, now);
     if (work.notify) {
@@ -61,5 +64,34 @@ export async function GET(req: Request) {
       switched += 1;
     }
   }
-  return NextResponse.json({ notified, switched });
+  const clubNotices = await sendClubLapseNotices(admin, now);
+  return NextResponse.json({ notified, switched, clubNotices });
+}
+
+async function sendClubLapseNotices(admin: ReturnType<typeof createAdminClient>, now: Date): Promise<number> {
+  const { data: subs } = await admin.from('club_subscriptions').select('club_id, status, cancel_at_period_end, current_period_end').in('status', ['active', 'trialing', 'past_due', 'canceled', 'unpaid']);
+  let sent = 0;
+  for (const sub of subs ?? []) {
+    const ending = sub.cancel_at_period_end === true || sub.status === 'canceled' || sub.status === 'unpaid' || sub.status === 'past_due';
+    if (!ending || !sub.current_period_end) continue;
+    const periodEnd = new Date(sub.current_period_end as string);
+    const endDate = periodEnd.toISOString().slice(0, 10);
+    const { data: prior } = await admin.from('club_lapse_notices').select('notice').eq('club_id', sub.club_id).eq('period_end', endDate);
+    const due = clubLapseNotices({ now, clubPeriodEnd: periodEnd, sent: (prior ?? []).map((n) => n.notice as LapseNotice) });
+    if (due.length === 0) continue;
+    const { data: members } = await admin.from('club_members').select('user_id, role').eq('club_id', sub.club_id).eq('is_active', true);
+    const ids = (members ?? []).map((m) => m.user_id as string);
+    const { data: profiles } = ids.length ? await admin.from('profiles').select('id, email').in('id', ids) : { data: [] as Array<{ id: string; email: string | null }> };
+    const clubIds = new Set((members ?? []).filter((m) => m.role === 'club_admin').map((m) => m.user_id as string));
+    for (const notice of due) {
+      const mail = clubLapseEmail({ when: notice, endsOn: endDate });
+      for (const profile of profiles ?? []) {
+        if (!profile.email) continue;
+        const audienceMail = clubIds.has(profile.id as string) ? mail : { ...mail, subject: mail.subject.replace('club plan', 'club’s plan') };
+        if (await sendEmail({ to: profile.email as string, ...audienceMail })) sent += 1;
+      }
+      await admin.from('club_lapse_notices').insert({ club_id: sub.club_id, notice, period_end: endDate });
+    }
+  }
+  return sent;
 }

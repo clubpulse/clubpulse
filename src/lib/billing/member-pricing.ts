@@ -27,6 +27,10 @@ export const MEMBER_PENCE: Record<PlayerTier, number> = {
 };
 
 export const RENEWAL_NOTICE_DAYS = 14;
+export const LAPSE_GRACE_DAYS = 30;
+export const RESUBSCRIBE_DAYS = 90;
+export type BillingInterval = 'month' | 'year' | 'season';
+export type RateCause = 'none' | 'club_lapsed' | 'player_left';
 
 /** Stripe Price IDs Ishwar creates. This code only reads them. It never creates a Price or Product. */
 export const STRIPE_PRICE_ENV: Record<'individual' | 'club_member' | 'club_seat', Record<PaidPlan, string>> = {
@@ -131,30 +135,119 @@ export function decidePayer(input: {
 
 export type RenewalDecision = {
   rate: RateKind;
-  /** Ask them, about 14 days before renewal, that the next bill will be the individual price. */
+  /** Tell the player the price will change, once the change is within 14 days. */
   notify: boolean;
-  /** The paid period has ended and they are no longer eligible, so the next bill is the individual price. */
+  /** The grace has ended, so the next bill is the individual price. */
   switchNow: boolean;
+  protectedUntil: Date | null;
 };
 
+const DAY_MS = 86_400_000;
+
+export function addDays(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * DAY_MS);
+}
+
+export function seasonKey(now: Date): string {
+  return String(now.getUTCFullYear());
+}
+
 /**
- * Leaving the club, or the club plan lapsing, does not change the price mid-period.
- * Another registered club that has confirmed them keeps the member rate.
- * Otherwise they are told before renewal and move to the individual price at renewal.
+ * How long a member price lasts after it stops being earned.
+ * A lapsed club plan keeps the member rate for the rest of this billing period plus 30 days.
+ * Leaving the club moves to the individual rate at the next renewal.
+ * A season or year that was already paid keeps that price until the term ends.
  */
+export function memberRateProtectedUntil(input: {
+  cause: 'club_lapsed' | 'player_left';
+  periodEnd: Date;
+  interval: BillingInterval;
+  termEnd: Date | null;
+}): Date {
+  if (input.interval === 'year' || input.interval === 'season') return input.termEnd ?? input.periodEnd;
+  if (input.cause === 'club_lapsed') return addDays(input.periodEnd, LAPSE_GRACE_DAYS);
+  return input.periodEnd;
+}
+
 export function renewalDecision(input: {
   now: Date;
-  periodEnd: Date | null;
   onMemberRate: boolean;
-  eligibleNow: boolean;
+  /** Still confirmed by a paid registered club, including one they joined instead. */
+  qualifiesNow: boolean;
+  cause: RateCause;
+  periodEnd: Date | null;
+  interval?: BillingInterval;
+  termEnd?: Date | null;
 }): RenewalDecision {
-  if (!input.onMemberRate) return { rate: 'individual', notify: false, switchNow: false };
-  if (input.eligibleNow) return { rate: 'club_member', notify: false, switchNow: false };
+  if (!input.onMemberRate) return { rate: 'individual', notify: false, switchNow: false, protectedUntil: null };
+  if (input.qualifiesNow || input.cause === 'none') return { rate: 'club_member', notify: false, switchNow: false, protectedUntil: null };
   const end = input.periodEnd;
-  if (!end || Number.isNaN(end.getTime())) return { rate: 'club_member', notify: false, switchNow: false };
-  if (input.now.getTime() >= end.getTime()) return { rate: 'individual', notify: false, switchNow: true };
-  const daysLeft = (end.getTime() - input.now.getTime()) / 86_400_000;
-  return { rate: 'club_member', notify: daysLeft <= RENEWAL_NOTICE_DAYS, switchNow: false };
+  if (!end || Number.isNaN(end.getTime())) return { rate: 'club_member', notify: false, switchNow: false, protectedUntil: null };
+  const until = memberRateProtectedUntil({
+    cause: input.cause,
+    periodEnd: end,
+    interval: input.interval ?? 'month',
+    termEnd: input.termEnd ?? null,
+  });
+  if (input.now.getTime() >= until.getTime()) return { rate: 'individual', notify: false, switchNow: true, protectedUntil: until };
+  const daysLeft = (until.getTime() - input.now.getTime()) / DAY_MS;
+  return { rate: 'club_member', notify: daysLeft <= RENEWAL_NOTICE_DAYS, switchNow: false, protectedUntil: until };
+}
+
+/** A confirmation from an earlier season still counts when the club was away for 90 days or less. */
+export function confirmationCarries(input: {
+  confirmedSeason: string | null;
+  currentSeason: string;
+  lapsedAt: Date | null;
+  resumedAt: Date | null;
+}): boolean {
+  if (!input.confirmedSeason) return false;
+  if (input.confirmedSeason === input.currentSeason) return true;
+  if (!input.lapsedAt || !input.resumedAt) return false;
+  const gap = input.resumedAt.getTime() - input.lapsedAt.getTime();
+  return gap >= 0 && gap <= RESUBSCRIBE_DAYS * DAY_MS;
+}
+
+/** Clubs confirm only as many members as the plan allows, and a new season needs a new confirmation. */
+export function rosterRoom(input: {
+  confirmedThisSeason: number;
+  limit: number;
+  alreadyConfirmedThisSeason: boolean;
+}): { ok: true } | { ok: false; error: string } {
+  if (input.alreadyConfirmedThisSeason) return { ok: true };
+  if (input.confirmedThisSeason >= input.limit) {
+    return { ok: false, error: 'This club has confirmed as many members as its plan allows. Re-confirm the squad next season within that limit.' };
+  }
+  return { ok: true };
+}
+
+export type LapseNotice = 'before' | 'on_day';
+
+/** One notice 14 days before the club plan ends, and one on the day it ends. */
+export function clubLapseNotices(input: { now: Date; clubPeriodEnd: Date; sent: LapseNotice[] }): LapseNotice[] {
+  const end = input.clubPeriodEnd.getTime();
+  const days = (end - input.now.getTime()) / DAY_MS;
+  const due: LapseNotice[] = [];
+  if (days <= RENEWAL_NOTICE_DAYS && days > 0 && !input.sent.includes('before')) due.push('before');
+  const sameDay = input.now.toISOString().slice(0, 10) === input.clubPeriodEnd.toISOString().slice(0, 10);
+  if (sameDay && !input.sent.includes('on_day')) due.push('on_day');
+  return due;
+}
+
+export function clubLapseEmail(input: { when: LapseNotice; endsOn: string }): { subject: string; text: string } {
+  const when = input.when === 'before'
+    ? `The club plan ends on ${input.endsOn}.`
+    : `The club plan ends today (${input.endsOn}).`;
+  return {
+    subject: input.when === 'before' ? 'A SHIFTUP club plan ends in 14 days' : 'A SHIFTUP club plan ends today',
+    text: [
+      when,
+      'Members keep the member rate for the rest of their current billing period, plus 30 days, and then renew at the individual price.',
+      'A season or year that is already paid keeps that price until the term ends.',
+      'If the club takes a paid plan again within 90 days, confirmed members return to the member rate at their next renewal without being confirmed again. After 90 days the club confirms them again.',
+      'Club plans still start from £29.99 a month.',
+    ].join('\n\n'),
+  };
 }
 
 export function renewalEmail(input: { plan: PaidPlan; renewsOn: string }): { subject: string; text: string } {
@@ -164,7 +257,8 @@ export function renewalEmail(input: { plan: PaidPlan; renewsOn: string }): { sub
     subject: 'Your SHIFTUP plan price changes at renewal',
     text: [
       `Your club member price (£${member} a month) lasts until ${input.renewsOn}.`,
-      `After that renewal the plan moves to the individual price (£${individual} a month), unless a registered club on a paid SHIFTUP plan has confirmed you as a member.`,
+      `After that the plan renews at the individual price (£${individual} a month), unless a registered club on a paid SHIFTUP plan has confirmed you.`,
+      'If your club plan is ending, the member price also covers 30 days after your current billing period. A season or year already paid keeps that price until the term ends.',
       'Free stays £0. Club plans still start from £29.99 a month.',
     ].join('\n\n'),
   };

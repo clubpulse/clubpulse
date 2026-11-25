@@ -3,10 +3,14 @@ import {
   INDIVIDUAL_PENCE,
   MEMBER_PENCE,
   STRIPE_PRICE_ENV,
+  clubLapseEmail,
+  clubLapseNotices,
   clubMemberPricingEnabled,
   clubSeatLine,
+  confirmationCarries,
   decidePayer,
   memberDiscountEligible,
+  memberRateProtectedUntil,
   normaliseClubCode,
   penceFor,
   priceIdFor,
@@ -14,6 +18,8 @@ import {
   pricingCopyAllows,
   renewalDecision,
   renewalEmail,
+  rosterRoom,
+  seasonKey,
 } from '@/lib/billing/member-pricing';
 import { prepareMemberCheckout, renewalWork } from '@/lib/billing/member-pricing-server';
 import fs from 'fs';
@@ -64,23 +70,63 @@ describe('who pays', () => {
   });
 });
 
-describe('renewal', () => {
+describe('lapse, leaving and roster', () => {
   const end = day('2026-12-01');
+  const lapsed = { onMemberRate: true, qualifiesNow: false, cause: 'club_lapsed' as const, periodEnd: end, interval: 'month' as const };
 
-  it('keeps the member rate until renewal, then moves to the individual price', () => {
-    expect(renewalDecision({ now: day('2026-11-01'), periodEnd: end, onMemberRate: true, eligibleNow: false })).toMatchObject({ rate: 'club_member', switchNow: false, notify: false });
-    expect(renewalDecision({ now: day('2026-11-20'), periodEnd: end, onMemberRate: true, eligibleNow: false })).toMatchObject({ rate: 'club_member', notify: true, switchNow: false });
-    expect(renewalDecision({ now: day('2026-12-01'), periodEnd: end, onMemberRate: true, eligibleNow: false })).toMatchObject({ rate: 'individual', switchNow: true, notify: false });
+  it('keeps a lapsed club’s members on the member rate for the billing period plus 30 days', () => {
+    const until = memberRateProtectedUntil({ cause: 'club_lapsed', periodEnd: end, interval: 'month', termEnd: null });
+    expect(until.toISOString().slice(0, 10)).toBe('2026-12-31');
+    expect(renewalDecision({ now: day('2026-12-01'), ...lapsed })).toMatchObject({ rate: 'club_member', switchNow: false });
+    expect(renewalDecision({ now: day('2026-12-20'), ...lapsed })).toMatchObject({ rate: 'club_member', notify: true, switchNow: false });
+    expect(renewalDecision({ now: day('2026-12-31'), ...lapsed })).toMatchObject({ rate: 'individual', switchNow: true });
   });
 
-  it('keeps the discount when another registered club has confirmed them', () => {
-    expect(renewalDecision({ now: day('2026-11-20'), periodEnd: end, onMemberRate: true, eligibleNow: true })).toEqual({ rate: 'club_member', notify: false, switchNow: false });
+  it('keeps a prepaid season or year until the term ends', () => {
+    const term = day('2027-03-01');
+    const until = memberRateProtectedUntil({ cause: 'club_lapsed', periodEnd: end, interval: 'season', termEnd: term });
+    expect(until).toEqual(term);
+    expect(renewalDecision({ now: day('2026-12-31'), ...lapsed, interval: 'year', termEnd: term })).toMatchObject({ rate: 'club_member', switchNow: false });
+    expect(renewalDecision({ now: day('2027-03-01'), ...lapsed, interval: 'year', termEnd: term })).toMatchObject({ switchNow: true });
+  });
+
+  it('moves someone who leaves to the individual rate at the next renewal, unless another club has confirmed them', () => {
+    expect(renewalDecision({ now: day('2026-11-20'), onMemberRate: true, qualifiesNow: false, cause: 'player_left', periodEnd: end })).toMatchObject({ rate: 'club_member', notify: true, switchNow: false });
+    expect(renewalDecision({ now: day('2026-12-01'), onMemberRate: true, qualifiesNow: false, cause: 'player_left', periodEnd: end })).toMatchObject({ rate: 'individual', switchNow: true });
+    expect(renewalDecision({ now: day('2026-12-01'), onMemberRate: true, qualifiesNow: true, cause: 'none', periodEnd: end })).toMatchObject({ rate: 'club_member', switchNow: false, notify: false });
+  });
+
+  it('notifies the club 14 days before the plan ends and again that day', () => {
+    const clubEnd = day('2026-12-15');
+    expect(clubLapseNotices({ now: day('2026-12-01'), clubPeriodEnd: clubEnd, sent: [] })).toEqual(['before']);
+    expect(clubLapseNotices({ now: day('2026-12-15'), clubPeriodEnd: clubEnd, sent: ['before'] })).toEqual(['on_day']);
+    expect(clubLapseNotices({ now: day('2026-12-15'), clubPeriodEnd: clubEnd, sent: ['before', 'on_day'] })).toEqual([]);
+    const mail = clubLapseEmail({ when: 'before', endsOn: '2026-12-15' });
+    expect(mail.text).toContain('30 days');
+    expect(mail.text).toContain('90 days');
+    expect(mail.text.toLowerCase()).not.toContain('free for players');
+  });
+
+  it('carries a confirmation when the club returns within 90 days, and requires a new one after that or next season', () => {
+    const lapsedAt = day('2026-01-01');
+    expect(confirmationCarries({ confirmedSeason: '2025', currentSeason: '2026', lapsedAt, resumedAt: day('2026-03-01') })).toBe(true);
+    expect(confirmationCarries({ confirmedSeason: '2025', currentSeason: '2026', lapsedAt, resumedAt: day('2026-05-01') })).toBe(false);
+    expect(confirmationCarries({ confirmedSeason: '2026', currentSeason: '2026', lapsedAt: null, resumedAt: null })).toBe(true);
+    expect(confirmationCarries({ confirmedSeason: '2025', currentSeason: '2026', lapsedAt: null, resumedAt: null })).toBe(false);
+    expect(seasonKey(day('2026-06-01'))).toBe('2026');
+  });
+
+  it('stops confirming members once the plan’s seats are full', () => {
+    expect(rosterRoom({ confirmedThisSeason: 75, limit: 75, alreadyConfirmedThisSeason: false }).ok).toBe(false);
+    expect(rosterRoom({ confirmedThisSeason: 75, limit: 75, alreadyConfirmedThisSeason: true }).ok).toBe(true);
+    expect(rosterRoom({ confirmedThisSeason: 10, limit: 75, alreadyConfirmedThisSeason: false }).ok).toBe(true);
   });
 
   it('names both prices in the reminder and does not say players are free', () => {
     const mail = renewalEmail({ plan: 'pro', renewsOn: '2026-12-01' });
     expect(mail.text).toContain('£7.99');
     expect(mail.text).toContain('£9.99');
+    expect(mail.text).toContain('30 days');
     expect(mail.text.toLowerCase()).not.toContain('free for players');
     expect(mail.text).toContain('£29.99');
   });
@@ -109,6 +155,7 @@ describe('Stripe price ids', () => {
       clubPaysSeats: false,
       verifiedParentId: null,
       rate: 'club_member' as const,
+      cause: 'none' as const,
       pence: { pro: 799, elite: 1199, legend: 1599 },
     };
     const prep = prepareMemberCheckout({ plan: 'pro', assessment, playerId: 'player', callerId: 'player', env });
@@ -130,7 +177,8 @@ describe('Stripe price ids', () => {
       plan: 'elite',
       onMemberRate: true,
       periodEnd: '2026-12-01T00:00:00Z',
-      eligibleNow: false,
+      qualifiesNow: false,
+      cause: 'player_left',
       stripeSubscriptionId: 'sub_1',
     }, day('2026-12-02'), );
     expect(work.switchTo).toBeNull();
@@ -142,7 +190,8 @@ describe('Stripe price ids', () => {
       plan: 'elite',
       onMemberRate: true,
       periodEnd: '2026-12-01T00:00:00Z',
-      eligibleNow: false,
+      qualifiesNow: false,
+      cause: 'player_left',
       stripeSubscriptionId: 'sub_1',
     }, day('2026-11-20'));
     expect(notified.notify?.text).toContain('£11.99');

@@ -4,6 +4,8 @@ import 'server-only';
 // join requests, and posting a shift. Every function checks who is asking.
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import { clubMemberPricingEnabled, rosterRoom, seasonKey } from '@/lib/billing/member-pricing';
+import { TIER_CONFIG, type SubscriptionTier } from '@/lib/types/subscription';
 import { createShift } from '@/lib/admin/volunteer-service';
 import { ukToday } from '@/lib/scores/context';
 import type { ActionResult } from '@/lib/types/action';
@@ -122,6 +124,22 @@ export async function decideJoinRequest(userId: string, requestId: string, appro
   if (!request || !clubIds.includes(request.club_id as string)) return { success: false, error: 'Request not found' };
 
   if (approve) {
+    const season = seasonKey(new Date());
+    let stamp: { confirmed_at?: string; confirmed_season?: string } = {};
+    if (clubMemberPricingEnabled()) {
+      const { data: plan } = await sb.from('club_subscriptions').select('tier').eq('club_id', request.club_id).maybeSingle();
+      const tier = (plan?.tier as SubscriptionTier | undefined) ?? 'free';
+      const limit = TIER_CONFIG[tier]?.maxMembers ?? TIER_CONFIG.free.maxMembers;
+      const { count } = await sb.from('club_members').select('id', { count: 'exact', head: true }).eq('club_id', request.club_id).eq('is_active', true).eq('confirmed_season', season);
+      const { data: already } = await sb.from('club_members').select('confirmed_season').eq('club_id', request.club_id).eq('user_id', request.user_id).maybeSingle();
+      const room = rosterRoom({
+        confirmedThisSeason: count ?? 0,
+        limit,
+        alreadyConfirmedThisSeason: already?.confirmed_season === season,
+      });
+      if (!room.ok) return { success: false, error: room.error };
+      stamp = { confirmed_at: new Date().toISOString(), confirmed_season: season };
+    }
     // A person who was a member before and was switched off is switched back on, keeping their role
     const { data: existing } = await sb
       .from('club_members')
@@ -130,8 +148,8 @@ export async function decideJoinRequest(userId: string, requestId: string, appro
       .eq('user_id', request.user_id)
       .maybeSingle();
     const { error } = existing
-      ? await sb.from('club_members').update({ is_active: true }).eq('id', existing.id)
-      : await sb.from('club_members').insert({ club_id: request.club_id, user_id: request.user_id, role: 'player', is_active: true });
+      ? await sb.from('club_members').update({ is_active: true, ...stamp }).eq('id', existing.id)
+      : await sb.from('club_members').insert({ club_id: request.club_id, user_id: request.user_id, role: 'player', is_active: true, ...stamp });
     if (error) return { success: false, error: 'Could not add this member' };
   }
   await sb.from('club_join_requests').delete().eq('id', requestId);

@@ -8,13 +8,16 @@ import {
   clubSeatLine,
   decidePayer,
   isPaidPlan,
-  memberDiscountEligible,
   penceFor,
   priceIdFor,
   renewalDecision,
   renewalEmail,
+  type BillingInterval,
+  confirmationCarries,
+  seasonKey,
   type PaidPlan,
   type Payer,
+  type RateCause,
   type RateKind,
 } from '@/lib/billing/member-pricing';
 
@@ -30,6 +33,7 @@ export type MemberAssessment = {
   verifiedParentId: string | null;
   rate: RateKind;
   pence: Record<PaidPlan, number>;
+  cause: RateCause;
 };
 
 export async function assessMemberPricing(admin: Admin, userId: string, now = new Date()): Promise<MemberAssessment> {
@@ -37,33 +41,40 @@ export async function assessMemberPricing(admin: Admin, userId: string, now = ne
   const claimedClubId = (profile?.claimed_club_id as string | null) ?? null;
   const age = ageOn((profile?.date_of_birth as string | null) ?? null, now);
 
-  const [{ data: memberships }, { data: links }] = await Promise.all([
-    admin.from('club_members').select('club_id, is_active, is_junior').eq('user_id', userId),
+  const [{ data: memberships }, { data: links }, { data: subRow }] = await Promise.all([
+    admin.from('club_members').select('club_id, is_active, is_junior, confirmed_season').eq('user_id', userId),
     admin.from('child_profiles').select('linked_user_id, parent_child_links ( parent_id, verified_at )').eq('linked_user_id', userId),
+    admin.from('player_subscriptions').select('member_club_id').eq('user_id', userId).maybeSingle(),
   ]);
 
-  const confirmedHere = (memberships ?? []).some((m) => m.club_id === claimedClubId && m.is_active === true);
+  const season = seasonKey(now);
   const markedJunior = (memberships ?? []).some((m) => m.is_junior === true && m.is_active === true);
+  const clubIds = [...new Set((memberships ?? []).map((m) => m.club_id as string).concat(claimedClubId ? [claimedClubId] : []))];
+  const pricedClubId = (subRow?.member_club_id as string | null) ?? claimedClubId;
 
-  let clubRegistered = false;
-  let clubPaidPlanActive = false;
   let clubPaysSeats = false;
-  if (claimedClubId) {
+  let pricedClubLapsed = false;
+  let stillOnPricedClub = false;
+  let eligible = false;
+  for (const clubId of clubIds) {
     const [{ data: club }, { data: sub }] = await Promise.all([
-      admin.from('clubs').select('id').eq('id', claimedClubId).maybeSingle(),
-      admin.from('club_subscriptions').select('tier, status, pays_member_seats').eq('club_id', claimedClubId).maybeSingle(),
+      admin.from('clubs').select('id').eq('id', clubId).maybeSingle(),
+      admin.from('club_subscriptions').select('tier, status, pays_member_seats, lapsed_at, resumed_at').eq('club_id', clubId).maybeSingle(),
     ]);
-    clubRegistered = !!club;
-    clubPaidPlanActive = !!sub && PAID_TIERS.has(sub.tier as string) && isLive(sub.status as string);
-    clubPaysSeats = clubPaidPlanActive && sub?.pays_member_seats === true;
+    const member = (memberships ?? []).find((m) => m.club_id === clubId && m.is_active === true);
+    const paid = !!sub && PAID_TIERS.has(sub.tier as string) && isLive(sub.status as string);
+    const confirmed = confirmationCarries({
+      confirmedSeason: (member?.confirmed_season as string | null) ?? null,
+      currentSeason: season,
+      lapsedAt: sub?.lapsed_at ? new Date(sub.lapsed_at as string) : null,
+      resumedAt: sub?.resumed_at ? new Date(sub.resumed_at as string) : null,
+    });
+    if (clubId === pricedClubId && member) stillOnPricedClub = true;
+    if (clubId === pricedClubId && !!club && !paid) pricedClubLapsed = true;
+    if (club && paid && confirmed) eligible = true;
+    if (clubId === claimedClubId && paid && member) clubPaysSeats = sub?.pays_member_seats === true;
   }
-
-  const eligible = memberDiscountEligible({
-    claimedClubId,
-    clubRegistered,
-    clubPaidPlanActive,
-    confirmedMember: confirmedHere,
-  });
+  const cause: RateCause = eligible ? 'none' : stillOnPricedClub && pricedClubLapsed ? 'club_lapsed' : 'player_left';
 
   const parents = (links ?? []).flatMap((row) => {
     const raw = row.parent_child_links as { parent_id?: string; verified_at?: string | null } | Array<{ parent_id?: string; verified_at?: string | null }> | null;
@@ -82,9 +93,10 @@ export async function assessMemberPricing(admin: Admin, userId: string, now = ne
     pence: {
       pro: penceFor('pro', eligible),
       elite: penceFor('elite', eligible),
-      legend: penceFor('legend', eligible),
-    },
-  };
+    legend: penceFor('legend', eligible),
+  },
+  cause,
+};
 }
 
 export type CheckoutPrep =
@@ -126,18 +138,25 @@ export type RenewalRow = {
   plan: PaidPlan;
   onMemberRate: boolean;
   periodEnd: string | null;
-  eligibleNow: boolean;
+  qualifiesNow: boolean;
+  cause: RateCause;
+  interval?: BillingInterval;
+  termEnd?: string | null;
   stripeSubscriptionId: string | null;
 };
 
 export function renewalWork(row: RenewalRow, now: Date): { notify: { to: string; subject: string; text: string } | null; switchTo: string | null } {
+  const periodEnd = row.periodEnd ? new Date(row.periodEnd) : null;
   const decision = renewalDecision({
     now,
-    periodEnd: row.periodEnd ? new Date(row.periodEnd) : null,
+    periodEnd,
     onMemberRate: row.onMemberRate,
-    eligibleNow: row.eligibleNow,
+    qualifiesNow: row.qualifiesNow,
+    cause: row.cause,
+    interval: row.interval,
+    termEnd: row.termEnd ? new Date(row.termEnd) : null,
   });
-  const renewsOn = row.periodEnd ? new Date(row.periodEnd).toISOString().slice(0, 10) : '';
+  const renewsOn = (decision.protectedUntil ?? periodEnd)?.toISOString().slice(0, 10) ?? '';
   const notify = decision.notify && row.email ? { to: row.email, ...renewalEmail({ plan: row.plan, renewsOn }) } : null;
   const switchTo = decision.switchNow ? priceIdFor('individual', row.plan) : null;
   return { notify, switchTo };
