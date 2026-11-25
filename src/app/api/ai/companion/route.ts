@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST /api/ai/companion  { message, conversationId? } → { reply, conversationId }
 // Auth: Bearer access token (Expo) or cookie session (web).
 
@@ -12,6 +13,8 @@ import { PAID_FEATURE_MESSAGE } from '@/lib/billing/access-logic';
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'companion');
+  if (limited) return limited;
   if (!(await getPaidAccess(user.id, user.email)).allowed) return fail(PAID_FEATURE_MESSAGE, 402);
 
   const body = (await readJson(req)) as { message?: unknown; conversationId?: unknown } | null;

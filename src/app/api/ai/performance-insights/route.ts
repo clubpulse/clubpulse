@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST /api/ai/performance-insights → { insights: Insight[], generatedAt: string }
 // Analyses a member's recent activity and returns AI-generated performance insights.
 
@@ -20,6 +21,8 @@ interface Insight {
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'performance-insights');
+  if (limited) return limited;
 
   const supabase = await createClient();
 

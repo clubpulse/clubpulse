@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST /api/ai/scorecard-parse  multipart/form-data { image: File }
 // → { batting?: BattingLine, bowling?: BowlingLine, rawText: string, scoresAwarded: number }
 // Parses a cricket scorecard photo and auto-awards Scores for the performance.
@@ -56,6 +57,8 @@ function calcScores(batting?: BattingLine, bowling?: BowlingLine): number {
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'scorecard-parse');
+  if (limited) return limited;
 
   let imageData: string;
   let mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif';

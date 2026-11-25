@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // GET /api/ai/merchant-intelligence → RedemptionInsight (anonymised aggregates + a summary)
 // Access: the service role key as a Bearer token (platform-wide), or a signed-in user with the
 // merchant role (scoped to their own rewards). Everyone else gets 403.
@@ -24,6 +25,8 @@ export async function GET(req: NextRequest) {
 
     const { user } = await getRequestAuth(req);
     if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'merchant-intelligence');
+  if (limited) return limited;
     if (!(await isMerchant(user.id))) return fail('Forbidden', 403);
 
     return NextResponse.json(await getMerchantInsights(user.id));

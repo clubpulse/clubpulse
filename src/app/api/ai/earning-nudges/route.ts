@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // POST /api/ai/earning-nudges → { nudges: Nudge[] }
 // Returns personalised opportunities to earn more Scores based on member profile.
 
@@ -22,6 +23,8 @@ interface Nudge {
 export async function POST(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'earning-nudges');
+  if (limited) return limited;
 
   const supabase = await createClient();
 

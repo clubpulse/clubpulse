@@ -5,11 +5,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRequestAuth } from '@/lib/supabase/request-auth';
 import { generateSportingSoul } from '@/lib/ai/sporting-soul';
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 import type { PerformanceWithSport } from '@/lib/types/sport';
 
 export async function POST(req: NextRequest) {
   const { supabase, user } = await getRequestAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const limited = rateLimitResponse(user.id, 'sporting-soul');
+  if (limited) return limited;
 
   const { data: profile } = await supabase
     .from('profiles')

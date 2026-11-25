@@ -1,3 +1,4 @@
+import { rateLimitResponse } from '@/lib/ai/rate-limit';
 // GET /api/ai/club-health → { score: number, grade: string, pillars: Pillar[], summary: string }
 // Club-admin only. Returns an AI-generated health score for the club.
 
@@ -37,6 +38,8 @@ function scoreToGrade(score: number): ClubHealth['grade'] {
 export async function GET(req: NextRequest) {
   const { user } = await getRequestAuth(req);
   if (!user) return unauthorized();
+  const limited = rateLimitResponse(user.id, 'club-health');
+  if (limited) return limited;
 
   const roles = await getUserRoles(user.id);
   if (!roles.includes('admin') && !roles.includes('club_admin')) {
