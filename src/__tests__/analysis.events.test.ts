@@ -201,10 +201,13 @@ describe('tracking and view', () => {
     expect(findReleaseFrame(onlyEarly, 'right', W, H, times)).toBeNull();
   });
 
-  it('marks a folded bowling arm as low confidence and a 133° arm as medium', () => {
+  it('marks a folded side-on bowling arm as low confidence', () => {
     const body = Array.from({ length: 8 }, () => person());
     expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 30 })).toBe('low');
-    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 133 })).toBe('medium');
+    // Side-on, under about 140° is not a readable release. Front-on foreshortens a straight arm.
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 133 })).toBe('low');
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 133, view: 'front' })).not.toBe('low');
+    expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 150 })).toBe('medium');
     expect(readingConfidence({ frames: body, keyFrame: 4, armAngle: 170, times: body.map((_, i) => i / 10) })).not.toBe('high');
   });
 

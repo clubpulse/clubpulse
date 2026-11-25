@@ -76,7 +76,7 @@ async function main() {
       ? detectShot(tracked.frames, read.width, read.height, { view: viewArg, hand })
       : null;
     const shot = discipline === 'batting' ? shotToScore(detectedShot, (shotArg as ShotType | undefined) ?? 'auto') : undefined;
-    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times, { world, motion: read.motion });
+    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times, { world, motion: read.motion, crowded: tracked.crowded });
     if (tracked.crowded && marked.ok) {
       marked.analysis.warnings.push('more than one person');
       marked.analysis.confidence = capConfidence(marked.analysis.confidence, 'medium');

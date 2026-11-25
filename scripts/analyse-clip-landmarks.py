@@ -27,20 +27,22 @@ height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 1
 fps = cap.get(cv2.CAP_PROP_FPS) or 30
 
 
-def landmarker(path):
+def landmarker(path, mode):
     options = mp.tasks.vision.PoseLandmarkerOptions(
         base_options=mp.tasks.BaseOptions(model_asset_path=path),
-        running_mode=mp.tasks.vision.RunningMode.VIDEO,
+        running_mode=mode,
         num_poses=3,
     )
     return mp.tasks.vision.PoseLandmarker.create_from_options(options)
 
 
-lite = landmarker(model)
+lite = landmarker(model, mp.tasks.vision.RunningMode.VIDEO)
 heavy = None
 try:
     if heavy_path:
-        heavy = landmarker(heavy_path)
+        # IMAGE mode has no clock, so a second read of a small person cannot
+        # reuse a timestamp the video tracker has already seen.
+        heavy = landmarker(heavy_path, mp.tasks.vision.RunningMode.IMAGE)
 except Exception:
     heavy = None
 
@@ -91,9 +93,11 @@ def enlarge(frame, box):
     return big, (x0, y0, x1 - x0, y1 - y0)
 
 
-def detect(marker, frame, timestamp):
+def detect(marker, frame, timestamp, image_mode=False):
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+    if image_mode:
+        return marker.detect(image)
     return marker.detect_for_video(image, timestamp)
 
 
@@ -142,7 +146,7 @@ while True:
             enlarged = enlarge(frame, box)
             if enlarged is not None:
                 big, crop = enlarged
-                again = detect(heavy, big, timestamp)
+                again = detect(heavy, big, timestamp, True)
                 if again.pose_landmarks:
                     best_at = max(range(len(again.pose_landmarks)), key=lambda item: max(point.y for point in again.pose_landmarks[item]) - min(point.y for point in again.pose_landmarks[item]))
                     image_pose = map_back(again.pose_landmarks[best_at], crop, frame_w, frame_h)
