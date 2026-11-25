@@ -15,7 +15,7 @@ import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Development Tracking | SHIFTUP',
+  title: 'Development Tracking',
   description: 'See where your cricket skills are heading based on your analysis sessions.',
 };
 

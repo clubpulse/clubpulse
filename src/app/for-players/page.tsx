@@ -4,7 +4,7 @@ import MarketingNav from '@/components/marketing/MarketingNav';
 import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 export const metadata: Metadata = {
-  title: 'For players | SHIFTUP',
+  title: 'For players',
   description: 'Four pillars for every cricketer: Player Analysis, Community, Wellness and Academy.',
 };
 

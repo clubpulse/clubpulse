@@ -1,7 +1,7 @@
 import { requireUser } from '@/lib/auth/server';
 import { ScorecardUpload } from '@/components/scorecard/ScorecardUpload';
 
-export const metadata = { title: 'Scorecard · SHIFTUP' };
+export const metadata = { title: 'Scorecard' };
 
 export default async function ScorecardPage() {
   await requireUser();

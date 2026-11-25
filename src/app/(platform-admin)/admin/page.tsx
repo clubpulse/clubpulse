@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { parseAdminStats } from '@/lib/platform-admin';
 import { ErrorNote, PageHeader, StatCard } from '@/components/platform-admin/ui';
 
-export const metadata: Metadata = { title: 'Admin | SHIFTUP' };
+export const metadata: Metadata = { title: 'Admin' };
 
 export default async function AdminDashboardPage() {
   await requireAdmin();

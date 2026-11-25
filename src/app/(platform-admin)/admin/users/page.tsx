@@ -6,7 +6,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Cell, ErrorNote, PageHeader, Pagination, Table } from '@/components/platform-admin/ui';
 import { promoteToAdmin } from './actions';
 
-export const metadata: Metadata = { title: 'Users | Admin | SHIFTUP' };
+export const metadata: Metadata = { title: 'Users | Admin' };
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const me = await requireAdmin();

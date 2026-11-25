@@ -63,7 +63,7 @@ export function AuthShell({ title, subtitle, children, footer }: {
 <path d="M8 28.5 L18 18.5 L28 28.5" stroke="url(#authPulse)" strokeWidth="3.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
-            <span className="auth-logo-name"><span className="club">Shift</span><span className="pulse">Up</span></span>
+            <span className="auth-logo-name"><span className="club">SHIFT</span><span className="pulse">UP</span></span>
           </Link>
           <h1 className="auth-title">{title}</h1>
           {subtitle && <p className="auth-subtitle">{subtitle}</p>}

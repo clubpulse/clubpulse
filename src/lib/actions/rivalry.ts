@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { sharedClubNameCards, cardName } from '@/lib/profile/lookup';
 import type { ActionResult } from '@/lib/types/action';
 import type { NemesisPair, RivalryStats, MatchPerformance } from '@/lib/types/rivalry';
@@ -107,9 +108,10 @@ export async function logPerformance(input: {
     .single();
 
   if (error) return { success: false, error: error.message };
-  // Best-effort: a failed refresh shouldn't fail the logged game
+  // Best-effort. refresh_nemesis_pairs rewrites every pair, so only the service role may call it.
+  // A player logging their own game still refreshes the table; a failed refresh does not fail the log.
   try {
-    await supabase.rpc('refresh_nemesis_pairs');
+    await createAdminClient().rpc('refresh_nemesis_pairs');
   } catch {}
   return { success: true, data: data as MatchPerformance };
 }

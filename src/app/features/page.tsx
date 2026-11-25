@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { CATEGORIES } from '@/lib/marketing/feature-categories';
 
 export const metadata: Metadata = {
-  title: 'Features | SHIFTUP',
+  title: 'Features',
   description: 'SHIFTUP features for players and for clubs.',
 };
 

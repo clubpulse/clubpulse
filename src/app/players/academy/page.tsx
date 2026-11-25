@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PillarPage from '@/components/marketing/PillarPage';
 
 export const metadata: Metadata = {
-  title: 'Academy | SHIFTUP',
+  title: 'Academy',
   description: 'Two-minute cricket lessons, daily games and a log for your ECB qualifications.',
 };
 

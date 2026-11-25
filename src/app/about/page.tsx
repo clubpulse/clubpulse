@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About — SHIFTUP',
+  title: 'About',
   description: 'SHIFTUP is one app for grassroots cricketers and clubs: technique, community, mindset and learning.',
 };
 

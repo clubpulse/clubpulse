@@ -4,7 +4,7 @@ import { AutoRefresh } from '@/components/match-day/AutoRefresh';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
-  title: 'Live scorecard | SHIFTUP',
+  title: 'Live scorecard',
   robots: { index: false, follow: false },
 };
 

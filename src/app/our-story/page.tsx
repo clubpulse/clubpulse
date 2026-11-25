@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our story — SHIFTUP',
+  title: 'Our story',
   description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',};
 
 export default function OurStoryPage() {
