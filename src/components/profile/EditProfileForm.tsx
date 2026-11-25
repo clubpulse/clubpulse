@@ -6,12 +6,16 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import type { UserProfile } from '@/lib/types/user';
+import { clubMemberPricingEnabled } from '@/lib/billing/member-pricing';
+import { saveClaimedClub } from '@/lib/billing/claimed-club';
 
 export function EditProfileForm({ profile }: { profile: UserProfile }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(profile.full_name);
   const [displayName, setDisplayName] = useState(profile.display_name);
+  const [clubCode, setClubCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const memberPricing = clubMemberPricingEnabled();
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -27,6 +31,13 @@ export function EditProfileForm({ profile }: { profile: UserProfile }) {
         toast.error(body.error ?? 'Could not save your profile');
         return;
       }
+      if (memberPricing && clubCode.trim()) {
+        const club = await saveClaimedClub(clubCode);
+        if (!club.success) {
+          toast.error(club.error);
+          return;
+        }
+      }
       toast.success('Profile updated');
       router.push('/profile');
       router.refresh();
@@ -39,6 +50,9 @@ export function EditProfileForm({ profile }: { profile: UserProfile }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input label="Full name" required maxLength={100} value={fullName} onChange={(e) => setFullName(e.target.value)} />
       <Input label="Display name" required maxLength={40} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+      {memberPricing && (
+        <Input label="Club code" value={clubCode} autoComplete="off" onChange={(e) => setClubCode(e.target.value)} placeholder="From your club, if you have one" />
+      )}
       <p className="text-xs text-neutral-500">Your email and sport can&apos;t be changed here.</p>
       <div className="flex gap-3">
         <Button variant="secondary" onClick={() => router.push('/profile')} className="flex-1">Cancel</Button>

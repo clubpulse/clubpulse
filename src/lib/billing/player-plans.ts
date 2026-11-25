@@ -7,7 +7,7 @@
 import { TIER_CONFIG, type SubscriptionTier } from '@/lib/types/subscription';
 
 export type PlayerPlan = 'pro' | 'elite' | 'legend';
-export type PlanKind = 'individual' | 'club_addon';
+export type PlanKind = 'individual' | 'club_addon' | 'club_member';
 
 export const PLAYER_PLANS: Record<PlayerPlan, { label: string; pence: number }> = {
   pro: { label: 'Pro', pence: 999 },

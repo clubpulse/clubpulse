@@ -8,6 +8,7 @@
 import { getStripe } from './client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { TIER_CONFIG, type SubscriptionTier } from '@/lib/types/subscription';
+import { clubInvoicePaymentMethods, clubMemberPricingEnabled, clubPlanPriceId, isBillingTerm, type BillingTerm, type ClubPlanTier } from '@/lib/billing/member-pricing';
 
 const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 
@@ -18,7 +19,7 @@ const PLATFORM_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shiftup.club';
 export async function createSubscriptionCheckout(
   clubId: string,
   tier: SubscriptionTier,
-  billingCycle: 'monthly' | 'annual',
+  billingCycle: 'monthly' | 'quarterly' | 'annual',
   adminEmail: string,
 ): Promise<string> {
   if (tier === 'free') throw new Error('Cannot checkout for the free tier');
@@ -57,24 +58,28 @@ export async function createSubscriptionCheckout(
       .eq('club_id', clubId);
   }
 
-  // Get or create the price
-  const pricePence =
-    billingCycle === 'annual' ? config.annualPence : config.monthlyPence;
-  const interval = billingCycle === 'annual' ? 'year' : 'month';
+  const term: BillingTerm = billingCycle === 'annual' ? 'year' : billingCycle === 'quarterly' ? 'quarter' : 'month';
+  // Get or create the price. With club-member pricing on, only a Price Ishwar has already created is used.
+  const pricePence = term === 'year' ? config.annualPence : config.monthlyPence;
+  const interval = term === 'year' ? 'year' : 'month';
 
   // Use a product lookup key so we don't create duplicate products
   const lookupKey = `clubpulse_${tier}_${billingCycle}`;
 
-  // Search for existing price
-  const existingPrices = await stripe.prices.search({
-    query: `lookup_key:"${lookupKey}" active:"true"`,
-  });
-
   let priceId: string;
 
-  if (existingPrices.data.length > 0) {
-    priceId = existingPrices.data[0].id;
+  const configuredClubTier = (tier === 'starter' || tier === 'pro' || tier === 'elite') ? tier as ClubPlanTier : null;
+  if (clubMemberPricingEnabled() && configuredClubTier && isBillingTerm(term)) {
+    const configured = clubPlanPriceId(configuredClubTier, term);
+    if (!configured) throw new Error('That club plan price is not configured yet.');
+    priceId = configured;
   } else {
+    const existingPrices = await stripe.prices.search({
+      query: `lookup_key:"${lookupKey}" active:"true"`,
+    });
+    if (existingPrices.data.length > 0) {
+      priceId = existingPrices.data[0].id;
+    } else {
     // Create product + price
     const product = await stripe.products.create({
       name: `SHIFTUP ${config.label} (${billingCycle})`,
@@ -91,6 +96,7 @@ export async function createSubscriptionCheckout(
     });
 
     priceId = price.id;
+    }
   }
 
   // Create checkout session
@@ -98,6 +104,7 @@ export async function createSubscriptionCheckout(
     customer: customerId,
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
+    ...(clubMemberPricingEnabled() ? { payment_method_types: clubInvoicePaymentMethods() } : {}),
     success_url: `${PLATFORM_URL}/admin/club/settings?subscription=success&tier=${tier}`,
     cancel_url: `${PLATFORM_URL}/admin/club/settings?subscription=canceled`,
     subscription_data: {

@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { xiCreateUser } from "@/lib/xi/client";
 import { isPlausibleDob } from "@/lib/community/age";
+import { clubMemberPricingEnabled } from "@/lib/billing/member-pricing";
+import { assignClaimedClub } from "@/lib/billing/claimed-club";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
 
@@ -13,6 +15,7 @@ type CompleteSignupInput = {
   email: string;
   roles: Role[];
   dateOfBirth?: string;
+  clubCode?: string;
 };
 
 type CompleteSignupResult =
@@ -25,6 +28,7 @@ export async function completeSignup({
   email,
   roles,
   dateOfBirth,
+  clubCode,
 }: CompleteSignupInput): Promise<CompleteSignupResult> {
   if (!userId || !fullName || !email || roles.length === 0) {
     return { success: false, error: "Missing required fields" };
@@ -88,6 +92,10 @@ export async function completeSignup({
   // ── Provision The XI account — players only (silent, non-blocking) ───────
   // Only players need an XI account (rewards wallet + fantasy points).
   // Coaches, volunteers, parents and admins do not.
+  if (clubMemberPricingEnabled() && typeof clubCode === 'string' && clubCode.trim()) {
+    await assignClaimedClub(userId, clubCode);
+  }
+
   if (roles.includes('player')) {
     const xiResult = await xiCreateUser({
       clubpulse_user_id: userId,
