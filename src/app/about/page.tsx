@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'SHIFTUP is one app for grassroots cricketers and clubs: technique, community, mindset and learning.',
+  description: 'SHIFTUP helps every grassroots cricketer get better through Player Analysis, Community, Wellness and Academy, with a dashboard for their club.',
 };
 
 export default function AboutPage() {
@@ -96,8 +96,8 @@ export default function AboutPage() {
       {/* ── Hero ── */}
       <section className="about-hero">
         <p className="section-tag">About SHIFTUP</p>
-        <h1 className="hero-h">Built by cricketers,<br />for every cricket club</h1>
-        <p className="hero-sub">One app for grassroots cricket: technique, community, mindset and learning for players, and the admin taken care of for clubs.</p>
+        <h1 className="hero-h">Made by people who play on Saturdays.</h1>
+        <p className="hero-sub">SHIFTUP gives every player four pillars to get better with: Player Analysis, Community, Wellness and Academy. Clubs get a dashboard to look after all four for their players. Scores are earned by taking part.</p>
         <p style={{ marginTop: 14 }}><Link href="/our-story" style={{ color: '#EFC84A', textDecoration: 'none', fontWeight: 600, fontSize: 15 }}>Read our story →</Link></p>
       </section>
 
@@ -107,12 +107,12 @@ export default function AboutPage() {
           <h2 className="values-h">What we believe</h2>
           <div className="values-grid">
             {[
-              { icon: '🏏', title: 'Cricket first', desc: 'Every decision starts with one question: does this make playing and managing cricket better? Engagement metrics are secondary.' },
-              { icon: '🌱', title: 'Grassroots, not glamour', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
-              { icon: '🤝', title: 'Built with cricketers', desc: 'Built with input from cricketers. The roadmap follows the game, not investor decks.' },
-              { icon: '⚡', title: 'Actually useful', desc: 'No bloat. No feature graveyards. If a feature doesn\'t save time or add real value, it doesn\'t ship. Simple as that.' },
-              { icon: '🔒', title: 'Privacy by default', desc: 'Your club data belongs to your club. We never sell it, never train on it without consent, and we make it easy to export.' },
-              { icon: '💷', title: 'Fair pricing', desc: 'SHIFTUP should cost less than the prize fund your club puts up for the end-of-season awards. We mean that literally.' },
+              { icon: '🏏', title: 'Cricket first', desc: 'Before we build anything we ask one thing: does it make playing or running cricket easier? If not, it waits.' },
+              { icon: '🌱', title: 'Small clubs first', desc: 'We build for the club with 40 members and one volunteer admin, not for the county academies that already have full-time staff.' },
+              { icon: '🤝', title: 'Listening to clubs', desc: 'We are talking to clubs now, and what they tell us decides what we build next.' },
+              { icon: '⚡', title: 'Actually useful', desc: 'If a feature does not save a volunteer some time, it does not ship.' },
+              { icon: '🔒', title: 'Privacy by default', desc: 'Your club’s data belongs to your club. We do not sell it.' },
+              { icon: '💷', title: 'Plain pricing', desc: 'Club plans from £29.99 a month, set up with you. Players start on Free (£0).' },
             ].map(v => (
               <div key={v.title} className="value-card">
                 <div className="value-icon"><Glyph e={v.icon} /></div>
@@ -126,11 +126,11 @@ export default function AboutPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring SHIFTUP<br />to your club?</h2>
-        <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
+        <h2 className="cta-h">Want SHIFTUP at your club?</h2>
+        <p className="cta-sub">We set clubs up one at a time. Tell us how yours runs today and we will show you how SHIFTUP would fit.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>
-          <Link href="/" className="btn-ghost">See all features</Link>
+          <Link href="/for-players" className="btn-ghost">See the four pillars</Link>
         </div>
       </section>
 

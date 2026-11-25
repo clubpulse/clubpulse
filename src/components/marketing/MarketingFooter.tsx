@@ -65,7 +65,7 @@ export default function MarketingFooter() {
             </div>
           ))}
         </div>
-        <p className="mk-foot-copy">© 2026 SHIFTUP. ClubPulse is the parent company.</p>
+        <p className="mk-foot-copy">© 2026 SHIFTUP.</p>
       </div>
     </footer>
   );

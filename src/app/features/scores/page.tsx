@@ -126,12 +126,12 @@ export default function ScoresPage() {
 
         <section className="sr-hero">
           <div>
-            <p className="sr-eyebrow">🏆 Scores & Rewards</p>
-            <h1 className="sr-h1">Scores you can <span className="gold">actually spend.</span></h1>
+            <p className="sr-eyebrow">Scores</p>
+            <h1 className="sr-h1">Scores you earn <span className="gold">by taking part.</span></h1>
             <p className="sr-sub">Players earn Scores for taking part. Scores are never sold and are not a fifth pillar. 500 Scores equal £1. A tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-btns">
               <Link href="/contact" className="sr-btn-red">Get started →</Link>
-              <Link href="/features" className="sr-btn-ghost">See all features</Link>
+              <Link href="/for-players" className="sr-btn-ghost">See the four pillars</Link>
             </div>
           </div>
 
@@ -151,7 +151,6 @@ export default function ScoresPage() {
                 { name:'Daily check-in', role:'Base value for the day', pts:'+5' },
                 { name:'Academy lesson', role:'The first time you pass', pts:'+10' },
                 { name:'Training attendance', role:'Marked present by the club', pts:'+10' },
-                { name:'Match fee on time', role:'Paid on or before the due date', pts:'+10' },
                 { name:'Community post', role:'The first live post of the day', pts:'+3' },
               ].map((p, i) => (
                 <div key={i} className={`sr-row${i === 0 ? ' top' : ''}`}>
@@ -181,13 +180,13 @@ export default function ScoresPage() {
         <div style={{borderTop:'1px solid rgba(255,255,255,0.07)'}}>
           <div className="sr-section">
             <p className="sr-section-eyebrow">How Scores work</p>
-            <h2 className="sr-section-h2">Earn them. They have a value.</h2>
+            <h2 className="sr-section-h2">How you earn them.</h2>
             <p className="sr-section-sub">Scores are a reward for taking part, not a runs-and-wickets leaderboard. Scores are never sold and are not a fifth pillar. 500 Scores equal £1. Your tier multiplies what you earn: Bronze 1×, Silver 2×, Gold 3× and Platinum 4×.</p>
             <div className="sr-pts-grid">
               {[
                 { icon:'📅', h:'Daily check-in', body:'The base is 5 Scores. The first two days pay that, days 3 and 4 pay double, days 5 and 6 pay triple, and day 7 is a scratch card.', val:'Base 5' },
                 { icon:'🎓', h:'Academy', body:'Passing a lesson pays 10 Scores the first time. Finishing a whole track pays a 30 Score bonus.', val:'+10 / +30' },
-                { icon:'🏏', h:'Training and match fees', body:'A player marked present at training earns 10 Scores. A match fee paid on or before its due date earns 10 Scores.', val:'+10' },
+                { icon:'🏏', h:'Training attendance', body:'A player marked present at training earns 10 Scores.', val:'+10' },
                 { icon:'🤝', h:'Community and wellness', body:'The first live Community post of the day earns 3 Scores. A readiness check-in earns 3. Joining a nets or pick-up session earns 5.', val:'+3 / +5' },
                 { icon:'🎮', h:'Games and tasks', body:'Daily games, the quiz and the weekly and monthly tasks each have their own amount. Nothing is staked.', val:'Per task' },
                 { icon:'✖️', h:'Tiers', body:'Bronze multiplies by 1, Silver by 2, Gold by 3 and Platinum by 4. Free is Bronze. Pro is Silver, Elite is Gold and Legend is Platinum.', val:'1× to 4×' },
@@ -207,7 +206,7 @@ export default function ScoresPage() {
         <div className="sr-rewards">
           <div className="sr-rewards-inner">
             <p className="sr-section-eyebrow">Rewards</p>
-            <h2 className="sr-section-h2">A balance with a cash value.</h2>
+            <h2 className="sr-section-h2">500 Scores is £1.</h2>
             <p className="sr-section-sub">Scores are worth money at a fixed rate, and a higher tier makes the same action worth more. The amounts below are the defaults.</p>
             <div className="sr-reward-cards">
               <div className="sr-reward-card featured">
@@ -240,7 +239,7 @@ export default function ScoresPage() {
             {[
               ['What is a Score worth?', '500 Scores equal £1. That rate is the same across the app.'],
               ['What do the tiers do?', 'They multiply what you earn. Bronze is 1×, Silver is 2×, Gold is 3× and Platinum is 4×. Free is Bronze, Pro is Silver, Elite is Gold and Legend is Platinum.'],
-              ['How do players earn them?', 'By taking part: a daily check-in, training, a match fee paid on time, an Academy lesson, a Community post, a wellness check-in, and the daily games and tasks. Each rule has its own default amount.'],
+              ['How do players earn them?', 'By taking part: a daily check-in, training, an Academy lesson, a Community post, a wellness check-in, and the daily games and tasks. Each rule has its own default amount.'],
               ['Are Scores a performance leaderboard?', 'No. They are not calculated from runs, wickets or catches on the scorecard.'],
               ['Can a club change the amounts?', 'Yes. A club can override an amount or switch a rule off. The defaults are the starting point, and the weekly cap starts at 300 Scores.'],
               ['Do the games cost Scores?', 'No. The games pay Scores. Nothing is staked and nothing is lost.'],

@@ -57,7 +57,7 @@ export function BadgeWall() {
         </p>
         <div style={{ marginTop: 28, display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
           <ShimmerButton href="/contact">Start earning →</ShimmerButton>
-          <Link href="/features" style={{ fontSize: 14, fontWeight: 700, color: '#EFC84A', textDecoration: 'none' }}>See all features →</Link>
+          <Link href="/" style={{ fontSize: 14, fontWeight: 700, color: '#EFC84A', textDecoration: 'none' }}>See all features →</Link>
         </div>
       </div>
     </section>

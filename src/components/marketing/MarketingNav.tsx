@@ -28,7 +28,7 @@ export default function MarketingNav() {
 
   const is = (href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
   const playersActive = is(FOR_PLAYERS) || pathname.startsWith('/players') || pathname.startsWith('/for-players') || pathname.startsWith('/features/players');
-  const clubsActive = is(FOR_CLUBS) || pathname.startsWith('/for-clubs') || pathname.startsWith('/features/clubs');
+  const clubsActive = is(FOR_CLUBS) || pathname.startsWith('/for-clubs');
 
   return (
     <header className="mk-nav">

@@ -6,20 +6,18 @@ import { FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
 export const metadata: Metadata = {
   title: 'For clubs',
-  description: 'Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
+  description: 'SHIFTUP for clubs: a dashboard to look after Player Analysis, Community, Wellness, Academy and Scores for your players.',
 };
 
 const SATURDAY = [
-  { n: '01', icon: '📅', h: 'Availability', body: 'Players say yes, no or maybe from their phone. Captains and committee see the whole squad on one grid, with no chasing.' },
-  { n: '02', icon: '🧢', h: 'Pick the XI', body: 'Choose the team from the people who are available, and players see the selection in the app.' },
-  { n: '03', icon: '🏏', h: 'Score every ball', body: 'A scorer records each delivery from a phone. Club members watch live, and a public link shows the scorecard to anyone, refreshing every few seconds.' },
-  { n: '04', icon: '📈', h: 'Stats that carry on', body: 'Results and scorecards build each player’s record, which feeds Player Analysis and their Cricket CV.' },
+  { n: '01', icon: '📣', h: 'Community', body: 'Run the club noticeboard and the dressing room, and keep the club bible and documents in one place.' },
+  { n: '02', icon: '⭐', h: 'Scores', body: 'Your players earn Scores for taking part. The club can change a default amount or switch a rule off, and the weekly cap starts at 300 Scores.' },
+  { n: '03', icon: '🧘', h: 'Wellness', body: 'Players check in privately. Coaches see only anonymous club averages, and adult players can choose to share their readiness averages, never their notes.' },
+  { n: '04', icon: '🎓', h: 'Academy', body: 'Players work through two-minute lessons and log their ECB courses. Courses written by your own coaches are coming soon.' },
 ];
 
 const CLUB = [
-  { tag: 'Live now', h: 'Membership', body: 'Invite the squad, keep the member list in one place, and give committee, coaches and parents the right level of access. Players start on the free tier.' },
-  { tag: 'Live now', h: 'Finance', body: 'Track match fees, income and expenses in one ledger, with a dashboard for the treasurer. Paying fees in the app is coming soon; for now the club collects as it does today.' },
-  { tag: 'Live now', h: 'Safeguarding and coaches', body: 'Keep coaches’ qualifications and checks in one place and in date, with junior-aware rules built in.' },
+  { tag: 'Coming soon', h: 'Juniors', body: 'When the wider network opens, under-18s and adults are kept apart in messaging, posts are checked before they go live, and parents can see their child’s activity.' },
 ];
 
 export default function ForClubsPage() {
@@ -49,8 +47,6 @@ export default function ForClubsPage() {
         .fc-card h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800; margin: 0 0 8px; }
         .fc-card p { font-size: 14.5px; line-height: 1.6; color: rgba(226,232,240,0.7); margin: 0; }
         .fc-tag { display: inline-block; margin-bottom: 10px; font-size: 11px; font-weight: 700; color: #4ADE80; border: 1px solid rgba(74,222,128,0.4); border-radius: 99px; padding: 2px 9px; }
-        .fc-soon { margin-top: 18px; font-size: 14px; color: rgba(226,232,240,0.6); }
-        .fc-soon b { color: #EFC84A; font-weight: 700; }
         .fc-cta { margin: 24px 0 72px; padding: 40px; border-radius: 22px; background: linear-gradient(135deg, #1D4ED8, #2563EB); text-align: center; }
         .fc-cta h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(26px, 4vw, 36px); font-weight: 800; margin: 0 0 10px; color: #fff; }
         .fc-cta p { color: rgba(255,255,255,0.85); margin: 0 auto 22px; max-width: 520px; line-height: 1.6; }
@@ -61,10 +57,10 @@ export default function ForClubsPage() {
       <main className="fc-wrap">
         <section className="fc-hero">
           <p className="fc-eyebrow">For clubs</p>
-          <h1 className="fc-h1">Run Saturday <em>end to end.</em></h1>
+          <h1 className="fc-h1">The four pillars, <em>for the whole club.</em></h1>
           <p className="fc-lead">
-            Invite the squad, mark availability, pick the XI and score every ball. Fees and safeguarding sit in the same place,
-            so the committee stops living in WhatsApp.
+            Every player at your club gets Player Analysis, Community, Wellness and Academy. The club dashboard is where you
+            run the noticeboard, set the Scores rules and keep an eye on how the squad is getting on.
           </p>
           <div className="fc-btns">
             <Link href="/contact" className="fc-btn fc-btn-p">Tell us about your club</Link>
@@ -73,13 +69,13 @@ export default function ForClubsPage() {
         </section>
 
         <section className="fc-sec">
-          <p className="fc-eyebrow">Match Day</p>
-          <h2 className="fc-h2">The Saturday flow.</h2>
-          <p className="fc-sub">Four steps for Saturday. SHIFTUP is in development and is now starting to contact clubs.</p>
+          <p className="fc-eyebrow">The club dashboard</p>
+          <h2 className="fc-h2">What the club looks after.</h2>
+          <p className="fc-sub">SHIFTUP is in development and we have started contacting clubs. This is what the club side covers.</p>
           <div className="fc-grid fc-grid-4">
             {SATURDAY.map((s) => (
               <div key={s.n} className="fc-card">
-                <div className="fc-n">STEP {s.n}</div>
+                <div className="fc-n">{s.n}</div>
                 <div className="fc-ic" aria-hidden="true">{s.icon}</div>
                 <h3>{s.h}</h3>
                 <p>{s.body}</p>
@@ -89,9 +85,9 @@ export default function ForClubsPage() {
         </section>
 
         <section className="fc-sec">
-          <p className="fc-eyebrow">Run the club</p>
-          <h2 className="fc-h2">Membership, money and safeguarding.</h2>
-          <p className="fc-sub">The committee work that usually lives in spreadsheets and group chats.</p>
+          <p className="fc-eyebrow">Juniors</p>
+          <h2 className="fc-h2">Juniors in the community.</h2>
+          <p className="fc-sub">Under-18s and adults are kept apart in messaging, and posts are checked before they go live.</p>
           <div className="fc-grid fc-grid-3">
             {CLUB.map((c) => (
               <div key={c.h} className="fc-card">
@@ -101,12 +97,11 @@ export default function ForClubsPage() {
               </div>
             ))}
           </div>
-          <p className="fc-soon"><b>Coming soon:</b> paying match fees online, straight to the club&apos;s own account.</p>
         </section>
 
         <section className="fc-sec">
-          <p className="fc-eyebrow">Beyond Saturday</p>
-          <h2 className="fc-h2">Every player you add gets more.</h2>
+          <p className="fc-eyebrow">For your players</p>
+          <h2 className="fc-h2">What your players get.</h2>
           <p className="fc-loop">
             Players who join through your club also get the four player pillars: analysis, community, wellness and the academy.
             <Link href={FOR_PLAYERS_HREF} style={{ color: '#60A5FA' }}> See what players get →</Link>
@@ -115,7 +110,7 @@ export default function ForClubsPage() {
 
         <div className="fc-cta">
           <h2>Tell us about your club.</h2>
-          <p>We set SHIFTUP up with you. Club plans start from £29.99 a month and cover the whole club.</p>
+          <p>We set SHIFTUP up with you. Club plans from £29.99 a month.</p>
           <Link href="/contact">Get in touch →</Link>
         </div>
       </main>

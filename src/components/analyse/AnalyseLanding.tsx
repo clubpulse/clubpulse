@@ -8,7 +8,7 @@ const FEATURES = [
   { icon: '🎯', text: 'Bowling & batting analysis' },
   { icon: '📷', text: 'Works on any phone or laptop camera' },
   { icon: '🦴', text: '33-point body tracking' },
-  { icon: '📊', text: 'Instant score with personalised tips' },
+  { icon: '📊', text: 'A score and tips on what to work on' },
 ];
 
 const SAMPLE_SCORE = 87;
@@ -63,16 +63,15 @@ export function AnalyseLanding() {
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider"
             style={{ borderColor: 'rgba(37,99,235,0.40)', background: 'rgba(37,99,235,0.14)', color: GOLD }}>
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: CRIMSON }} aria-hidden />
-            New · SHIFTUP Analyse
+            SHIFTUP Analyse
           </span>
 
           <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-            AI Cricket <span style={{ color: GOLD }}>Motion Analysis</span>
+            Check your <span style={{ color: GOLD }}>technique on video</span>
           </h1>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-400 sm:text-lg">
-            Get instant feedback on your bowling action and batting technique. Our AI tracks 33 body landmarks in
-            real time, scores your technique out of 100, and tells you exactly what to fix.
+            Film your bowling action or batting technique and see what to work on. The app tracks 33 points on your body and gives a score out of 100. Coach AI is still in development and has not been biomechanically validated.
           </p>
 
           <ul className="mt-8 grid gap-3 sm:grid-cols-2">
