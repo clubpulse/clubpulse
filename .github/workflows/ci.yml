@@ -22,6 +22,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql
           sudo service postgresql start
+          # The postgres user has to read the migration files. The checkout is private to the runner.
+          sudo chmod -R a+rX "$GITHUB_WORKSPACE"
       - run: npm test
       - run: npm run build
         env:
