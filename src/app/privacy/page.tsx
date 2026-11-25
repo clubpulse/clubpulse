@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy | SHIFTUP',
+  title: 'Privacy policy',
   description: 'What SHIFTUP collects, why, who it is shared with, and your rights.',
 };
 

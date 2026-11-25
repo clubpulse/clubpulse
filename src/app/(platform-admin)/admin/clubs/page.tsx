@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/platform-admin';
 import { Cell, EmptyState, ErrorNote, PageHeader, Table } from '@/components/platform-admin/ui';
 import { addClubAdmin, createClub, removeClubAdmin } from './actions';
 
-export const metadata: Metadata = { title: 'Clubs | Admin | SHIFTUP' };
+export const metadata: Metadata = { title: 'Clubs | Admin' };
 
 const input = 'rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-white placeholder:text-neutral-500';
 const button = 'whitespace-nowrap rounded-lg border border-neutral-700 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800';

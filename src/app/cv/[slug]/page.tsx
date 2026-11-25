@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!result.success || !result.data) {
     return {
-      title: 'Cricket CV | SHIFTUP',
+      title: 'Cricket CV',
       description: 'View this player\'s cricket profile on SHIFTUP.',
     };
   }
@@ -25,13 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const role = profile.primary_role ? PRIMARY_ROLE_LABELS[profile.primary_role] : '';
   const description = profile.personal_statement
     ?? (profile.tagline ?? `${name}${role ? ` · ${role}` : ''} — Cricket CV on SHIFTUP`);
-  const title = `${name} · Cricket CV | SHIFTUP`;
+  const title = `${name} · Cricket CV`;
+  const shareTitle = `${title} | SHIFTUP`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: shareTitle,
       description,
       type: 'profile',
       siteName: 'SHIFTUP',
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: shareTitle,
       description,
       images: [profile.avatar_url ?? `${APP_URL}/og-default.png`],
     },

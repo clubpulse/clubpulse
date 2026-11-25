@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PillarPage from '@/components/marketing/PillarPage';
 
 export const metadata: Metadata = {
-  title: 'Wellness | SHIFTUP',
+  title: 'Wellness',
   description: 'Private check-ins, match mood, an injury log and match-day preparation for cricketers.',
 };
 

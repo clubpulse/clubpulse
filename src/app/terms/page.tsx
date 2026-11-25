@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Terms of use | SHIFTUP',
+  title: 'Terms of use',
   description: 'The terms for using the SHIFTUP app and website.',
 };
 

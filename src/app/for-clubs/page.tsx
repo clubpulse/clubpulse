@@ -5,7 +5,7 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import { FOR_PLAYERS_HREF } from '@/lib/marketing/routes';
 
 export const metadata: Metadata = {
-  title: 'For clubs | SHIFTUP',
+  title: 'For clubs',
   description: 'Run Saturday end to end: availability, picking the XI, ball-by-ball scoring, finance tracking and safeguarding for cricket clubs.',
 };
 

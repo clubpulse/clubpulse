@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Refund policy | SHIFTUP',
+  title: 'Refund policy',
   description: 'Refunds for individual players, how clubs are covered by their agreement, and how to ask.',
 };
 

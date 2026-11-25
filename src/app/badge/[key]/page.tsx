@@ -16,13 +16,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const def = badgeDef((await params).key);
   if (!def) return {};
-  const title = `${def.title} badge | SHIFTUP`;
+  const title = `${def.title} badge`;
   const description = `${def.how} A SHIFTUP badge for grassroots cricketers.`;
+  // The root template already appends " | SHIFTUP" to title. Share cards set their own title, so they name the brand once.
+  const shareTitle = `${title} | SHIFTUP`;
   return {
     title,
     description,
-    openGraph: { title, description, url: `https://shiftup.club/badge/${def.key}`, siteName: 'SHIFTUP', type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
+    openGraph: { title: shareTitle, description, url: `https://shiftup.club/badge/${def.key}`, siteName: 'SHIFTUP', type: 'website' },
+    twitter: { card: 'summary_large_image', title: shareTitle, description },
   };
 }
 

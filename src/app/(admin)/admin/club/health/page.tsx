@@ -6,7 +6,7 @@ import { ClubHealthScore } from '@/components/admin/ClubHealthScore';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Club Health | SHIFTUP Admin',
+  title: 'Club Health | Admin',
   description: 'AI-powered club health score, smart alerts, and engagement intelligence.',
 };
 

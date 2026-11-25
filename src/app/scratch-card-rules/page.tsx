@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CONTACT_EMAIL, LegalPage, type LegalSection } from '@/components/legal/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Scratch card rules | SHIFTUP',
+  title: 'Scratch card rules',
   description: 'The official rules for SHIFTUP scratch cards: who can take part, how cards are earned, and how prizes are decided.',
 };
 
