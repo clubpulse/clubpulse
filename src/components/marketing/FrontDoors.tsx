@@ -19,17 +19,17 @@ export default function FrontDoors() {
       <div className="fd-grid">
         <Link href={FOR_CLUBS_HREF} className="fd-card">
           <span className="fd-eyebrow">For clubs</span>
-          <span className="fd-title">Match Day, run end to end.</span>
+          <span className="fd-title">A dashboard for the four pillars.</span>
           <ul className="fd-list">
-            <li>Availability and picking the XI</li>
-            <li>Ball-by-ball scoring and a shareable scorecard</li>
-            <li>Finance tracking and safeguarding in the same place</li>
+            <li>Run the noticeboard and the dressing room</li>
+            <li>Set the Scores rules for your club</li>
+            <li>See anonymous wellness averages, never private notes</li>
           </ul>
           <span className="fd-cta">See what clubs get →</span>
         </Link>
         <Link href={FOR_PLAYERS_HREF} className="fd-card">
           <span className="fd-eyebrow">For players</span>
-          <span className="fd-title">Four pillars to grow with.</span>
+          <span className="fd-title">Four pillars, and Scores for taking part.</span>
           <ul className="fd-list">
             <li>Player Analysis: video, Coach AI, stats and your Cricket CV</li>
             <li>Community, Wellness and Academy</li>

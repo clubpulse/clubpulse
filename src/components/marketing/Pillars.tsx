@@ -21,13 +21,13 @@ const PILLARS: Pillar[] = [
     line: 'Film a shot or a delivery and see exactly what to work on.',
     items: [
       { text: 'Video analysis of your batting and bowling', status: 'live' },
-      { text: 'Coach AI is in development and being validated, not biomechanically validated', status: 'soon' },
+      { text: 'Coach AI feedback on your technique. Still in development and not yet biomechanically validated', status: 'soon' },
       { text: 'Your stats and a shareable Cricket CV', status: 'live' },
     ],
   },
   {
     name: 'Community', href: '/players/community', tag: 'Connection', colour: '#60A5FA', icon: '🤝', col: 2,
-    line: 'A social network for cricketers: find players, clubs and games near you.',
+    line: 'Your club’s noticeboard and dressing room today. A wider network for finding players, clubs and games is built but not open yet.',
     items: [
       { text: 'Club noticeboard and dressing room, inside your club', status: 'live' },
       { text: 'Feed, connections, follows, and nets and games near you, built with safeguarding and moderation. Opening to clubs once final safety checks are complete', status: 'soon' },
@@ -44,7 +44,7 @@ const PILLARS: Pillar[] = [
   },
   {
     name: 'Academy', href: '/players/academy', tag: 'Learning', colour: '#2DD4BF', icon: '🎓', col: 4,
-    line: 'Short lessons, daily questions and games that make you a better cricketer.',
+    line: 'Two-minute lessons, daily games and a log for your ECB courses.',
     items: [
       { text: 'Two-minute lessons, a practice plan and SHIFTUP certificates for finishing a track', status: 'live' },
       { text: 'Daily games, and a log for your ECB qualifications', status: 'live' },
@@ -59,10 +59,10 @@ export function Pillars() {
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#EFC84A', marginBottom: 12 }}>Four pillars for every player</p>
         <h2 id="pillars-h" style={{ fontFamily: 'var(--font-syne), Bricolage Grotesque, sans-serif', fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, lineHeight: 1.08, color: '#E8EDF5', maxWidth: 720 }}>
-          Analysis, community, wellness and learning, in one place.
+          Film a shot. Talk to the dressing room. Check in before the match. Learn something in two minutes.
         </h2>
         <p style={{ marginTop: 16, maxWidth: 640, fontSize: 16, lineHeight: 1.6, color: 'rgba(232,237,245,0.6)' }}>
-          Scores run across all four pillars. You earn them by taking part, and they are never sold. They are not a fifth pillar.
+          Scores sit across all four. You earn them by taking part, not by scoring runs, and they are never sold.
         </p>
 
         <div style={{ marginTop: 44 }}>

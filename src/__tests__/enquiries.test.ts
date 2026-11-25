@@ -1,12 +1,12 @@
 import { parseEnquiry } from '@/lib/enquiries/logic';
 
-const good = { name: 'Asha Patel', email: ' Asha@Example.org ', club: 'Riverside CC', role: 'secretary', members: '50 to 150', needs: ['volunteers', 'juniors'], message: '' };
+const good = { name: 'Asha Patel', email: ' Asha@Example.org ', club: 'Riverside CC', role: 'secretary', members: '50 to 150', needs: ['coaching', 'juniors'], message: '' };
 
 describe('parseEnquiry', () => {
   it('accepts a good enquiry and tidies it', () => {
     expect(parseEnquiry(good)).toEqual({
       ok: true,
-      value: { name: 'Asha Patel', email: 'asha@example.org', club_name: 'Riverside CC', role: 'secretary', members: '50 to 150', needs: ['volunteers', 'juniors'], message: null },
+      value: { name: 'Asha Patel', email: 'asha@example.org', club_name: 'Riverside CC', role: 'secretary', members: '50 to 150', needs: ['coaching', 'juniors'], message: null },
     });
   });
 
@@ -19,8 +19,8 @@ describe('parseEnquiry', () => {
   });
 
   it('keeps only known needs and sizes, and cuts long text', () => {
-    const parsed = parseEnquiry({ ...good, needs: ['volunteers', 'volunteers', 'hack', 7], members: 'loads', message: 'x'.repeat(9000) });
-    expect(parsed.ok && parsed.value.needs).toEqual(['volunteers']);
+    const parsed = parseEnquiry({ ...good, needs: ['coaching', 'coaching', 'hack', 7], members: 'loads', message: 'x'.repeat(9000) });
+    expect(parsed.ok && parsed.value.needs).toEqual(['coaching']);
     expect(parsed.ok && parsed.value.members).toBeNull();
     expect(parsed.ok && parsed.value.message?.length).toBe(3000);
   });

@@ -1,14 +1,11 @@
 // What the contact form can send, and the checks on it. No database here, so it can be tested.
 
 export const NEEDS = [
-  { value: 'membership', label: 'Members and fees' },
-  { value: 'selection', label: 'Availability and team selection' },
-  { value: 'volunteers', label: 'Volunteers and shifts' },
-  { value: 'juniors', label: 'Juniors, parents and safeguarding' },
-  { value: 'coaching', label: 'Coaching and video analysis' },
-  { value: 'rewards', label: 'Scores and rewards for members' },
-  { value: 'sponsors', label: 'Sponsors and local businesses' },
-  { value: 'custom', label: 'Something built for our club' },
+  { value: 'juniors', label: 'Community and juniors' },
+  { value: 'coaching', label: 'Player Analysis and Coach AI' },
+  { value: 'rewards', label: 'Scores for our players' },
+  { value: 'wellness', label: 'Wellness' },
+  { value: 'academy', label: 'Academy' },
 ] as const;
 
 export const CLUB_SIZES = ['Under 50 members', '50 to 150', '150 to 300', 'Over 300', 'A league or federation'] as const;

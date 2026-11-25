@@ -34,32 +34,30 @@ const PLAYER_SECTIONS: Section[] = [
   {
     title: 'Core',
     rows: [
-      { label: 'Live scorecard viewing', desc: 'Watch live innings ball by ball as it happens', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Basic career stats', desc: 'Runs, wickets, averages and strike rates across all seasons', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
-      { label: 'Fixture & match notifications', desc: 'Upcoming games, results, weather alerts and reminders', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
-      { label: 'Shareable stats card', desc: 'Public profile link with your season highlights — share anywhere', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Shareable stats card', desc: 'Public profile link with your season highlights. Share anywhere', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Achievement badges', desc: 'First fifty, hat-trick, season milestones and more', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Club leaderboard', desc: 'See where you rank among teammates across all metrics', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
-      { label: 'Scores — Bronze (1×)', desc: 'Earn loyalty points for every match contribution', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Scores: Bronze (1×)', desc: 'Earn Scores by taking part', free: '✓', pro: '✓', elite: '✓', legend: '✓' },
     ],
   },
   {
     title: 'AI & Coaching',
     rows: [
-      { label: 'AI coaching sessions', desc: 'Personalised coaching powered by Claude AI — conversational, specific to your game', free: '2/month', pro: '8/month', elite: '20/month', legend: 'Unlimited' },
+      { label: 'AI coaching sessions', desc: 'Coach AI feedback in plain English, specific to your game. Coach AI is still in development.', free: '2/month', pro: '8/month', elite: '20/month', legend: 'Unlimited' },
       { label: 'Role-based coaching', desc: 'Tailored advice based on your batting or bowling role in the team', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Drill recommendations', desc: 'Targeted practice drills generated from your performance weaknesses', free: '✕', pro: '2/month', elite: '8/month', legend: 'Unlimited' },
-      { label: 'Post-match self-assessment', desc: 'Log how you felt after each game — feeds directly into your AI coaching', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Post-match self-assessment', desc: 'Log how you felt after each game. Feeds directly into your AI coaching', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
       { label: 'Match notes & journal', desc: 'Private per-match notes and reflections stored on your profile', free: '✕', pro: '3 saved', elite: '15 saved', legend: 'Unlimited' },
       { label: 'Target setting', desc: 'Set and track seasonal batting or bowling goals with AI check-ins', free: '✕', pro: '1 active', elite: '3 active', legend: 'Unlimited' },
       { label: 'Session history & progress', desc: 'Track your improvement over time with coaching session archives', free: '✕', pro: 'Last 30 days', elite: 'Last 3 months', legend: 'Full history' },
-      { label: 'Scores — Silver (2×)', desc: 'Double your points on every match contribution', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
+      { label: 'Scores: Silver (2×)', desc: 'Earn Scores at twice the Bronze rate', free: '✕', pro: '✓', elite: '✓', legend: '✓' },
     ],
   },
   {
     title: 'Video Analysis',
     rows: [
-      { label: 'Video uploads', desc: 'Upload batting or bowling footage — full nets sessions, match clips, any length', free: '7 lifetime', pro: 'Unlimited', elite: 'Unlimited', legend: 'Unlimited' },
+      { label: 'Video uploads', desc: 'Upload batting or bowling footage: nets sessions or match clips, up to your plan’s file size', free: '7 lifetime', pro: 'Unlimited', elite: 'Unlimited', legend: 'Unlimited' },
       { label: 'Max file size per video', desc: 'Supports high-quality recordings from any device', free: '250 MB', pro: '750 MB', elite: '2 GB', legend: '4 GB' },
       { label: 'Total monthly storage', desc: 'Your personal video library on SHIFTUP', free: '2 GB', pro: '10 GB', elite: '30 GB', legend: '100 GB' },
       { label: 'AI feedback detail', desc: 'Depth of technical analysis returned from your video', free: 'Basic highlights', pro: 'Standard breakdown', elite: 'Detailed technical report', legend: 'Full frame-by-frame analysis' },
@@ -81,26 +79,26 @@ const PLAYER_SECTIONS: Section[] = [
       { label: 'Injury log & return tracker', desc: 'Log injuries, track recovery and get return-to-play guidance', free: '✕', pro: '✕', elite: '✓', legend: '✓' },
       { label: 'Season report & stat exports', desc: 'Download your complete season as a shareable PDF report', free: '✕', pro: '✕', elite: '1/season', legend: 'Unlimited' },
       { label: 'Priority rewards redemption', desc: 'Jump the queue on limited reward drops before they sell out', free: '✕', pro: '✕', elite: '✓', legend: '✓' },
-      { label: 'Scores — Gold (3×)', desc: 'Triple your points on every match contribution', free: '✕', pro: '✕', elite: '✓', legend: '✓' },
+      { label: 'Scores: Gold (3×)', desc: 'Earn Scores at three times the Bronze rate', free: '✕', pro: '✕', elite: '✓', legend: '✓' },
     ],
   },
   {
     title: 'Legend Only',
     rows: [
-      { label: 'vs club & regional avg comparison', desc: 'See how your stats stack up beyond your own club — across the region', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
+      { label: 'vs club & regional avg comparison', desc: 'See how your stats stack up beyond your own club, across the region', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Early feature access', desc: 'Try new SHIFTUP features before they launch to everyone else', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
       { label: 'Legend badge & profile flair', desc: 'Exclusive profile distinction that sets you apart on the leaderboard', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
-      { label: 'Direct support line', desc: 'Priority human support — not just chat, a real response within hours', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
-      { label: 'Scores — Platinum (4×)', desc: 'The maximum points multiplier — every contribution counts more', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
+      { label: 'Direct support line', desc: 'Priority support from a person', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
+      { label: 'Scores: Platinum (4×)', desc: 'Earn Scores at four times the Bronze rate', free: '✕', pro: '✕', elite: '✕', legend: '✓' },
     ],
   },
 ];
 
 const PLAYER_TIERS = [
-  { key: 'free',   label: 'Free',   price: '£0',     period: 'Free tier',           desc: 'Get started — stats, scorecard and Bronze Scores.',              featured: false, cta: 'Start on Free →', href: '/auth/sign-up' },
+  { key: 'free',   label: 'Free',   price: '£0',     period: 'Free tier',           desc: 'Get started: your stats, a shareable stats card and Bronze Scores.',              featured: false, cta: 'Start on Free →', href: '/auth/sign-up' },
   { key: 'pro',    label: 'Pro',    price: '£9.99',  period: 'per month',           desc: 'AI coaching, drills and Silver Scores rewards.',                 featured: true,  cta: 'Get Pro →',      href: PLAYER_CTA },
   { key: 'elite',  label: 'Elite',  price: '£14.99', period: 'per month',           desc: 'Deep analysis, venue breakdowns and Gold Scores.',               featured: false, cta: 'Get Elite →',    href: PLAYER_CTA },
-  { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'Unlimited everything. Full video analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: PLAYER_CTA },
+  { key: 'legend', label: 'Legend', price: '£19.99', period: 'per month',           desc: 'No limit on coaching sessions, drills or notes. Full frame-by-frame analysis. Platinum Scores.',    featured: false, cta: 'Get Legend →',   href: PLAYER_CTA },
 ] as const;
 
 type TierKey = 'free' | 'pro' | 'elite' | 'legend';
@@ -534,10 +532,10 @@ export default function PricingPage() {
       {/* HERO */}
       <div className="cp-pricing-hero">
         <span className="cp-pricing-eyebrow">Pricing</span>
-        <h1 className="cp-pricing-h1">Simple pricing.<br />Serious value.</h1>
+        <h1 className="cp-pricing-h1">Players start at £0.<br />Clubs from £29.99 a month.</h1>
         <p className="cp-pricing-sub">
           Start on Free (£0). Move up to Pro (£9.99), Elite (£14.99) or Legend (£19.99) when you want more.
-          Club plans from £29.99 a month, set up around how your club actually operates.
+          Club plans from £29.99 a month, set up with you.
         </p>
 
         {/* AUDIENCE TOGGLE */}
@@ -560,7 +558,7 @@ export default function PricingPage() {
           <div className="cp-tier-grid">
             {PLAYER_TIERS.map(tier => (
               <div key={tier.key} className={`cp-tier-card${tier.featured ? ' featured' : ''}`}>
-                {tier.featured && <span className="cp-tier-chip">Most popular</span>}
+                {tier.featured && <span className="cp-tier-chip">Coaching starts here</span>}
                 <div className="cp-tier-name">{tier.label}</div>
                 <div className="cp-tier-price">
                   {tier.key === 'free' ? tier.price : <><span>£</span>{tier.price.replace('£','')}</>}
@@ -636,13 +634,9 @@ export default function PricingPage() {
             <div style={{ fontSize: '40px', marginBottom: '16px' }}><Glyph e="🏟️" /></div>
             <h3>Club plans from £29.99 a month</h3>
             <p>
-              Three plans, each covering your whole club: Pro at £29.99 a month for up to 75 members, Elite at
-              £59.99 for up to 200, and Legend at £99.99 with unlimited members. A member who wants analysis on their own
-              phone, with coaching and AI analysis sessions, adds it for £2.99, £4.99 or £6.99 a month, depending on
-              the club&apos;s plan.
-              Club plans are not bought online.
-              Tell us what your club needs, we confirm it with you, and we sign an agreement for a set period at
-              these prices. We can also shape the platform around how your club works.
+              One plan covers the whole club and comes with the club dashboard for the four pillars. Club plans are not bought online.
+              Tell us what your club needs, we confirm it with you, and we sign an agreement for a set period.
+              We can also shape the platform around how your club works.
             </p>
             <Link href="/contact">Tell us what your club needs →</Link>
           </div>

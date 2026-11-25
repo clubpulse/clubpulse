@@ -139,13 +139,13 @@ export default function AICoachPage() {
 
         <section className="ai-hero">
           <div>
-            <p className="ai-eyebrow">🎯 AI Coach</p>
+            <p className="ai-eyebrow">Coach AI</p>
             <div className="ai-road-tag">In development · being validated</div>
-            <h1 className="ai-h1">A batting and bowling coach in your pocket. <span className="green">Pose analysis on your phone.</span></h1>
-            <p className="ai-sub">Coach AI is in development and being validated. It is not biomechanically validated. MediaPipe Pose maps 33 body landmarks directly on your phone, from your camera. Feedback on stance, elbow position, head level and follow-through.</p>
+            <h1 className="ai-h1">Point your phone at the nets. <span className="green">Coach AI looks at your technique.</span></h1>
+            <p className="ai-sub">Coach AI is still in development and has not been biomechanically validated, so treat it as a second opinion, not a verdict. It uses your phone camera to track 33 points on your body and comments on stance, elbow position, head level and follow-through.</p>
             <div className="ai-btns">
               <Link href="/auth/sign-up" className="ai-btn-red">Start on Free →</Link>
-              <Link href="/features" className="ai-btn-ghost">See all features</Link>
+              <Link href="/for-players" className="ai-btn-ghost">See the four pillars</Link>
             </div>
           </div>
 
@@ -206,14 +206,14 @@ export default function AICoachPage() {
         <div style={{borderTop:'1px solid rgba(255,255,255,0.07)'}}>
           <div className="ai-section">
             <p className="ai-section-eyebrow">How it works</p>
-            <h2 className="ai-section-h2">Pose tracking. On your phone. In real time.</h2>
-            <p className="ai-section-sub">MediaPipe is the same technology used in Google&apos;s fitness and AR apps — SHIFTUP brings it to grassroots cricket coaching for the first time.</p>
+            <h2 className="ai-section-h2">Pose tracking runs on your phone.</h2>
+            <p className="ai-section-sub">SHIFTUP uses MediaPipe, Google&apos;s pose-tracking library, to find 33 points on the body from your camera.</p>
             <div className="ai-steps">
               <div className="ai-step">
                 <p className="ai-step-n">01</p>
                 <div className="ai-step-icon"><Glyph e="📱" /></div>
                 <h3 className="ai-step-h">Open AI Coach</h3>
-                <p className="ai-step-body">Open the AI Coach screen in the SHIFTUP app. Point your phone camera at the batter or bowler — or prop it up against a bag at the nets.</p>
+                <p className="ai-step-body">Open the AI Coach screen in the SHIFTUP app. Point your phone camera at the batter or bowler, or prop it against a kit bag at the nets.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">02</p>
@@ -225,13 +225,13 @@ export default function AICoachPage() {
                 <p className="ai-step-n">03</p>
                 <div className="ai-step-icon"><Glyph e="📊" /></div>
                 <h3 className="ai-step-h">Coaching feedback</h3>
-                <p className="ai-step-body">The app compares your pose to ideal batting and bowling geometry — head position, elbow height, front foot alignment, follow-through arc — and flags what needs attention.</p>
+                <p className="ai-step-body">The app checks your pose against its coaching rules: head position, elbow height, front foot alignment and follow-through. It flags what to look at.</p>
               </div>
               <div className="ai-step">
                 <p className="ai-step-n">04</p>
                 <div className="ai-step-icon"><Glyph e="📈" /></div>
                 <h3 className="ai-step-h">Progress tracked</h3>
-                <p className="ai-step-body">Every session is logged. You can see improvement over time — whether your head is staying stiller, your elbow dropping less, your follow-through extending further.</p>
+                <p className="ai-step-body">Every session is logged. You can see improvement over time, whether your head is staying stiller, your elbow dropping less, your follow-through extending further.</p>
               </div>
             </div>
           </div>
@@ -284,8 +284,8 @@ export default function AICoachPage() {
               ['What phone is needed?', 'Any modern iPhone (A12 Bionic or newer, iPhone XS+) or Android flagship from 2020 onward. MediaPipe Pose runs on-device, so a reasonably recent phone gives the smoothest results.'],
               ['Can it be used without an internet connection?', 'Pose tracking runs on your phone, but ball tracking and session reports need a connection, so AI Coach is not fully offline.'],
               ['Will it work for bowling or fielding?', 'Yes for bowling: choose bowling mode and the app checks your action, including front knee and foot position, and gives you a coaching note. Fielding mechanics may follow.'],
-              ['Who provides the coaching logic — is it a real coach?', 'The pose thresholds and feedback rules are written in collaboration with qualified coaches. MediaPipe provides the raw pose data; the coaching interpretation is built by humans with ECB coaching qualifications.'],
-              ['Is this only for the nets?', 'The main use case is a tripod or phone propped up at the nets, but it works anywhere with a camera angle that shows the batter\'s full body. Some players use it in a garden or sports hall.'],
+              ['Who provides the coaching logic? Is it a real coach?', 'MediaPipe provides the raw pose data. The coaching rules sit on top of it and are still being tested, which is why Coach AI is in development.'],
+              ['Is this only for the nets?', 'A tripod or a phone propped up at the nets is the usual setup. It should work anywhere the camera can see the batter’s full body, such as a garden or sports hall.'],
             ].map(([q, a], i) => (
               <div key={i} className="ai-faq-item">
                 <div className="ai-faq-q">{q}</div>
@@ -298,8 +298,8 @@ export default function AICoachPage() {
         <section className="ai-cta">
           <div className="ai-cta-inner">
             <div>
-              <h2 className="ai-cta-h">Try AI coaching today.</h2>
-              <p className="ai-cta-sub">Sign up, open the AI Coach screen and film your first shot or delivery.</p>
+              <h2 className="ai-cta-h">Want to try Coach AI?</h2>
+              <p className="ai-cta-sub">Sign up, open Coach AI in the app and film a shot or a delivery. It is still in development, so tell us what it gets wrong.</p>
             </div>
             <Link href="/auth/sign-up" className="ai-cta-btn">Start on Free →</Link>
           </div>

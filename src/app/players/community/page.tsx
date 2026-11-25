@@ -31,7 +31,7 @@ export default function CommunityPage() {
             { h: 'Feed for your club and local cricket', body: 'Posts and replies, checked before they go live and reportable by anyone. Under-18s and adults are kept apart in messaging.' },
             { h: 'Nets and games near you', body: 'Nets and pick-up games at club grounds and public venues, by distance, league or county. Junior sessions are only for that club’s juniors.' },
             { h: 'Profiles, connections and follows', body: 'Follow clubs and players and connect with people you want to play with. Parents can see their child’s activity.' },
-            { h: 'Transfer Window and scouting', body: 'Later: a way for players and clubs to find each other.' },
+            { h: 'Transfer Window', body: 'Later: a way for players and clubs to find each other.' },
           ],
         },
       ]}

@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Our story',
-  description: 'How a Sunday cricket club became the blueprint for grassroots cricket management.',};
+  description: 'Why we built SHIFTUP: four pillars to help every grassroots cricketer get better, and a dashboard for the club behind them.',};
 
 export default function OurStoryPage() {
   return (
@@ -95,33 +95,33 @@ export default function OurStoryPage() {
       {/* ── Hero ── */}
       <section className="about-hero">
         <p className="section-tag">Our story</p>
-        <h1 className="hero-h">Built on a real cricket club,<br />for every cricket club</h1>
-        <p className="hero-sub">SHIFTUP started as a solution to the chaos of running a grassroots cricket club. It grew into a platform that every grassroots club deserves.</p>
+        <h1 className="hero-h">It started with one club&apos;s Saturdays.</h1>
+        <p className="hero-sub">We set out to fix the admin at our own club. Along the way we noticed the players needed something too. That part became SHIFTUP.</p>
       </section>
 
       {/* ── Story ── */}
       <section className="story-wrap">
         <div className="story-block">
           <h2 className="story-h">The problem every club knows</h2>
-          <p className="story-p">Managing a cricket club means juggling availability spreadsheets, WhatsApp threads, paper scoresheets, and bank statements — all while trying to actually play cricket. Chasing subs, figuring out who&apos;s available, tracking who&apos;s paid their annual fee: it falls on one or two volunteers who burn out.</p>
-          <p className="story-p">We lived this every weekend. The admin overhead was killing the enjoyment of the game.</p>
+          <p className="story-p">Availability lives in a spreadsheet, the squad in a WhatsApp thread, the scores in a scorebook and the subs in somebody&apos;s bank account. Keeping all four going falls on one or two volunteers.</p>
+          <p className="story-p">We lived this every weekend. The admin was taking the fun out of it.</p>
         </div>
 
         <div className="pull-quote">
           <p>&ldquo;We didn&apos;t set out to build a software company. We just needed Saturday mornings back.&rdquo;</p>
-          <cite>— Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</cite>
+          <cite>Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</cite>
         </div>
 
         <div className="story-block">
-          <h2 className="story-h">A real club as the testbed</h2>
-          <p className="story-p">Every feature in SHIFTUP was born from a real frustration on the ground. Availability tracking came first — because the captain was texting 18 players every Wednesday night. The live scorecard followed because someone was still writing on paper and typing it up afterwards.</p>
-          <p className="story-p">The AI coaching engine came when we realised players were recording sessions anyway, just without any feedback. Scores — our loyalty currency — came when we wanted to reward the players who show up week after week, not just the stars.</p>
+          <h2 className="story-h">Where SHIFTUP came from</h2>
+          <p className="story-p">The match-day admin became its own tool. SHIFTUP is the part for players, and for the clubs that want to look after them.</p>
+          <p className="story-p">Coach AI came when we noticed players were already filming their nets sessions, with nobody to say what to fix. Scores came from wanting to reward the people who turn up every week, not only the ones who score runs.</p>
         </div>
 
         <div className="story-block">
           <h2 className="story-h">From one club to many</h2>
-          <p className="story-p">What started as an internal tool for one club is now a platform built to serve any grassroots cricket club in the UK. We&apos;ve kept the things that make community cricket special: the banter, the relationships, the sense of belonging — and wrapped them in tools that actually work.</p>
-          <p className="story-p">We&apos;re not here to replace the human side of your club. We&apos;re here to remove the admin burden so you can focus on it.</p>
+          <p className="story-p">SHIFTUP began as an internal tool for one club. We have started contacting other clubs about setting it up with them. Tea, banter and arguing about the batting order stay with the club.</p>
+          <p className="story-p">Every player at the club should have a way to get better, whichever XI they play in.</p>
         </div>
       </section>
 
@@ -131,14 +131,14 @@ export default function OurStoryPage() {
           <div className="origin-text">
             <p className="section-tag" style={{ marginBottom: '12px' }}>In development</p>
             <h2>Starting to contact clubs</h2>
-            <p>SHIFTUP is in development and is now starting to contact clubs.</p>
+            <p>SHIFTUP is in development. We have started contacting clubs, and we set them up one at a time.</p>
           </div>
           <div className="stat-cluster">
             {[
               { val: 'Now', desc: 'In development, and starting to contact clubs' },
-              { val: 'Score', desc: 'Ball-by-ball scoring, updated as it happens' },
+              { val: '4', desc: 'Player pillars: Analysis, Community, Wellness, Academy' },
               { val: '500', desc: 'Scores equal £1' },
-              { val: '£0', desc: 'Admin overhead for tracking availability' },
+              { val: 'From £0', desc: 'Player plans, starting on Free' },
             ].map(s => (
               <div key={s.val} className="stat-row">
                 <span className="stat-val">{s.val}</span>
@@ -151,11 +151,11 @@ export default function OurStoryPage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <h2 className="cta-h">Ready to bring SHIFTUP<br />to your club?</h2>
-        <p className="cta-sub">We onboard one club at a time to make sure the setup is right. Get in touch and we&apos;ll show you what it looks like for your setup.</p>
+        <h2 className="cta-h">Want SHIFTUP at your club?</h2>
+        <p className="cta-sub">We set clubs up one at a time. Tell us how yours runs today and we will show you how SHIFTUP would fit.</p>
         <div className="cta-btns">
           <Link href="/contact" className="btn-primary">Talk to us →</Link>
-          <Link href="/" className="btn-ghost">See all features</Link>
+          <Link href="/for-players" className="btn-ghost">See the four pillars</Link>
         </div>
       </section>
 

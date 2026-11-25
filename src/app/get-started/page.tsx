@@ -17,13 +17,13 @@ export default function GetStartedPage() {
           How would you like to start?
         </h1>
         <p style={{ marginTop: 14, color: 'rgba(226,232,240,0.7)', fontSize: 17, lineHeight: 1.6, maxWidth: 560 }}>
-          Clubs and players come in through different doors. Pick the one that fits.
+          Clubs and players start in different places. Pick yours.
         </p>
         <div style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginTop: 36 }}>
           <Link href="/contact" style={card}>
             <span style={eyebrow}>For clubs</span>
             <strong style={title}>Register your club</strong>
-            <span style={body}>Tell us about your club and we will set it up with you: availability, picking the XI, scoring, finance and safeguarding in one place.</span>
+            <span style={body}>Tell us about your club and we will set up the club dashboard with you: the noticeboard, your Scores rules and the four pillars for your players.</span>
             <span style={cta}>Tell us about your club →</span>
           </Link>
           <Link href="/auth/sign-up" style={card}>

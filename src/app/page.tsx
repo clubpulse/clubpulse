@@ -12,7 +12,7 @@ import { useState, useEffect, useRef } from 'react';
 // Players pay online once checkout is switched on in Vercel; until then the buttons lead to the contact form.
 
 
-type PhoneTab = 'dash' | 'card' | 'coach' | 'pts';
+type PhoneTab = 'dash' | 'coach' | 'pts';
 
 function useCountUp(target: number, duration = 1800) {
   const [count, setCount] = useState(target);
@@ -390,29 +390,6 @@ export default function HomePage() {
         .cp-avail-label { font-size:9px;font-weight:600;color:var(--green); }
         .cp-avail-toggle { width:28px;height:16px;background:var(--green);border-radius:8px;position:relative; }
         .cp-avail-toggle::after { content:'';position:absolute;right:3px;top:3px;width:10px;height:10px;background:#fff;border-radius:50%; }
-        .cp-live-chip {
-          display:inline-flex;align-items:center;gap:4px;padding:2px 7px;
-          background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.2);
-          border-radius:5px;font-size:8px;font-weight:700;color:var(--green);margin-bottom:8px;
-        }
-        .cp-live-chip-dot { width:4px;height:4px;border-radius:50%;background:var(--green);animation:cp-blink-dot 1.5s infinite; }
-        .cp-sc-match-title { font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;color:#fff;margin-bottom:2px; }
-        .cp-sc-match-meta { font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:12px; }
-        .cp-sc-innings { background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px; }
-        .cp-sc-head {
-          display:flex;justify-content:space-between;padding:8px 10px;
-          background:rgba(37,99,235,0.14);border-bottom:1px solid rgba(255,255,255,0.04);
-        }
-        .cp-sc-head-name { font-weight:700;color:#fff;font-size:10px; }
-        .cp-sc-head-score { font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;color:var(--gold); }
-        .cp-sc-bat-row {
-          display:flex;justify-content:space-between;align-items:center;
-          padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:10px;
-        }
-        .cp-sc-bat-row:last-child { border-bottom:none; }
-        .cp-sc-bat-name { color:rgba(255,255,255,0.6); }
-        .cp-sc-bat-name.bold { color:#fff;font-weight:600; }
-        .cp-sc-bat-runs { font-weight:700;color:#fff; }
         .cp-pts-hero {
           background:linear-gradient(135deg,rgba(239,200,74,0.14),rgba(29,78,216,0.06));
           border:1px solid rgba(239,200,74,0.18);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;
@@ -616,24 +593,6 @@ export default function HomePage() {
         .cp-price-divider { height:1px;background:var(--border);margin:20px 0; }
         .cp-price-note { font-size:11px;color:var(--fg3);margin-top:16px;text-align:center;line-height:1.6; }
 
-        /* ── QUOTE ── */
-        .cp-quote { max-width:1200px;margin:0 auto;padding:80px 40px; }
-        .cp-quote-inner {
-          background:var(--bg4);border:1px solid var(--border);
-          border-radius:20px;padding:56px;position:relative;overflow:hidden;
-        }
-        .cp-quote-mark {
-          position:absolute;top:-20px;left:36px;
-          font-family:'Bricolage Grotesque',sans-serif;font-size:180px;font-weight:800;
-          color:rgba(37,99,235,0.10);line-height:1;pointer-events:none;user-select:none;
-        }
-        .cp-quote-text {
-          font-family:'Bricolage Grotesque',sans-serif;
-          font-size:clamp(18px,2.5vw,26px);font-weight:700;
-          color:var(--fg);line-height:1.45;max-width:760px;position:relative;letter-spacing:-0.01em;
-        }
-        .cp-quote-attr { margin-top:24px;font-size:13px;color:var(--fg3);position:relative; }
-
         /* ── CTA BAND ── */
         .cp-cta-band { background:var(--red);border-top:1px solid rgba(255,255,255,0.08); }
         .cp-cta-band-inner {
@@ -694,7 +653,7 @@ export default function HomePage() {
           .cp-hero-stat { border-right:none !important;margin-right:0 !important;padding:14px 0 !important;border-top:1px solid var(--border); }
           .cp-nav-inner { padding:0 16px; }
           .cp-hero,.cp-how,.cp-features-inner,.cp-personas,.cp-pricing-inner,
-          .cp-quote,.cp-cta-band-inner,.cp-footer-inner {
+          .cp-cta-band-inner,.cp-footer-inner {
             padding-left:max(16px, env(safe-area-inset-left, 0px));
             padding-right:max(16px, env(safe-area-inset-right, 0px));
           }
@@ -726,12 +685,11 @@ export default function HomePage() {
                 In development · contacting clubs
               </div>
               <h1 className="cp-hero-h1">
-                Run Saturday.<br />
-                Grow every <AnimatedGradientText>player</AnimatedGradientText>.
+                Every <AnimatedGradientText>player</AnimatedGradientText> can get better.
               </h1>
               <p className="cp-eyebrow" style={{ marginBottom: 12 }}>From Grassroots to Greatness</p>
               <p className="cp-hero-sub">
-                SHIFTUP runs a cricket club&apos;s Saturday, from availability and the XI to ball-by-ball scoring, and gives every player four pillars to grow with: Player Analysis, Community, Wellness and Academy.
+                SHIFTUP gives cricketers four ways to work on their game: Player Analysis, Community, Wellness and Academy. You earn Scores for taking part. Clubs get a dashboard to look after all four for their players.
               </p>
 
               {/* The four pillars */}
@@ -759,13 +717,13 @@ export default function HomePage() {
               <BorderBeam size={120} duration={7} />
               <div className="cp-phone-screen">
                 <div className="cp-tab-bar">
-                  {(['dash','card','coach','pts'] as PhoneTab[]).map((t, i) => (
+                  {(['dash','coach','pts'] as PhoneTab[]).map((t, i) => (
                     <button
                       key={t}
                       className={`cp-ph-tab${phoneTab === t ? ' active' : ''}`}
                       onClick={() => setPhoneTab(t)}
                     >
-                      {['Home','Score','AI','Scores'][i]}
+                      {['Home','Coach AI','Scores'][i]}
                     </button>
                   ))}
                 </div>
@@ -773,7 +731,7 @@ export default function HomePage() {
                   {phoneTab === 'dash' && (
                     <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
                       <div>
-                        <p className="cp-sc-greeting">Good morning 👋</p>
+                        <p className="cp-sc-greeting">Good morning</p>
                         <p className="cp-sc-sub">Your Club · 2026 Season</p>
                       </div>
                       <div className="cp-score-card">
@@ -787,31 +745,14 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="cp-tiles">
-                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📋" /></div><div className="cp-tile-label">Live scorecard</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="🎯" /></div><div className="cp-tile-label">AI Coach</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📅" /></div><div className="cp-tile-label">Availability</div></div>
-                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="💷" /></div><div className="cp-tile-label">Finance</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📋" /></div><div className="cp-tile-label">Academy</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="🎯" /></div><div className="cp-tile-label">Coach AI</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="📅" /></div><div className="cp-tile-label">Wellness</div></div>
+                        <div className="cp-tile"><div className="cp-tile-icon"><Glyph e="💷" /></div><div className="cp-tile-label">Community</div></div>
                       </div>
                       <div className="cp-avail-bar">
-                        <span className="cp-avail-label">✓ Available Saturday</span>
+                        <span className="cp-avail-label">✓ Ready for Saturday</span>
                         <div className="cp-avail-toggle" />
-                      </div>
-                    </div>
-                  )}
-                  {phoneTab === 'card' && (
-                    <div>
-                      <div className="cp-live-chip"><span className="cp-live-chip-dot" />LIVE</div>
-                      <p className="cp-sc-match-title">Your Club vs Fairwick CC</p>
-                      <p className="cp-sc-match-meta">Sun 20 Oct · Home ground · 2nd innings</p>
-                      <div className="cp-sc-innings">
-                        <div className="cp-sc-head"><span className="cp-sc-head-name">Your Club batting</span><span className="cp-sc-head-score">142–3</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">A. Patel*</span><span className="cp-sc-bat-runs">67*</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name bold">R. Patel*</span><span className="cp-sc-bat-runs">24*</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">A. Khan (out)</span><span className="cp-sc-bat-runs">34</span></div>
-                        <div className="cp-sc-bat-row"><span className="cp-sc-bat-name">S. Bhatt (out)</span><span className="cp-sc-bat-runs">12</span></div>
-                      </div>
-                      <div className="cp-sc-innings">
-                        <div className="cp-sc-head"><span className="cp-sc-head-name">Fairwick CC</span><span className="cp-sc-head-score">178 all out</span></div>
                       </div>
                     </div>
                   )}
@@ -842,10 +783,10 @@ export default function HomePage() {
                       </div>
                       <div className="cp-coach-feedback">
                         <p className="cp-coach-fb-title">Coaching feedback</p>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Head position — <span>level &amp; still ✓</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot warn"/><span className="cp-fb-text">Elbow height — <span>drop slightly</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Front foot — <span>straight ✓</span></span></div>
-                        <div className="cp-coach-fb-row"><span className="cp-fb-dot bad"/><span className="cp-fb-text">Follow-through — <span>cut short</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Head position: <span>level &amp; still ✓</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot warn"/><span className="cp-fb-text">Elbow height: <span>drop slightly</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot ok"/><span className="cp-fb-text">Front foot: <span>straight ✓</span></span></div>
+                        <div className="cp-coach-fb-row"><span className="cp-fb-dot bad"/><span className="cp-fb-text">Follow-through: <span>cut short</span></span></div>
                       </div>
                     </div>
                   )}
@@ -859,7 +800,6 @@ export default function HomePage() {
                         <div className="cp-earn-row"><span className="cp-earn-label">✅ Daily check-in</span><span className="cp-earn-pts">+5</span></div>
                         <div className="cp-earn-row"><span className="cp-earn-label">🎓 Academy lesson</span><span className="cp-earn-pts">+10</span></div>
                         <div className="cp-earn-row"><span className="cp-earn-label">🏏 Training attendance</span><span className="cp-earn-pts">+10</span></div>
-                        <div className="cp-earn-row"><span className="cp-earn-label">💷 Match fee on time</span><span className="cp-earn-pts">+10</span></div>
                         <div className="cp-earn-row"><span className="cp-earn-label">🤝 Community post</span><span className="cp-earn-pts">+3</span></div>
                       </div>
                     </div>
@@ -894,29 +834,29 @@ export default function HomePage() {
         {/* ── HOW IT WORKS ── */}
         <section className="cp-how" id="how-it-works">
           <p className="cp-eyebrow">How it works</p>
-          <h2 className="cp-section-h2">From first chat to first Saturday.</h2>
-          <p className="cp-section-sub">No training sessions and no implementation consultants. We set your club up with you, and players start on the free tier.</p>
+          <h2 className="cp-section-h2">From sign-up to your first Scores.</h2>
+          <p className="cp-section-sub">Players start on Free. Clubs talk to us and we set up the club dashboard with them.</p>
 
           <div className="cp-steps">
             <div className="cp-step">
               <p className="cp-step-num">STEP 01</p>
               <div className="cp-step-icon"><Glyph e="💬" /></div>
-              <h3 className="cp-step-h">Talk to us</h3>
-              <p className="cp-step-body">Tell us about your club and we set it up with you: your teams, your season and your committee.</p>
+              <h3 className="cp-step-h">Sign up on Free</h3>
+              <p className="cp-step-body">Set up your profile. You do not need your club to be on SHIFTUP.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 02</p>
               <div className="cp-step-icon"><Glyph e="📱" /></div>
-              <h3 className="cp-step-h">Invite the squad</h3>
-              <p className="cp-step-body">Players start on the free tier, set up their profile and straight away see upcoming fixtures and their Scores balance.</p>
+              <h3 className="cp-step-h">Pick a pillar</h3>
+              <p className="cp-step-body">Film a shot for Player Analysis, check in before a match or do a two-minute Academy lesson.</p>
               <div className="cp-step-arrow">→</div>
             </div>
             <div className="cp-step">
               <p className="cp-step-num">STEP 03</p>
               <div className="cp-step-icon"><Glyph e="🏏" /></div>
-              <h3 className="cp-step-h">Run Saturday</h3>
-              <p className="cp-step-body">Players mark availability, captains pick the XI, scorers record every ball, and stats build up from there.</p>
+              <h3 className="cp-step-h">Earn Scores</h3>
+              <p className="cp-step-body">You earn Scores for taking part. 500 Scores is £1, and Pro, Elite and Legend multiply what you earn.</p>
             </div>
           </div>
         </section>
@@ -925,23 +865,11 @@ export default function HomePage() {
         <section className="cp-pricing">
           <div className="cp-pricing-inner" style={{ textAlign: 'center' }}>
             <p className="cp-eyebrow">Pricing</p>
-            <h2 className="cp-section-h2">Player plans from £0. Simple for clubs.</h2>
+            <h2 className="cp-section-h2">Players start at £0. Club plans from £29.99 a month.</h2>
             <p className="cp-section-sub" style={{ margin: '0 auto 28px' }}>
-              Players start on Free (£0), with Pro, Elite and Legend above it. Club plans start from £29.99 a month and cover the whole club.
+              Pro, Elite and Legend sit above Free for players who want more. A club plan covers the whole club and comes with the club dashboard.
             </p>
             <Link href="/pricing" className="cp-btn-hero-ghost">See pricing →</Link>
-            <p style={{ marginTop: 28, fontSize: 13, color: 'rgba(240,236,228,0.45)' }}>
-              League and county tools are on the roadmap. <Link href="/contact" style={{ color: '#60A5FA' }}>Get in touch</Link> if you run one.
-            </p>
-          </div>
-        </section>
-
-        {/* ── QUOTE ── */}
-        <section className="cp-quote">
-          <div className="cp-quote-inner">
-            <div className="cp-quote-mark">&ldquo;</div>
-            <p className="cp-quote-text">We didn&apos;t set out to build a software company. We just needed Saturday mornings back — and to stop losing the squad thread three days before a match.</p>
-            <p className="cp-quote-attr">— Harinarayanan J and Ishwar Suresh, Co-Founders, SHIFTUP</p>
           </div>
         </section>
 
@@ -949,8 +877,8 @@ export default function HomePage() {
         <section className="cp-cta-band">
           <div className="cp-cta-band-inner">
             <div>
-              <h2 className="cp-cta-h">Two doors in. One platform.</h2>
-              <p className="cp-cta-sub">Clubs: we set you up. Players: start on Free, with or without your club.</p>
+              <h2 className="cp-cta-h">Start with your club, or on your own.</h2>
+              <p className="cp-cta-sub">Clubs: tell us about yours and we set up the club dashboard with you. Players: sign up on Free, with or without your club on SHIFTUP.</p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <Link href="/contact" className="cp-cta-btn">Register your club →</Link>
