@@ -10,7 +10,7 @@
 // the same functions the page uses.
 
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { detectShot, shotToScore } from '../src/lib/analysis/shot-detect';
@@ -18,6 +18,7 @@ import {
   LOW_CONFIDENCE_MESSAGE, analyseDetailed, capConfidence, drillFor, lockPerson, overallScore, weakestMeasure,
   type CameraMotion, type Hand, type Landmark, type Mode, type ShotType, type View,
 } from '../src/lib/analysis/pose-metrics';
+import { heavyFrameIndexes } from '../src/lib/analysis/metric-confidence';
 
 const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 const HEAVY_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task';
@@ -76,11 +77,33 @@ async function main() {
       ? detectShot(tracked.frames, read.width, read.height, { view: viewArg, hand })
       : null;
     const shot = discipline === 'batting' ? shotToScore(detectedShot, (shotArg as ShotType | undefined) ?? 'auto') : undefined;
-    const marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times, { world, motion: read.motion, crowded: tracked.crowded });
+    let marked = analyseDetailed(tracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, times, { world, motion: read.motion, crowded: tracked.crowded });
+    if (marked.ok && existsSync(heavyPath)) {
+      const key = tracked.index[marked.analysis.keyFrame] ?? marked.analysis.keyFrame;
+      const indexes = heavyFrameIndexes(key, read.frames.length, 3);
+      const again = spawnSync('python3', [
+        path.join(process.cwd(), 'scripts/analyse-clip-landmarks.py'), video, modelPath, heavyPath, indexes.join(','),
+      ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      if (again.status === 0 && again.stdout) {
+        const refined = JSON.parse(again.stdout) as { refined?: Record<string, Landmark[][]> };
+        for (const [index, people] of Object.entries(refined.refined ?? {})) {
+          if (people.length > 0) read.frames[Number(index)] = people;
+        }
+        const againTracked = lockPerson(read.frames);
+        const againTimes = againTracked.index.map((i) => read.timestamps[i]);
+        const againWorld = read.world
+          ? againTracked.index.map((frame, i) => read.world?.[frame]?.[againTracked.which[i]] ?? [])
+          : undefined;
+        const rescored = analyseDetailed(againTracked.frames, discipline as Mode, hand as Hand, read.width, read.height, shot, viewArg as View, againTimes, { world: againWorld, motion: read.motion, crowded: againTracked.crowded });
+        if (rescored.ok) marked = rescored;
+      }
+    }
     if (tracked.crowded && marked.ok) {
       marked.analysis.warnings.push('more than one person');
       marked.analysis.confidence = capConfidence(marked.analysis.confidence, 'medium');
-      marked.analysis.metrics.forEach((metric) => { metric.confidence = marked.analysis.confidence; });
+      marked.analysis.metrics.forEach((metric) => {
+        if (metric.confidence !== 'low') metric.confidence = marked.analysis.confidence;
+      });
     }
     if (!marked.ok) {
       process.stdout.write(`${JSON.stringify({ ok: false, problem: marked.problem, frames: read.frames.length }, null, 2)}\n`);
@@ -102,9 +125,16 @@ async function main() {
       frames: read.frames.length,
       overall: low ? null : overallScore(metrics),
       weakest: weakest ? { key: weakest.key, label: weakest.label, score: weakest.score, value: weakest.value, confidence: weakest.confidence ?? marked.analysis.confidence, tip: weakest.tip, drill: drillFor(weakest) } : null,
-      metrics: low ? [] : metrics.map((metric) => ({
-        key: metric.key, label: metric.label, score: metric.score, value: metric.value, confidence: metric.confidence ?? marked.analysis.confidence, tip: metric.tip, excused: metric.excused ?? false,
-      })),
+      metrics: low ? [] : metrics.map((metric) => {
+        const hiddenNumber = metric.confidence === 'low';
+        return {
+          key: metric.key, label: metric.label,
+          score: hiddenNumber ? null : metric.score,
+          value: hiddenNumber ? null : metric.value,
+          confidence: metric.confidence ?? marked.analysis.confidence,
+          tip: metric.tip, excused: metric.excused ?? false,
+        };
+      }),
     }, null, 2)}\n`);
   } finally {
     rmSync(dir, { recursive: true, force: true });

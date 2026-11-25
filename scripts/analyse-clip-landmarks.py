@@ -18,6 +18,10 @@ import numpy as np
 video = sys.argv[1]
 model = sys.argv[2]
 heavy_path = sys.argv[3] if len(sys.argv) > 3 else ''
+# Optional fourth argument: frame indexes to read again with the heavy model, e.g. 40,41,42,43
+refine_at = set()
+if len(sys.argv) > 4 and sys.argv[4].strip():
+    refine_at = {int(part) for part in sys.argv[4].split(',') if part.strip().lstrip('-').isdigit()}
 cap = cv2.VideoCapture(video)
 if not cap.isOpened():
     sys.stderr.write('Could not open the video.\n')
@@ -113,6 +117,39 @@ def border_shift(prev, curr):
     zoom = float(right[0] - left[0])
     return pan, zoom
 
+
+if refine_at:
+    # A second pass on the key moments only. The lite read already chose those frames.
+    refined = {}
+    index = 0
+    while True:
+        ok, frame = cap.read()
+        if not ok:
+            break
+        if index in refine_at and heavy is not None:
+            frame_h, frame_w = frame.shape[:2]
+            result = detect(heavy, frame, 0, True)
+            people = []
+            for pose in result.pose_landmarks or []:
+                box = person_box(pose, frame_w, frame_h)
+                image_pose = pack(pose)
+                if box and box[3] < 256:
+                    enlarged = enlarge(frame, box)
+                    if enlarged is not None:
+                        big, crop = enlarged
+                        again = detect(heavy, big, 0, True)
+                        if again.pose_landmarks:
+                            best_at = max(range(len(again.pose_landmarks)), key=lambda item: max(point.y for point in again.pose_landmarks[item]) - min(point.y for point in again.pose_landmarks[item]))
+                            image_pose = map_back(again.pose_landmarks[best_at], crop, frame_w, frame_h)
+                people.append(image_pose)
+            refined[str(index)] = people
+        index += 1
+    cap.release()
+    lite.close()
+    if heavy is not None:
+        heavy.close()
+    json.dump({'refined': refined}, sys.stdout)
+    sys.exit(0)
 
 frames = []
 world = []

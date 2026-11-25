@@ -6,6 +6,10 @@
 //
 // The ideal ranges are coaching rules of thumb, not validated biomechanics. Treat scores as a guide.
 
+import { consistentArmAngle } from '@/lib/analysis/arm-check';
+import { repairBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
+import { UNMEASURED_MESSAGE, judgeMetric } from '@/lib/analysis/metric-confidence';
+
 /** One body point: x and y as a share of the frame (0 to 1), and how sure the model is it can see it */
 export type Landmark = { x: number; y: number; z?: number; visibility?: number };
 
@@ -977,9 +981,9 @@ function medianOrNull(values: number[]): number | null {
 
 // Averages each metric across the contact window, not the whole clip. Each measure uses only the
 // joints it needs. Shot-type ranges and tips override the drive defaults.
-export function analyse(frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side', times?: number[]): MetricResult[] | null {
-  if (mode === 'bowling') return bowlingAnalysis(frames, hand, w, h, view, times)?.metrics ?? null;
-  return scoreBatting(frames, hand, w, h, shotType, view, times);
+export function analyse(frames: Landmark[][], mode: Mode, hand: Hand, w: number, h: number, shotType?: ShotType, view: View = 'side', times?: number[], lengths?: BoneLengths): MetricResult[] | null {
+  if (mode === 'bowling') return bowlingAnalysis(frames, hand, w, h, view, times, lengths)?.metrics ?? null;
+  return scoreBatting(frames, hand, w, h, shotType, view, times, lengths);
 }
 
 /** Joints a batting measure needs. Missing feet do not throw away an elbow reading. */
@@ -1062,8 +1066,9 @@ function battingValue(lm: Landmark[], key: string, hand: Hand, w: number, h: num
   return null;
 }
 
-function scoreBatting(framesIn: Landmark[][], hand: Hand, w: number, h: number, shotType: ShotType | undefined, view: View, times?: number[]): MetricResult[] | null {
-  const frames = prepareFrames(framesIn);
+function scoreBatting(framesIn: Landmark[][], hand: Hand, w: number, h: number, shotType: ShotType | undefined, view: View, times?: number[], lengths?: BoneLengths): MetricResult[] | null {
+  const repaired = repairBoneLengths(framesIn, w, h, lengths);
+  const frames = prepareFrames(repaired);
   if (frames.length < 4) return null;
   // Contact is read on the raw wrists. Smoothing a one-frame bat angle hides the hit on a mirrored clip.
   const contactPick = findContact(framesIn, hand, w, h, times, shotType);
@@ -1083,7 +1088,8 @@ function scoreBatting(framesIn: Landmark[][], hand: Hand, w: number, h: number, 
     const ideal: [number, number] = overrides[def.key] ?? def.ideal;
     metrics.push({ ...def, tip: shotTip(def, shotType), ideal, value, score: scoreFor(value, ideal, def.tolerance, def.best) });
   }
-  return metrics.length >= 2 ? metrics : null;
+  const checked = annotateConfidence(metrics, scored, w, h, hand);
+  return checked.length >= 2 ? checked : null;
 }
 
 // Highlight score for one segment: technique score scaled by the share of frames with a clearly visible pose,
@@ -1210,6 +1216,38 @@ export function wholeBodyVisible(lm: Landmark[] | undefined): boolean {
   return head > 0.02 && feet < 0.98;
 }
 
+/**
+ * One number's confidence, from how well its joints were seen and whether a frame jumps off the path.
+ * A low number is left out of the overall score and is not shown as a firm reading.
+ */
+function annotateConfidence(metrics: MetricResult[], pool: Landmark[][], w: number, h: number, hand: Hand): MetricResult[] {
+  return metrics.map((metric) => {
+    const chains = metricJoints(metric.key, 'batting', hand).flat();
+    const joints = chains.length > 0 ? chains : [L.lShoulder, L.rShoulder, L.lHip, L.rHip];
+    const visibility = pool.map((lm) => {
+      const values = joints.map((index) => lm[index]?.visibility ?? 0);
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    });
+    const jumps: number[] = [];
+    for (let i = 1; i < pool.length - 1; i++) {
+      const torso = torsoOf(pool[i], w, h) ?? 1;
+      let worst = 0;
+      for (const joint of joints) {
+        const prev = pool[i - 1]?.[joint];
+        const here = pool[i]?.[joint];
+        const next = pool[i + 1]?.[joint];
+        if (!prev || !here || !next) continue;
+        const mid = { x: (prev.x + next.x) / 2, y: (prev.y + next.y) / 2 };
+        worst = Math.max(worst, Math.hypot((here.x - mid.x) * w, (here.y - mid.y) * h) / torso);
+      }
+      jumps.push(worst);
+    }
+    const reading = judgeMetric({ visibility, jumps, spread: null, spreadLimit: metric.unit === '°' ? 40 : 0.5 });
+    if (reading === 'low') return { ...metric, confidence: 'low', excused: true, tip: UNMEASURED_MESSAGE };
+    return { ...metric, confidence: reading };
+  });
+}
+
 /* ── Bowling: measured at release ──────────────────────────────────────────── */
 
 /**
@@ -1217,7 +1255,7 @@ export function wholeBodyVisible(lm: Landmark[] | undefined): boolean {
  * Returns null when no bowling action can be seen, e.g. someone standing or walking.
  */
 export function bowlingAnalysis(
-  frames: Landmark[][], hand: Hand, w: number, h: number, view: View = 'side', times?: number[],
+  frames: Landmark[][], hand: Hand, w: number, h: number, view: View = 'side', times?: number[], lengths?: BoneLengths,
 ): { metrics: MetricResult[]; keyFrame: number; elbow: ElbowCheck; unique: UniqueKey[] } | null {
   const smoothed = prepareFrames(frames);
   const arm = sides(hand);
@@ -1230,7 +1268,9 @@ export function bowlingAnalysis(
   // The highest hand in the run-up is not the release.
   const release = findReleaseFrame(frames, hand, w, h, times) ?? -1;
   if (release < 0) return null;
-  const releaseLm = frames[release];
+  // Lengths repair glitch frames for the angles only. The release frame itself was chosen on the raw points.
+  const measured = repairBoneLengths(frames, w, h, lengths);
+  const releaseLm = measured[release] ?? frames[release];
   const releaseSize = torso(releaseLm);
   const best = visible(releaseLm, arm.wrist, arm.shoulder) && releaseSize > 0
     ? (p(releaseLm, arm.shoulder).y - p(releaseLm, arm.wrist).y) / releaseSize
@@ -1247,7 +1287,7 @@ export function bowlingAnalysis(
   const side = sides(hand, unique.includes('wrong-footed'));
 
   const clock = times && times.length === frames.length ? times : frames.map((_, i) => i / 30);
-  const aroundTime = (before: number, after: number) => frames.filter((_, i) => {
+  const aroundTime = (before: number, after: number) => measured.filter((_, i) => {
     const t = clock[i] ?? 0;
     const at = clock[release] ?? 0;
     return t >= at - before && t <= at + after;
@@ -1269,15 +1309,20 @@ export function bowlingAnalysis(
     ? aroundTime(0.25, 0.1)
     : smoothed.slice(Math.max(0, smoothRelease - 8), smoothRelease + 3), w, h);
 
+  const armReading = consistentArmAngle(
+    window(4, 0)
+      .filter((lm) => visible(lm, side.shoulder, side.elbow, side.wrist) && p(lm, side.wrist).y < p(lm, side.shoulder).y)
+      .map((lm) => ({
+        angle: angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)),
+        upper: dist(p(lm, side.shoulder), p(lm, side.elbow)),
+        fore: dist(p(lm, side.elbow), p(lm, side.wrist)),
+      })),
+  );
   const values: Record<string, number | null> = view === 'side'
     ? {
         frontKnee: measure([atRelease], [side.hip, side.knee, side.ankle], (lm) => angleAt(p(lm, side.hip), p(lm, side.knee), p(lm, side.ankle))),
-        // From the arm coming over the shoulder up to release
-        armStraightness: measure(
-          window(4, 0).filter((lm) => visible(lm, side.shoulder, side.wrist) && p(lm, side.wrist).y < p(lm, side.shoulder).y),
-          [side.shoulder, side.elbow, side.wrist],
-          (lm) => angleAt(p(lm, side.shoulder), p(lm, side.elbow), p(lm, side.wrist)),
-        ),
+        // From the arm coming over the shoulder up to release. A collapsed frame is left out.
+        armStraightness: armReading.angle,
         armUpright: armLean,
         trunkTilt: trunkLean,
         headStability,
@@ -1307,7 +1352,11 @@ export function bowlingAnalysis(
       score: scoreFor(values[def.key] as number, def.ideal, def.tolerance, def.best),
       ...(excused.includes(def.key) ? { excused: true } : {}),
     }));
-  return metrics.length >= 2 ? { metrics, keyFrame: release, elbow: elbowCheck(frames, release, side, p), unique } : null;
+  const checked = annotateConfidence(metrics, around.length > 0 ? around : [atRelease], w, h, hand)
+    .map((metric) => metric.key === 'armStraightness' && armReading.unreliable
+      ? { ...metric, confidence: 'low' as const, excused: true, tip: UNMEASURED_MESSAGE }
+      : metric);
+  return checked.length >= 2 ? { metrics: checked, keyFrame: release, elbow: elbowCheck(frames, release, side, p), unique } : null;
 }
 
 /* ── Bowling arm reference check ───────────────────────────────────────────── */
@@ -1564,6 +1613,8 @@ export type ClipContext = {
   motion?: CameraMotion;
   /** Another person stays in frame. A bowling release cannot be timed cleanly then. */
   crowded?: boolean;
+  /** Segment lengths from a T-pose. Without them the clip's own middle lengths are used. */
+  lengths?: BoneLengths;
 };
 
 export function analyseDetailed(
@@ -1585,7 +1636,7 @@ export function analyseDetailed(
 
   const sampled = resampleClip(frames, times);
   if (mode === 'bowling') {
-    const result = bowlingAnalysis(sampled.frames, hand, w, h, resolved.view, sampled.times);
+    const result = bowlingAnalysis(sampled.frames, hand, w, h, resolved.view, sampled.times, context?.lengths);
     if (!result) return { ok: false, problem: framesSeen < MIN_FRAMES ? 'no-body' : 'no-action' };
     const keyFrame = sampled.toOriginal(result.keyFrame);
     const arm = elbowAngle3D(context?.world?.[keyFrame], hand)
@@ -1622,7 +1673,7 @@ export function analyseDetailed(
     };
   }
 
-  const metrics = analyse(sampled.frames, 'batting', hand, w, h, shotType, resolved.view, sampled.times);
+  const metrics = analyse(sampled.frames, 'batting', hand, w, h, shotType, resolved.view, sampled.times, context?.lengths);
   if (!metrics) return { ok: false, problem: feetMissing ? 'feet-out-of-frame' : 'no-body' };
   const contact = findContact(sampled.frames, hand, w, h, sampled.times, shotType);
   const keyFrame = sampled.toOriginal(contact.frame);

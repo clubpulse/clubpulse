@@ -252,7 +252,7 @@ export function pickHighlights(
   metrics: MetricResult[], mode: Mode, hand: Hand, view: View, shot?: ShotType, target = false,
 ): OverlayHighlight[] {
   const chosen: MetricResult[] = [];
-  const add = (metric: MetricResult | undefined) => { if (metric) chosen.push(metric); };
+  const add = (metric: MetricResult | undefined) => { if (metric && metric.confidence !== 'low') chosen.push(metric); };
   if (mode === 'bowling') {
     if (view === 'front') add(take(metrics, 'armHeight'));
     else add(take(metrics, 'armStraightness'));
