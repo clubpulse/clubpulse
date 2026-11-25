@@ -78,7 +78,7 @@ export interface CoachSessionNote {
   coach_id: string;
   player_id: string;
   notes: string;
-  focus_areas: string[];
+  focus_areas: string[] | null;
   improvement: string | null;
   next_steps: string | null;
   created_at: string;

@@ -31,7 +31,15 @@ describe('view RLS against local Postgres', () => {
     psql(db, ['-f', bootstrap]);
 
     const files = fs.readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort();
-    expect(files.at(-1)).toBe(followUp);
+    const followUpAt = files.indexOf(followUp);
+    expect(followUpAt).toBeGreaterThanOrEqual(0);
+    // Later migrations must not reopen the views or grant anon every table. The follow-up is
+    // applied again below, after a simulated broad grant, and that re-apply is what restores them.
+    for (const name of files.slice(followUpAt + 1)) {
+      const sql = fs.readFileSync(path.join(migrations, name), 'utf8');
+      expect(sql).not.toMatch(/public_profile_cards|club_scores_leaderboard/);
+      expect(sql).not.toMatch(/GRANT\s+SELECT\s+ON\s+ALL\s+TABLES/i);
+    }
     for (const name of files) psql(db, ['-f', path.join(migrations, name)]);
 
     // A later broad grant must not put anon back on these views. Applying the follow-up again restores it.
