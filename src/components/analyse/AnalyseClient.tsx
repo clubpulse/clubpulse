@@ -1,6 +1,7 @@
 'use client';
 
 import { Glyph } from '@/components/icons/Glyph';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -28,6 +29,8 @@ import {
 import { framingPrompt } from '@/lib/analysis/framing';
 import { estimateBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
 import { CLEAR_IMAGE, heavyFrameIndexes, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
+
+const TechniquePanel = dynamic(() => import('@/components/technique3d/TechniquePanel').then((m) => m.TechniquePanel), { ssr: false });
 import { scoreMeaning, topFix, coachingChains } from '@/lib/analysis/coaching-causes';
 
 /** An earlier analysis, tagged with the recording it came from */
@@ -255,7 +258,7 @@ function Toggle<T extends string>({ value, options, onChange, disabled, label }:
   );
 }
 
-export function AnalyseClient() {
+export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }) {
   const [tab, setTab] = useState<AnalyseTab>('pose');
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -296,6 +299,8 @@ export function AnalyseClient() {
   const [guideStep, setGuideStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
+  const [clipUrl, setClipUrl] = useState<string | null>(null);
+  const [poseAnalysisId, setPoseAnalysisId] = useState<string | null>(null);
   // The position shown in the figure under the video
   const [detail, setDetail] = useState<(Analysis & { pose: NormalizedLandmark[]; width: number; height: number }) | null>(null);
   const [coaching, setCoaching] = useState<{ state: 'idle' | 'loading' | 'ready'; text?: string }>({ state: 'idle' });
@@ -390,6 +395,8 @@ export function AnalyseClient() {
     }
     if (fileUrlRef.current) URL.revokeObjectURL(fileUrlRef.current);
     fileUrlRef.current = null;
+    setClipUrl(null);
+    setPoseAnalysisId(null);
   }, []);
 
   useEffect(() => {
@@ -453,7 +460,10 @@ export function AnalyseClient() {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ analysis_type: 'pose', result_json: resultJson, coaching_paragraph: coachData?.paragraph ?? null }),
-          }).catch(() => {/* silent */});
+          })
+            .then((response) => response.ok ? response.json() : null)
+            .then((saved: { id?: string } | null) => { if (saved?.id) setPoseAnalysisId(saved.id); })
+            .catch(() => {/* silent */});
         })
         .catch(() => { if (seq === compareSeq.current) setCoaching({ state: 'idle' }); });
     };
@@ -827,6 +837,7 @@ export function AnalyseClient() {
       if (!video) return;
       const url = URL.createObjectURL(file);
       fileUrlRef.current = url;
+      setClipUrl(url);
       video.srcObject = null;
       // Phones only let a clip start by itself when it is silent and plays inside the page.
       // Set as attributes as well as properties: some browsers only look at one of them.
@@ -1354,6 +1365,10 @@ export function AnalyseClient() {
             </div>
           )}
         </div>
+
+        {technique3d && fileShown && phase === 'done' && clipUrl && (
+          <TechniquePanel key={`${clipUrl}:${mode}:${hand}`} clipUrl={clipUrl} mode={mode} hand={hand} analysisId={poseAnalysisId} />
+        )}
 
         {fileShown && phase === 'done' && frameAt && frameAt.total > 1 && (
           <div className="mt-4">

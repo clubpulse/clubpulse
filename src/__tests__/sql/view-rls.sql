@@ -379,3 +379,50 @@ BEGIN
 END $$;
 
 RESET ROLE;
+
+-- A 3D pose estimate belongs to the player. A coach cannot read a junior's row, and a junior cannot read an adult's.
+INSERT INTO public.technique_pose_frames (user_id, mode, hand, key_event, key_event_frame, times, frames)
+VALUES
+  ('33333333-3333-3333-3333-333333333333', 'batting', 'right', 'bat_ball_contact', 0, '[0]'::jsonb, '[]'::jsonb),
+  ('11111111-1111-1111-1111-111111111111', 'bowling', 'right', 'release', 0, '[0]'::jsonb, '[]'::jsonb);
+
+SELECT set_config('request.jwt.claim.sub', 'aaaaaaaa-1111-1111-1111-111111111111', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.technique_pose_frames) THEN
+    RAISE EXCEPTION 'a coach can read a 3D technique estimate';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', false);
+DO $$
+BEGIN
+  IF (SELECT count(*) FROM public.technique_pose_frames) <> 1 THEN
+    RAISE EXCEPTION 'a junior cannot read only their own 3D estimate';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.technique_pose_frames WHERE user_id <> '33333333-3333-3333-3333-333333333333') THEN
+    RAISE EXCEPTION 'a junior can read someone else''s 3D estimate';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.technique_pose_frames WHERE user_id = '33333333-3333-3333-3333-333333333333') THEN
+    RAISE EXCEPTION 'another member can read a junior 3D estimate';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE anon;
+DO $$
+BEGIN
+  BEGIN
+    PERFORM 1 FROM public.technique_pose_frames;
+    RAISE EXCEPTION 'anon read a 3D technique estimate';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;
