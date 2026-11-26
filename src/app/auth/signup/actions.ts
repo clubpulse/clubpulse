@@ -3,7 +3,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { xiCreateUser } from "@/lib/xi/client";
-import { isPlausibleDob } from "@/lib/community/age";
+import { ageOn, isPlausibleDob } from "@/lib/community/age";
+import { requestGuardianConsent } from "@/lib/community/guardian-consent";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
 
@@ -13,6 +14,7 @@ type CompleteSignupInput = {
   email: string;
   roles: Role[];
   dateOfBirth?: string;
+  guardianEmail?: string;
 };
 
 type CompleteSignupResult =
@@ -25,9 +27,18 @@ export async function completeSignup({
   email,
   roles,
   dateOfBirth,
+  guardianEmail,
 }: CompleteSignupInput): Promise<CompleteSignupResult> {
   if (!userId || !fullName || !email || roles.length === 0) {
     return { success: false, error: "Missing required fields" };
+  }
+
+  const under13 = isPlausibleDob(dateOfBirth) && (ageOn(dateOfBirth) ?? 99) < 13;
+  if (under13) {
+    const guardian = typeof guardianEmail === "string" ? guardianEmail.trim() : "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardian)) {
+      return { success: false, error: "Under 13s need a parent or guardian email address." };
+    }
   }
 
   // This action uses the service role key and bypasses RLS entirely, so we
@@ -104,6 +115,11 @@ export async function completeSignup({
       // Intentionally not returning on update error — xi_user_id can be
       // backfilled later; sign-up must succeed regardless.
     }
+  }
+
+  if (under13) {
+    const sent = await requestGuardianConsent(userId, guardianEmail);
+    if (!sent.success) return sent;
   }
 
   return { success: true };
