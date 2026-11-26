@@ -28,7 +28,8 @@ export const getCurrentUser = cache(async () => {
 export const ensureProfile = cache(async (user: User): Promise<{ needsDob: boolean }> => {
   try {
     const admin = createAdminClient();
-    const { data } = await admin.from('profiles').select('id, date_of_birth').eq('id', user.id).maybeSingle();
+    const { data, error } = await admin.from('profiles').select('id, date_of_birth').eq('id', user.id).maybeSingle();
+    if (error) return { needsDob: ageVerificationEnabled() };
     if (!data) {
       await ensureProfileAndRoles(user);
     } else if (!data.date_of_birth) {
@@ -40,7 +41,7 @@ export const ensureProfile = cache(async (user: User): Promise<{ needsDob: boole
     return { needsDob: !!after && !after.date_of_birth };
   } catch (e) {
     console.error('[auth] could not ensure profile:', e instanceof Error ? e.message : e);
-    return { needsDob: false };
+    return { needsDob: ageVerificationEnabled() };
   }
 });
 

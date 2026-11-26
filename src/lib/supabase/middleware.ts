@@ -31,7 +31,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { response, user };
+  let needsDob = false;
+  if (process.env.AGE_VERIFICATION_ENABLED === 'true' && user) {
+    const { data, error } = await supabase.from('profiles').select('date_of_birth').eq('id', user.id).maybeSingle();
+    needsDob = !!error || !data?.date_of_birth;
+  }
+
+  return { response, user, needsDob };
 }
 
 // Redirects while keeping any refreshed session cookies.

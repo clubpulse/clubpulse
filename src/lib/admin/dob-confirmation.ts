@@ -18,10 +18,17 @@ type Member = { user_id: string; club_id: string; role: string; is_junior: boole
 const isJunior = (rows: Member[], dob: string | null) => (rows.length > 0 && rows.every((m) => m.is_junior === true)) || (dob !== null && (ageOn(dob) ?? 99) < 18);
 
 /** Junior members of these clubs whose date of birth no admin has confirmed yet, youngest first. */
-export async function listDobToConfirm(clubIds: string[], limit = 200): Promise<{ items: DobCandidate[]; confirmed: number; error?: string }> {
+export async function listDobToConfirm(clubIds: string[], limit = 200, callerId?: string): Promise<{ items: DobCandidate[]; confirmed: number; error?: string }> {
   if (clubIds.length === 0) return { items: [], confirmed: 0 };
+  let visibleClubs = clubIds;
+  if (ageVerificationEnabled() && callerId) {
+    const allowed: string[] = [];
+    for (const clubId of clubIds) if (await hasCurrentDbsAt(callerId, clubId)) allowed.push(clubId);
+    if (allowed.length === 0) return { items: [], confirmed: 0, error: 'You need a current enhanced DBS check at this club before you can confirm a date of birth.' };
+    visibleClubs = allowed;
+  }
   const admin = createAdminClient();
-  const { data: members, error: mErr } = await admin.from('club_members').select('user_id, club_id, role, is_junior').in('club_id', clubIds).eq('is_active', true).limit(2000);
+  const { data: members, error: mErr } = await admin.from('club_members').select('user_id, club_id, role, is_junior').in('club_id', visibleClubs).eq('is_active', true).limit(2000);
   if (mErr) return { items: [], confirmed: 0, error: 'Could not load members.' };
   const ids = [...new Set((members ?? []).map((m) => m.user_id as string))];
   if (ids.length === 0) return { items: [], confirmed: 0 };

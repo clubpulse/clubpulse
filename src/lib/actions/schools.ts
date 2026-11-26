@@ -11,7 +11,7 @@ import type {
   SessionType,
 } from '@/lib/types/schools';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { guardSquad } from '@/lib/age-verification/squad';
+import { canManageSquad, guardSquad, openSquadHold } from '@/lib/age-verification/squad';
 import { ageVerificationEnabled } from '@/lib/age-verification/flag';
 import { PLAYER_DOB_HOLD } from '@/lib/age-verification/rules';
 
@@ -123,7 +123,9 @@ export async function adminAssignAgeGroup(
 ): Promise<ActionResult<SchoolAgeGroup>> {
   const callerId = await currentUserId();
   if (!callerId) return { success: false, error: 'Not authenticated' };
-  const held = await guardSquad(createAdminClient(), { clubId, userIds: [memberId], ageGroup });
+  const admin = createAdminClient();
+  if (!(await canManageSquad(admin, callerId, clubId))) return { success: false, error: 'Only club admins and coaches can do this.' };
+  const held = await guardSquad(admin, { clubId, actorId: callerId, userIds: [memberId], ageGroup });
   if (!held.ok) return { success: false, error: held.error };
   const supabase = await createClient();
   const year = new Date().getFullYear();
@@ -149,6 +151,10 @@ export async function adminCreateAttendanceSession(input: {
 }): Promise<ActionResult<SchoolAttendance>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
+  const admin = createAdminClient();
+  if (!(await canManageSquad(admin, userId, input.clubId))) return { success: false, error: 'Only club admins and coaches can do this.' };
+  const blocked = await openSquadHold(admin, input.clubId, input.attendees);
+  if (blocked) return { success: false, error: blocked };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('school_attendance')
@@ -173,6 +179,13 @@ export async function adminMarkAttendance(
 ): Promise<ActionResult<SchoolAttendance>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
+  const admin = createAdminClient();
+  const { data: session } = await admin.from('school_attendance').select('club_id').eq('id', sessionId).maybeSingle();
+  if (!session) return { success: false, error: 'Session not found.' };
+  const clubId = session.club_id as string;
+  if (!(await canManageSquad(admin, userId, clubId))) return { success: false, error: 'Only club admins and coaches can do this.' };
+  const blocked = await openSquadHold(admin, clubId, attendeeIds);
+  if (blocked) return { success: false, error: blocked };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('school_attendance')
@@ -194,7 +207,9 @@ export async function adminSelectTeam(input: {
 }): Promise<ActionResult<SchoolTeamSelection>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
-  const held = await guardSquad(createAdminClient(), { clubId: input.clubId, userIds: input.selectedPlayers, ageGroup: input.ageGroup });
+  const admin = createAdminClient();
+  if (!(await canManageSquad(admin, userId, input.clubId))) return { success: false, error: 'Only club admins and coaches can do this.' };
+  const held = await guardSquad(admin, { clubId: input.clubId, actorId: userId, userIds: input.selectedPlayers, ageGroup: input.ageGroup });
   if (!held.ok) return { success: false, error: held.error };
   const supabase = await createClient();
   const { data, error } = await supabase

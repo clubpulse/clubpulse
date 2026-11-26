@@ -16,6 +16,7 @@ import { randomUUID } from 'crypto';
 import { raiseAlert, targetIsJunior } from '@/lib/safeguarding/alerts';
 import { ageStatus, type AgeStatus } from './age';
 import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { acceptedAgePass } from '@/lib/age-verification/provider';
 import { verifiedAge } from '@/lib/age-verification/rules';
 
 export type Admin = ReturnType<typeof createAdminClient>;
@@ -83,7 +84,7 @@ export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
     ? !!(profile?.dob_confirmed_by && profile?.dob_confirmed_at && profile?.dob_confirmation_method)
     : isDobConfirmed(profile);
   const extras = await verificationExtras(admin, userId, parents);
-  const ageInput = { clubJunior, dob, hasVerifiedParent, dobConfirmed, requireDobConfirmation: dobConfirmationRequired(), guardianConsented };
+  const ageInput = { clubJunior, dob, hasVerifiedParent, dobConfirmed, requireDobConfirmation: dobConfirmationRequired(), guardianConsented, hasClub: mine.length > 0 };
   const age = ageVerificationEnabled() ? verifiedAge({ ...ageInput, ...extras }) : ageStatus(ageInput);
   // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
   // clubs can show them anyone. The explicit checks on each action give the reason.
@@ -148,7 +149,7 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
   const withParent = new Set((linked ?? []).map((r) => r.linked_user_id as string));
   const guardianConsented = new Set((consents ?? []).filter((r) => r.confirmed_at).map((r) => r.user_id as string));
   const passedChecks = ageVerificationEnabled()
-    ? new Set(((await admin.from('age_verifications').select('user_id').in('user_id', unique).eq('status', 'passed')).data ?? []).map((row) => row.user_id as string))
+    ? new Set(((await admin.from('age_verifications').select('user_id, status, provider').in('user_id', unique)).data ?? []).filter((row) => acceptedAgePass(row)).map((row) => row.user_id as string))
     : new Set<string>();
   const clubIds = [...new Set((members ?? []).map((m) => m.club_id as string))];
   const { data: clubs } = clubIds.length ? await admin.from('clubs').select('id, name').in('id', clubIds) : { data: [] as Array<{ id: string; name: string }> };
@@ -168,6 +169,7 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
       dobConfirmed: personConfirmed,
       requireDobConfirmation: dobConfirmationRequired(),
       guardianConsented: guardianConsented.has(id),
+      hasClub: rows.length > 0,
     };
     const age = ageVerificationEnabled()
       ? verifiedAge({ ...personInput, thirdPartyPassed: passedChecks.has(id) })
@@ -477,7 +479,7 @@ async function logEvent(admin: Admin, e: { connectionId: string | null; actor: s
 /** Club confirmation, a third-party pass, or a verified guardian. Only read when the age-verification flag is on. */
 async function verificationExtras(admin: Admin, userId: string, parentIds: string[]) {
   if (!ageVerificationEnabled()) return { thirdPartyPassed: false, guardianVerified: false };
-  const { data: mine } = await admin.from('age_verifications').select('status').eq('user_id', userId).eq('status', 'passed').limit(1);
+  const { data: mine } = await admin.from('age_verifications').select('status, provider').eq('user_id', userId);
   let guardianVerified = false;
   if (parentIds.length > 0) {
     const [{ data: parents }, { data: checks }] = await Promise.all([
@@ -486,7 +488,7 @@ async function verificationExtras(admin: Admin, userId: string, parentIds: strin
     ]);
     guardianVerified = (parents ?? []).some((parent) => parent.dob_confirmed_by && parent.dob_confirmed_at && parent.dob_confirmation_method) || (checks ?? []).length > 0;
   }
-  return { thirdPartyPassed: (mine ?? []).length > 0, guardianVerified };
+  return { thirdPartyPassed: (mine ?? []).some((row) => acceptedAgePass(row)), guardianVerified };
 }
 
 export async function parentsOf(admin: Admin, juniorUserId: string): Promise<string[]> {

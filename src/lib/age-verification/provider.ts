@@ -8,14 +8,31 @@ export type AgeCheckProvider = {
   checkAdult: () => Promise<AgeCheckResult>;
 };
 
+export function isProductionEnv(env: Record<string, string | undefined> = process.env): boolean {
+  return env.VERCEL_ENV === 'production' || env.NODE_ENV === 'production';
+}
+
+/** A stored mock result is never proof, in any environment. */
+export function acceptedAgePass(row: { status?: string | null; provider?: string | null } | null | undefined): boolean {
+  return row?.status === 'passed' && !!row.provider && row.provider !== 'mock';
+}
+
+/**
+ * The mock is a local stub only. In production it fails closed: the check does not pass,
+ * and the age-check route must answer 404 when the configured provider is mock.
+ */
+export function mockAgeCheckBlocked(env: Record<string, string | undefined> = process.env): boolean {
+  return isProductionEnv(env) && env.AGE_VERIFICATION_PROVIDER === 'mock';
+}
+
 /** The only built-in provider. It does not call a company and it does not see a document. */
 export const mockAgeProvider: AgeCheckProvider = {
   name: 'mock',
-  checkAdult: async () => 'passed',
+  checkAdult: async () => (isProductionEnv() ? 'failed' : 'passed'),
 };
 
 export function resolveAgeProvider(env: Record<string, string | undefined> = process.env): AgeCheckProvider | null {
-  if (!ageProviderEnabled(env)) return null;
+  if (!ageProviderEnabled(env) || mockAgeCheckBlocked(env)) return null;
   if (env.AGE_VERIFICATION_PROVIDER === 'mock') return mockAgeProvider;
   return null;
 }

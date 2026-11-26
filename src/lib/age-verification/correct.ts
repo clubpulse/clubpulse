@@ -29,11 +29,16 @@ export async function correctDateOfBirth(officialId: string, clubId: unknown, me
   const { data: profile } = await admin.from('profiles').select('date_of_birth').eq('id', memberId).maybeSingle();
   const previous = (profile?.date_of_birth as string | null) ?? null;
   if (previous === nextDob) return { success: false, error: 'That date is already on the profile.' };
-  const { error: logError } = await admin.from('dob_change_log').insert({
-    user_id: memberId, club_id: clubId, previous_dob: previous, new_dob: nextDob, changed_by: officialId, reason: why,
+  const { error } = await admin.rpc('correct_date_of_birth', {
+    p_member: memberId,
+    p_club: clubId,
+    p_official: officialId,
+    p_new: nextDob,
+    p_reason: why,
   });
-  if (logError) return { success: false, error: 'Could not record the correction.' };
-  const { error } = await admin.from('profiles').update({ date_of_birth: nextDob }).eq('id', memberId);
-  if (error) return { success: false, error: 'Could not correct the date of birth.' };
+  if (error) {
+    console.error('[age-verification] date of birth correction failed');
+    return { success: false, error: 'Could not correct the date of birth.' };
+  }
   return { success: true };
 }

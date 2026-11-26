@@ -98,6 +98,11 @@ export async function confirmXI(input: {
   players: string[];
   twelfthMan?: string | null;
   notes?: string;
+  /**
+   * Open-age until it is decided whether a junior may be named in an open XI.
+   * Pass 'junior' for an under-18 squad. The check uses that value and nothing else.
+   */
+  matchType?: 'open' | 'junior';
 }): Promise<ConfirmResult> {
   const user = await requireUser();
   const db = createAdminClient();
@@ -114,7 +119,12 @@ export async function confirmXI(input: {
   const { data: members } = await db.from('club_members').select('user_id').eq('club_id', clubId).eq('is_active', true).in('user_id', wanted.length ? wanted : ['00000000-0000-0000-0000-000000000000']);
   const memberIds = new Set((members ?? []).map((m) => m.user_id as string));
   if (wanted.some((id) => !memberIds.has(id))) return { success: false, error: 'Everyone picked must be an active member of the club.' };
-  const held = await guardSquad(db, { clubId, userIds: wanted, ageGroup: 'Open' });
+  const held = await guardSquad(db, {
+    clubId,
+    actorId: user.id,
+    userIds: wanted,
+    ageGroup: input.matchType === 'junior' ? 'U18' : 'Open',
+  });
   if (!held.ok) return { success: false, error: held.error };
 
   const { data: avail } = await db.from('fixture_availability').select('user_id, status').eq('fixture_id', input.fixtureId);

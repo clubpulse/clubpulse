@@ -3,13 +3,13 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { ageOn } from '@/lib/community/age';
 import { ageProviderEnabled, ageVerificationEnabled } from '@/lib/age-verification/flag';
-import { runAdultAgeCheck } from '@/lib/age-verification/provider';
+import { mockAgeCheckBlocked, runAdultAgeCheck } from '@/lib/age-verification/provider';
 
 export const dynamic = 'force-dynamic';
 
 /** Solo adult age check. The provider flag is off unless explicitly enabled, and the stub stores no document and no date of birth. */
 export async function POST() {
-  if (!ageVerificationEnabled()) return NextResponse.json({ error: 'Not available' }, { status: 404 });
+  if (!ageVerificationEnabled() || mockAgeCheckBlocked()) return NextResponse.json({ error: 'Not available' }, { status: 404 });
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
@@ -24,6 +24,6 @@ export async function POST() {
   if (age !== null && age < 18) return NextResponse.json({ status: 'unavailable', needsGuardian: true });
   const status = await runAdultAgeCheck({ age, hasClub: (clubs ?? []).length > 0 });
   const provider = process.env.AGE_VERIFICATION_PROVIDER === 'mock' ? 'mock' : 'unconfigured';
-  await admin.from('age_verifications').insert({ user_id: user.id, provider, status });
+  if (provider !== 'mock') await admin.from('age_verifications').insert({ user_id: user.id, provider, status });
   return NextResponse.json({ status });
 }

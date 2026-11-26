@@ -33,8 +33,10 @@ export type VerificationInput = {
   hasVerifiedParent: boolean;
   dobConfirmed?: boolean;
   guardianConsented?: boolean;
-  /** An adult with no club passed the provider check. Never a document, and never a minor. */
+  /** An adult with no club passed a real provider check. A mock result is never this. */
   thirdPartyPassed?: boolean;
+  /** True when they have any active club membership. A third-party pass then no longer counts. */
+  hasClub?: boolean;
   /** A linked parent or guardian is themselves age-verified. */
   guardianVerified?: boolean;
 };
@@ -50,7 +52,7 @@ export function verifiedAge(input: VerificationInput, today: Date = new Date()):
   const junior = input.clubJunior || (age !== null && age < 18);
   if (age === null) return { status: 'needs_dob', junior: input.clubJunior, cleared: false, hold: HOLD_NEEDS_DOB };
   const clubOk = input.dobConfirmed === true;
-  const providerOk = input.thirdPartyPassed === true && age >= 18 && !input.clubJunior;
+  const providerOk = input.thirdPartyPassed === true && age >= 18 && !input.clubJunior && input.hasClub === false;
   const guardianOk = age < 18 && input.guardianVerified === true && (input.hasVerifiedParent || input.guardianConsented === true);
   const under13Ok = age >= 13 || input.guardianConsented === true;
   if (!(under13Ok && (clubOk || providerOk || guardianOk))) {
@@ -75,6 +77,8 @@ export function signupDobError(dob: unknown, enabled: boolean): string | null {
   return isPlausibleDob(dob) ? null : 'Enter your date of birth as a real date.';
 }
 
+
+
 const SQUAD_JUNIOR = new Set(['U11', 'U13', 'U15', 'U18']);
 
 export function squadIsJunior(ageGroup: string): boolean {
@@ -93,11 +97,23 @@ export function ageSquadMismatch(input: { age: number | null; clubJunior: boolea
 
 export const PURGE_AFTER_DAYS = 14;
 
-/** An under-13 whose guardian has not confirmed by email, once 14 days have passed. */
-export function under13PurgeDue(input: { createdAt: string; confirmedAt: string | null; age: number | null }, now: Date): boolean {
-  if (input.confirmedAt) return false;
-  if (input.age === null || input.age >= 13) return false;
+export type PurgeDecision = 'delete' | 'alert' | 'keep';
+
+/**
+ * Under-13s are removed 14 days after the profile was created if the guardian has not confirmed.
+ * A club-confirmed date, or a parent link a DBS-checked official has verified, is not deleted:
+ * the club is told instead. The decision never includes the date of birth.
+ */
+export function purgeDecision(input: {
+  age: number | null;
+  createdAt: string;
+  guardianConfirmed: boolean;
+  clubConfirmed: boolean;
+  verifiedParent: boolean;
+}, now: Date): PurgeDecision {
+  if (input.guardianConfirmed || input.age === null || input.age >= 13) return 'keep';
   const created = new Date(input.createdAt).getTime();
-  if (Number.isNaN(created)) return false;
-  return created <= now.getTime() - PURGE_AFTER_DAYS * 86_400_000;
+  if (Number.isNaN(created) || created > now.getTime() - PURGE_AFTER_DAYS * 86_400_000) return 'keep';
+  if (input.clubConfirmed || input.verifiedParent) return 'alert';
+  return 'delete';
 }

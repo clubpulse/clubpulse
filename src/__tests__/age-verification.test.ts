@@ -2,8 +2,9 @@ import { ageStatus } from '@/lib/community/age';
 import { squadAlert } from '@/lib/age-verification/alert';
 import { ageProviderEnabled, ageVerificationEnabled } from '@/lib/age-verification/flag';
 import { mockAgeProvider, runAdultAgeCheck } from '@/lib/age-verification/provider';
+import { acceptedAgePass, mockAgeCheckBlocked, resolveAgeProvider } from '@/lib/age-verification/provider';
 import {
-  PLAYER_DOB_HOLD, ageSquadMismatch, dobBlockPath, signupDobError, under13PurgeDue, verifiedAge,
+  PLAYER_DOB_HOLD, ageSquadMismatch, dobBlockPath, purgeDecision, signupDobError, verifiedAge,
 } from '@/lib/age-verification/rules';
 
 const day = new Date('2026-11-26T12:00:00Z');
@@ -21,7 +22,8 @@ describe('verified age', () => {
   it('does not treat a missing or unchecked date as an adult', () => {
     expect(verifiedAge({ clubJunior: false, dob: null, hasVerifiedParent: false }, day)).toMatchObject({ status: 'needs_dob', junior: false, cleared: false });
     expect(verifiedAge({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false }, day)).toMatchObject({ status: 'unverified', junior: false, cleared: false, hold: PLAYER_DOB_HOLD });
-    expect(verifiedAge({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false, thirdPartyPassed: true }, day).status).toBe('adult');
+    expect(verifiedAge({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false, thirdPartyPassed: true, hasClub: false }, day).status).toBe('adult');
+    expect(verifiedAge({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false, thirdPartyPassed: true, hasClub: true }, day).status).toBe('unverified');
     expect(verifiedAge({ clubJunior: true, dob: '2012-01-01', hasVerifiedParent: true, dobConfirmed: true, guardianConsented: true }, day)).toMatchObject({ status: 'junior', cleared: true });
     expect(verifiedAge({ clubJunior: false, dob: '2014-01-01', hasVerifiedParent: false, guardianConsented: false }, day).status).toBe('needs_guardian');
     expect(verifiedAge({ clubJunior: false, dob: '2014-01-01', hasVerifiedParent: true, guardianConsented: true, guardianVerified: true }, day)).toMatchObject({ status: 'junior', cleared: true });
@@ -47,12 +49,15 @@ describe('verified age', () => {
     expect(PLAYER_DOB_HOLD).toBe('Your club needs to confirm your date of birth');
   });
 
-  it('deletes an unconfirmed under-13 only after 14 days', () => {
+  it('deletes an unconfirmed under-13 only after 14 days, and alerts instead of deleting a confirmed one', () => {
     const created = '2026-11-01T00:00:00Z';
-    expect(under13PurgeDue({ createdAt: created, confirmedAt: null, age: 10 }, day)).toBe(true);
-    expect(under13PurgeDue({ createdAt: '2026-11-20T00:00:00Z', confirmedAt: null, age: 10 }, day)).toBe(false);
-    expect(under13PurgeDue({ createdAt: created, confirmedAt: '2026-11-02T00:00:00Z', age: 10 }, day)).toBe(false);
-    expect(under13PurgeDue({ createdAt: created, confirmedAt: null, age: 16 }, day)).toBe(false);
+    const base = { age: 10, createdAt: created, guardianConfirmed: false, clubConfirmed: false, verifiedParent: false };
+    expect(purgeDecision(base, day)).toBe('delete');
+    expect(purgeDecision({ ...base, createdAt: '2026-11-20T00:00:00Z' }, day)).toBe('keep');
+    expect(purgeDecision({ ...base, guardianConfirmed: true }, day)).toBe('keep');
+    expect(purgeDecision({ ...base, age: 16 }, day)).toBe('keep');
+    expect(purgeDecision({ ...base, clubConfirmed: true }, day)).toBe('alert');
+    expect(purgeDecision({ ...base, verifiedParent: true }, day)).toBe('alert');
   });
 
   it('keeps the third-party stub unavailable until its flag and the mock are both on', async () => {
@@ -61,5 +66,11 @@ describe('verified age', () => {
     expect(await runAdultAgeCheck({ age: 16, hasClub: false }, { AGE_VERIFICATION_ENABLED: 'true', AGE_VERIFICATION_PROVIDER_ENABLED: 'true', AGE_VERIFICATION_PROVIDER: 'mock' })).toBe('unavailable');
     expect(await runAdultAgeCheck({ age: 30, hasClub: true }, { AGE_VERIFICATION_ENABLED: 'true', AGE_VERIFICATION_PROVIDER_ENABLED: 'true', AGE_VERIFICATION_PROVIDER: 'mock' })).toBe('unavailable');
     expect(await runAdultAgeCheck({ age: 30, hasClub: false }, { AGE_VERIFICATION_ENABLED: 'true', AGE_VERIFICATION_PROVIDER_ENABLED: 'true', AGE_VERIFICATION_PROVIDER: 'mock' }, mockAgeProvider)).toBe('passed');
+    const production = { AGE_VERIFICATION_ENABLED: 'true', AGE_VERIFICATION_PROVIDER_ENABLED: 'true', AGE_VERIFICATION_PROVIDER: 'mock', NODE_ENV: 'production' };
+    expect(mockAgeCheckBlocked(production)).toBe(true);
+    expect(mockAgeCheckBlocked({ ...production, NODE_ENV: 'test', VERCEL_ENV: 'production' })).toBe(true);
+    expect(resolveAgeProvider(production)).toBeNull();
+    expect(acceptedAgePass({ status: 'passed', provider: 'mock' })).toBe(false);
+    expect(acceptedAgePass({ status: 'passed', provider: 'yoti' })).toBe(true);
   });
 });

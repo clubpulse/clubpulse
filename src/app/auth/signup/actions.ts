@@ -55,7 +55,8 @@ export async function completeSignup({
     return { success: false, error: "Unauthorized" };
   }
 
-  const dobError = signupDobError(dateOfBirth, ageVerificationEnabled());
+  const rulesOn = ageVerificationEnabled();
+  const dobError = signupDobError(dateOfBirth, rulesOn);
   if (dobError) return { success: false, error: dobError };
 
   let admin: ReturnType<typeof createAdminClient>;

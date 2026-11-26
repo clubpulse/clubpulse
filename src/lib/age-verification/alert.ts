@@ -1,3 +1,9 @@
+export const DEFAULT_SAFEGUARDING_LEAD_EMAIL = 'hello@shiftup.club';
+
+export function safeguardingLeadEmail(env: Record<string, string | undefined> = process.env): string {
+  return env.SAFEGUARDING_LEAD_EMAIL?.trim() || DEFAULT_SAFEGUARDING_LEAD_EMAIL;
+}
+
 /** The alert names the person and the squad. It never includes a date of birth. */
 export function squadAlert(input: { playerName: string; ageGroup: string; reason: 'mismatch' | 'unverified' }) {
   const why = input.reason === 'mismatch'

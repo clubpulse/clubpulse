@@ -12,4 +12,9 @@ When it is on:
 6. After sign-in, someone with no date of birth is sent to `/auth/date-of-birth` and cannot continue until it is saved.
 7. Someone with no club can be verified as an adult only by the third-party stub, and only when `AGE_VERIFICATION_PROVIDER_ENABLED` is exactly `true` and `AGE_VERIFICATION_PROVIDER` is `mock`. The stub stores a pass or fail. It does not store a document or a date of birth. Under-18s with no club need a verified guardian. A junior's date of birth is not shown to other people.
 
-The migration is `supabase/migrations/20261130000001_age_verification.sql`. Do not apply it to production until the flag is ready to be turned on. The third-party provider flag stays off until a real provider is chosen. The mock is not a real identity check.
+Migrations, both repo-only until the flag is turned on:
+
+- `supabase/migrations/20261130000001_age_verification.sql`
+- `supabase/migrations/20261130000002_age_verification_followup.sql` locks squad-flag reads to DBS-checked staff, stores the correction in one database function, and removes unconfirmed people from the public cards and the club leaderboard.
+
+The mock provider fails closed in production (`VERCEL_ENV` or `NODE_ENV` is `production`): the age-check route answers 404, and a stored mock pass is never treated as verified. `SAFEGUARDING_LEAD_EMAIL` defaults to hello@shiftup.club. A third-party pass stops counting once the person joins a club.

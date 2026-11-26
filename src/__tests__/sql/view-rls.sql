@@ -15,7 +15,8 @@ INSERT INTO auth.users (id, email) VALUES
   ('77777777-7777-7777-7777-777777777777', 'under18@club.test'),
   ('88888888-8888-8888-8888-888888888888', 'flagged@club.test'),
   ('99999999-9999-9999-9999-999999999999', 'inactive@club.test'),
-  ('aaaaaaaa-1111-1111-1111-111111111111', 'coach@club.test');
+  ('aaaaaaaa-1111-1111-1111-111111111111', 'coach@club.test'),
+  ('abababab-abab-abab-abab-abababababab', 'unchecked@club.test');
 
 UPDATE public.profiles AS p SET
   full_name = v.full_name,
@@ -33,7 +34,8 @@ FROM (VALUES
   ('77777777-7777-7777-7777-777777777777', 'Under Seven', 'Under', 'under18@club.test', DATE '2015-07-07'),
   ('88888888-8888-8888-8888-888888888888', 'Flagged Eight', 'Flagged', 'flagged@club.test', DATE '1992-08-08'),
   ('99999999-9999-9999-9999-999999999999', 'Inactive Nine', 'Inactive', 'inactive@club.test', DATE '1980-09-09'),
-  ('aaaaaaaa-1111-1111-1111-111111111111', 'Coach Ten', 'Coach', 'coach@club.test', DATE '1982-10-10')
+  ('aaaaaaaa-1111-1111-1111-111111111111', 'Coach Ten', 'Coach', 'coach@club.test', DATE '1982-10-10'),
+  ('abababab-abab-abab-abab-abababababab', 'Unchecked Adult', 'Unchecked', 'unchecked@club.test', DATE '1990-04-04')
 ) AS v(id, full_name, display_name, email, dob)
 WHERE p.id = v.id;
 
@@ -51,7 +53,18 @@ INSERT INTO public.club_members (club_id, user_id, role, is_active, is_junior) V
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '77777777-7777-7777-7777-777777777777', 'player', true, false),
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '88888888-8888-8888-8888-888888888888', 'player', true, true),
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '99999999-9999-9999-9999-999999999999', 'player', false, false),
-  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-1111-1111-1111-111111111111', 'coach', true, false);
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-1111-1111-1111-111111111111', 'coach', true, false),
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'abababab-abab-abab-abab-abababababab', 'player', true, false);
+
+-- Adults the cards and leaderboard are still expected to show have a club-confirmed date.
+UPDATE public.profiles SET
+  dob_confirmed_by = '55555555-5555-5555-5555-555555555555',
+  dob_confirmed_at = NOW(),
+  dob_confirmation_method = 'existing_registration'
+WHERE id IN (
+  '22222222-2222-2222-2222-222222222222',
+  '44444444-4444-4444-4444-444444444444'
+);
 
 INSERT INTO public.child_profiles (id, club_id, first_name, last_name, date_of_birth, linked_user_id) VALUES
   ('c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Linked', 'Child', DATE '2012-01-01', '66666666-6666-6666-6666-666666666666');
@@ -185,6 +198,12 @@ BEGIN
   END IF;
   IF EXISTS (SELECT 1 FROM public.club_scores_leaderboard WHERE user_id = '44444444-4444-4444-4444-444444444444') THEN
     RAISE EXCEPTION 'another club is on this caller''s leaderboard';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.public_profile_cards WHERE id = 'abababab-abab-abab-abab-abababababab') THEN
+    RAISE EXCEPTION 'an unconfirmed adult is on public_profile_cards';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.club_scores_leaderboard WHERE user_id = 'abababab-abab-abab-abab-abababababab') THEN
+    RAISE EXCEPTION 'an unconfirmed adult is on the leaderboard';
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.finance_club_summary WHERE club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') THEN
@@ -426,6 +445,8 @@ INSERT INTO public.age_verifications (user_id, provider, status)
 VALUES ('11111111-1111-1111-1111-111111111111', 'mock', 'passed');
 INSERT INTO public.age_squad_mismatches (club_id, user_id, age_group, reason)
 VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'Open', 'mismatch');
+INSERT INTO public.dbs_checks (club_id, user_id, check_type, status, expiry_date)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '55555555-5555-5555-5555-555555555555', 'enhanced', 'valid', CURRENT_DATE + 365);
 INSERT INTO public.dob_change_log (user_id, club_id, previous_dob, new_dob, changed_by, reason)
 VALUES ('33333333-3333-3333-3333-333333333333', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', DATE '2014-03-03', DATE '2014-03-04', '55555555-5555-5555-5555-555555555555', 'Registration form');
 
@@ -467,8 +488,16 @@ END $$;
 SELECT set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', false);
 DO $$
 BEGIN
-  IF (SELECT count(*) FROM public.age_squad_mismatches) <> 1 THEN
-    RAISE EXCEPTION 'a junior cannot see their own squad hold';
+  IF EXISTS (SELECT 1 FROM public.age_squad_mismatches) THEN
+    RAISE EXCEPTION 'a player can read their own squad flag';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', 'aaaaaaaa-1111-1111-1111-111111111111', false);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.age_squad_mismatches) THEN
+    RAISE EXCEPTION 'a coach without a current DBS check can read a squad flag';
   END IF;
 END $$;
 
