@@ -379,3 +379,49 @@ BEGIN
 END $$;
 
 RESET ROLE;
+
+-- A club admin cannot change role or is_junior through the database API. The checked function can, and it is audited.
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+DECLARE
+  member uuid;
+BEGIN
+  SELECT id INTO member FROM public.club_members
+  WHERE user_id = '22222222-2222-2222-2222-222222222222' AND club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  BEGIN
+    UPDATE public.club_members SET role = 'coach' WHERE id = member;
+    RAISE EXCEPTION 'a club admin changed a role through the API';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    UPDATE public.club_members SET is_junior = TRUE WHERE id = member;
+    RAISE EXCEPTION 'a club admin changed is_junior through the API';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  IF (SELECT role FROM public.club_members WHERE id = member) IS DISTINCT FROM 'player'
+     OR (SELECT is_junior FROM public.club_members WHERE id = member) THEN
+    RAISE EXCEPTION 'role or junior status changed through the API';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE service_role;
+DO $$
+DECLARE
+  member uuid;
+BEGIN
+  SELECT id INTO member FROM public.club_members
+  WHERE user_id = '22222222-2222-2222-2222-222222222222' AND club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  PERFORM public.set_club_member_standing(member, 'coach', false, '55555555-5555-5555-5555-555555555555');
+  IF NOT EXISTS (
+    SELECT 1 FROM public.club_member_role_log
+    WHERE member_id = member AND previous_role = 'player' AND new_role = 'coach'
+      AND changed_by = '55555555-5555-5555-5555-555555555555'
+  ) THEN
+    RAISE EXCEPTION 'role change was not audited';
+  END IF;
+  PERFORM public.set_club_member_standing(member, 'player', false, '55555555-5555-5555-5555-555555555555');
+END $$;
+RESET ROLE;
