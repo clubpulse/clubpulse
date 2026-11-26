@@ -141,7 +141,7 @@ describe('sign-up of an under-13', () => {
 
 describe('the confirmation email after email confirmation', () => {
   it('sends once from the sign-up metadata when no consent row exists yet', async () => {
-    const user = { id: 'child-1', email: 'kid@example.com', user_metadata: { full_name: 'Kit Young', roles: ['player'], date_of_birth: '2015-06-01', guardian_email: 'parent@example.com' } } as User;
+    const user = { id: 'child-1', email: 'kid@example.com', app_metadata: {}, aud: 'authenticated', created_at: '2026-01-01T00:00:00Z', user_metadata: { full_name: 'Kit Young', roles: ['player'], date_of_birth: '2015-06-01', guardian_email: 'parent@example.com' } } as User;
     await ensureProfileAndRoles(user);
     expect(emailed).toHaveBeenCalledTimes(1);
     expect(consent()?.guardian_email).toBe('parent@example.com');
