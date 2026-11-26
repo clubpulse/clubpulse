@@ -31,12 +31,16 @@ describe('view RLS against local Postgres', () => {
     psql(db, ['-f', bootstrap]);
 
     const files = fs.readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort();
-    expect(files.at(-1)).toBe(followUp);
+    const followUpAt = files.indexOf(followUp);
+    expect(followUpAt).toBeGreaterThanOrEqual(0);
     for (const name of files) psql(db, ['-f', path.join(migrations, name)]);
 
-    // A later broad grant must not put anon back on these views. Applying the follow-up again restores it.
+    // A later broad grant must not put anon back on these views. Applying the follow-up again restores
+    // those grants. That file still contains the old resolve_pitch_votes body, so every migration after
+    // it has to be applied again or the replay puts the double-payout function back.
     psql(db, ['-c', 'GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role']);
     psql(db, ['-f', path.join(migrations, followUp)]);
+    for (const name of files.slice(followUpAt + 1)) psql(db, ['-f', path.join(migrations, name)]);
     psql(db, ['-f', assertions]);
   });
 });
