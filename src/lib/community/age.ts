@@ -55,7 +55,10 @@ export function ageStatus(i: { clubJunior: boolean; dob: string | null | undefin
   const age = i.dob ? ageOn(i.dob, today) : null;
   const junior = i.clubJunior || (age !== null && age < 18);
   if (!junior && age === null) return { status: 'needs_dob', junior: false, cleared: false, hold: HOLD_NEEDS_DOB };
-  if (age !== null && age < 13 && !i.guardianConsented) return { status: 'needs_guardian', junior: true, cleared: false, hold: HOLD_NEEDS_GUARDIAN };
+  // A verified parent link is the guardian's consent, so an under-13 who already has one is not held here.
+  // Without that link, and without an emailed confirmation, the account stays closed. Everyone 13 or over
+  // skips this and keeps the parent and date-of-birth rules below.
+  if (age !== null && age < 13 && !i.guardianConsented && !i.hasVerifiedParent) return { status: 'needs_guardian', junior: true, cleared: false, hold: HOLD_NEEDS_GUARDIAN };
   if (junior && !i.hasVerifiedParent) return { status: 'pending_parent', junior: true, cleared: false, hold: HOLD_PENDING_PARENT };
   if (junior && i.requireDobConfirmation && !(i.dobConfirmed && age !== null)) return { status: 'needs_dob_confirmation', junior: true, cleared: false, hold: HOLD_NEEDS_DOB_CONFIRMATION };
   return { status: junior ? 'junior' : 'adult', junior, cleared: true, hold: null };

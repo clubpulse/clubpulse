@@ -38,9 +38,11 @@ describe('ageStatus', () => {
     expect(ageStatus({ clubJunior: true, dob: '1990-01-01', hasVerifiedParent: false }, on)).toMatchObject({ junior: true, cleared: false });
     expect(ageStatus({ clubJunior: true, dob: null, hasVerifiedParent: true }, on)).toMatchObject({ junior: true, status: 'junior', cleared: true });
   });
-  it('keeps an under-13 closed until a guardian confirms, even with a linked parent', () => {
-    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true }, on)).toMatchObject({ status: 'needs_guardian', cleared: false, hold: HOLD_NEEDS_GUARDIAN });
-    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true, guardianConsented: true }, on)).toMatchObject({ status: 'junior', cleared: true });
+  it('treats a verified parent link as guardian consent, and still holds an under-13 with neither', () => {
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true }, on)).toMatchObject({ status: 'junior', cleared: true, hold: null });
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: false }, on)).toMatchObject({ status: 'needs_guardian', cleared: false, hold: HOLD_NEEDS_GUARDIAN });
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: false, guardianConsented: true }, on)).toMatchObject({ status: 'pending_parent', cleared: false });
+    expect(ageStatus({ clubJunior: false, dob: '2015-01-01', hasVerifiedParent: true, requireDobConfirmation: true }, on)).toMatchObject({ status: 'needs_dob_confirmation', cleared: false });
   });
   it('opens to an adult with a date of birth', () => {
     expect(ageStatus({ clubJunior: false, dob: '1990-01-01', hasVerifiedParent: false }, on)).toMatchObject({ junior: false, status: 'adult', cleared: true, hold: null });

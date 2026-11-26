@@ -3,9 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getCurrentUser } from '@/lib/auth/server';
-import { createHash, randomBytes } from 'crypto';
 import { ageOn, isPlausibleDob } from '@/lib/community/age';
-import { sendEmail } from '@/lib/email/resend';
+import { requestGuardianConsent } from '@/lib/community/guardian-consent';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -29,23 +28,15 @@ export async function saveDateOfBirth(dob: unknown, guardianEmail?: unknown): Pr
   if (row?.date_of_birth) return { success: false, error: 'Your date of birth is already saved. Contact SHIFTUP if it is wrong.' };
   const { error } = await admin.from('profiles').update({ date_of_birth: dob }).eq('id', user.id).is('date_of_birth', null);
   if (error) return { success: false, error: 'Could not save your date of birth.' };
-  if (age !== null && age < 13) {
-    const token = randomBytes(32).toString('hex');
-    const token_hash = createHash('sha256').update(token).digest('hex');
-    const { error: consentError } = await admin.from('guardian_consents').upsert({
-      user_id: user.id,
-      guardian_email: email,
-      token_hash,
-      confirmed_at: null,
-    });
-    if (consentError) return { success: false, error: 'Your date of birth was saved, but the guardian confirmation could not be stored yet.' };
-    const site = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shiftup.club';
-    await sendEmail({
-      to: email,
-      subject: 'Confirm a SHIFTUP account for someone under 13',
-      text: `Someone under 13 has asked you to confirm their SHIFTUP account.\n\nOpen this link if you are their parent or guardian and you agree:\n${site}/api/account/guardian-consent?token=${token}\n\nIf this was not you, ignore this email.`,
-    });
-  }
   revalidatePath('/', 'layout');
+  if (age !== null && age < 13) {
+    const sent = await requestGuardianConsent(user.id, email);
+    if (!sent.success) {
+      const error = sent.error === 'The guardian confirmation could not be stored yet.'
+        ? 'Your date of birth was saved, but the guardian confirmation could not be stored yet.'
+        : sent.error;
+      return { success: false, error };
+    }
+  }
   return { success: true };
 }

@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isPlausibleDob } from '@/lib/community/age';
+import { requestGuardianConsentFromSignup } from '@/lib/community/guardian-consent';
 
 // Roles a person may pick for themselves at sign-up. club_admin and merchant are never
 // self-assigned: sign-up metadata is user-controlled, so it is filtered here.
@@ -40,6 +41,10 @@ export async function ensureProfileAndRoles(user: User): Promise<void> {
   if (profileError) throw new Error(`Could not create the profile: ${profileError.message}`);
 
   await backfillDateOfBirth(user);
+  // Email confirmation saves the date of birth in the database trigger, which cannot send the guardian email.
+  // Ask once here when sign-up collected an address and no confirmation has been stored yet. Roles that already
+  // exist must not skip this, or a confirmed account never gets the email.
+  await requestGuardianConsentFromSignup(user);
 
   const { data: existing } = await admin.from('user_roles').select('id').eq('user_id', user.id).limit(1);
   if ((existing ?? []).length > 0) return;
