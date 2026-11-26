@@ -6,6 +6,8 @@ import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { backfillDateOfBirth, ensureProfileAndRoles } from '@/lib/auth/onboarding';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { dobBlockPath } from '@/lib/age-verification/rules';
 
 // Memoised per request, so layouts and pages can both call it without extra round trips.
 export const getCurrentUser = cache(async () => {
@@ -48,6 +50,9 @@ export async function requireUser() {
     const path = safeRedirect((await headers()).get('x-pathname'), '');
     redirect(path ? `/auth/sign-in?redirectTo=${encodeURIComponent(path)}` : '/auth/sign-in');
   }
-  await ensureProfile(user);
+  const { needsDob } = await ensureProfile(user);
+  const path = (await headers()).get('x-pathname') ?? '';
+  const block = dobBlockPath(path, needsDob, ageVerificationEnabled());
+  if (block) redirect(block);
   return user;
 }

@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { namesAlreadyAuthorised } from '@/lib/profile/lookup';
 import { requireUser } from '@/lib/auth/server';
 import { checkXI, type MyXIState, myXIState } from '@/lib/xi-selection/logic';
+import { guardSquad } from '@/lib/age-verification/squad';
 import type { AvailabilityStatus, FixtureGridRow } from '@/lib/types/availability';
 
 export type XISelection = {
@@ -113,6 +114,8 @@ export async function confirmXI(input: {
   const { data: members } = await db.from('club_members').select('user_id').eq('club_id', clubId).eq('is_active', true).in('user_id', wanted.length ? wanted : ['00000000-0000-0000-0000-000000000000']);
   const memberIds = new Set((members ?? []).map((m) => m.user_id as string));
   if (wanted.some((id) => !memberIds.has(id))) return { success: false, error: 'Everyone picked must be an active member of the club.' };
+  const held = await guardSquad(db, { clubId, userIds: wanted, ageGroup: 'Open' });
+  if (!held.ok) return { success: false, error: held.error };
 
   const { data: avail } = await db.from('fixture_availability').select('user_id, status').eq('fixture_id', input.fixtureId);
   const status = new Map((avail ?? []).map((a) => [a.user_id as string, a.status as AvailabilityStatus]));

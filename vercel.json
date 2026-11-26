@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/safeguarding-alerts",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/age-verification-purge",
+      "schedule": "0 3 * * *"
     }
   ]
 }

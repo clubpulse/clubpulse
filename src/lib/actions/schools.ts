@@ -10,6 +10,10 @@ import type {
   AgeGroup,
   SessionType,
 } from '@/lib/types/schools';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { guardSquad } from '@/lib/age-verification/squad';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { PLAYER_DOB_HOLD } from '@/lib/age-verification/rules';
 
 async function currentUserId(): Promise<string | null> {
   const supabase = await createClient();
@@ -38,6 +42,10 @@ export async function getMyAgeGroup(
 ): Promise<ActionResult<SchoolAgeGroup | null>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
+  if (ageVerificationEnabled()) {
+    const { data: held } = await createAdminClient().from('age_squad_mismatches').select('id').eq('club_id', clubId).eq('user_id', userId).limit(1);
+    if ((held ?? []).length > 0) return { success: false, error: PLAYER_DOB_HOLD };
+  }
   const supabase = await createClient();
   const year = new Date().getFullYear();
   const { data, error } = await supabase
@@ -115,6 +123,8 @@ export async function adminAssignAgeGroup(
 ): Promise<ActionResult<SchoolAgeGroup>> {
   const callerId = await currentUserId();
   if (!callerId) return { success: false, error: 'Not authenticated' };
+  const held = await guardSquad(createAdminClient(), { clubId, userIds: [memberId], ageGroup });
+  if (!held.ok) return { success: false, error: held.error };
   const supabase = await createClient();
   const year = new Date().getFullYear();
   const { data, error } = await supabase
@@ -184,6 +194,8 @@ export async function adminSelectTeam(input: {
 }): Promise<ActionResult<SchoolTeamSelection>> {
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
+  const held = await guardSquad(createAdminClient(), { clubId: input.clubId, userIds: input.selectedPlayers, ageGroup: input.ageGroup });
+  if (!held.ok) return { success: false, error: held.error };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('school_team_selections')

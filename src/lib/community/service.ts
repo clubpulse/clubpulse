@@ -15,6 +15,8 @@ import { notify } from './notify';
 import { randomUUID } from 'crypto';
 import { raiseAlert, targetIsJunior } from '@/lib/safeguarding/alerts';
 import { ageStatus, type AgeStatus } from './age';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { verifiedAge } from '@/lib/age-verification/rules';
 
 export type Admin = ReturnType<typeof createAdminClient>;
 export type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -48,7 +50,13 @@ export const JUNIOR_DMS_OFF = 'Private messages are not available for under-18s 
 type ClubRow = { id: string; name: string; county: string | null; league: string | null; ground_lat: number | null; ground_lng: number | null };
 
 /** The profile columns the age rules read. The confirmation columns exist only once migration 026 is applied, so they are asked for only when the switch needs them. */
-export const dobColumns = (): string => (dobConfirmationRequired() ? 'date_of_birth, dob_confirmed_by, dob_confirmed_at' : 'date_of_birth');
+export const dobColumns = (): string => (
+  ageVerificationEnabled()
+    ? 'date_of_birth, dob_confirmed_by, dob_confirmed_at, dob_confirmation_method'
+    : dobConfirmationRequired()
+      ? 'date_of_birth, dob_confirmed_by, dob_confirmed_at'
+      : 'date_of_birth'
+);
 export const isDobConfirmed = (p: { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined | null) => !!(p?.dob_confirmed_by && p?.dob_confirmed_at);
 
 export type Viewer = {
@@ -66,14 +74,17 @@ export async function getViewer(admin: Admin, userId: string): Promise<Viewer> {
     admin.from('guardian_consents').select('confirmed_at').eq('user_id', userId).maybeSingle(),
   ]);
   const mine = rows ?? [];
-  const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null; dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined;
-  const age = ageStatus({
-    clubJunior: mine.length > 0 && mine.every((m) => m.is_junior === true),
-    dob: (profile?.date_of_birth as string | null | undefined) ?? null,
-    hasVerifiedParent: parents.length > 0,
-    dobConfirmed: isDobConfirmed(profile), requireDobConfirmation: dobConfirmationRequired(),
-    guardianConsented: !!(consent.data as { confirmed_at?: string | null } | null)?.confirmed_at,
-  });
+  const profile = (profileRows ?? [])[0] as { date_of_birth?: string | null; dob_confirmed_by?: string | null; dob_confirmed_at?: string | null; dob_confirmation_method?: string | null } | undefined;
+  const clubJunior = mine.length > 0 && mine.every((m) => m.is_junior === true);
+  const dob = (profile?.date_of_birth as string | null | undefined) ?? null;
+  const hasVerifiedParent = parents.length > 0;
+  const guardianConsented = !!(consent.data as { confirmed_at?: string | null } | null)?.confirmed_at;
+  const dobConfirmed = ageVerificationEnabled()
+    ? !!(profile?.dob_confirmed_by && profile?.dob_confirmed_at && profile?.dob_confirmation_method)
+    : isDobConfirmed(profile);
+  const extras = await verificationExtras(admin, userId, parents);
+  const ageInput = { clubJunior, dob, hasVerifiedParent, dobConfirmed, requireDobConfirmation: dobConfirmationRequired(), guardianConsented };
+  const age = ageVerificationEnabled() ? verifiedAge({ ...ageInput, ...extras }) : ageStatus(ageInput);
   // Shut out, a person has no clubs as far as the Community is concerned, so nothing that starts from their
   // clubs can show them anyone. The explicit checks on each action give the reason.
   const juniorsClosed = age.junior && !juniorsOpen();
@@ -136,6 +147,9 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
   const profiles = profilesRaw as unknown as Array<Record<string, unknown>> | null;
   const withParent = new Set((linked ?? []).map((r) => r.linked_user_id as string));
   const guardianConsented = new Set((consents ?? []).filter((r) => r.confirmed_at).map((r) => r.user_id as string));
+  const passedChecks = ageVerificationEnabled()
+    ? new Set(((await admin.from('age_verifications').select('user_id').in('user_id', unique).eq('status', 'passed')).data ?? []).map((row) => row.user_id as string))
+    : new Set<string>();
   const clubIds = [...new Set((members ?? []).map((m) => m.club_id as string))];
   const { data: clubs } = clubIds.length ? await admin.from('clubs').select('id, name').in('id', clubIds) : { data: [] as Array<{ id: string; name: string }> };
   const clubName = new Map((clubs ?? []).map((c) => [c.id as string, c.name as string]));
@@ -143,13 +157,21 @@ export async function people(admin: Admin, ids: string[]): Promise<Map<string, P
     const rows = (members ?? []).filter((m) => m.user_id === id);
     const profile = (profiles ?? []).find((p) => p.id === id);
     // The same rule as getViewer: a club admin's mark or a date of birth under 18 makes someone a junior
-    const age = ageStatus({
+    const personDob = (profile?.date_of_birth as string | null | undefined) ?? null;
+    const personConfirmed = ageVerificationEnabled()
+      ? !!(profile?.dob_confirmed_by && profile?.dob_confirmed_at && profile?.dob_confirmation_method)
+      : isDobConfirmed(profile as { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined);
+    const personInput = {
       clubJunior: rows.length > 0 && rows.every((m) => m.is_junior === true),
-      dob: (profile?.date_of_birth as string | null | undefined) ?? null,
+      dob: personDob,
       hasVerifiedParent: withParent.has(id),
-      dobConfirmed: isDobConfirmed(profile as { dob_confirmed_by?: string | null; dob_confirmed_at?: string | null } | undefined), requireDobConfirmation: dobConfirmationRequired(),
+      dobConfirmed: personConfirmed,
+      requireDobConfirmation: dobConfirmationRequired(),
       guardianConsented: guardianConsented.has(id),
-    });
+    };
+    const age = ageVerificationEnabled()
+      ? verifiedAge({ ...personInput, thirdPartyPassed: passedChecks.has(id) })
+      : ageStatus(personInput);
     const junior = age.junior;
     const juniorsClosed = junior && !juniorsOpen();
     const clubId = (rows[0]?.club_id as string | undefined) ?? null;
@@ -452,7 +474,21 @@ async function logEvent(admin: Admin, e: { connectionId: string | null; actor: s
   try { await admin.from('community_connection_events').insert({ connection_id: e.connectionId, actor_id: e.actor, other_id: e.other, event: e.event, both_junior: e.bothJunior }); } catch { /* ignore */ }
 }
 
-/** The verified parents of a junior's linked account. */
+/** Club confirmation, a third-party pass, or a verified guardian. Only read when the age-verification flag is on. */
+async function verificationExtras(admin: Admin, userId: string, parentIds: string[]) {
+  if (!ageVerificationEnabled()) return { thirdPartyPassed: false, guardianVerified: false };
+  const { data: mine } = await admin.from('age_verifications').select('status').eq('user_id', userId).eq('status', 'passed').limit(1);
+  let guardianVerified = false;
+  if (parentIds.length > 0) {
+    const [{ data: parents }, { data: checks }] = await Promise.all([
+      admin.from('profiles').select('id, dob_confirmed_by, dob_confirmed_at, dob_confirmation_method').in('id', parentIds),
+      admin.from('age_verifications').select('user_id').in('user_id', parentIds).eq('status', 'passed').limit(1),
+    ]);
+    guardianVerified = (parents ?? []).some((parent) => parent.dob_confirmed_by && parent.dob_confirmed_at && parent.dob_confirmation_method) || (checks ?? []).length > 0;
+  }
+  return { thirdPartyPassed: (mine ?? []).length > 0, guardianVerified };
+}
+
 export async function parentsOf(admin: Admin, juniorUserId: string): Promise<string[]> {
   const { data } = await admin.from('child_profiles').select('parent_child_links!inner ( parent_id, verified_at )').eq('linked_user_id', juniorUserId).not('parent_child_links.verified_at', 'is', null);
   const links = (data ?? []).flatMap((r) => (Array.isArray(r.parent_child_links) ? r.parent_child_links : [r.parent_child_links]));

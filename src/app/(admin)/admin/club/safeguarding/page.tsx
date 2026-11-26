@@ -4,6 +4,8 @@ import ChildrenList from '@/components/club/ChildrenList';
 import IncidentList from '@/components/club/IncidentList';
 import DbsCheckList from '@/components/club/DbsCheckList';
 import DobConfirmList from '@/components/club/DobConfirmList';
+import { DobCorrectionForm } from '@/components/club/DobCorrectionForm';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
 import { listDobToConfirm } from '@/lib/admin/dob-confirmation';
 import { h1, card, muted } from '@/components/play/ui';
 import type { Metadata } from 'next';
@@ -47,7 +49,8 @@ export default async function SafeguardingPage() {
 
       {/* Dates of birth waiting for a club admin to confirm them */}
       <div style={{ marginBottom: '2rem' }}>
-        <DobConfirmList items={dobs.items} confirmed={dobs.confirmed} error={dobs.error} />
+        <DobConfirmList items={dobs.items} confirmed={dobs.confirmed} error={dobs.error} askMethod={ageVerificationEnabled()} />
+        {ageVerificationEnabled() && <div style={{ marginTop: '1.5rem' }}><DobCorrectionForm clubId={clubId} /></div>}
       </div>
 
       {/* Children registry */}

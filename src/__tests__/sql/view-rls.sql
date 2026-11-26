@@ -420,3 +420,74 @@ BEGIN
     RAISE EXCEPTION 'second call changed the recorded condition to %', recorded;
   END IF;
 END $$;
+
+-- Age verification rows do not expose a junior's date of birth, and other members cannot read them.
+INSERT INTO public.age_verifications (user_id, provider, status)
+VALUES ('11111111-1111-1111-1111-111111111111', 'mock', 'passed');
+INSERT INTO public.age_squad_mismatches (club_id, user_id, age_group, reason)
+VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'Open', 'mismatch');
+INSERT INTO public.dob_change_log (user_id, club_id, previous_dob, new_dob, changed_by, reason)
+VALUES ('33333333-3333-3333-3333-333333333333', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', DATE '2014-03-03', DATE '2014-03-04', '55555555-5555-5555-5555-555555555555', 'Registration form');
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'age_squad_mismatches' AND column_name = 'date_of_birth'
+  ) THEN
+    RAISE EXCEPTION 'squad mismatch stores a date of birth';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.age_verifications) THEN
+    RAISE EXCEPTION 'another member read an age check';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.age_squad_mismatches) THEN
+    RAISE EXCEPTION 'another member read a squad age record';
+  END IF;
+  BEGIN
+    PERFORM 1 FROM public.dob_change_log;
+    RAISE EXCEPTION 'a member read the date of birth audit log';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    UPDATE public.profiles SET date_of_birth = DATE '1992-02-02' WHERE id = '22222222-2222-2222-2222-222222222222';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  IF (SELECT date_of_birth FROM public.profiles WHERE id = '22222222-2222-2222-2222-222222222222') IS DISTINCT FROM DATE '1991-02-02' THEN
+    RAISE EXCEPTION 'a member changed their date of birth';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', false);
+DO $$
+BEGIN
+  IF (SELECT count(*) FROM public.age_squad_mismatches) <> 1 THEN
+    RAISE EXCEPTION 'a junior cannot see their own squad hold';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.age_squad_mismatches WHERE reason = 'mismatch') THEN
+    RAISE EXCEPTION 'a club admin cannot see the squad age record';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE anon;
+DO $$
+BEGIN
+  BEGIN
+    PERFORM 1 FROM public.age_squad_mismatches;
+    RAISE EXCEPTION 'anon read a squad age record';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;
