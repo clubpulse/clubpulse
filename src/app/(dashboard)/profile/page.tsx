@@ -11,6 +11,9 @@ import { FormTicker } from '@/components/form/FormTicker';
 import { Card } from '@/components/ui/Card';
 import { DebutCard } from '@/components/debut-card/DebutCard';
 import { NemesisWidget } from '@/components/rivalry/NemesisWidget';
+import Link from 'next/link';
+import { cameraDrillsEnabled } from '@/lib/camera-drills/flag';
+import { loadDrillSummary } from '@/lib/actions/camera-drills';
 
 export default async function ProfilePage() {
   const user = await requireUser();
@@ -38,6 +41,7 @@ export default async function ProfilePage() {
     : null;
 
   const nemesisResult = await getMyNemesis(user.id);
+  const drills = cameraDrillsEnabled() ? await loadDrillSummary(user.id) : null;
 
   if (!profile.success) {
     return (
@@ -52,6 +56,17 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileCard profile={profile.data} wallet={wallet.success ? wallet.data : null} roles={roles} />
+      {drills && (
+        <Card title="Movement starting point">
+          {Object.keys(drills.baseline).length === 0 ? (
+            <p className="text-sm text-neutral-400">No starting point yet. <Link href="/drills" className="text-sky-400">You can do the short checks whenever you like.</Link></p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-2 text-sm">
+              {Object.entries(drills.baseline).map(([key, score]) => <li key={key}>{key}: {score}</li>)}
+            </ul>
+          )}
+        </Card>
+      )}
       <FormTicker form={formRating?.success ? formRating.data ?? null : null} />
       <NemesisWidget nemesis={nemesisResult.success ? nemesisResult.data : null} />
       <DebutCard userId={user.id} displayName={profile.data.display_name || profile.data.full_name} />
