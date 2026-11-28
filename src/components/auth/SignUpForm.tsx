@@ -9,7 +9,7 @@ import { completeSignup } from '@/app/auth/signup/actions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { VOLUNTEERS_ENABLED } from '@/lib/nav/menu';
-import { isPlausibleDob } from '@/lib/community/age';
+import { ageOn, isPlausibleDob } from '@/lib/community/age';
 
 type Role = 'player' | 'volunteer' | 'parent' | 'coach';
 
@@ -30,7 +30,9 @@ export function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState('');
+  const [guardianEmail, setGuardianEmail] = useState('');
   const [roles, setRoles] = useState<Role[]>([]);
+  const under13 = dob ? (ageOn(dob) ?? 99) < 13 : false;
   const [loading, setLoading] = useState(false);
 
   function toggleRole(role: Role) {
@@ -40,6 +42,10 @@ export function SignUpForm() {
   function handleDetails(event: FormEvent) {
     event.preventDefault();
     if (!isPlausibleDob(dob)) { toast.error('Enter your date of birth as a real date.'); return; }
+    if (under13 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardianEmail.trim())) {
+      toast.error('Under 13s need a parent or guardian email address.');
+      return;
+    }
     setStep(2);
   }
 
@@ -52,7 +58,12 @@ export function SignUpForm() {
       password,
       options: {
         // Kept in metadata so the profile can still be created after email confirmation
-        data: { full_name: fullName.trim(), roles, date_of_birth: dob },
+        data: {
+          full_name: fullName.trim(),
+          roles,
+          date_of_birth: dob,
+          ...(under13 ? { guardian_email: guardianEmail.trim().toLowerCase() } : {}),
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
@@ -69,10 +80,22 @@ export function SignUpForm() {
       return;
     }
 
-    const result = await completeSignup({ userId: data.user.id, fullName: fullName.trim(), email, roles, dateOfBirth: dob });
+    const result = await completeSignup({
+      userId: data.user.id,
+      fullName: fullName.trim(),
+      email,
+      roles,
+      dateOfBirth: dob,
+      ...(under13 ? { guardianEmail: guardianEmail.trim() } : {}),
+    });
     setLoading(false);
     if (!result.success) {
       toast.error(result.error);
+      // The account already exists. The dashboard prompt can send the guardian email again.
+      if (under13 && /confirmation email|guardian confirmation/i.test(result.error)) {
+        router.push('/dashboard');
+        router.refresh();
+      }
       return;
     }
     router.push('/dashboard');
@@ -88,6 +111,10 @@ export function SignUpForm() {
           onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         <Input label="Date of birth" type="date" required autoComplete="bday" value={dob} max={new Date().toISOString().slice(0, 10)}
           onChange={(e) => setDob(e.target.value)} />
+        {under13 ? (
+          <Input label="Parent or guardian email" type="email" required autoComplete="email" value={guardianEmail}
+            onChange={(e) => setGuardianEmail(e.target.value)} placeholder="parent@example.com" />
+        ) : null}
         <Input label="Password" type="password" required minLength={8} autoComplete="new-password" value={password}
           onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
         <Button type="submit" className="w-full">Continue</Button>

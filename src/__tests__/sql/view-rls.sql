@@ -79,6 +79,12 @@ INSERT INTO public.fixtures (id, club_id, opponent, match_date) VALUES
   ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Resolve CC', CURRENT_DATE),
   ('ffffffff-ffff-ffff-ffff-ffffffffffff', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Away CC', CURRENT_DATE);
 
+-- Two correct flat votes and one seam miss. Wallets start at 10, 0 and 50.
+INSERT INTO public.pitch_votes (user_id, fixture_id, club_id, prediction) VALUES
+  ('11111111-1111-1111-1111-111111111111', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'flat'),
+  ('aaaaaaaa-1111-1111-1111-111111111111', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'flat'),
+  ('22222222-2222-2222-2222-222222222222', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'seam');
+
 INSERT INTO public.pitch_results (fixture_id, club_id, actual_condition) VALUES
   ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'flat'),
   ('ffffffff-ffff-ffff-ffff-ffffffffffff', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'spin');
@@ -265,6 +271,12 @@ BEGIN
   IF resolved->>'ok' IS DISTINCT FROM 'true' THEN
     RAISE EXCEPTION 'club admin resolve_pitch_votes failed: %', resolved;
   END IF;
+  IF (resolved->>'correct_count')::int IS DISTINCT FROM 2 THEN
+    RAISE EXCEPTION 'expected two correct pitch votes, got %', resolved;
+  END IF;
+  -- A second call, including one that names a different condition, must not pay again.
+  resolved := public.resolve_pitch_votes('dddddddd-dddd-dddd-dddd-dddddddddddd', 'seam', 'second pass');
+  PERFORM set_config('test.resolve_pitch_second', COALESCE(resolved->>'error', resolved::text), false);
 END $$;
 
 -- A player and a coach are not club admins. They can call the functions and get an error.
@@ -379,6 +391,35 @@ BEGIN
 END $$;
 
 RESET ROLE;
+
+-- Calling resolve_pitch_votes twice credits each winner once (75), and leaves the miss unchanged.
+DO $$
+DECLARE
+  winner_adult integer;
+  winner_coach integer;
+  loser integer;
+  second text;
+  recorded text;
+BEGIN
+  second := current_setting('test.resolve_pitch_second', true);
+  SELECT flexi_balance INTO winner_adult FROM public.creds_wallet WHERE user_id = '11111111-1111-1111-1111-111111111111';
+  SELECT flexi_balance INTO winner_coach FROM public.creds_wallet WHERE user_id = 'aaaaaaaa-1111-1111-1111-111111111111';
+  SELECT flexi_balance INTO loser FROM public.creds_wallet WHERE user_id = '22222222-2222-2222-2222-222222222222';
+  SELECT actual_condition INTO recorded FROM public.pitch_results WHERE fixture_id = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
+
+  IF second IS DISTINCT FROM 'already_resolved' THEN
+    RAISE EXCEPTION 'second resolve_pitch_votes should report already_resolved, got %; balances adult % coach % loser %', second, winner_adult, winner_coach, loser;
+  END IF;
+  IF winner_adult IS DISTINCT FROM 85 OR winner_coach IS DISTINCT FROM 75 THEN
+    RAISE EXCEPTION 'winners credited more than once: adult % (expected 85), coach % (expected 75)', winner_adult, winner_coach;
+  END IF;
+  IF loser IS DISTINCT FROM 50 THEN
+    RAISE EXCEPTION 'incorrect pitch vote changed the wallet to %', loser;
+  END IF;
+  IF recorded IS DISTINCT FROM 'flat' THEN
+    RAISE EXCEPTION 'second call changed the recorded condition to %', recorded;
+  END IF;
+END $$;
 
 -- A 3D pose estimate belongs to the player. A coach cannot read a junior's row, and a junior cannot read an adult's.
 INSERT INTO public.technique_pose_frames (user_id, mode, hand, key_event, key_event_frame, times, frames)
