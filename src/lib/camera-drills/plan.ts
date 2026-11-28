@@ -1,5 +1,7 @@
 export type DrillRole = 'batter' | 'bowler' | 'either';
-export type DrillKey = 'squat' | 'balance' | 'shoulder' | 'jump' | 'reach';
+export type DrillKey = 'squat' | 'balance' | 'shoulder' | 'jump' | 'reach' | 'plank';
+/** reps: the ring counts full down-and-up cycles. hold: the ring counts seconds held in position. */
+export type DrillMode = 'reps' | 'hold' | 'range';
 
 export type DrillDef = {
   key: DrillKey;
@@ -8,22 +10,31 @@ export type DrillDef = {
   setup: string;
   target: number;
   unit: 'reps' | 'seconds' | 'degrees';
+  mode: DrillMode;
   /** Under-18s do not do the jump. */
   adultOnly?: boolean;
+  /** Offered on the page, but not part of the starting checks or the daily pick. */
+  optional?: boolean;
 };
 
 export const DRILLS: DrillDef[] = [
-  { key: 'squat', title: 'Bodyweight squat', seconds: 45, setup: 'Stand the phone so your head and both feet are in frame, side-on if you can. Sit down and stand up.', target: 8, unit: 'reps' },
-  { key: 'balance', title: 'Single-leg balance', seconds: 40, setup: 'Face the phone. Lift one foot and hold. Then swap legs.', target: 10, unit: 'seconds' },
-  { key: 'shoulder', title: 'Shoulder circles', seconds: 40, setup: 'Stand side-on, arm’s length from the phone. Circle one arm slowly from your side to overhead.', target: 120, unit: 'degrees' },
-  { key: 'reach', title: 'Easy reach', seconds: 30, setup: 'Stand facing the phone. Reach one arm overhead, then the other. Keep it easy.', target: 6, unit: 'reps' },
-  { key: 'jump', title: 'Easy bounce', seconds: 30, setup: 'Stand side-on with your whole body in frame. A small bounce is enough. This is not a max effort.', target: 5, unit: 'reps', adultOnly: true },
+  { key: 'squat', title: 'Bodyweight squat', seconds: 45, setup: 'Stand the phone so your head and both feet are in frame, side-on if you can. Sit down and stand up.', target: 8, unit: 'reps', mode: 'reps' },
+  { key: 'balance', title: 'Single-leg balance', seconds: 40, setup: 'Face the phone. Lift one foot and hold. Then swap legs.', target: 10, unit: 'seconds', mode: 'hold' },
+  { key: 'shoulder', title: 'Shoulder circles', seconds: 40, setup: 'Stand side-on, arm’s length from the phone. Circle one arm slowly from your side to overhead.', target: 120, unit: 'degrees', mode: 'range' },
+  { key: 'reach', title: 'Easy reach', seconds: 30, setup: 'Stand facing the phone. Reach one arm overhead, then the other. Keep it easy.', target: 6, unit: 'reps', mode: 'reps' },
+  { key: 'jump', title: 'Easy bounce', seconds: 30, setup: 'Stand side-on with your whole body in frame. A small bounce is enough. This is not a max effort.', target: 5, unit: 'reps', mode: 'reps', adultOnly: true },
+  { key: 'plank', title: 'Plank hold', seconds: 60, setup: 'Put the phone on the floor side-on, about two metres away. Get into a plank, forearms down, body in a straight line. Hold as long as is comfortable, and stop if it hurts.', target: 30, unit: 'seconds', mode: 'hold', optional: true },
 ];
 
 export const BASELINE_KEYS: DrillKey[] = ['squat', 'balance', 'shoulder', 'jump'];
 
+/** Holds that can be started from the page without being part of the baseline. */
+export function optionalDrills(): DrillDef[] {
+  return DRILLS.filter((drill) => drill.optional);
+}
+
 export function drillsFor(junior: boolean): DrillDef[] {
-  return DRILLS.filter((drill) => !(junior && drill.adultOnly));
+  return DRILLS.filter((drill) => !(junior && drill.adultOnly) && !drill.optional);
 }
 
 export function baselineTests(junior: boolean): DrillDef[] {

@@ -6,7 +6,7 @@ import { loadDrillSummary } from '@/lib/actions/camera-drills';
 import { WARMUP_NOTE } from '@/lib/camera-drills/ring';
 import { DrillRunner } from '@/components/drills/DrillRunner';
 import { RolePicker } from '@/components/drills/RolePicker';
-import { baselineTests, DRILLS } from '@/lib/camera-drills/plan';
+import { baselineTests, DRILLS, optionalDrills } from '@/lib/camera-drills/plan';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +20,7 @@ export default async function DrillsPage({ searchParams }: { searchParams: Promi
   const daily = DRILLS.find((drill) => drill.key === summary.today?.key) ?? null;
   const active = query.daily === '1'
     ? (daily && !(summary.junior && daily.adultOnly) ? daily : null)
-    : tests.find((drill) => drill.key === query.test) ?? null;
+    : [...tests, ...optionalDrills()].find((drill) => drill.key === query.test) ?? null;
   const dailyHistory = summary.history.filter((row) => row.key === summary.today?.key);
 
   return (
@@ -47,6 +47,14 @@ export default async function DrillsPage({ searchParams }: { searchParams: Promi
           ))}
         </ul>
       </section>
+      <section>
+        <h2 className="text-lg font-semibold">Holds</h2>
+        <ul className="mt-2 space-y-2 text-sm">
+          {optionalDrills().map((drill) => (
+            <li key={drill.key}><Link className="text-sky-400" href={`/drills?test=${drill.key}`}>{drill.title}</Link></li>
+          ))}
+        </ul>
+      </section>
       {summary.today && (
         <section>
           <h2 className="text-lg font-semibold">Today</h2>
@@ -55,7 +63,7 @@ export default async function DrillsPage({ searchParams }: { searchParams: Promi
           <History history={dailyHistory} baseline={summary.baseline[summary.today.key] ?? null} />
         </section>
       )}
-      {active && <DrillRunner drill={active} baseline={query.daily !== '1'} />}
+      {active && <DrillRunner drill={active} baseline={query.daily !== '1' && !active.optional} />}
     </div>
   );
 }

@@ -4,23 +4,23 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { POSE_LITE_MODEL_URL, POSE_WASM_URL } from '@/lib/analysis/pose-runtime';
 import { saveDrillResult } from '@/lib/actions/camera-drills';
-import { J, type PosePoint } from '@/lib/camera-drills/pose';
-import { balanceHoldSeconds, countJumps, countSquats, shoulderRange, squatAngles } from '@/lib/camera-drills/reps';
-import { ringCue, ringFill, WARMUP_NOTE } from '@/lib/camera-drills/ring';
+import type { PosePoint } from '@/lib/camera-drills/pose';
+import { WARMUP_NOTE } from '@/lib/camera-drills/ring';
+import { projectPoint, strokeSizes, visibleBones, type OverlayView } from '@/lib/camera-drills/overlay';
+import { VISIBILITY_MIN } from '@/lib/camera-drills/one-euro';
+import { DrillTracker, type Readout } from '@/lib/camera-drills/session';
 import type { DrillDef } from '@/lib/camera-drills/plan';
-
-const BONES: Array<[number, number]> = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28]];
 
 export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: boolean }) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const frames = useRef<PosePoint[][]>([]);
-  const times = useRef<number[]>([]);
+  const tracker = useRef<DrillTracker | null>(null);
+  const facingRef = useRef<'user' | 'environment'>('user');
   const [phase, setPhase] = useState<'ready' | 'count' | 'go' | 'done'>('ready');
   const [facing, setFacing] = useState<'user' | 'environment'>('user');
   const [count, setCount] = useState(3);
-  const [fill, setFill] = useState(0);
+  const [readout, setReadout] = useState<Readout | null>(null);
   const [cue, setCue] = useState(WARMUP_NOTE);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
@@ -31,8 +31,10 @@ export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: bo
 
   const start = async () => {
     setError(null);
-    frames.current = [];
-    times.current = [];
+    tracker.current?.clear();
+    tracker.current = new DrillTracker(drill);
+    facingRef.current = facing;
+    setReadout(tracker.current.readout());
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
       const video = videoRef.current;
@@ -74,14 +76,13 @@ export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: bo
         const canvas = canvasRef.current;
         if (video && canvas && video.readyState >= 2) {
           const found = landmarker.detectForVideo(video, performance.now());
-          const pose = (found.landmarks?.[0] ?? []) as PosePoint[];
-          if (pose.length) {
-            frames.current.push(pose);
-            times.current.push((performance.now() - started) / 1000);
-            draw(canvas, video, pose);
-            const live = liveFill(drill, frames.current, times.current);
-            setFill(live.fill);
-            setCue(live.cue);
+          // MediaPipe names the confidence `visibility`. The drill code reads it as `v`.
+          const pose = ((found.landmarks?.[0] ?? []) as Array<{ x: number; y: number; visibility?: number }>).map((p) => ({ x: p.x, y: p.y, v: p.visibility }));
+          if (pose.length && tracker.current) {
+            const next = tracker.current.push(pose, (performance.now() - started) / 1000);
+            draw(canvas, video, next.pose, facingRef.current === 'user');
+            setReadout(next.readout);
+            setCue(next.readout.cue);
           }
         }
         if (performance.now() - started >= drill.seconds * 1000) {
@@ -95,9 +96,9 @@ export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: bo
     const finish = () => {
       stop = true;
       cancelAnimationFrame(raf);
-      const summary = summarise(drill, frames.current, times.current);
-      frames.current = [];
-      times.current = [];
+      const summary = tracker.current?.result() ?? { score: 0, detail: {}, line: 'No movement was seen.' };
+      // The poses are dropped here. Only the score and the few numbers in `detail` are saved. No video leaves the phone.
+      tracker.current?.clear();
       videoRef.current?.srcObject && (videoRef.current.srcObject as MediaStream).getTracks().forEach((track) => track.stop());
       setPhase('done');
       setResult(summary.line);
@@ -115,7 +116,13 @@ export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: bo
       <div className="relative mx-auto aspect-[3/4] max-w-sm overflow-hidden rounded-xl bg-black">
         <video ref={videoRef} playsInline muted className="h-full w-full object-cover" style={{ transform: facing === 'user' ? 'scaleX(-1)' : undefined }} />
         <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" />
-        <Ring fill={fill} />
+        <Ring fill={readout?.fill ?? 0} label={readout ? String(readout.mode === 'hold' ? Math.floor(readout.count) : readout.count) : '0'} />
+        <p
+          aria-live="polite"
+          className="absolute inset-x-0 bottom-3 mx-auto w-fit rounded-full bg-black/70 px-4 py-1 text-3xl font-bold tabular-nums text-sky-200"
+        >
+          {readout?.big ?? ''}
+        </p>
         {phase === 'count' && count > 0 && <p className="absolute inset-0 flex items-center justify-center text-6xl font-bold">{count}</p>}
       </div>
       <p className="text-sm">{cue}</p>
@@ -138,69 +145,61 @@ export function DrillRunner({ drill, baseline }: { drill: DrillDef; baseline: bo
   );
 }
 
-function Ring({ fill }: { fill: number }) {
+function Ring({ fill, label }: { fill: number; label: string }) {
   const c = 2 * Math.PI * 28;
   return (
-    <svg className="absolute right-3 top-3 h-16 w-16" viewBox="0 0 72 72" aria-label={`Progress ${Math.round(fill * 100)} percent`}>
-      <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="6" />
-      <circle cx="36" cy="36" r="28" fill="none" stroke="#7dd3fc" strokeWidth="6" strokeDasharray={`${c * fill} ${c}`} transform="rotate(-90 36 36)" />
+    <svg className="absolute right-3 top-3 h-20 w-20" viewBox="0 0 72 72" role="img" aria-label={`${label} counted, ${Math.round(fill * 100)} percent of the goal`}>
+      <circle cx="36" cy="36" r="28" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.25)" strokeWidth="7" />
+      <circle cx="36" cy="36" r="28" fill="none" stroke="#7dd3fc" strokeWidth="7" strokeLinecap="round" strokeDasharray={`${c * fill} ${c}`} transform="rotate(-90 36 36)" />
+      <text x="36" y="44" textAnchor="middle" fontSize="24" fontWeight="700" fill="#fff">{label}</text>
     </svg>
   );
 }
 
-function draw(canvas: HTMLCanvasElement, video: HTMLVideoElement, pose: PosePoint[]) {
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+/**
+ * Draws on a canvas sized to the box in real device pixels, using the same cover-and-mirror maths as the video,
+ * so the skeleton sits on the body. Joints below the visibility line are left out. A dark halo under each line
+ * keeps it readable against clothes and floors.
+ */
+function draw(canvas: HTMLCanvasElement, video: HTMLVideoElement, pose: Array<PosePoint & { visible?: boolean }>, mirrored: boolean) {
+  const box = { width: canvas.clientWidth, height: canvas.clientHeight };
+  const ratio = window.devicePixelRatio || 1;
+  const pixelW = Math.round(box.width * ratio);
+  const pixelH = Math.round(box.height * ratio);
+  if (canvas.width !== pixelW || canvas.height !== pixelH) {
+    canvas.width = pixelW;
+    canvas.height = pixelH;
+  }
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = '#7dd3fc';
-  ctx.lineWidth = 3;
-  for (const [a, b] of BONES) {
-    const p = pose[a];
-    const q = pose[b];
-    if (!p || !q) continue;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.clearRect(0, 0, box.width, box.height);
+  const view: OverlayView = { video: { width: video.videoWidth, height: video.videoHeight }, box, mirrored };
+  const size = strokeSizes(box);
+  const bones = visibleBones(pose, VISIBILITY_MIN);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const [color, width] of [['rgba(0,0,0,0.75)', size.halo], ['#7dd3fc', size.line]] as const) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    for (const [a, b] of bones) {
+      const p = projectPoint(pose[a], view);
+      const q = projectPoint(pose[b], view);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(q.x, q.y);
+      ctx.stroke();
+    }
+  }
+  const joints = new Set(bones.flat());
+  for (const index of joints) {
+    const p = projectPoint(pose[index], view);
     ctx.beginPath();
-    ctx.moveTo(p.x * canvas.width, p.y * canvas.height);
-    ctx.lineTo(q.x * canvas.width, q.y * canvas.height);
+    ctx.arc(p.x, p.y, size.dot, 0, Math.PI * 2);
+    ctx.fillStyle = '#fde047';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
     ctx.stroke();
   }
-}
-
-function liveFill(drill: DrillDef, samples: PosePoint[][], times: number[]) {
-  const summary = summarise(drill, samples, times);
-  return { fill: summary.fill, cue: ringCue(summary.fill, summary.form) };
-}
-
-function summarise(drill: DrillDef, samples: PosePoint[][], times: number[]) {
-  if (drill.key === 'squat' || drill.key === 'reach') {
-    const reading = countSquats(squatAngles(samples));
-    const done = drill.key === 'reach' ? Math.min(reading.reps, samples.length) : reading.reps;
-    const fill = ringFill(done, drill.target, drill.key === 'reach' ? 1 : reading.form);
-    return { fill, form: reading.form, score: Math.round(fill * 100), detail: { reps: done, deepest: Math.round(reading.deepest) }, line: `${done} reps. Score ${Math.round(fill * 100)}.` };
-  }
-  if (drill.key === 'balance') {
-    const left = balanceHoldSeconds(samples.map((frame, i) => ({
-      freeY: frame[J.lAnkle]?.y ?? 1,
-      standY: frame[J.rAnkle]?.y ?? 1,
-      t: times[i] ?? 0,
-    })));
-    const right = balanceHoldSeconds(samples.map((frame, i) => ({
-      freeY: frame[J.rAnkle]?.y ?? 1,
-      standY: frame[J.lAnkle]?.y ?? 1,
-      t: times[i] ?? 0,
-    })));
-    const held = Math.min(left, right);
-    const fill = ringFill(held, drill.target, held > 0 ? 1 : 0);
-    return { fill, form: held > 0 ? 1 : 0, score: Math.round(fill * 100), detail: { left, right }, line: `Left ${left}s, right ${right}s. Score ${Math.round(fill * 100)}.` };
-  }
-  if (drill.key === 'shoulder') {
-    const range = shoulderRange(samples);
-    const fill = ringFill(range.range, drill.target, range.form);
-    return { fill, form: range.form, score: Math.round(fill * 100), detail: { degrees: range.range }, line: `${range.range} degrees of movement. Score ${Math.round(fill * 100)}.` };
-  }
-  const ground = samples[0]?.[J.lAnkle]?.y ?? 1;
-  const jumps = countJumps(samples.map((frame, i) => ({ ankleY: Math.min(frame[J.lAnkle]?.y ?? 1, frame[J.rAnkle]?.y ?? 1), t: times[i] ?? 0 })), ground);
-  const fill = ringFill(jumps.reps, drill.target, jumps.form);
-  return { fill, form: jumps.form, score: Math.round(fill * 100), detail: { reps: jumps.reps, flight: jumps.flight }, line: `${jumps.reps} bounces. Score ${Math.round(fill * 100)}.` };
 }

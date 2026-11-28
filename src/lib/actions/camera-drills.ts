@@ -7,7 +7,7 @@ import { ageOn } from '@/lib/community/age';
 import { cameraDrillsEnabled } from '@/lib/camera-drills/flag';
 import { pickDailyDrill, streakDays, streakLine, type BaselineScores, type DrillKey, type DrillRole } from '@/lib/camera-drills/plan';
 
-const KEYS = new Set(['squat', 'balance', 'shoulder', 'jump', 'reach']);
+const KEYS = new Set(['squat', 'balance', 'shoulder', 'jump', 'reach', 'plank']);
 const ROLES = new Set(['batter', 'bowler', 'either']);
 
 export type DrillSummary = {

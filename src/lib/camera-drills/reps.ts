@@ -1,34 +1,21 @@
-import { armLift, kneeAngle, type PosePoint } from './pose';
+import { armLift, type PosePoint } from './pose';
+import { SQUAT_CONFIG, bestKneeAngle, countCycles, depthForm } from './rep-counter';
 
-export type SquatReading = { reps: number; deepest: number; form: number };
+export type SquatReading = { reps: number; deepest: number; form: number; partials: number };
 
 /**
- * Counts a squat only after the knee bends to the depth line and then straightens again.
- * Form is 1 when the deepest bend reaches the line, and less when it stays shallow.
+ * Counts a rep only after the angle falls to the depth line and then rises back to standing (a full down-and-up
+ * cycle). The gap between the depth line and the standing line is a hysteresis band: a reading that wobbles
+ * around either line cannot count twice. Form is 1 when the deepest bend reaches the line, less when it stays shallow.
  */
-export function countSquats(angles: number[], depth = 110, stand = 155): SquatReading {
-  let reps = 0;
-  let descending = false;
-  let reached = false;
-  let deepest = 180;
-  for (const angle of angles) {
-    if (!Number.isFinite(angle)) continue;
-    deepest = Math.min(deepest, angle);
-    if (!descending && angle < 145) descending = true;
-    if (descending && angle <= depth) reached = true;
-    if (descending && angle >= stand) {
-      if (reached) reps += 1;
-      descending = false;
-      reached = false;
-    }
-  }
-  const span = stand - depth;
-  const form = span <= 0 ? 0 : Math.min(1, Math.max(0, (stand - deepest) / span));
-  return { reps, deepest, form };
+export function countSquats(angles: number[], depth = SQUAT_CONFIG.down, stand = SQUAT_CONFIG.up): SquatReading {
+  const cfg = { ...SQUAT_CONFIG, down: depth, up: stand };
+  const state = countCycles(angles, null, { ...cfg, minRepSeconds: 0 });
+  return { reps: state.reps, partials: state.partials, deepest: state.deepest, form: depthForm(state.deepest, cfg) };
 }
 
 export function squatAngles(frames: PosePoint[][]): number[] {
-  return frames.map((frame) => kneeAngle(frame, 'left') ?? kneeAngle(frame, 'right') ?? Number.NaN).filter((n) => Number.isFinite(n));
+  return frames.map((frame) => bestKneeAngle(frame) ?? Number.NaN).filter((n) => Number.isFinite(n));
 }
 
 /** Seconds the free foot stays clearly off the ground. y grows downward, so a lifted foot has a smaller y. */

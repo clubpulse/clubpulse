@@ -1,3 +1,5 @@
+import { VISIBILITY_MIN } from './one-euro';
+
 /** A body point from the in-browser pose model. y grows downward, the same way the picture is drawn. */
 export type PosePoint = { x: number; y: number; v?: number };
 
@@ -9,7 +11,7 @@ export const J = {
 export function point(frame: PosePoint[] | undefined, index: number): PosePoint | null {
   const p = frame?.[index];
   if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return null;
-  if ((p.v ?? 1) < 0.4) return null;
+  if ((p.v ?? 1) < VISIBILITY_MIN) return null;
   return p;
 }
 
