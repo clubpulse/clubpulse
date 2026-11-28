@@ -5,12 +5,20 @@
 import fs from 'fs';
 import path from 'path';
 import { statedb, statedbClient } from './helpers/statedb';
+import { installResolveFlagRpc } from './helpers/resolve-flag-rpc';
+
+installResolveFlagRpc();
 
 const order: string[] = [];
 let userId: string | null = 'coach-1';
 
 jest.mock('@/lib/supabase/server', () => ({
-  createClient: async () => ({ auth: { getUser: async () => ({ data: { user: userId ? { id: userId } : null } }) } }),
+  createClient: async () => {
+    const empty: Record<string, unknown> = {};
+    for (const m of ['select', 'eq', 'order', 'limit']) empty[m] = () => empty;
+    empty.maybeSingle = async () => ({ data: null, error: null });
+    return { auth: { getUser: async () => ({ data: { user: userId ? { id: userId } : null } }) }, from: () => empty };
+  },
 }));
 jest.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => {
@@ -176,17 +184,39 @@ describe('a resolved flag', () => {
     expect(await resolveSquadFlag('officer-1', 'c1', 'f1')).toEqual({ success: false, error: 'Could not resolve that flag.' });
   });
 
-  it('does not close an incident from another club', async () => {
+  it('does not close an incident from another club, and then leaves the flag open too', async () => {
     statedb.tables.safeguarding_incidents[0].club_id = 'other';
-    await resolveSquadFlag('officer-1', 'c1', 'f1');
+    const res = await resolveSquadFlag('officer-1', 'c1', 'f1');
+    expect(res.success).toBe(false);
     expect(statedb.tables.safeguarding_incidents[0].status).toBe('reported');
+    expect(statedb.tables.age_squad_mismatches[0].resolved_at).toBeNull();
   });
 
-  it('reports a failed incident update instead of saying it all worked', async () => {
+  it('closes the flag and the incident in one database call, so they cannot get out of step', async () => {
+    await resolveSquadFlag('officer-1', 'c1', 'f1');
+    expect(statedb.rpcCalls.map((c) => c.name)).toEqual(['resolve_age_squad_flag']);
+    expect(statedb.rpcCalls[0].args).toMatchObject({ p_flag: 'f1', p_club: 'c1', p_resolver: 'officer-1', p_via: 'club_welfare_officer' });
+  });
+
+  it('reports a failed incident update instead of saying it all worked, and the flag stays open', async () => {
     statedb.failOn = 'safeguarding_incidents';
     const res = await resolveSquadFlag('officer-1', 'c1', 'f1');
     statedb.failOn = null;
     expect(res.success).toBe(false);
+    expect(statedb.tables.age_squad_mismatches[0].resolved_at).toBeNull();
+    expect(statedb.tables.safeguarding_incidents[0].status).toBe('reported');
+  });
+
+  it('lets the player through again once the flag is resolved, and blocks them again when a new flag is raised', async () => {
+    const { getMyAgeGroup } = await import('@/lib/actions/schools');
+    userId = 'p1';
+    const blocked = await getMyAgeGroup('c1');
+    expect(blocked).toEqual({ success: false, error: PLAYER_DOB_HOLD });
+    await resolveSquadFlag('officer-1', 'c1', 'f1');
+    const after = await getMyAgeGroup('c1');
+    expect(after).not.toEqual({ success: false, error: PLAYER_DOB_HOLD });
+    statedb.tables.age_squad_mismatches.push({ id: 'f2', club_id: 'c1', user_id: 'p1', age_group: 'U15', reason: 'mismatch', incident_id: null, resolved_at: null });
+    expect(await getMyAgeGroup('c1')).toEqual({ success: false, error: PLAYER_DOB_HOLD });
   });
 
   it('only a welfare officer with a current DBS check can resolve', async () => {

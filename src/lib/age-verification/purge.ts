@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { sendEmail } from '@/lib/email/resend';
+import { activeLeadEmails } from './lead';
 import { purgeAlert, safeguardingLeadEmail } from './alert';
 
 type Admin = SupabaseClient;
@@ -53,7 +54,13 @@ export async function purgeRecipients(admin: Admin, clubIds: string[]): Promise<
   if (error) return { error: 'could not look up welfare officers' };
   const covered = new Set((officers ?? []).map((row) => row.club_id as string));
   const emails = new Set<string>();
-  if (clubIds.some((id) => !covered.has(id))) emails.add(lead);
+  if (clubIds.some((id) => !covered.has(id))) {
+    // No welfare officer at one of the clubs: the active leads are told. The environment address is an extra copy only.
+    emails.add(lead);
+    const leads = await activeLeadEmails(admin);
+    if ('error' in leads) return { error: leads.error };
+    for (const email of leads.emails) emails.add(email);
+  }
   const ids = (officers ?? []).map((row) => row.user_id as string);
   if (ids.length > 0) {
     const { data: profiles, error: profileError } = await admin.from('profiles').select('email').in('id', ids);
@@ -78,7 +85,8 @@ export async function sendPurgeAlerts(admin: Admin): Promise<{ sent: number; fai
     const recipients = await purgeRecipients(admin, (row.club_ids as string[] | null) ?? []);
     let ok = false;
     if ('emails' in recipients) {
-      const message = purgeAlert({ recordId: row.id as string, purgedAt: row.purged_at as string });
+      const clubIds = (row.club_ids as string[] | null) ?? [];
+      const message = purgeAlert({ recordId: row.id as string, purgedAt: row.purged_at as string, clubs: await clubsForAlert(admin, clubIds) });
       const results = await Promise.all(recipients.emails.map((to) => sendEmail({ to, subject: message.subject, text: message.text })));
       ok = results.every(Boolean);
     }
@@ -92,4 +100,16 @@ export async function sendPurgeAlerts(admin: Admin): Promise<{ sent: number; fai
     }
   }
   return { sent, failed };
+}
+
+/** Club names for the alert, and which of them have no welfare officer, so a lead knows the follow-up is theirs. */
+async function clubsForAlert(admin: Admin, clubIds: string[]): Promise<Array<{ name: string; noWelfareOfficer: boolean }>> {
+  if (clubIds.length === 0) return [];
+  const [{ data: clubs }, { data: officers }] = await Promise.all([
+    admin.from('clubs').select('id, name').in('id', clubIds),
+    admin.from('club_members').select('club_id').in('club_id', clubIds).eq('is_active', true).eq('role', 'welfare_officer'),
+  ]);
+  const covered = new Set((officers ?? []).map((r) => r.club_id as string));
+  const names = new Map((clubs ?? []).map((c) => [c.id as string, c.name as string]));
+  return clubIds.map((id) => ({ name: names.get(id) ?? 'A club', noWelfareOfficer: !covered.has(id) }));
 }

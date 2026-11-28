@@ -6,6 +6,7 @@ import { safeguardingLeadEmail } from '@/lib/age-verification/alert';
 import { ageVerificationEnabled } from '@/lib/age-verification/flag';
 import { purgeDecision } from '@/lib/age-verification/rules';
 import { sendEmail } from '@/lib/email/resend';
+import { sendHandoverNotices } from '@/lib/age-verification/handover';
 import { markPurged, recordPurge, sendPurgeAlerts } from '@/lib/age-verification/purge';
 
 export const dynamic = 'force-dynamic';
@@ -79,5 +80,6 @@ export async function GET(req: Request) {
   }
   // Tell the clubs. Alerts that failed earlier are retried here until they go out.
   const purgeAlerts = await sendPurgeAlerts(admin);
-  return NextResponse.json({ deleted, alerted, purgeAlertsSent: purgeAlerts.sent, purgeAlertsFailed: purgeAlerts.failed });
+  const handovers = await sendHandoverNotices(admin);
+  return NextResponse.json({ deleted, alerted, purgeAlertsSent: purgeAlerts.sent, purgeAlertsFailed: purgeAlerts.failed, handoverNoticesSent: handovers.sent, handoverNoticesFailed: handovers.failed });
 }

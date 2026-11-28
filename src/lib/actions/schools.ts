@@ -43,7 +43,7 @@ export async function getMyAgeGroup(
   const userId = await currentUserId();
   if (!userId) return { success: false, error: 'Not authenticated' };
   if (ageVerificationEnabled()) {
-    const { data: held } = await createAdminClient().from('age_squad_mismatches').select('id').eq('club_id', clubId).eq('user_id', userId).limit(1);
+    const { data: held } = await createAdminClient().from('age_squad_mismatches').select('id').eq('club_id', clubId).eq('user_id', userId).is('resolved_at', null).limit(1);
     if ((held ?? []).length > 0) return { success: false, error: PLAYER_DOB_HOLD };
   }
   const supabase = await createClient();

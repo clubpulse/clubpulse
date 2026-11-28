@@ -21,7 +21,7 @@ export function SquadFlagList({ clubId, items, error }: { clubId: string; items:
       <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 8 }}>
         {left.map((flag) => (
           <li key={flag.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-            <span>{flag.ageGroup} · {flag.reason === 'mismatch' ? 'Age band does not match' : 'Date of birth is not confirmed'}</span>
+            <span><strong>{flag.playerName}</strong> · {flag.ageGroup} · {flag.reason === 'mismatch' ? 'Age band does not match' : 'Date of birth is not confirmed'}</span>
             <button type="button" disabled={pending} onClick={() => start(async () => {
               const result = await resolveSquadFlagAction(clubId, flag.id);
               if (result.success) setLeft((rows) => rows.filter((row) => row.id !== flag.id));

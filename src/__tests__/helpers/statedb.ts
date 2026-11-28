@@ -4,13 +4,21 @@
 export type Row = Record<string, any>;
 export const statedb = {
   tables: {} as Record<string, Row[]>,
-  reset(tables: Record<string, Row[]>) { this.tables = JSON.parse(JSON.stringify(tables)); },
+  reset(tables: Record<string, Row[]>) { this.tables = JSON.parse(JSON.stringify(tables)); this.rpcCalls = []; },
   /** Set to a table name to make every query on it return an error, to test the failure paths */
   failOn: null as string | null,
+  /** Stand-ins for database functions, by name. A test registers the behaviour it wants. */
+  rpcs: {} as Record<string, (args: Record<string, any>) => { data: any; error: { message: string; code?: string } | null }>,
+  rpcCalls: [] as Array<{ name: string; args: Record<string, any> }>,
 };
 
 export function statedbClient() {
   return {
+    rpc: async (name: string, args: Record<string, any>) => {
+      statedb.rpcCalls.push({ name, args });
+      const handler = statedb.rpcs[name];
+      return handler ? handler(args) : { data: null, error: { message: `no stand-in for ${name}` } };
+    },
     from: (table: string) => {
       const filters: Array<(r: Row) => boolean> = [];
       let op = 'select'; let payload: any; let single = false; let returning = false; let lim = Infinity;

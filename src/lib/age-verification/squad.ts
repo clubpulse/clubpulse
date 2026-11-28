@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ageOn } from '@/lib/community/age';
 import { sendEmail } from '@/lib/email/resend';
-import { safeguardingLeadEmail, squadAlert } from './alert';
+import { noWelfareOfficerAlert, safeguardingLeadEmail, squadAlert } from './alert';
+import { activeLeadEmails } from './lead';
 import { ageVerificationEnabled } from './flag';
 import { acceptedAgePass } from './provider';
 import { PLAYER_DOB_HOLD, ageSquadMismatch, verifiedAge } from './rules';
@@ -32,7 +33,7 @@ export async function openSquadHold(admin: Admin, clubId: string, userIds: strin
   return (data ?? []).length > 0 ? PLAYER_DOB_HOLD : null;
 }
 
-type Refused = { userId: string; name: string; reason: 'mismatch' | 'unverified' };
+type Refused = { userId: string; name: string; reason: 'mismatch' | 'unverified'; flagId?: string; raisedAt?: string };
 
 /**
  * Call this only after canManageSquad. It reads verification for the named players and, when
@@ -122,13 +123,14 @@ export async function guardSquad(admin: Admin, input: { clubId: string; actorId:
       console.error('[age-verification] could not save the safeguarding incident');
       return { ok: false, error: 'Could not record the safeguarding flag. The squad was not changed.' };
     }
-    const { error: flagError } = await admin.from('age_squad_mismatches').insert({
+    const { data: flagRow, error: flagError } = await admin.from('age_squad_mismatches').insert({
       club_id: input.clubId,
       user_id: row.userId,
       age_group: input.ageGroup,
       reason: row.reason,
       incident_id: incident.id,
-    });
+    }).select('id, created_at').single();
+    if (flagRow) { row.flagId = flagRow.id as string; row.raisedAt = (flagRow.created_at as string | undefined) ?? new Date().toISOString(); }
     if (flagError) {
       console.error('[age-verification] could not save the squad flag');
       return { ok: false, error: 'Could not record the safeguarding flag. The squad was not changed.' };
@@ -147,18 +149,19 @@ async function notifySquad(admin: Admin, clubId: string, ageGroup: string, refus
     console.error('[age-verification] could not look up the welfare officer');
     return 'The player was not added, and the club welfare officer could not be looked up.';
   }
+  const { data: club } = await admin.from('clubs').select('name').eq('id', clubId).maybeSingle();
+  const clubName = ((club as { name?: string } | null)?.name) || 'this club';
   const ids = (welfare ?? []).map((row) => row.user_id as string);
+  const noOfficer = ids.length === 0;
+  // The environment address is an extra copy only. The people who act are the welfare officer, or the active leads.
   const emails = new Set<string>([lead]);
-  if (ids.length === 0) {
-    const sent = await sendEmail({
-      to: lead,
-      subject: 'SHIFTUP safeguarding: no welfare officer',
-      text: 'A squad age check could not be sent to a welfare officer because this club has none. The player was not added. This message does not include a date of birth.',
-    });
-    if (!sent) {
-      console.error('[age-verification] could not email the safeguarding lead about a missing welfare officer');
+  if (noOfficer) {
+    const leads = await activeLeadEmails(admin);
+    if ('error' in leads) {
+      console.error('[age-verification] could not look up the safeguarding leads');
       return 'The player was not added, and the safeguarding alert could not be sent.';
     }
+    for (const email of leads.emails) emails.add(email);
   } else {
     const { data: profiles, error: profileError } = await admin.from('profiles').select('email').in('id', ids);
     if (profileError) {
@@ -167,8 +170,15 @@ async function notifySquad(admin: Admin, clubId: string, ageGroup: string, refus
     }
     for (const profile of profiles ?? []) if (profile.email) emails.add(profile.email as string);
   }
+  let openAtClub: number | undefined;
+  if (noOfficer) {
+    const { data: open } = await admin.from('age_squad_mismatches').select('id').eq('club_id', clubId).is('resolved_at', null);
+    openAtClub = (open ?? []).length;
+  }
   for (const row of refused) {
-    const message = squadAlert({ playerName: row.name, ageGroup, reason: row.reason });
+    const message = noOfficer
+      ? noWelfareOfficerAlert({ clubName, playerName: row.name, ageGroup, reason: row.reason, flagId: row.flagId, raisedAt: row.raisedAt ?? new Date().toISOString(), openFlagsAtClub: openAtClub })
+      : squadAlert({ playerName: row.name, ageGroup, reason: row.reason, clubName });
     for (const to of emails) {
       const sent = await sendEmail({ to, subject: message.subject, text: message.text });
       if (!sent) {

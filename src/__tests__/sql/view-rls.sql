@@ -559,3 +559,199 @@ BEGIN
   END;
 END $$;
 RESET ROLE;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Squad flags: nobody signed in can change them; closing one is a single transaction; the platform lead rules hold.
+-- ---------------------------------------------------------------------------------------------------------------
+
+-- A signed-in user's UPDATE, INSERT or DELETE on age_squad_mismatches is refused, even a DBS-checked club admin.
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  BEGIN
+    UPDATE public.age_squad_mismatches SET resolved_at = NOW();
+    RAISE EXCEPTION 'a signed-in user updated a squad flag';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    INSERT INTO public.age_squad_mismatches (club_id, user_id, age_group, reason)
+    VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', 'Open', 'mismatch');
+    RAISE EXCEPTION 'a signed-in user inserted a squad flag';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    DELETE FROM public.age_squad_mismatches;
+    RAISE EXCEPTION 'a signed-in user deleted a squad flag';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  -- and none of the lead tables, the audit log or the hand-over rows are readable from the API
+  BEGIN
+    PERFORM 1 FROM public.platform_safeguarding_leads;
+    RAISE EXCEPTION 'a signed-in user read the lead table';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    PERFORM 1 FROM public.safeguarding_lead_audit;
+    RAISE EXCEPTION 'a signed-in user read the lead audit log';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    PERFORM 1 FROM public.age_flag_handovers;
+    RAISE EXCEPTION 'a signed-in user read the hand-over rows';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(gen_random_uuid(), 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '55555555-5555-5555-5555-555555555555', 'club_welfare_officer', NULL);
+    RAISE EXCEPTION 'a signed-in user called the resolve function';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;
+
+-- Fixtures: Away CC has no welfare officer. F1 and F2 are about the player 4444, F3 about 8888.
+INSERT INTO public.safeguarding_incidents (id, club_id, reported_by, category, description) VALUES
+  ('a1a1a1a1-0000-0000-0000-000000000001', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '55555555-5555-5555-5555-555555555555', 'welfare_concern', 'F1 incident'),
+  ('a1a1a1a1-0000-0000-0000-000000000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '55555555-5555-5555-5555-555555555555', 'welfare_concern', 'F2 incident, in another club'),
+  ('a1a1a1a1-0000-0000-0000-000000000003', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'abababab-abab-abab-abab-abababababab', 'welfare_concern', 'F3 incident, reported by a lead');
+INSERT INTO public.age_squad_mismatches (id, club_id, user_id, age_group, reason, incident_id) VALUES
+  ('f1f1f1f1-0000-0000-0000-000000000001', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '44444444-4444-4444-4444-444444444444', 'U15', 'unverified', 'a1a1a1a1-0000-0000-0000-000000000001'),
+  ('f1f1f1f1-0000-0000-0000-000000000002', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '44444444-4444-4444-4444-444444444444', 'U13', 'mismatch', 'a1a1a1a1-0000-0000-0000-000000000002'),
+  ('f1f1f1f1-0000-0000-0000-000000000003', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '88888888-8888-8888-8888-888888888888', 'U15', 'mismatch', 'a1a1a1a1-0000-0000-0000-000000000003');
+
+-- Leads: abab is active. 9999 has training older than a year. 4444 and 6666 are active but conflicted. 2222 has no DBS date.
+INSERT INTO public.platform_safeguarding_leads (user_id, granted_by, dbs_checked_on, training_completed_on) VALUES
+  ('abababab-abab-abab-abab-abababababab', '55555555-5555-5555-5555-555555555555', CURRENT_DATE - 100, CURRENT_DATE - 30),
+  ('99999999-9999-9999-9999-999999999999', '55555555-5555-5555-5555-555555555555', CURRENT_DATE - 100, CURRENT_DATE - 800),
+  ('44444444-4444-4444-4444-444444444444', '55555555-5555-5555-5555-555555555555', CURRENT_DATE - 100, CURRENT_DATE - 30),
+  ('66666666-6666-6666-6666-666666666666', '55555555-5555-5555-5555-555555555555', CURRENT_DATE - 100, CURRENT_DATE - 30),
+  ('22222222-2222-2222-2222-222222222222', '55555555-5555-5555-5555-555555555555', NULL, CURRENT_DATE - 30);
+
+DO $$
+DECLARE
+  f1 uuid := 'f1f1f1f1-0000-0000-0000-000000000001';
+  f2 uuid := 'f1f1f1f1-0000-0000-0000-000000000002';
+  f3 uuid := 'f1f1f1f1-0000-0000-0000-000000000003';
+  away uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+  lead uuid := 'abababab-abab-abab-abab-abababababab';
+  n integer;
+BEGIN
+  -- the role is inactive unless both dates are current
+  IF NOT public.platform_lead_is_active(lead) THEN RAISE EXCEPTION 'a lead with both dates current is not active'; END IF;
+  IF public.platform_lead_is_active('99999999-9999-9999-9999-999999999999') THEN RAISE EXCEPTION 'a lead with out-of-date training is active'; END IF;
+  IF public.platform_lead_is_active('22222222-2222-2222-2222-222222222222') THEN RAISE EXCEPTION 'a lead with no DBS date is active'; END IF;
+  IF public.platform_lead_is_active('11111111-1111-1111-1111-111111111111') THEN RAISE EXCEPTION 'someone who is not a lead is active'; END IF;
+  UPDATE public.platform_safeguarding_leads SET revoked_at = NOW() WHERE user_id = '66666666-6666-6666-6666-666666666666';
+  IF public.platform_lead_is_active('66666666-6666-6666-6666-666666666666') THEN RAISE EXCEPTION 'a revoked lead is active'; END IF;
+  UPDATE public.platform_safeguarding_leads SET revoked_at = NULL WHERE user_id = '66666666-6666-6666-6666-666666666666';
+
+  -- an inactive lead cannot close a flag
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f1, away, '99999999-9999-9999-9999-999999999999', 'platform_lead', 'x');
+    RAISE EXCEPTION 'an inactive lead closed a flag';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  -- a lead must say why
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f1, away, lead, 'platform_lead', '   ');
+    RAISE EXCEPTION 'a lead closed a flag without a note';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM LIKE 'a lead closed%' THEN RAISE; END IF;
+  END;
+  -- conflict of interest: the flag is about the lead, the lead belongs to the club, the lead reported the incident
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f1, away, '44444444-4444-4444-4444-444444444444', 'platform_lead', 'about me');
+    RAISE EXCEPTION 'a lead closed a flag about themselves';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    PERFORM public.resolve_age_squad_flag('f1f1f1f1-0000-0000-0000-0000000000aa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '66666666-6666-6666-6666-666666666666', 'platform_lead', 'my club');
+    RAISE EXCEPTION 'an unknown flag was accepted';
+  EXCEPTION WHEN no_data_found THEN NULL;
+  END;
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f3, away, lead, 'platform_lead', 'I reported this');
+    RAISE EXCEPTION 'a lead closed a flag on an incident they reported';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  INSERT INTO public.club_members (club_id, user_id, role, is_active, is_junior) VALUES (away, '66666666-6666-6666-6666-666666666666', 'player', true, false);
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f1, away, '66666666-6666-6666-6666-666666666666', 'platform_lead', 'my own club');
+    RAISE EXCEPTION 'a lead closed a flag at their own club';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  SELECT count(*) INTO n FROM public.age_squad_mismatches WHERE club_id = away AND resolved_at IS NULL;
+  IF n <> 3 THEN RAISE EXCEPTION 'a refused attempt changed a flag (% open)', n; END IF;
+  SELECT count(*) INTO n FROM public.safeguarding_lead_audit WHERE action = 'resolve';
+  IF n <> 0 THEN RAISE EXCEPTION 'a refused attempt left a resolve audit row'; END IF;
+
+  -- ONE transaction: F2's incident belongs to another club, so the incident cannot be updated and the flag must stay open
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f2, away, lead, 'platform_lead', 'should roll back');
+    RAISE EXCEPTION 'the flag closed although its incident could not be updated';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM LIKE 'the flag closed%' THEN RAISE; END IF;
+  END;
+  IF (SELECT resolved_at FROM public.age_squad_mismatches WHERE id = f2) IS NOT NULL THEN RAISE EXCEPTION 'flag F2 was closed by a rolled-back call'; END IF;
+  IF (SELECT status::text FROM public.safeguarding_incidents WHERE id = 'a1a1a1a1-0000-0000-0000-000000000002') <> 'reported' THEN RAISE EXCEPTION 'incident for F2 changed'; END IF;
+  SELECT count(*) INTO n FROM public.safeguarding_lead_audit WHERE flag_ids @> ARRAY[f2];
+  IF n <> 0 THEN RAISE EXCEPTION 'a rolled-back call left an audit row'; END IF;
+
+  -- a normal close by an active lead: flag, incident and audit row together, with the route and the note
+  DELETE FROM public.club_members WHERE club_id = away AND user_id = '66666666-6666-6666-6666-666666666666';
+  PERFORM public.resolve_age_squad_flag(f1, away, lead, 'platform_lead', 'Date of birth confirmed with the club admin');
+  IF NOT EXISTS (SELECT 1 FROM public.age_squad_mismatches WHERE id = f1 AND resolved_at IS NOT NULL AND resolved_by = lead AND resolved_via = 'platform_lead' AND resolution_note LIKE 'Date of birth confirmed%') THEN
+    RAISE EXCEPTION 'flag F1 was not closed with its route and note';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.safeguarding_incidents WHERE id = 'a1a1a1a1-0000-0000-0000-000000000001' AND status = 'resolved' AND resolved_at IS NOT NULL) THEN
+    RAISE EXCEPTION 'the incident for F1 was not closed with its flag';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.safeguarding_lead_audit WHERE lead_id = lead AND action = 'resolve' AND club_id = away AND flag_ids = ARRAY[f1] AND note LIKE 'Date of birth confirmed%') THEN
+    RAISE EXCEPTION 'the lead resolve was not audited';
+  END IF;
+  -- closing it again is refused
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f1, away, lead, 'platform_lead', 'again');
+    RAISE EXCEPTION 'a closed flag was closed twice';
+  EXCEPTION WHEN no_data_found THEN NULL;
+  END;
+
+  -- the audit log is append only
+  BEGIN
+    UPDATE public.safeguarding_lead_audit SET note = 'edited';
+    RAISE EXCEPTION 'the audit log was edited';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    DELETE FROM public.safeguarding_lead_audit;
+    RAISE EXCEPTION 'the audit log was deleted from';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+
+  -- hand-over: naming a welfare officer records every open flag as handed to them, keeps the history, and is not repeated
+  SELECT count(*) INTO n FROM public.age_flag_handovers WHERE club_id = away;
+  IF n <> 0 THEN RAISE EXCEPTION 'hand-overs exist before a welfare officer was named'; END IF;
+  INSERT INTO public.club_members (club_id, user_id, role, is_active, is_junior) VALUES (away, 'aaaaaaaa-1111-1111-1111-111111111111', 'welfare_officer', true, false);
+  SELECT count(*) INTO n FROM public.age_flag_handovers WHERE club_id = away AND officer_id = 'aaaaaaaa-1111-1111-1111-111111111111' AND notified_at IS NULL;
+  IF n <> 2 THEN RAISE EXCEPTION 'expected the 2 open flags handed over, got %', n; END IF;
+  IF EXISTS (SELECT 1 FROM public.age_flag_handovers WHERE flag_id = f1) THEN RAISE EXCEPTION 'a closed flag was handed over'; END IF;
+  UPDATE public.club_members SET is_active = false WHERE club_id = away AND user_id = 'aaaaaaaa-1111-1111-1111-111111111111';
+  UPDATE public.club_members SET is_active = true WHERE club_id = away AND user_id = 'aaaaaaaa-1111-1111-1111-111111111111';
+  SELECT count(*) INTO n FROM public.age_flag_handovers WHERE club_id = away;
+  IF n <> 2 THEN RAISE EXCEPTION 're-naming the same officer repeated the hand-over (%)', n; END IF;
+  IF (SELECT count(*) FROM public.safeguarding_lead_audit WHERE action = 'resolve') <> 1 THEN RAISE EXCEPTION 'hand-over changed the lead audit history'; END IF;
+
+  -- with a welfare officer in place the lead can no longer decide this club's flags
+  BEGIN
+    PERFORM public.resolve_age_squad_flag(f3, away, lead, 'platform_lead', 'club has an officer now');
+    RAISE EXCEPTION 'a lead closed a flag at a club with a welfare officer';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  -- the officer route closes the flag and its incident together too
+  PERFORM public.resolve_age_squad_flag(f3, away, 'aaaaaaaa-1111-1111-1111-111111111111', 'club_welfare_officer', NULL);
+  IF NOT EXISTS (SELECT 1 FROM public.age_squad_mismatches WHERE id = f3 AND resolved_via = 'club_welfare_officer')
+     OR NOT EXISTS (SELECT 1 FROM public.safeguarding_incidents WHERE id = 'a1a1a1a1-0000-0000-0000-000000000003' AND status = 'resolved') THEN
+    RAISE EXCEPTION 'the welfare officer route did not close the flag and incident together';
+  END IF;
+END $$;

@@ -11,7 +11,8 @@ export function NoWelfareOfficerPanel({ data }: { data: FallbackFlags }) {
     <section aria-label="Squad flags without a welfare officer">
       <h3 style={cardTitle}>Squad flags (no welfare officer)</h3>
       <p style={muted}>
-        This club has no welfare officer, so safeguarding alerts go to {data.alertTo}. Add a welfare officer to review and close flags.
+        This club has no welfare officer, so SHIFTUP&apos;s safeguarding leads review these flags and are alerted, with a copy to {data.alertTo}.
+        Name a welfare officer and every open flag below is handed to them, with the history kept.
         Until then each player sees: {PLAYER_DOB_HOLD}
       </p>
       {data.error && <p role="alert">{data.error}</p>}
@@ -19,7 +20,7 @@ export function NoWelfareOfficerPanel({ data }: { data: FallbackFlags }) {
       <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 8 }}>
         {data.items.map((flag) => (
           <li key={flag.id}>
-            {flag.ageGroup} · {flag.reason === 'mismatch' ? 'Age band does not match' : 'Date of birth is not confirmed'} · {flag.createdAt.slice(0, 10)}
+            <strong>{flag.playerName}</strong> · {flag.ageGroup} · {flag.reason === 'mismatch' ? 'Age band does not match' : 'Date of birth is not confirmed'} · {flag.createdAt.slice(0, 10)}
           </li>
         ))}
       </ul>
