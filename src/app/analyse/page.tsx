@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AnalyseClient } from '@/components/analyse/AnalyseClient';
 import { AnalyseLanding } from '@/components/analyse/AnalyseLanding';
 import { DashboardShell } from '@/components/layout/DashboardShell';
+import { technique3dEnabled } from '@/lib/technique3d/flag';
 
 export const metadata: Metadata = { title: 'Analyse', description: 'AI-powered cricket motion analysis' };
 
@@ -18,7 +19,7 @@ export default async function AnalysePage() {
   // Technique analysis runs on the phone. A Free account is not sent to the paid-plan screen.
   return (
     <DashboardShell user={user}>
-      <AnalyseClient />
+      <AnalyseClient technique3d={technique3dEnabled()} />
     </DashboardShell>
   );
 }

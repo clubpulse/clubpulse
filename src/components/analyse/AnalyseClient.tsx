@@ -1,6 +1,7 @@
 'use client';
 
 import { Glyph } from '@/components/icons/Glyph';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -28,6 +29,8 @@ import {
 import { framingPrompt } from '@/lib/analysis/framing';
 import { estimateBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
 import { CLEAR_IMAGE, heavyFrameIndexes, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
+
+const TechniquePanel = dynamic(() => import('@/components/technique3d/TechniquePanel').then((m) => m.TechniquePanel), { ssr: false });
 import { scoreMeaning, topFix, coachingChains } from '@/lib/analysis/coaching-causes';
 
 /** An earlier analysis, tagged with the recording it came from */
@@ -255,11 +258,13 @@ function Toggle<T extends string>({ value, options, onChange, disabled, label }:
   );
 }
 
-export function AnalyseClient() {
+export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }) {
   const [tab, setTab] = useState<AnalyseTab>('pose');
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
+  // MediaPipe's video mode rejects a timestamp that goes backwards, so each new clip continues the clock.
+  const poseStampRef = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
@@ -296,6 +301,8 @@ export function AnalyseClient() {
   const [guideStep, setGuideStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUrlRef = useRef<string | null>(null);
+  const [clipUrl, setClipUrl] = useState<string | null>(null);
+  const [poseAnalysisId, setPoseAnalysisId] = useState<string | null>(null);
   // The position shown in the figure under the video
   const [detail, setDetail] = useState<(Analysis & { pose: NormalizedLandmark[]; width: number; height: number }) | null>(null);
   const [coaching, setCoaching] = useState<{ state: 'idle' | 'loading' | 'ready'; text?: string }>({ state: 'idle' });
@@ -390,6 +397,8 @@ export function AnalyseClient() {
     }
     if (fileUrlRef.current) URL.revokeObjectURL(fileUrlRef.current);
     fileUrlRef.current = null;
+    setClipUrl(null);
+    setPoseAnalysisId(null);
   }, []);
 
   useEffect(() => {
@@ -453,7 +462,10 @@ export function AnalyseClient() {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ analysis_type: 'pose', result_json: resultJson, coaching_paragraph: coachData?.paragraph ?? null }),
-          }).catch(() => {/* silent */});
+          })
+            .then((response) => response.ok ? response.json() : null)
+            .then((saved: { id?: string } | null) => { if (saved?.id) setPoseAnalysisId(saved.id); })
+            .catch(() => {/* silent */});
         })
         .catch(() => { if (seq === compareSeq.current) setCoaching({ state: 'idle' }); });
     };
@@ -827,6 +839,7 @@ export function AnalyseClient() {
       if (!video) return;
       const url = URL.createObjectURL(file);
       fileUrlRef.current = url;
+      setClipUrl(url);
       video.srcObject = null;
       // Phones only let a clip start by itself when it is silent and plays inside the page.
       // Set as attributes as well as properties: some browsers only look at one of them.
@@ -839,35 +852,18 @@ export function AnalyseClient() {
       video.setAttribute('webkit-playsinline', 'true');
       video.setAttribute('autoplay', '');
       video.src = url;
-      video.onended = () => finishRecording();
+      video.onended = null;
       await clipReady(video);
-      try {
-        await video.play();
-      } catch (err) {
-        // Some phones refuse to start a clip by themselves (always in Low Power Mode, and often
-        // straight after the photo picker closes). The clip does not need to play to be read:
-        // step through it frame by frame instead.
-        if (err instanceof DOMException && err.name === 'NotAllowedError') {
-          await readBySeeking(video);
-          return;
-        }
-        throw err;
-      }
-      readWhilePlaying();
+      // Always step through an upload on a fixed time grid. Playing it takes whatever frames the
+      // browser happens to present, so the same clip was accepted on one run and rejected on the next.
+      video.pause();
+      await readBySeeking(video);
     } catch (err) {
       stopCamera();
       setProgress(null);
       setError(clipError(err));
       setPhase('idle');
     }
-  }
-
-  // The clip is playing: collect poses from it as it goes
-  function readWhilePlaying() {
-    lastVideoTimeRef.current = -1;
-    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [], seen: 0, extra: 0 };
-    setPhase('recording');
-    startLoop();
   }
 
   // Reads a clip without playing it: moves through it a frame at a time and reads the pose at
@@ -878,6 +874,7 @@ export function AnalyseClient() {
     if (!landmarker || !canvas || !Number.isFinite(video.duration) || video.duration <= 0) throw new Error('unreadable');
     const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[], seen: 0, extra: 0 };
     recordingRef.current = recording;
+    trackedPose.current = null;
     setProgress(0);
     setPhase('recording');
     canvas.width = video.videoWidth;
@@ -889,7 +886,8 @@ export function AnalyseClient() {
       await seekTo(video, time);
       // Someone started the camera or chose another clip while this one was being read
       if (recordingRef.current !== recording) return;
-      const found = landmarker.detectForVideo(video, performance.now());
+      poseStampRef.current += Math.max(1, Math.round(step * 1000));
+      const found = landmarker.detectForVideo(video, poseStampRef.current);
       const pose = choosePose(found.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
       if (pose) trackedPose.current = pose;
       const bodies = (found.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
@@ -1354,6 +1352,10 @@ export function AnalyseClient() {
             </div>
           )}
         </div>
+
+        {technique3d && fileShown && phase === 'done' && clipUrl && (
+          <TechniquePanel key={`${clipUrl}:${mode}:${hand}`} clipUrl={clipUrl} mode={mode} hand={hand} analysisId={poseAnalysisId} />
+        )}
 
         {fileShown && phase === 'done' && frameAt && frameAt.total > 1 && (
           <div className="mt-4">

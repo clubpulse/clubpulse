@@ -213,6 +213,9 @@ Write only the paragraph — no headings, no bullet points, no markdown.`;
 
     return NextResponse.json({ paragraph });
   } catch (err) {
+    const message = err instanceof Error ? err.message : '';
+    // Preview deploys have no AI key. The scores still stand; the written line is simply absent.
+    if (/authentication method/i.test(message)) return NextResponse.json({ paragraph: null });
     console.error('[coaching-read]', err);
     return NextResponse.json({ error: 'Failed to generate coaching read' }, { status: 500 });
   }
