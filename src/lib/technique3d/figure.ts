@@ -24,6 +24,7 @@ export type Framing = {
   referenceDrop: number;
   bounds: Bounds;
   ground: number;
+  focusX: number;
 };
 export type Projected = { vertical: number; horizontal: number; centerX: number; centerY: number };
 
@@ -301,7 +302,10 @@ export function clipFraming(playerClip: PoseFrame[] | null, referenceClip: PoseF
   const placed: PoseFrame[] = [];
   if (showPlayer && playerClip) placed.push(...playerClip.map((frame) => shiftFrame(frame, playerShift, playerDrop)));
   if (showReference && referenceClip) placed.push(...referenceClip.map((frame) => shiftFrame(frame, referenceShift, referenceDrop)));
-  return { playerShift, referenceShift, playerDrop, referenceDrop, bounds: boundsOf(placed), ground: 0 };
+  const bounds = boundsOf(placed);
+  const hips = placed.map((frame) => ((frame[23]?.[0] ?? 0) + (frame[24]?.[0] ?? 0)) / 2).sort((a, b) => a - b);
+  const focusX = layout === 'side' ? (bounds.min[0] + bounds.max[0]) / 2 : (hips[Math.floor(hips.length / 2)] ?? 0);
+  return { playerShift, referenceShift, playerDrop, referenceDrop, bounds, ground: 0, focusX };
 }
 
 export function placeFrame(frame: PoseFrame | null, shiftX: number, drop = 0): PoseFrame | null {
@@ -348,20 +352,44 @@ export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV
   };
 }
 
-/** Distance is chosen so the body height fills VIEW_FILL, unless a portrait panel would clip the width. */
-export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): CameraFit {
+/**
+ * Distance is chosen so the body height fills VIEW_FILL.
+ * On a portrait panel the camera centres on `focusX` (the hips) and ignores arm reach
+ * that would otherwise shrink the body and shove it to one side.
+ */
+export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV, focusX?: number): CameraFit {
+  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
+  const fullWidth = Math.max(0.2, bounds.max[0] - bounds.min[0]);
+  const vFov = (fovDeg * Math.PI) / 180;
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * Math.max(0.2, aspect));
+  const portrait = aspect < 1 && Number.isFinite(focusX);
+  const widthBudget = height * Math.max(0.2, aspect) * (VIEW_WIDTH_LIMIT / VIEW_FILL);
+  const width = portrait ? Math.min(fullWidth, widthBudget) : fullWidth;
   const target: Vec3 = [
-    (bounds.min[0] + bounds.max[0]) / 2,
+    portrait ? (focusX as number) : (bounds.min[0] + bounds.max[0]) / 2,
     (bounds.min[1] + bounds.max[1]) / 2,
     (bounds.min[2] + bounds.max[2]) / 2,
   ];
-  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
-  const width = Math.max(0.2, bounds.max[0] - bounds.min[0]);
-  const vFov = (fovDeg * Math.PI) / 180;
-  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * Math.max(0.2, aspect));
   const forHeight = (height / 2) / Math.tan(vFov / 2) / VIEW_FILL;
   const forWidth = (width / 2) / Math.tan(hFov / 2) / VIEW_WIDTH_LIMIT;
   const distance = Math.max(forHeight, forWidth, 0.4);
   const direction = normalize([0, height * 0.015, 1]);
   return { target, position: add(target, scale(direction, distance)), distance };
+}
+
+/** Where the hips land in a portrait view. `centerX` is that point, not the wide bounding box. */
+export function portraitFocus(bounds: Bounds, aspect: number, focusX: number, fovDeg = VIEW_FOV): Projected {
+  const fit = frameCamera(bounds, aspect, fovDeg, focusX);
+  const z = (bounds.min[2] + bounds.max[2]) / 2;
+  const top = projectAt([focusX, bounds.max[1], z], fit, aspect, fovDeg);
+  const bottom = projectAt([focusX, bounds.min[1], z], fit, aspect, fovDeg);
+  const center = projectAt([focusX, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  const left = projectAt([focusX - 0.25, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  const right = projectAt([focusX + 0.25, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  return {
+    vertical: Math.abs(top.y - bottom.y) / 2,
+    horizontal: Math.abs(right.x - left.x) / 2,
+    centerX: center.x,
+    centerY: center.y,
+  };
 }

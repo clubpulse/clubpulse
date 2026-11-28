@@ -68,12 +68,25 @@ export function TechniquePanel({
   const angles = shownPlayer ? anglesAt(shownPlayer, hand) : null;
   const marker = reference ? phaseLabel(reference, referenceIndex) : null;
 
+  const scrubTo = (next: number) => {
+    setPlaying(false);
+    setTime(next);
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    void seekTo(video, next);
+  };
+
   const estimate = async () => {
     const video = videoRef.current;
     if (!video) return;
     setBusy(true);
     setMessage(null);
     setPlaying(false);
+    video.pause();
+    video.muted = true;
+    // A phone will not decode a later frame until the clip has been started once.
+    try { await video.play(); } catch { /* seeking still runs if play is refused */ }
     video.pause();
     try {
       const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
@@ -86,11 +99,13 @@ export function TechniquePanel({
         landmarker = await PoseLandmarker.createFromOptions(vision, { ...options, baseOptions: { modelAssetPath: FULL_MODEL_URL, delegate: 'CPU' } });
       }
       await waitFor(video);
+      let stamp = 0;
       const sampled = await sampleClip({
         duration: video.duration,
         seek: (at) => seekTo(video, at),
         detect: () => {
-          const found = landmarker.detectForVideo(video, Math.round(video.currentTime * 1000));
+          stamp = Math.max(stamp + 1, Math.round(video.currentTime * 1000));
+          const found = landmarker.detectForVideo(video, stamp);
           const world = found.worldLandmarks?.[0];
           const image = found.landmarks?.[0];
           if (!world) return null;
@@ -144,7 +159,7 @@ export function TechniquePanel({
       <p className="mt-2 text-sm text-neutral-400">
         The angles are read from one camera. Drag the view to rotate it. The reference actions are drawn by SHIFTUP and are not a real player.
       </p>
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="relative mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-4">
         <SkeletonStage
           player={(pose ? layout : 'reference') === 'reference' ? null : shownPlayer}
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
@@ -157,8 +172,8 @@ export function TechniquePanel({
           src={clipUrl}
           muted
           playsInline
-          preload="metadata"
-          className="w-full rounded-xl bg-black"
+          preload="auto"
+          className="pointer-events-none absolute bottom-3 right-3 z-10 aspect-[3/4] w-20 rounded-lg bg-black object-cover shadow-lg ring-1 ring-white/40 lg:pointer-events-auto lg:static lg:aspect-auto lg:w-full lg:rounded-xl lg:shadow-none lg:ring-0"
           onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)}
           onTimeUpdate={(event) => { if (playing) setTime(event.currentTarget.currentTime); }}
           onEnded={() => setPlaying(false)}
@@ -179,11 +194,8 @@ export function TechniquePanel({
         Scrub
         <input className="mt-1 w-full" type="range" min={0} max={duration} step={0.01} value={Math.min(time, duration)}
           aria-label="Scrub the clip and the skeleton"
-          onChange={(event) => {
-            const next = Number(event.target.value);
-            setTime(next);
-            if (videoRef.current) videoRef.current.currentTime = next;
-          }} />
+          onInput={(event) => { void scrubTo(Number(event.currentTarget.value)); }}
+          onChange={(event) => { void scrubTo(Number(event.currentTarget.value)); }} />
       </label>
       {angles && (
         <dl className="mt-3 grid grid-cols-3 gap-2 text-sm">
@@ -239,9 +251,23 @@ function waitFor(video: HTMLVideoElement): Promise<void> {
 }
 
 function seekTo(video: HTMLVideoElement, time: number): Promise<void> {
-  if (Math.abs(video.currentTime - time) < 0.001) return Promise.resolve();
+  const limit = Number.isFinite(video.duration) ? video.duration : time;
+  const target = Math.min(Math.max(time, 0), limit);
+  if (Math.abs(video.currentTime - target) < 0.02 && video.readyState >= 2) {
+    return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  }
   return new Promise((resolve) => {
-    video.addEventListener('seeked', () => resolve(), { once: true });
-    video.currentTime = time;
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      video.removeEventListener('seeked', finish);
+      // Phones paint the new frame a moment after seeked.
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    };
+    const timer = window.setTimeout(finish, 700);
+    video.addEventListener('seeked', finish);
+    video.currentTime = target;
   });
 }

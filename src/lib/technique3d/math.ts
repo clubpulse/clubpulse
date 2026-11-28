@@ -101,6 +101,15 @@ export function frameIndexAt(times: number[], time: number): number {
   return best;
 }
 
+/** Maps a 0–1 scrub across the sampled clip, including the last frame. */
+export function scrubToIndex(times: number[], fraction: number): number {
+  if (times.length === 0) return 0;
+  const start = times[0];
+  const end = times[times.length - 1];
+  const clamped = Math.min(1, Math.max(0, fraction));
+  return frameIndexAt(times, start + (end - start) * clamped);
+}
+
 export function alignedReferenceIndex(playerIndex: number, playerEvent: number, referenceEvent: number, referenceLength: number): number | null {
   const index = playerIndex - playerEvent + referenceEvent;
   if (index < 0 || index >= referenceLength) return null;

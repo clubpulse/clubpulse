@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { authoredReferences } from '@/lib/technique3d/author';
-import { sampleClip } from '@/lib/technique3d/capture';
+import { sampleClip, sampleTimes } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
 import { technique3dEnabled } from '@/lib/technique3d/flag';
-import { limbLength, lowestFootY, prepareClip, projectedShare, trunkLeanDegrees } from '@/lib/technique3d/figure';
-import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, yawDelta } from '@/lib/technique3d/math';
+import { limbLength, lowestFootY, portraitFocus, prepareClip, projectedShare, trunkLeanDegrees } from '@/lib/technique3d/figure';
+import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, scrubToIndex, yawDelta } from '@/lib/technique3d/math';
 import { parseTechniquePose } from '@/lib/technique3d/payload';
 import { canReadTechniquePose } from '@/lib/technique3d/privacy';
 import { phaseLabel, referencesFor } from '@/lib/technique3d/references';
@@ -204,6 +204,29 @@ describe('3D figure framing and limb lengths', () => {
     const shoulderZ = (frontal[11][2] + frontal[12][2]) / 2;
     expect(shoulderZ).toBeGreaterThan(hipZ + 0.15);
     expect(Math.abs(((frontal[11][0] + frontal[12][0]) / 2) - ((frontal[23][0] + frontal[24][0]) / 2))).toBeLessThan(0.08);
+  });
+
+  it('centres a portrait view on the hips and still fills the height', () => {
+    const wide = { min: [-0.35, 0, -0.25] as Vec3, max: [2.4, 1.7, 0.3] as Vec3 };
+    const phone = portraitFocus(wide, 390 / 520, 0);
+    expect(phone.vertical).toBeGreaterThan(0.75);
+    expect(phone.vertical).toBeLessThan(0.92);
+    expect(Math.abs(phone.centerX)).toBeLessThan(0.12);
+    expect(Math.abs(phone.centerY)).toBeLessThan(0.12);
+  });
+
+  it('maps a scrub across the whole clip, not only the opening', () => {
+    const times = sampleTimes(12);
+    expect(times[0]).toBe(0);
+    expect(times[times.length - 1]).toBe(12);
+    expect(times.length).toBeGreaterThan(20);
+    const early = scrubToIndex(times, 0.2);
+    const middle = scrubToIndex(times, 0.5);
+    const end = scrubToIndex(times, 1);
+    expect(early).toBeGreaterThan(0);
+    expect(middle).toBeGreaterThan(early + 5);
+    expect(end).toBe(times.length - 1);
+    expect(end - early).toBeGreaterThan(times.length / 2);
   });
 
   it('keeps the drawn reference actions in a human limb range', () => {

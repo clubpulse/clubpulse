@@ -16,6 +16,15 @@ function copyPoints(points: Vec3[]): PoseFrame | null {
   return frame;
 }
 
+/** Times spread across the whole clip. A long action is not cut off after the opening. */
+export function sampleTimes(duration: number, maxFrames = 120, maxSeconds = 180): number[] {
+  const span = Math.min(Math.max(duration, 0), maxSeconds);
+  if (span <= 0) return [];
+  const count = Math.min(maxFrames, Math.max(2, Math.ceil(span * 12)));
+  const step = span / (count - 1);
+  return Array.from({ length: count }, (_, index) => Math.round(Math.min(span, index * step) * 1000) / 1000);
+}
+
 export async function sampleClip(options: {
   duration: number;
   seek: (time: number) => Promise<void>;
@@ -23,23 +32,19 @@ export async function sampleClip(options: {
   maxFrames?: number;
   maxSeconds?: number;
 }): Promise<{ times: number[]; frames: PoseFrame[]; images: Array<PoseFrame | null> }> {
-  const maxFrames = options.maxFrames ?? 160;
-  const maxSeconds = options.maxSeconds ?? 8;
-  const duration = Math.min(Math.max(options.duration, 0), maxSeconds);
-  if (duration <= 0) return { times: [], frames: [], images: [] };
-  const step = Math.max(1 / 15, duration / maxFrames);
+  const plan = sampleTimes(options.duration, options.maxFrames ?? 120, options.maxSeconds ?? 180);
   const times: number[] = [];
   const frames: PoseFrame[] = [];
   const images: Array<PoseFrame | null> = [];
-  for (let time = 0; time <= duration + 1e-6 && frames.length < maxFrames; time += step) {
-    await options.seek(Math.min(time, duration));
+  for (const time of plan) {
+    await options.seek(time);
     const found = options.detect();
     const world = Array.isArray(found) ? found : found?.world ?? null;
     const image = Array.isArray(found) ? null : found?.image ?? null;
     if (!world) continue;
     const frame = copyPoints(world);
     if (!frame) continue;
-    times.push(Math.round(Math.min(time, duration) * 1000) / 1000);
+    times.push(time);
     frames.push(frame);
     images.push(image ? copyPoints(image) : null);
   }

@@ -33,14 +33,14 @@ const JOINTS: Array<{ index: number; side: 'left' | 'right' | 'center'; radius: 
   { index: 28, side: 'right', radius: 0.04 },
 ];
 
-function CameraRig({ bounds }: { bounds: { min: Vec3; max: Vec3 } }) {
+function CameraRig({ bounds, focusX }: { bounds: { min: Vec3; max: Vec3 }; focusX: number }) {
   const { camera, gl, size } = useThree();
   const orbit = useRef<OrbitControls | null>(null);
   const target = useRef(new THREE.Vector3());
-  const key = `${bounds.min.join(',')}:${bounds.max.join(',')}`;
+  const key = `${bounds.min.join(',')}:${bounds.max.join(',')}:${focusX}`;
 
   useLayoutEffect(() => {
-    const [minText, maxText] = key.split(':');
+    const [minText, maxText, focusText] = key.split(':');
     const read = (text: string): Vec3 => {
       const [x, y, z] = text.split(',').map(Number);
       return [x || 0, y || 0, z || 0];
@@ -48,7 +48,7 @@ function CameraRig({ bounds }: { bounds: { min: Vec3; max: Vec3 } }) {
     const min = read(minText);
     const max = read(maxText);
     const aspect = size.width / Math.max(1, size.height);
-    const fit = frameCamera({ min, max }, aspect);
+    const fit = frameCamera({ min, max }, aspect, 40, Number(focusText));
     target.current.set(fit.target[0], fit.target[1], fit.target[2]);
     camera.position.set(fit.position[0], fit.position[1], fit.position[2]);
     camera.lookAt(target.current);
@@ -149,14 +149,16 @@ export function SkeletonStage({
   const placedPlayer = player && layout !== 'reference' ? placeFrame(player, framing.playerShift, framing.playerDrop) : null;
   const placedReference = reference && layout !== 'player' ? placeFrame(reference, framing.referenceShift, framing.referenceDrop) : null;
   return (
-    <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: 'min(78vh, 760px)', minHeight: 480, background: '#07111f', borderRadius: 12 }}>
+    <div className="h-[60vh] min-h-[320px] w-full lg:h-[min(70vh,720px)]">
+    <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: '100%', background: '#07111f', borderRadius: 12 }}>
       <color attach="background" args={['#07111f']} />
       <ambientLight intensity={0.65} />
       <directionalLight position={[2, 4, 3]} intensity={1.1} />
-      <CameraRig bounds={framing.bounds} />
+      <CameraRig bounds={framing.bounds} focusX={framing.focusX} />
       <Ground bounds={framing.bounds} ground={framing.ground} />
       {placedPlayer && <Figure frame={placedPlayer} ghost={false} />}
       {placedReference && <Figure frame={placedReference} ghost={layout === 'overlay'} />}
     </Canvas>
+    </div>
   );
 }
