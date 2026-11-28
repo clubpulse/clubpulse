@@ -146,10 +146,10 @@ export function SkeletonStage({
     () => clipFraming(layout === 'reference' ? null : playerClip, layout === 'player' ? null : referenceClip, layout),
     [playerClip, referenceClip, layout],
   );
-  const placedPlayer = player && layout !== 'reference' ? placeFrame(player, framing.playerShift) : null;
-  const placedReference = reference && layout !== 'player' ? placeFrame(reference, framing.referenceShift) : null;
+  const placedPlayer = player && layout !== 'reference' ? placeFrame(player, framing.playerShift, framing.playerDrop) : null;
+  const placedReference = reference && layout !== 'player' ? placeFrame(reference, framing.referenceShift, framing.referenceDrop) : null;
   return (
-    <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: 480, background: '#07111f', borderRadius: 12 }}>
+    <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: 'min(78vh, 760px)', minHeight: 480, background: '#07111f', borderRadius: 12 }}>
       <color attach="background" args={['#07111f']} />
       <ambientLight intensity={0.65} />
       <directionalLight position={[2, 4, 3]} intensity={1.1} />

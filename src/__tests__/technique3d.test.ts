@@ -4,7 +4,7 @@ import { authoredReferences } from '@/lib/technique3d/author';
 import { sampleClip } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
 import { technique3dEnabled } from '@/lib/technique3d/flag';
-import { clipFraming, limbLength, prepareClip, projectedShare } from '@/lib/technique3d/figure';
+import { limbLength, lowestFootY, prepareClip, projectedShare, trunkLeanDegrees } from '@/lib/technique3d/figure';
 import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, yawDelta } from '@/lib/technique3d/math';
 import { parseTechniquePose } from '@/lib/technique3d/payload';
 import { canReadTechniquePose } from '@/lib/technique3d/privacy';
@@ -169,28 +169,41 @@ describe('3D figure framing and limb lengths', () => {
     }
   });
 
-  it('fills the viewport instead of sitting in a corner, including a wide canvas and a side-by-side pair', () => {
-    const pose = standing();
-    const single = projectedShare({ min: [-0.4, -0.95, -0.2], max: [0.4, 0.8, 0.2] }, 2.8);
-    expect(Math.max(single.vertical, single.horizontal)).toBeGreaterThan(0.64);
-    expect(Math.max(single.vertical, single.horizontal)).toBeLessThan(0.8);
-    expect(Math.abs(single.centerX)).toBeLessThan(0.15);
-    expect(Math.abs(single.centerY)).toBeLessThan(0.15);
-    expect(single.vertical).toBeGreaterThan(0.5);
+  it('fills most of the panel height in landscape and stays inside a portrait panel', () => {
+    const box = { min: [-0.4, 0, -0.2] as Vec3, max: [0.4, 1.75, 0.2] as Vec3 };
+    for (const aspect of [1.6, 2.8]) {
+      const share = projectedShare(box, aspect);
+      expect(share.vertical).toBeGreaterThan(0.8);
+      expect(share.vertical).toBeLessThan(0.9);
+      expect(share.horizontal).toBeLessThan(0.95);
+      expect(Math.abs(share.centerX)).toBeLessThan(0.12);
+      expect(Math.abs(share.centerY)).toBeLessThan(0.12);
+    }
+    const portrait = projectedShare(box, 0.5);
+    expect(portrait.horizontal).toBeGreaterThan(0.7);
+    expect(portrait.horizontal).toBeLessThan(0.95);
+    expect(portrait.vertical).toBeGreaterThan(0.45);
+    expect(Math.abs(portrait.centerX)).toBeLessThan(0.12);
+    expect(Math.abs(portrait.centerY)).toBeLessThan(0.12);
+  });
 
-    const square = projectedShare({ min: [-0.4, -0.95, -0.2], max: [0.4, 0.8, 0.2] }, 1);
-    expect(Math.max(square.vertical, square.horizontal)).toBeGreaterThan(0.64);
-    expect(Math.abs(square.centerX)).toBeLessThan(0.15);
+  it('puts the lowest foot on the ground and keeps a forward trunk lean', () => {
+    const leaned = standing();
+    for (const index of [0, 11, 12, 13, 14, 15, 16]) leaned[index] = [leaned[index][0] + 0.38, leaned[index][1], leaned[index][2]];
+    const prepared = prepareClip([asWorldYDown(leaned)], [asImage(leaned)]);
+    expect(lowestFootY(prepared[0])).toBeCloseTo(0, 3);
+    expect(trunkLeanDegrees(prepared[0])).toBeGreaterThan(25);
+    const hips = (prepared[0][23][0] + prepared[0][24][0]) / 2;
+    const shoulders = (prepared[0][11][0] + prepared[0][12][0]) / 2;
+    expect(shoulders).toBeGreaterThan(hips + 0.2);
 
-    const clip = Array.from({ length: 6 }, () => pose);
-    const side = clipFraming(clip, clip, 'side');
-    const share = projectedShare(side.bounds, 2.8);
-    expect(Math.max(share.vertical, share.horizontal)).toBeGreaterThan(0.64);
-    expect(Math.max(share.vertical, share.horizontal)).toBeLessThan(0.8);
-    expect(Math.abs(share.centerX)).toBeLessThan(0.15);
-    expect(Math.abs(share.centerY)).toBeLessThan(0.15);
-    expect(side.playerShift).toBeLessThan(0);
-    expect(side.referenceShift).toBeGreaterThan(0);
+    const front = standing();
+    for (const index of [0, 11, 12, 13, 14, 15, 16]) front[index] = [front[index][0], front[index][1], front[index][2] + 0.28];
+    const frontal = prepareClip([asWorldYDown(front)], [asImage(front)])[0];
+    const hipZ = (frontal[23][2] + frontal[24][2]) / 2;
+    const shoulderZ = (frontal[11][2] + frontal[12][2]) / 2;
+    expect(shoulderZ).toBeGreaterThan(hipZ + 0.15);
+    expect(Math.abs(((frontal[11][0] + frontal[12][0]) / 2) - ((frontal[23][0] + frontal[24][0]) / 2))).toBeLessThan(0.08);
   });
 
   it('keeps the drawn reference actions in a human limb range', () => {

@@ -1,4 +1,4 @@
-import { add, rotY, scale, sub } from './math';
+import { add, scale, sub } from './math';
 import type { PoseFrame, Vec3 } from './types';
 
 /**
@@ -9,13 +9,22 @@ import type { PoseFrame, Vec3 } from './types';
  * anatomical left and right on their own indices.
  */
 
-export const VIEW_FILL = 0.72;
+/** Share of the panel height the body should fill. Portrait panels back off if the width would clip. */
+export const VIEW_FILL = 0.85;
+const VIEW_WIDTH_LIMIT = 0.92;
 export const VIEW_FOV = 40;
 
 export type LayoutMode = 'player' | 'reference' | 'side' | 'overlay';
 export type Bounds = { min: Vec3; max: Vec3 };
 export type CameraFit = { target: Vec3; position: Vec3; distance: number };
-export type Framing = { playerShift: number; referenceShift: number; bounds: Bounds; ground: number };
+export type Framing = {
+  playerShift: number;
+  referenceShift: number;
+  playerDrop: number;
+  referenceDrop: number;
+  bounds: Bounds;
+  ground: number;
+};
 export type Projected = { vertical: number; horizontal: number; centerX: number; centerY: number };
 
 type Side = 'left' | 'right' | 'center';
@@ -89,57 +98,6 @@ export function hipCenter(frame: PoseFrame): PoseFrame {
   return frame.map((point) => sub(point, hip));
 }
 
-function imageTarget(image: PoseFrame, index: number): Vec3 {
-  const point = image[index] ?? [0.5, 0.5, 0];
-  return [point[0] - 0.5, 0.5 - point[1], -(point[2] ?? 0)];
-}
-
-function similarityError(source: Vec3[], target: Vec3[]): number {
-  const n = source.length;
-  if (n === 0) return 1;
-  const mean = (points: Vec3[]): Vec3 => points.reduce((acc, point) => add(acc, point), [0, 0, 0] as Vec3).map((value) => value / n) as Vec3;
-  const sc = mean(source);
-  const tc = mean(target);
-  const s = source.map((point) => sub(point, sc));
-  const t = target.map((point) => sub(point, tc));
-  let ss = 0;
-  let st = 0;
-  for (let i = 0; i < n; i++) {
-    ss += dot(s[i], s[i]);
-    st += dot(s[i], t[i]);
-  }
-  if (ss < 1e-8) return 1;
-  const fitted = st / ss;
-  let err = 0;
-  for (let i = 0; i < n; i++) {
-    const guess = scale(s[i], fitted);
-    err += dist(guess, t[i]) ** 2;
-  }
-  if (fitted < 0) err += n;
-  return err / n;
-}
-
-function yawError(frame: PoseFrame, image: PoseFrame, degrees: number): number {
-  const source = ALIGN.map((index) => rotY(frame[index] ?? [0, 0, 0], degrees));
-  const target = ALIGN.map((index) => imageTarget(image, index));
-  return similarityError(source, target);
-}
-
-function bestYaw(frame: PoseFrame, image: PoseFrame, hint: number | null): number {
-  let best = hint ?? 0;
-  let score = Infinity;
-  for (let step = 0; step < 72; step++) {
-    const yaw = step * 5;
-    const jump = hint == null ? 0 : (Math.abs(((yaw - hint + 540) % 360) - 180) / 180) ** 2 * 0.002;
-    const next = yawError(frame, image, yaw) + jump;
-    if (next < score) {
-      score = next;
-      best = yaw;
-    }
-  }
-  return best;
-}
-
 function noseAboveHips(frame: PoseFrame): boolean {
   if (!frame[0] || !frame[23] || !frame[24]) return true;
   return frame[0][1] >= (frame[23][1] + frame[24][1]) / 2;
@@ -171,8 +129,10 @@ function turn180X(frame: PoseFrame): PoseFrame {
 }
 
 /**
- * Put world landmarks into the phone's view and restore limb lengths.
- * `imageFrames` use MediaPipe image landmarks. Without them, only the y-up vote and the limb lengths run.
+ * Put world landmarks into the phone's view.
+ * The picture's x and y are kept, so a forward lean stays a lean and left/right match the video
+ * for a left-hander or a front-on camera. World depth is only the toward-camera axis.
+ * Limb lengths are repaired only when a joint collapses or stretches. A normal pose is not pulled upright.
  */
 export function prepareClip(worldFrames: PoseFrame[], imageFrames?: Array<PoseFrame | null> | null): PoseFrame[] {
   if (worldFrames.length === 0) return [];
@@ -180,24 +140,67 @@ export function prepareClip(worldFrames: PoseFrame[], imageFrames?: Array<PoseFr
   const images = imageFrames && imageFrames.length === frames.length ? imageFrames : null;
   const known = images?.filter((frame): frame is PoseFrame => !!frame) ?? [];
   if (images && known.length > 0) {
-    const sample = uprightIndex(known);
-    const image = known[sample];
+    const image = known[uprightIndex(known)];
     const worldIndex = images.findIndex((frame) => frame === image);
     const world = frames[worldIndex] ?? frames[0];
     if (image && world && imageNoseAbove(image) !== noseAboveHips(world)) frames = frames.map(turn180X);
-    let hint: number | null = null;
+    const sample = frames[worldIndex] ?? frames[0];
+    const zSign = image && sample ? depthSign(sample, image) : 1;
     frames = frames.map((frame, index) => {
       const shot = images[index];
-      if (!shot) return frame.map((point) => rotY(point, hint ?? 0));
-      const yaw = bestYaw(frame, shot, hint);
-      hint = yaw;
-      return frame.map((point) => rotY(point, yaw));
+      return shot ? liftFrame(frame, shot, zSign) : frame;
     });
   } else if (frames.filter(noseAboveHips).length < frames.length / 2) {
     frames = frames.map(turn180X);
   }
-  frames = frames.map(hipCenter);
-  return normalizeLimbs(frames).map(hipCenter);
+  return repairOutliers(frames).map(plantFeet);
+}
+
+function depthSign(world: PoseFrame, image: PoseFrame): number {
+  const hip = hipOf(world);
+  let corr = 0;
+  for (const index of ALIGN) {
+    const point = world[index];
+    const shot = image[index];
+    if (!point || !shot) continue;
+    corr += (point[2] - hip[2]) * -(shot[2] ?? 0);
+  }
+  return corr >= 0 ? 1 : -1;
+}
+
+function liftFrame(world: PoseFrame, image: PoseFrame, zSign: number): PoseFrame {
+  const hip = hipOf(world);
+  const ankleY = Math.min(world[27]?.[1] ?? 0, world[28]?.[1] ?? 0);
+  const worldHeight = Math.max(0.4, (world[0]?.[1] ?? 0) - ankleY);
+  const imageNose = 0.5 - (image[0]?.[1] ?? 0.5);
+  const imageFoot = Math.min(0.5 - (image[27]?.[1] ?? 1), 0.5 - (image[28]?.[1] ?? 1));
+  const imageHeight = Math.max(0.05, imageNose - imageFoot);
+  const metres = worldHeight / imageHeight;
+  return image.map((point, index) => {
+    const from = world[index] ?? hip;
+    return [(point[0] - 0.5) * metres, (0.5 - point[1]) * metres, (from[2] - hip[2]) * zSign] as Vec3;
+  });
+}
+
+export function plantFeet(frame: PoseFrame): PoseFrame {
+  const low = lowestFootY(frame);
+  if (!Number.isFinite(low)) return frame;
+  return frame.map(([x, y, z]) => [x, y - low, z] as Vec3);
+}
+
+export function lowestFootY(frame: PoseFrame): number {
+  const ys = FEET.map((index) => frame[index]?.[1]).filter((value): value is number => Number.isFinite(value));
+  return ys.length ? Math.min(...ys) : 0;
+}
+
+/** Degrees the trunk leans away from upright. 0 is vertical. */
+export function trunkLeanDegrees(frame: PoseFrame): number {
+  const hips = mid(frame, 23, 24);
+  const shoulders = mid(frame, 11, 12);
+  const dx = shoulders[0] - hips[0];
+  const dy = shoulders[1] - hips[1];
+  const dz = shoulders[2] - hips[2];
+  return (Math.atan2(Math.hypot(dx, dz), Math.max(1e-6, dy)) * 180) / Math.PI;
 }
 
 function median(values: number[]): number {
@@ -206,42 +209,31 @@ function median(values: number[]): number {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
-const TORSO_LOW = 0.38;
-const TORSO_HIGH = 0.62;
-const ARM_CHAIN = [0, 11, 12, 13, 14, 15, 16];
-
 function mid(frame: PoseFrame, a: number, b: number): Vec3 {
   const left = frame[a] ?? [0, 0, 0];
   const right = frame[b] ?? [0, 0, 0];
   return [(left[0] + right[0]) / 2, (left[1] + right[1]) / 2, (left[2] + right[2]) / 2];
 }
 
-function normalizeLimbs(frames: PoseFrame[]): PoseFrame[] {
+/** Restores a bone only when that frame's length has collapsed or stretched. A leaned trunk is left as it is. */
+function repairOutliers(frames: PoseFrame[]): PoseFrame[] {
   const lengths = new Map<string, number>();
   for (const [parent, child, low, high] of LIMBS) {
     const seen = frames.map((frame) => dist(frame[parent], frame[child])).filter((value) => value > 0.05);
     const raw = median(seen);
     lengths.set(`${parent}-${child}`, Math.min(high, Math.max(low, raw || (low + high) / 2)));
   }
-  const torsoSeen = frames.map((frame) => dist(mid(frame, 23, 24), mid(frame, 11, 12))).filter((value) => value > 0.15);
-  const torso = Math.min(TORSO_HIGH, Math.max(TORSO_LOW, median(torsoSeen) || 0.5));
   const previous = new Map<string, Vec3>();
   return frames.map((frame) => {
     const next = cloneFrame(frame);
-    const hips = mid(next, 23, 24);
-    const shoulders = mid(next, 11, 12);
-    const torsoDir = unit(sub(shoulders, hips), previous.get('torso') ?? [0, 1, 0]);
-    previous.set('torso', torsoDir);
-    const shoulderShift = sub(add(hips, scale(torsoDir, torso)), shoulders);
-    if (Math.hypot(...shoulderShift) > 1e-4) {
-      for (const index of ARM_CHAIN) if (next[index]) next[index] = add(next[index], shoulderShift);
-    }
     for (const [parent, child] of LIMBS) {
       const key = `${parent}-${child}`;
       const target = lengths.get(key) ?? 0.3;
       const delta = sub(next[child], next[parent]);
+      const length = Math.hypot(delta[0], delta[1], delta[2]);
       const direction = unit(delta, previous.get(key) ?? [0, parent >= 23 ? -1 : 1, 0]);
       previous.set(key, direction);
+      if (length >= target * 0.55 && length <= target * 1.7) continue;
       next[child] = add(next[parent], scale(direction, target));
     }
     return next;
@@ -270,9 +262,14 @@ export function boundsOf(frames: PoseFrame[]): Bounds {
   return seen ? { min, max } : EMPTY_BOUNDS;
 }
 
-function shiftFrame(frame: PoseFrame, dx: number): PoseFrame {
-  if (dx === 0) return frame;
-  return frame.map(([x, y, z]) => [x + dx, y, z] as Vec3);
+function shiftFrame(frame: PoseFrame, dx: number, drop: number): PoseFrame {
+  if (dx === 0 && drop === 0) return frame;
+  return frame.map(([x, y, z]) => [x + dx, y - drop, z] as Vec3);
+}
+
+function footDrop(frames: PoseFrame[]): number {
+  const ys = frames.flatMap((frame) => FEET.map((index) => frame[index]?.[1])).filter((value): value is number => Number.isFinite(value));
+  return ys.length ? Math.min(...ys) : 0;
 }
 
 function widthOf(bounds: Bounds): number {
@@ -286,11 +283,13 @@ function centerX(bounds: Bounds): number {
 export function clipFraming(playerClip: PoseFrame[] | null, referenceClip: PoseFrame[] | null, layout: LayoutMode): Framing {
   const showPlayer = layout !== 'reference' && !!playerClip?.length;
   const showReference = layout !== 'player' && !!referenceClip?.length;
+  const playerDrop = showPlayer && playerClip ? footDrop(playerClip) : 0;
+  const referenceDrop = showReference && referenceClip ? footDrop(referenceClip) : 0;
   let playerShift = 0;
   let referenceShift = 0;
   if (layout === 'side' && showPlayer && showReference && playerClip && referenceClip) {
-    const playerBounds = boundsOf(playerClip);
-    const referenceBounds = boundsOf(referenceClip);
+    const playerBounds = boundsOf(playerClip.map((frame) => shiftFrame(frame, 0, playerDrop)));
+    const referenceBounds = boundsOf(referenceClip.map((frame) => shiftFrame(frame, 0, referenceDrop)));
     const playerWidth = widthOf(playerBounds);
     const referenceWidth = widthOf(referenceBounds);
     const gap = 0.28;
@@ -300,18 +299,14 @@ export function clipFraming(playerClip: PoseFrame[] | null, referenceClip: PoseF
     referenceShift = left + playerWidth + gap + referenceWidth / 2 - centerX(referenceBounds);
   }
   const placed: PoseFrame[] = [];
-  if (showPlayer && playerClip) placed.push(...playerClip.map((frame) => shiftFrame(frame, playerShift)));
-  if (showReference && referenceClip) placed.push(...referenceClip.map((frame) => shiftFrame(frame, referenceShift)));
-  const bounds = boundsOf(placed);
-  let ground = bounds.min[1];
-  const feet = placed.flatMap((frame) => FEET.map((index) => frame[index]?.[1]).filter((value): value is number => Number.isFinite(value)));
-  if (feet.length) ground = Math.min(...feet);
-  return { playerShift, referenceShift, bounds, ground };
+  if (showPlayer && playerClip) placed.push(...playerClip.map((frame) => shiftFrame(frame, playerShift, playerDrop)));
+  if (showReference && referenceClip) placed.push(...referenceClip.map((frame) => shiftFrame(frame, referenceShift, referenceDrop)));
+  return { playerShift, referenceShift, playerDrop, referenceDrop, bounds: boundsOf(placed), ground: 0 };
 }
 
-export function placeFrame(frame: PoseFrame | null, shiftX: number): PoseFrame | null {
+export function placeFrame(frame: PoseFrame | null, shiftX: number, drop = 0): PoseFrame | null {
   if (!frame) return null;
-  return shiftFrame(frame, shiftX);
+  return shiftFrame(frame, shiftX, drop);
 }
 
 function normalize(v: Vec3): Vec3 {
@@ -323,59 +318,50 @@ function cross(a: Vec3, b: Vec3): Vec3 {
   return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 }
 
-/** NDC share of the bounding box. 1 means it touches the top and bottom of the view. */
-export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV, position?: Vec3, target?: Vec3): Projected {
-  const fit = position && target ? { position, target, distance: dist(position, target) } : frameCamera(bounds, aspect, fovDeg);
+function projectAt(point: Vec3, fit: CameraFit, aspect: number, fovDeg: number): { x: number; y: number } {
   const forward = normalize(sub(fit.target, fit.position));
   const right = normalize(cross(forward, [0, 1, 0]));
   const up = cross(right, forward);
   const tan = Math.tan((fovDeg * Math.PI) / 360);
-  const safeAspect = Math.max(0.2, aspect);
-  const project = (point: Vec3) => {
-    const fromEye = sub(point, fit.position);
-    const camZ = Math.max(1e-4, dot(fromEye, forward));
-    return {
-      x: dot(fromEye, right) / (camZ * tan * safeAspect),
-      y: dot(fromEye, up) / (camZ * tan),
-    };
-  };
-  const corners: Vec3[] = [];
-  for (const x of [bounds.min[0], bounds.max[0]]) {
-    for (const y of [bounds.min[1], bounds.max[1]]) {
-      for (const z of [bounds.min[2], bounds.max[2]]) corners.push([x, y, z]);
-    }
-  }
-  const flat = corners.map(project);
-  const center = project([
-    (bounds.min[0] + bounds.max[0]) / 2,
-    (bounds.min[1] + bounds.max[1]) / 2,
-    (bounds.min[2] + bounds.max[2]) / 2,
-  ]);
-  const xs = flat.map((point) => point.x);
-  const ys = flat.map((point) => point.y);
+  const fromEye = sub(point, fit.position);
+  const camZ = Math.max(1e-4, dot(fromEye, forward));
   return {
-    horizontal: (Math.max(...xs) - Math.min(...xs)) / 2,
-    vertical: (Math.max(...ys) - Math.min(...ys)) / 2,
+    x: dot(fromEye, right) / (camZ * tan * Math.max(0.2, aspect)),
+    y: dot(fromEye, up) / (camZ * tan),
+  };
+}
+
+/** Height and width of the body at the camera's focus depth. Depth does not shrink the figure. */
+export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): Projected {
+  const fit = frameCamera(bounds, aspect, fovDeg);
+  const z = (bounds.min[2] + bounds.max[2]) / 2;
+  const top = projectAt([(bounds.min[0] + bounds.max[0]) / 2, bounds.max[1], z], fit, aspect, fovDeg);
+  const bottom = projectAt([(bounds.min[0] + bounds.max[0]) / 2, bounds.min[1], z], fit, aspect, fovDeg);
+  const left = projectAt([bounds.min[0], (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  const right = projectAt([bounds.max[0], (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  const center = projectAt([(bounds.min[0] + bounds.max[0]) / 2, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  return {
+    vertical: Math.abs(top.y - bottom.y) / 2,
+    horizontal: Math.abs(right.x - left.x) / 2,
     centerX: center.x,
     centerY: center.y,
   };
 }
 
-/** Distance is chosen so the longer screen axis of the box fills VIEW_FILL of the view. */
+/** Distance is chosen so the body height fills VIEW_FILL, unless a portrait panel would clip the width. */
 export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): CameraFit {
   const target: Vec3 = [
     (bounds.min[0] + bounds.max[0]) / 2,
     (bounds.min[1] + bounds.max[1]) / 2,
     (bounds.min[2] + bounds.max[2]) / 2,
   ];
-  const direction = normalize([0, 0.08, 1]);
-  let lo = 0.15;
-  let hi = 40;
-  for (let i = 0; i < 28; i++) {
-    const mid = (lo + hi) / 2;
-    const share = projectedShare(bounds, aspect, fovDeg, add(target, scale(direction, mid)), target);
-    if (Math.max(share.vertical, share.horizontal) > VIEW_FILL) lo = mid;
-    else hi = mid;
-  }
-  return { target, position: add(target, scale(direction, hi)), distance: hi };
+  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
+  const width = Math.max(0.2, bounds.max[0] - bounds.min[0]);
+  const vFov = (fovDeg * Math.PI) / 180;
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * Math.max(0.2, aspect));
+  const forHeight = (height / 2) / Math.tan(vFov / 2) / VIEW_FILL;
+  const forWidth = (width / 2) / Math.tan(hFov / 2) / VIEW_WIDTH_LIMIT;
+  const distance = Math.max(forHeight, forWidth, 0.4);
+  const direction = normalize([0, height * 0.015, 1]);
+  return { target, position: add(target, scale(direction, distance)), distance };
 }

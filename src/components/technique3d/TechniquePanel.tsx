@@ -74,6 +74,7 @@ export function TechniquePanel({
     setBusy(true);
     setMessage(null);
     setPlaying(false);
+    video.pause();
     try {
       const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
       const vision = await FilesetResolver.forVisionTasks(WASM_URL);
@@ -115,9 +116,13 @@ export function TechniquePanel({
         analysisId,
       };
       setPose(next);
-      setLayout('side');
-      setTime(next.times[next.keyEventFrame] ?? 0);
-      if (videoRef.current) videoRef.current.currentTime = next.times[next.keyEventFrame] ?? 0;
+      const at = next.times[next.keyEventFrame] ?? 0;
+      setPlaying(false);
+      setTime(at);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = at;
+      }
       const response = await fetch('/api/analysis/technique-pose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,7 +152,17 @@ export function TechniquePanel({
           referenceClip={referenceClip}
           layout={pose ? layout : 'reference'}
         />
-        <video ref={videoRef} src={clipUrl} muted playsInline className="w-full rounded-xl bg-black" onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)} onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)} onEnded={() => setPlaying(false)} />
+        <video
+          ref={videoRef}
+          src={clipUrl}
+          muted
+          playsInline
+          preload="metadata"
+          className="w-full rounded-xl bg-black"
+          onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)}
+          onTimeUpdate={(event) => { if (playing) setTime(event.currentTarget.currentTime); }}
+          onEnded={() => setPlaying(false)}
+        />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="rounded-full bg-sky-500 px-3 py-1 text-sm font-medium text-neutral-950" onClick={() => void estimate()} disabled={busy}>

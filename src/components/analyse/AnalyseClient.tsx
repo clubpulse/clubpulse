@@ -263,6 +263,8 @@ export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
+  // MediaPipe's video mode rejects a timestamp that goes backwards, so each new clip continues the clock.
+  const poseStampRef = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
@@ -850,35 +852,18 @@ export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }
       video.setAttribute('webkit-playsinline', 'true');
       video.setAttribute('autoplay', '');
       video.src = url;
-      video.onended = () => finishRecording();
+      video.onended = null;
       await clipReady(video);
-      try {
-        await video.play();
-      } catch (err) {
-        // Some phones refuse to start a clip by themselves (always in Low Power Mode, and often
-        // straight after the photo picker closes). The clip does not need to play to be read:
-        // step through it frame by frame instead.
-        if (err instanceof DOMException && err.name === 'NotAllowedError') {
-          await readBySeeking(video);
-          return;
-        }
-        throw err;
-      }
-      readWhilePlaying();
+      // Always step through an upload on a fixed time grid. Playing it takes whatever frames the
+      // browser happens to present, so the same clip was accepted on one run and rejected on the next.
+      video.pause();
+      await readBySeeking(video);
     } catch (err) {
       stopCamera();
       setProgress(null);
       setError(clipError(err));
       setPhase('idle');
     }
-  }
-
-  // The clip is playing: collect poses from it as it goes
-  function readWhilePlaying() {
-    lastVideoTimeRef.current = -1;
-    recordingRef.current = { until: performance.now() + MAX_UPLOAD_MS, frames: [], times: [], seen: 0, extra: 0 };
-    setPhase('recording');
-    startLoop();
   }
 
   // Reads a clip without playing it: moves through it a frame at a time and reads the pose at
@@ -889,6 +874,7 @@ export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }
     if (!landmarker || !canvas || !Number.isFinite(video.duration) || video.duration <= 0) throw new Error('unreadable');
     const recording = { until: Infinity, frames: [] as NormalizedLandmark[][], times: [] as number[], seen: 0, extra: 0 };
     recordingRef.current = recording;
+    trackedPose.current = null;
     setProgress(0);
     setPhase('recording');
     canvas.width = video.videoWidth;
@@ -900,7 +886,8 @@ export function AnalyseClient({ technique3d = false }: { technique3d?: boolean }
       await seekTo(video, time);
       // Someone started the camera or chose another clip while this one was being read
       if (recordingRef.current !== recording) return;
-      const found = landmarker.detectForVideo(video, performance.now());
+      poseStampRef.current += Math.max(1, Math.round(step * 1000));
+      const found = landmarker.detectForVideo(video, poseStampRef.current);
       const pose = choosePose(found.landmarks as NormalizedLandmark[][], trackedPose.current, video.videoWidth, video.videoHeight) as NormalizedLandmark[] | null;
       if (pose) trackedPose.current = pose;
       const bodies = (found.landmarks ?? []).filter((lm) => lm.some((point) => (point.visibility ?? 0) >= 0.5));
