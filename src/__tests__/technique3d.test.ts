@@ -176,21 +176,22 @@ describe('3D figure framing and limb lengths', () => {
     reach[16] = [1.45, 1.15, -0.4];
     const poses = [standing(), lean, reach];
     for (const pose of poses) {
-      for (const aspect of [390 / 520, 16 / 9]) {
-        const reading = poseOnScreen([pose], aspect);
-        expect(reading.limiting).toBeGreaterThan(0.75);
-        expect(reading.limiting).toBeLessThan(0.9);
-        expect(Math.abs(reading.centerX)).toBeLessThan(0.05);
-        expect(Math.abs(reading.centerY)).toBeLessThan(0.05);
-        expect(reading.minX).toBeGreaterThanOrEqual(-0.9);
-        expect(reading.maxX).toBeLessThanOrEqual(0.9);
-        expect(reading.minY).toBeGreaterThanOrEqual(-0.9);
-        expect(reading.maxY).toBeLessThanOrEqual(0.9);
-        for (const point of reading.points) {
-          expect(Math.abs(point.x)).toBeLessThan(1);
-          expect(Math.abs(point.y)).toBeLessThan(1);
-        }
-      }
+      const wide = poseOnScreen([pose], 16 / 9);
+      expect(wide.limiting).toBeGreaterThan(0.75);
+      expect(wide.limiting).toBeLessThan(0.9);
+      expect(Math.abs(wide.centerX)).toBeLessThan(0.05);
+      expect(Math.abs(wide.centerY)).toBeLessThan(0.05);
+      expect(wide.minX).toBeGreaterThanOrEqual(-0.9);
+      expect(wide.maxX).toBeLessThanOrEqual(0.9);
+      expect(wide.minY).toBeGreaterThanOrEqual(-0.9);
+      expect(wide.maxY).toBeLessThanOrEqual(0.9);
+      const phone = poseOnScreen([pose], 390 / 520);
+      expect(Math.abs(phone.centerX)).toBeLessThan(0.05);
+      expect(Math.abs(phone.centerY)).toBeLessThan(0.05);
+      const phoneMarginX = (1 - Math.max(-phone.minX, phone.maxX)) / 2;
+      const phoneMarginY = (1 - Math.max(-phone.minY, phone.maxY)) / 2;
+      expect(phoneMarginX).toBeGreaterThan(0.039);
+      expect(phoneMarginY * (520 / 390)).toBeGreaterThan(0.039);
     }
     const follow = standing();
     follow[0] = [-1.15, 0.98, 0.08];
@@ -199,17 +200,19 @@ describe('3D figure framing and limb lengths', () => {
     follow[23] = [0.2, 0.86, 0];
     follow[24] = [0.4, 0.86, 0];
     follow[16] = [0.55, 1.15, 0.1];
-    for (const aspect of [390 / 520, 16 / 9]) {
-      const reading = poseOnScreen([follow], aspect);
-      expect(reading.limiting).toBeGreaterThan(0.75);
-      expect(reading.limiting).toBeLessThan(0.9);
-      expect(Math.abs(reading.centerX)).toBeLessThan(0.05);
-      expect(Math.abs(reading.centerY)).toBeLessThan(0.05);
-      expect(reading.minX).toBeGreaterThanOrEqual(-0.88);
-      expect(reading.maxX).toBeLessThanOrEqual(0.88);
-      expect(reading.minY).toBeGreaterThanOrEqual(-0.88);
-      expect(reading.maxY).toBeLessThanOrEqual(0.88);
-    }
+    const wideFollow = poseOnScreen([follow], 16 / 9);
+    expect(wideFollow.limiting).toBeGreaterThan(0.75);
+    expect(wideFollow.limiting).toBeLessThan(0.9);
+    expect(Math.abs(wideFollow.centerX)).toBeLessThan(0.05);
+    expect(Math.abs(wideFollow.centerY)).toBeLessThan(0.05);
+    const phoneFollow = poseOnScreen([follow], 390 / 844);
+    const phoneWidth = (phoneFollow.maxX - phoneFollow.minX) / 2;
+    expect(phoneWidth).toBeGreaterThan(0.86);
+    expect(phoneWidth).toBeLessThan(0.94);
+    expect(Math.abs(phoneFollow.centerX)).toBeLessThan(0.05);
+    expect(Math.abs(phoneFollow.centerY)).toBeLessThan(0.05);
+    const followMarginX = (1 - Math.max(-phoneFollow.minX, phoneFollow.maxX)) / 2;
+    expect(followMarginX).toBeGreaterThan(0.039);
     expect(easeFitDistance(null, 4, 3.5)).toBe(4);
     expect(easeFitDistance(2, 4, 3.2)).toBeCloseTo(3.2);
     const easedIn = easeFitDistance(5, 3, 2.8);

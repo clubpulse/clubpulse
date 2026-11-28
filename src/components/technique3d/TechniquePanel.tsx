@@ -154,13 +154,15 @@ export function TechniquePanel({
   };
 
   return (
-    <section className="mt-6 rounded-2xl border border-white/10 bg-neutral-950 p-4 text-neutral-100">
+    <section className="mt-6 rounded-2xl border border-white/10 bg-neutral-950 p-4 text-neutral-100 max-md:px-0">
+      <div className="max-md:px-4">
       <h2 className="text-lg font-semibold">3D technique view</h2>
       <p className="mt-1 text-sm text-amber-200">{ESTIMATE_NOTE}</p>
       <p className="mt-2 text-sm text-neutral-400">
         The angles are read from one camera. Drag the view to rotate it. The reference actions are drawn by SHIFTUP and are not a real player.
       </p>
-      <div className="mt-4 flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_280px] md:gap-4">
+      </div>
+      <div className="mt-4 flex w-full min-w-0 flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_280px] md:gap-4">
         <SkeletonStage
           player={(pose ? layout : 'reference') === 'reference' ? null : shownPlayer}
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
@@ -177,7 +179,7 @@ export function TechniquePanel({
           muted
           playsInline
           preload="auto"
-          className="mx-auto block h-auto w-auto max-h-36 max-w-full rounded-lg bg-black object-contain md:mx-0 md:h-auto md:max-h-none md:w-full md:rounded-xl"
+          className="mx-auto block h-auto w-auto max-h-36 max-w-full self-center rounded-lg bg-black object-contain md:mx-0 md:h-auto md:max-h-none md:w-full md:max-w-none md:self-stretch md:rounded-xl"
           style={clipAspect ? { aspectRatio: String(clipAspect) } : undefined}
           onLoadedMetadata={(event) => {
             const video = event.currentTarget;
@@ -188,6 +190,7 @@ export function TechniquePanel({
           onEnded={() => setPlaying(false)}
         />
       </div>
+      <div className="max-md:px-4">
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="rounded-full bg-sky-500 px-3 py-1 text-sm font-medium text-neutral-950" onClick={() => void estimate()} disabled={busy}>
           {busy ? 'Building the 3D estimate…' : 'Build 3D estimate'}
@@ -238,6 +241,7 @@ export function TechniquePanel({
       <p className="mt-1 text-sm text-neutral-300">{marker ? `Phase: ${marker}` : 'Phase markers sit on the reference action.'}</p>
       {saved && <p className="mt-2 text-sm text-neutral-400">Saved to your account only.</p>}
       {message && <p className="mt-2 text-sm text-amber-200" role="alert">{message}</p>}
+      </div>
     </section>
   );
 }

@@ -50,7 +50,7 @@ function CameraRig({ frames, live }: { frames: PoseFrame[]; live: PoseFrame[] })
     const haveOrbit = seen.current && offset.length() > 0.05;
     const direction: Vec3 = haveOrbit ? [offset.x, offset.y, offset.z] : [0, 0.12, 1];
     const fit = screenFit(frames, aspect, 40, direction);
-    const guard = screenFit(live.length > 0 ? live : frames, aspect, 40, direction, VIEW_SAFE_FILL);
+    const guard = screenFit(live.length > 0 ? live : frames, aspect, 40, direction, aspect < 1 ? undefined : VIEW_SAFE_FILL);
     needed.current = fit.distance;
     safe.current = guard.distance;
     target.current.set(fit.target[0], fit.target[1], fit.target[2]);
@@ -206,7 +206,7 @@ export function SkeletonStage({
     return out;
   }, [layout, playerClip, referenceClip, playerTimes, referenceTimes, time, framing, placedPlayer, placedReference]);
   return (
-    <div className="h-[60vh] min-h-[320px] w-full lg:h-[min(70vh,720px)]">
+    <div className="h-[60vh] min-h-[320px] w-full min-w-0 shrink-0 lg:h-[min(70vh,720px)]">
     <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: '100%', background: '#07111f', borderRadius: 12 }}>
       <color attach="background" args={['#07111f']} />
       <ambientLight intensity={0.65} />

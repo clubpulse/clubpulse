@@ -13,10 +13,23 @@ import type { PoseFrame, Vec3 } from './types';
 export const VIEW_FILL = 0.85;
 /** About 8% left clear on each side when the box is centred at that fill. */
 export const VIEW_PAD = (1 - VIEW_FILL) / 2;
-/** The head and limbs stay at least this far from every canvas edge. */
+/** Landscape panels stay at least this far from every edge, as a fraction of that edge. */
 export const VIEW_MARGIN = 0.06;
-/** Closest the camera may come: a 6% margin on the drawn figure. */
+/** Closest the camera may come on a landscape panel. */
 export const VIEW_SAFE_FILL = 1 - 2 * VIEW_MARGIN;
+/**
+ * On a portrait panel the margin is this fraction of the shorter side, on every edge.
+ * A wide pose is then about 90% of the width.
+ */
+export const PORTRAIT_MARGIN = 0.04;
+export const PORTRAIT_WIDTH_FILL = 0.9;
+
+/** How much of each screen axis the drawn box may cover. Landscape keeps one fill on both. */
+export function frameAllowance(aspect: number, fill = VIEW_FILL): { x: number; y: number } {
+  const safe = Math.max(0.2, aspect);
+  if (safe >= 1) return { x: fill, y: fill };
+  return { x: PORTRAIT_WIDTH_FILL, y: 1 - 2 * PORTRAIT_MARGIN * safe };
+}
 export const VIEW_FOV = 40;
 
 export type LayoutMode = 'player' | 'reference' | 'side' | 'overlay';
@@ -453,7 +466,8 @@ export function screenFit(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV
     const point = mark.point;
     reach = Math.max(reach, Math.hypot(point[0] - target[0], point[1] - target[1], point[2] - target[2]) + mark.radius);
   }
-  let distance = reach / tan / fill;
+  const limits = frameAllowance(safeAspect, fill);
+  let distance = reach / tan / Math.min(limits.x, limits.y);
   const dir = normalize(direction ?? [0, reach * 0.04, 1]);
   for (let step = 0; step < 10; step++) {
     const position = add(target, scale(dir, distance));
@@ -466,8 +480,10 @@ export function screenFit(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV
     const right = normalize(cross(forward, [0, 1, 0]));
     const up = cross(right, forward);
     target = add(target, add(scale(right, cx * distance * tan * safeAspect), scale(up, cy * distance * tan)));
-    const limiting = Math.max((box.maxX - box.minX) / 2, (box.maxY - box.minY) / 2);
-    if (limiting > 1e-3) distance *= limiting / fill;
+    const usedX = (box.maxX - box.minX) / 2 / limits.x;
+    const usedY = (box.maxY - box.minY) / 2 / limits.y;
+    const limiting = Math.max(usedX, usedY);
+    if (limiting > 1e-3) distance *= limiting;
     distance = Math.min(80, Math.max(0.25, distance));
   }
   return { target, position: add(target, scale(dir, distance)), distance };
