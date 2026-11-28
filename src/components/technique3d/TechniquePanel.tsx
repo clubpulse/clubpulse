@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { FULL_MODEL_URL, WASM_URL, sampleClip } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
-import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, rotateFrameY, yawDelta } from '@/lib/technique3d/math';
+import { prepareClip } from '@/lib/technique3d/figure';
+import { alignedReferenceIndex, anglesAt, frameIndexAt, rotateFrameY, yawDelta } from '@/lib/technique3d/math';
 import { phaseLabel, referenceById, referencesFor } from '@/lib/technique3d/references';
 import { ESTIMATE_NOTE, type AlignEvent, type TechniqueHand, type TechniqueMode, type TechniquePose } from '@/lib/technique3d/types';
 import { SkeletonStage } from './SkeletonStage';
@@ -58,6 +59,7 @@ export function TechniquePanel({
   const yaw = playerFrameAtEvent && referenceFrameAtEvent ? yawDelta(referenceFrameAtEvent, playerFrameAtEvent) : 0;
 
   const shownPlayer = pose?.frames[playerIndex] ?? null;
+  const referenceClip = reference ? reference.frames.map((frame) => rotateFrameY(frame, pose ? yaw : 0)) : null;
   const referenceIndex = pose && reference
     ? alignedReferenceIndex(playerIndex, playerEvent, referenceEvent, reference.frames.length)
     : reference ? frameIndexAt(reference.frames.map((_, index) => index / reference.fps), time) : null;
@@ -89,12 +91,16 @@ export function TechniquePanel({
         detect: () => {
           const found = landmarker.detectForVideo(video, Math.round(video.currentTime * 1000));
           const world = found.worldLandmarks?.[0];
+          const image = found.landmarks?.[0];
           if (!world) return null;
-          return world.map((point) => [point.x, point.y, point.z] as [number, number, number]);
+          return {
+            world: world.map((point) => [point.x, point.y, point.z] as [number, number, number]),
+            image: image?.map((point) => [point.x, point.y, point.z] as [number, number, number]) ?? null,
+          };
         },
       });
       landmarker.close();
-      const frames = orientFrames(sampled.frames);
+      const frames = prepareClip(sampled.frames, sampled.images);
       if (frames.length < 8) {
         setMessage('The full body was not clear enough for a 3D estimate. Use a clip with one person, head to ankles, in good light.');
         return;
@@ -137,6 +143,8 @@ export function TechniquePanel({
         <SkeletonStage
           player={(pose ? layout : 'reference') === 'reference' ? null : shownPlayer}
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
+          playerClip={pose?.frames ?? null}
+          referenceClip={referenceClip}
           layout={pose ? layout : 'reference'}
         />
         <video ref={videoRef} src={clipUrl} muted playsInline className="w-full rounded-xl bg-black" onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)} onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)} onEnded={() => setPlaying(false)} />

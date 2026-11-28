@@ -76,12 +76,17 @@ export function anglesAt(frame: PoseFrame, hand: TechniqueHand): AngleRead {
   };
 }
 
-/** Flip a clip so the nose sits above the hips. Two axes flip together, so left and right stay put. */
+/** Flip a clip so the nose sits above the hips on most frames. Two axes flip together, so left and right stay put. */
 export function orientFrames(frames: PoseFrame[]): PoseFrame[] {
-  const mid = frames[Math.floor(frames.length / 2)];
-  if (!mid || mid.length < 25) return frames;
-  const hipY = (mid[23][1] + mid[24][1]) / 2;
-  if (mid[0][1] >= hipY) return frames;
+  let up = 0;
+  let down = 0;
+  for (const frame of frames) {
+    if (!frame?.[0] || !frame[23] || !frame[24]) continue;
+    const hipY = (frame[23][1] + frame[24][1]) / 2;
+    if (frame[0][1] >= hipY) up += 1;
+    else down += 1;
+  }
+  if (down <= up) return frames;
   return frames.map((frame) => frame.map(([x, y, z]) => [x, -y, -z] as Vec3));
 }
 

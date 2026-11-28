@@ -4,6 +4,7 @@ import { authoredReferences } from '@/lib/technique3d/author';
 import { sampleClip } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
 import { technique3dEnabled } from '@/lib/technique3d/flag';
+import { clipFraming, limbLength, prepareClip, projectedShare } from '@/lib/technique3d/figure';
 import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, yawDelta } from '@/lib/technique3d/math';
 import { parseTechniquePose } from '@/lib/technique3d/payload';
 import { canReadTechniquePose } from '@/lib/technique3d/privacy';
@@ -77,6 +78,10 @@ describe('3D technique angles, alignment and capture', () => {
     const flat = body();
     const flipped = flat.map(([x, y, z]) => [x, -y, -z] as Vec3);
     expect(orientFrames([flipped])[0][0][1]).toBeGreaterThan(0);
+    const upright = Array.from({ length: 5 }, () => flat);
+    upright[2] = flipped;
+    expect(orientFrames(upright)[0][0][1]).toBeGreaterThan(0);
+    expect(orientFrames(upright)[2][0][1]).toBeLessThan(0);
     expect(Math.abs(yawDelta(flat, flat))).toBeLessThan(0.01);
   });
 
@@ -101,6 +106,107 @@ describe('3D technique angles, alignment and capture', () => {
     expect(ok.ok).toBe(true);
     expect(parseTechniquePose({ mode: 'bowling', hand: 'right', keyEvent: 'release', keyEventFrame: 3, times, frames, email: 'a@example.com' }).ok).toBe(false);
     expect(parseTechniquePose({ mode: 'bowling', hand: 'right', keyEvent: 'release', keyEventFrame: 3, times, frames: frames.slice(0, 2) }).ok).toBe(false);
+  });
+});
+
+function standing(): PoseFrame {
+  const frame = Array.from({ length: 33 }, () => [0, 0, 0] as Vec3);
+  frame[0] = [0, 0.7, 0.05];
+  frame[11] = [0.2, 0.5, 0];
+  frame[12] = [-0.2, 0.5, 0];
+  frame[13] = [0.2, 0.22, 0];
+  frame[14] = [-0.2, 0.22, 0.04];
+  frame[15] = [0.2, -0.03, 0];
+  frame[16] = [-0.34, 0.9, 0.12];
+  frame[23] = [0.11, 0, 0];
+  frame[24] = [-0.11, 0, 0];
+  frame[25] = [0.11, -0.42, 0];
+  frame[26] = [-0.11, -0.42, 0];
+  frame[27] = [0.11, -0.82, 0];
+  frame[28] = [-0.11, -0.82, 0];
+  frame[31] = [0.11, -0.9, 0.08];
+  frame[32] = [-0.11, -0.9, 0.08];
+  return frame;
+}
+
+function asImage(frame: PoseFrame): PoseFrame {
+  return frame.map(([x, y, z]) => [0.5 + x * 0.22, 0.5 - y * 0.22, -z * 0.22]);
+}
+
+function asWorldYDown(frame: PoseFrame): PoseFrame {
+  return frame.map(([x, y, z]) => [x, -y, -z]);
+}
+
+describe('3D figure framing and limb lengths', () => {
+  it('turns a y-down world pose into the picture, with left and right unswapped', () => {
+    const truePose = standing();
+    const prepared = prepareClip([asWorldYDown(truePose)], [asImage(truePose)])[0];
+    expect(prepared[0][1]).toBeGreaterThan(prepared[23][1]);
+    expect(prepared[11][0]).toBeGreaterThan(prepared[12][0]);
+    expect(prepared[16][0]).toBeLessThan(prepared[15][0]);
+    expect(prepared[16][1]).toBeGreaterThan(prepared[15][1]);
+    expect(prepared[16][2]).toBeGreaterThan(0);
+  });
+
+  it('keeps limb-length ratios plausible when one frame collapses a knee', () => {
+    const truePose = standing();
+    const image = asImage(truePose);
+    const collapsed = asWorldYDown(truePose);
+    collapsed[25] = [...collapsed[23]];
+    const clip = Array.from({ length: 8 }, (_, index) => (index === 3 ? collapsed.map((point) => [...point] as Vec3) : asWorldYDown(truePose)));
+    const prepared = prepareClip(clip, clip.map(() => image));
+    for (const frame of prepared) {
+      const thigh = limbLength(frame, 23, 25);
+      const shin = limbLength(frame, 25, 27);
+      const upper = limbLength(frame, 11, 13);
+      const fore = limbLength(frame, 13, 15);
+      expect(thigh).toBeGreaterThan(0.3);
+      expect(shin).toBeGreaterThan(0.28);
+      expect(thigh / shin).toBeGreaterThan(0.75);
+      expect(thigh / shin).toBeLessThan(1.4);
+      expect(upper / fore).toBeGreaterThan(0.7);
+      expect(upper / fore).toBeLessThan(1.5);
+    }
+  });
+
+  it('fills the viewport instead of sitting in a corner, including a wide canvas and a side-by-side pair', () => {
+    const pose = standing();
+    const single = projectedShare({ min: [-0.4, -0.95, -0.2], max: [0.4, 0.8, 0.2] }, 2.8);
+    expect(Math.max(single.vertical, single.horizontal)).toBeGreaterThan(0.64);
+    expect(Math.max(single.vertical, single.horizontal)).toBeLessThan(0.8);
+    expect(Math.abs(single.centerX)).toBeLessThan(0.15);
+    expect(Math.abs(single.centerY)).toBeLessThan(0.15);
+    expect(single.vertical).toBeGreaterThan(0.5);
+
+    const square = projectedShare({ min: [-0.4, -0.95, -0.2], max: [0.4, 0.8, 0.2] }, 1);
+    expect(Math.max(square.vertical, square.horizontal)).toBeGreaterThan(0.64);
+    expect(Math.abs(square.centerX)).toBeLessThan(0.15);
+
+    const clip = Array.from({ length: 6 }, () => pose);
+    const side = clipFraming(clip, clip, 'side');
+    const share = projectedShare(side.bounds, 2.8);
+    expect(Math.max(share.vertical, share.horizontal)).toBeGreaterThan(0.64);
+    expect(Math.max(share.vertical, share.horizontal)).toBeLessThan(0.8);
+    expect(Math.abs(share.centerX)).toBeLessThan(0.15);
+    expect(Math.abs(share.centerY)).toBeLessThan(0.15);
+    expect(side.playerShift).toBeLessThan(0);
+    expect(side.referenceShift).toBeGreaterThan(0);
+  });
+
+  it('keeps the drawn reference actions in a human limb range', () => {
+    for (const reference of authoredReferences()) {
+      for (const frame of reference.frames) {
+        const thigh = limbLength(frame, reference.hand === 'right' ? 24 : 23, reference.hand === 'right' ? 26 : 25);
+        const shin = limbLength(frame, reference.hand === 'right' ? 26 : 25, reference.hand === 'right' ? 28 : 27);
+        const upper = limbLength(frame, reference.hand === 'right' ? 12 : 11, reference.hand === 'right' ? 14 : 13);
+        const fore = limbLength(frame, reference.hand === 'right' ? 14 : 13, reference.hand === 'right' ? 16 : 15);
+        expect(thigh / shin).toBeGreaterThan(0.7);
+        expect(thigh / shin).toBeLessThan(1.45);
+        expect(upper / fore).toBeGreaterThan(0.7);
+        expect(upper / fore).toBeLessThan(1.5);
+        expect(frame[0][1]).toBeGreaterThan((frame[23][1] + frame[24][1]) / 2);
+      }
+    }
   });
 });
 
