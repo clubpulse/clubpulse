@@ -28,6 +28,7 @@ import {
 import { framingPrompt } from '@/lib/analysis/framing';
 import { estimateBoneLengths, type BoneLengths } from '@/lib/analysis/bone-length';
 import { CLEAR_IMAGE, heavyFrameIndexes, preferLiteModel, retakeLine, retakePlan } from '@/lib/analysis/metric-confidence';
+import { POSE_HEAVY_MODEL_URL, POSE_LITE_MODEL_URL, POSE_WASM_URL } from '@/lib/analysis/pose-runtime';
 import { scoreMeaning, topFix, coachingChains } from '@/lib/analysis/coaching-causes';
 
 /** An earlier analysis, tagged with the recording it came from */
@@ -39,13 +40,6 @@ type AnalyseTab = 'pose' | 'ball';
 
 const GOLD   = '#EFC84A';
 const CRIMSON = '#1D4ED8';
-
-// Keep in step with the @mediapipe/tasks-vision version in package.json: the wasm runtime must match the JS bundle.
-const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
-const MODEL_URL =
-  'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
-const HEAVY_URL =
-  'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task';
 
 const RECORD_MS = 5000;
 // An uploaded clip is analysed from the start up to this length
@@ -526,9 +520,9 @@ export function AnalyseClient() {
     try {
       if (!heavyRef.current) {
         const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-        const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+        const vision = await FilesetResolver.forVisionTasks(POSE_WASM_URL);
         heavyRef.current = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: { modelAssetPath: HEAVY_URL, delegate: 'GPU' },
+          baseOptions: { modelAssetPath: POSE_HEAVY_MODEL_URL, delegate: 'GPU' },
           runningMode: 'IMAGE',
           numPoses: 1,
         });
@@ -720,9 +714,9 @@ export function AnalyseClient() {
   async function loadLandmarker() {
     if (landmarkerRef.current) return;
     const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-    const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+    const vision = await FilesetResolver.forVisionTasks(POSE_WASM_URL);
     landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
+      baseOptions: { modelAssetPath: POSE_LITE_MODEL_URL, delegate: 'GPU' },
       runningMode: 'VIDEO',
       numPoses: 3,
     });

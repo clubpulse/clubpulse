@@ -420,3 +420,59 @@ BEGIN
     RAISE EXCEPTION 'second call changed the recorded condition to %', recorded;
   END IF;
 END $$;
+
+-- Movement results stay with the player, or a coach who already has a confirmed booking. No video column.
+INSERT INTO public.coaching_listings (id, coach_user_id, club_id, title, coaching_type, scores_cost)
+VALUES ('d1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1', 'aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Net session', 'fitness', 0);
+INSERT INTO public.coaching_bookings (listing_id, player_user_id, coach_user_id, club_id, session_date, status)
+VALUES ('d1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', CURRENT_DATE, 'confirmed');
+INSERT INTO public.camera_drill_sessions (user_id, drill_key, day, score)
+VALUES ('11111111-1111-1111-1111-111111111111', 'squat', CURRENT_DATE, 70);
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'camera_drill_sessions' AND column_name IN ('video', 'video_url', 'landmarks')
+  ) THEN
+    RAISE EXCEPTION 'movement results store more than numbers';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.camera_drill_sessions WHERE score = 70) THEN
+    RAISE EXCEPTION 'a player cannot read their own movement result';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.camera_drill_sessions) THEN
+    RAISE EXCEPTION 'another member can read a movement result';
+  END IF;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', 'aaaaaaaa-1111-1111-1111-111111111111', false);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.camera_drill_sessions WHERE user_id = '11111111-1111-1111-1111-111111111111') THEN
+    RAISE EXCEPTION 'a booked coach cannot read the player movement result';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE anon;
+DO $$
+BEGIN
+  BEGIN
+    PERFORM 1 FROM public.camera_drill_sessions;
+    RAISE EXCEPTION 'anon read a movement result';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;

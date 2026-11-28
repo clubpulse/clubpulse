@@ -3,7 +3,11 @@ import { join } from 'path';
 
 const root = join(__dirname, '../..');
 const configSource = readFileSync(join(root, 'next.config.ts'), 'utf8');
-const analyseSource = readFileSync(join(root, 'src/components/analyse/AnalyseClient.tsx'), 'utf8');
+const runtimeSource = readFileSync(join(root, 'src/lib/analysis/pose-runtime.ts'), 'utf8');
+const requestSource = [
+  readFileSync(join(root, 'src/components/analyse/AnalyseClient.tsx'), 'utf8'),
+  readFileSync(join(root, 'src/components/drills/DrillRunner.tsx'), 'utf8'),
+].join('\n');
 
 /** Host sources MediaPipe actually requests from a FilesetResolver base URL. useModule is false. */
 const WASM_SCRIPTS = ['vision_wasm_internal.js', 'vision_wasm_nosimd_internal.js'];
@@ -97,14 +101,14 @@ describe('report-only CSP and /analyse MediaPipe URLs', () => {
     expect(sourceAllows('https://*.supabase.co', 'https://supabase.co/rest/v1/x')).toBe(false);
   });
 
-  it('allows every external URL constant AnalyseClient actually requests', () => {
+  it('allows every external URL constant the pose clients actually request', () => {
     const csp = contentSecurityPolicy(configSource);
-    const constants = externalUrlConstants(analyseSource);
+    const constants = externalUrlConstants(runtimeSource);
     expect(constants.length).toBeGreaterThan(0);
 
     const covered: string[] = [];
     for (const constant of constants) {
-      const needs = requestsFor(constant.name, constant.url, analyseSource);
+      const needs = requestsFor(constant.name, constant.url, requestSource);
       if (needs.length === 0) {
         throw new Error(`${constant.name} (${constant.url}) is an external URL with no CSP request mapping`);
       }
