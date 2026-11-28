@@ -18,7 +18,7 @@ jest.mock('@/lib/scores/context', () => ({ awardScores: jest.fn(async () => ({ o
 
 import { createPost, getFeed, getNearby, answerPerson, sendMessage } from '@/lib/community/service';
 import { createSession } from '@/lib/community/sessions';
-import { HOLD_NEEDS_DOB, HOLD_PENDING_PARENT } from '@/lib/community/age';
+import { HOLD_NEEDS_DOB, HOLD_NEEDS_GUARDIAN, HOLD_PENDING_PARENT } from '@/lib/community/age';
 
 const world = (o: { dob: string | null; junior: boolean; parent: boolean }) => {
   written.length = 0;
@@ -51,6 +51,18 @@ describe('a child with no verified parent', () => {
       expect(await createPost('me', 'Hello')).toEqual({ success: false, error: HOLD_PENDING_PARENT });
       expect(written).toEqual([]);
     }
+  });
+});
+
+describe('an under-13', () => {
+  it('stays closed without a guardian confirmation or a verified parent', async () => {
+    world({ dob: '2015-01-01', junior: false, parent: false });
+    expect(await createPost('me', 'Hello')).toEqual({ success: false, error: HOLD_NEEDS_GUARDIAN });
+    expect(written).toEqual([]);
+  });
+  it('is not held at needs_guardian once a verified parent is linked', async () => {
+    world({ dob: '2015-01-01', junior: false, parent: true });
+    expect((await createPost('me', 'Hello')).success).toBe(true);
   });
 });
 

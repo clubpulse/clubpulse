@@ -261,3 +261,14 @@ describe('no other code writes role or is_junior on club_members', () => {
     expect(offenders).toEqual([]);
   });
 });
+
+describe('the checked functions do not leave their actor and reason behind', () => {
+  const sql = fs.readFileSync(path.join(__dirname, '../../supabase/migrations/20261130000004_club_member_standing_checked.sql'), 'utf8');
+  it('clears all three settings after each checked write, so a later direct write in the same transaction is logged as unchecked', () => {
+    // set_club_member_standing once, add_club_member twice (existing member, new member)
+    for (const key of ['actor', 'reason', 'source']) {
+      const sets = sql.match(new RegExp(`set_config\\('app\\.member_change_${key}', ''`, 'g')) ?? [];
+      expect(sets.length).toBe(3);
+    }
+  });
+});

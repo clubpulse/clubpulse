@@ -113,6 +113,10 @@ BEGIN
   PERFORM set_config('app.member_change_reason', btrim(p_reason), true);
   PERFORM set_config('app.member_change_source', COALESCE(p_source, 'club_admin'), true);
   UPDATE public.club_members SET role = p_role, is_junior = p_junior WHERE id = p_member;
+  -- Clear them, so a later direct write in the same transaction cannot borrow this actor and reason.
+  PERFORM set_config('app.member_change_actor', '', true);
+  PERFORM set_config('app.member_change_reason', '', true);
+  PERFORM set_config('app.member_change_source', '', true);
 END;
 $$;
 
@@ -160,10 +164,18 @@ BEGIN
   IF FOUND THEN
     -- Switching back on keeps their role, and never clears a junior mark.
     UPDATE public.club_members SET is_active = TRUE, is_junior = (existing.is_junior OR junior) WHERE id = existing.id;
+    -- Clear the settings so a later direct write in the same transaction cannot borrow this actor and reason.
+    PERFORM set_config('app.member_change_actor', '', true);
+    PERFORM set_config('app.member_change_reason', '', true);
+    PERFORM set_config('app.member_change_source', '', true);
     RETURN existing.id;
   END IF;
   INSERT INTO public.club_members (club_id, user_id, role, is_active, is_junior)
   VALUES (p_club, p_user, p_role, TRUE, junior) RETURNING id INTO new_id;
+  -- Same: clear the settings after the insert.
+  PERFORM set_config('app.member_change_actor', '', true);
+  PERFORM set_config('app.member_change_reason', '', true);
+  PERFORM set_config('app.member_change_source', '', true);
   RETURN new_id;
 END;
 $$;

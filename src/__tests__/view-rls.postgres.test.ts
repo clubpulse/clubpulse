@@ -22,23 +22,41 @@ function psql(database: string, args: string[]) {
   execFileSync('sudo', [...command, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 
+function migrationFiles(): string[] {
+  return fs.readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort();
+}
+
 describe('view RLS against local Postgres', () => {
   jest.setTimeout(180000);
+
+  it('does not let a later migration hand the locked views back to anon', () => {
+    const files = migrationFiles();
+    const followUpAt = files.indexOf(followUp);
+    expect(followUpAt).toBeGreaterThanOrEqual(0);
+    for (const name of files.slice(followUpAt + 1)) {
+      const sql = fs.readFileSync(path.join(migrations, name), 'utf8');
+      const grants = sql.split(';').filter((statement) => /^\s*GRANT\b/i.test(statement));
+      for (const grant of grants) expect(grant).not.toMatch(/\b(anon|PUBLIC)\b/);
+      expect(sql).not.toMatch(/public_profile_cards|club_scores_leaderboard|security_invoker/i);
+    }
+  });
 
   it('applies the repo migrations and checks cards, the leaderboard, and admin functions', () => {
     psql('postgres', ['-c', `DROP DATABASE IF EXISTS ${db} WITH (FORCE)`]);
     psql('postgres', ['-c', `CREATE DATABASE ${db}`]);
     psql(db, ['-f', bootstrap]);
 
-    const files = fs.readdirSync(migrations).filter((name) => name.endsWith('.sql')).sort();
-    expect(files).toContain(followUp);
+    const files = migrationFiles();
+    const followUpAt = files.indexOf(followUp);
+    expect(followUpAt).toBeGreaterThanOrEqual(0);
     for (const name of files) psql(db, ['-f', path.join(migrations, name)]);
 
-    // A later broad grant must not put anon back on these views. Applying the follow-up again restores it,
-    // then any migration after that follow-up is applied again so its own revokes are not left undone.
+    // A later broad grant must not put anon back on these views. Applying the follow-up again restores
+    // those grants. That file still contains the old resolve_pitch_votes body, so every migration after
+    // it has to be applied again or the replay puts the double-payout function back.
     psql(db, ['-c', 'GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role']);
     psql(db, ['-f', path.join(migrations, followUp)]);
-    for (const name of files.filter((file) => file > followUp)) psql(db, ['-f', path.join(migrations, name)]);
+    for (const name of files.slice(followUpAt + 1)) psql(db, ['-f', path.join(migrations, name)]);
     psql(db, ['-f', assertions]);
   });
 });
