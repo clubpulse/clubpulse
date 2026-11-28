@@ -4,7 +4,7 @@ import { authoredReferences } from '@/lib/technique3d/author';
 import { sampleClip, sampleTimes } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
 import { technique3dEnabled } from '@/lib/technique3d/flag';
-import { framesAround, limbLength, lowestFootY, poseOnScreen, prepareClip, trunkLeanDegrees } from '@/lib/technique3d/figure';
+import { easeFitDistance, framesAround, limbLength, lowestFootY, poseOnScreen, prepareClip, trunkLeanDegrees } from '@/lib/technique3d/figure';
 import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, scrubToIndex, yawDelta } from '@/lib/technique3d/math';
 import { parseTechniquePose } from '@/lib/technique3d/payload';
 import { canReadTechniquePose } from '@/lib/technique3d/privacy';
@@ -182,12 +182,39 @@ describe('3D figure framing and limb lengths', () => {
         expect(reading.limiting).toBeLessThan(0.9);
         expect(Math.abs(reading.centerX)).toBeLessThan(0.05);
         expect(Math.abs(reading.centerY)).toBeLessThan(0.05);
+        expect(reading.minX).toBeGreaterThanOrEqual(-0.9);
+        expect(reading.maxX).toBeLessThanOrEqual(0.9);
+        expect(reading.minY).toBeGreaterThanOrEqual(-0.9);
+        expect(reading.maxY).toBeLessThanOrEqual(0.9);
         for (const point of reading.points) {
           expect(Math.abs(point.x)).toBeLessThan(1);
           expect(Math.abs(point.y)).toBeLessThan(1);
         }
       }
     }
+    const follow = standing();
+    follow[0] = [-1.15, 0.98, 0.08];
+    follow[11] = [-0.55, 0.9, 0];
+    follow[12] = [-0.32, 0.9, 0];
+    follow[23] = [0.2, 0.86, 0];
+    follow[24] = [0.4, 0.86, 0];
+    follow[16] = [0.55, 1.15, 0.1];
+    for (const aspect of [390 / 520, 16 / 9]) {
+      const reading = poseOnScreen([follow], aspect);
+      expect(reading.limiting).toBeGreaterThan(0.75);
+      expect(reading.limiting).toBeLessThan(0.9);
+      expect(Math.abs(reading.centerX)).toBeLessThan(0.05);
+      expect(Math.abs(reading.centerY)).toBeLessThan(0.05);
+      expect(reading.minX).toBeGreaterThanOrEqual(-0.88);
+      expect(reading.maxX).toBeLessThanOrEqual(0.88);
+      expect(reading.minY).toBeGreaterThanOrEqual(-0.88);
+      expect(reading.maxY).toBeLessThanOrEqual(0.88);
+    }
+    expect(easeFitDistance(null, 4, 3.5)).toBe(4);
+    expect(easeFitDistance(2, 4, 3.2)).toBeCloseTo(3.2);
+    const easedIn = easeFitDistance(5, 3, 2.8);
+    expect(easedIn).toBeGreaterThan(3.5);
+    expect(easedIn).toBeLessThan(5);
     const times = [0, 0.2, 0.4];
     expect(framesAround(poses, times, 0.2, 0.5)).toHaveLength(3);
     expect(framesAround(poses, times, 0, 0.5).length).toBeLessThan(3);

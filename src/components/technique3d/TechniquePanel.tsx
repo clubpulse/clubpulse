@@ -34,6 +34,7 @@ export function TechniquePanel({
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(1);
+  const [clipAspect, setClipAspect] = useState<number | null>(null);
   const reference = referenceById(referenceId);
 
   useEffect(() => {
@@ -176,8 +177,13 @@ export function TechniquePanel({
           muted
           playsInline
           preload="auto"
-          className="h-28 w-full rounded-lg bg-black object-contain md:h-auto md:rounded-xl"
-          onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)}
+          className="mx-auto block h-auto w-auto max-h-36 max-w-full rounded-lg bg-black object-contain md:mx-0 md:h-auto md:max-h-none md:w-full md:rounded-xl"
+          style={clipAspect ? { aspectRatio: String(clipAspect) } : undefined}
+          onLoadedMetadata={(event) => {
+            const video = event.currentTarget;
+            setDuration(video.duration || 1);
+            if (video.videoWidth > 0 && video.videoHeight > 0) setClipAspect(video.videoWidth / video.videoHeight);
+          }}
           onTimeUpdate={(event) => { if (playing) setTime(event.currentTarget.currentTime); }}
           onEnded={() => setPlaying(false)}
         />
