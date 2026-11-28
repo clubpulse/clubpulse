@@ -41,10 +41,6 @@ type AnalyseTab = 'pose' | 'ball';
 const GOLD   = '#EFC84A';
 const CRIMSON = '#1D4ED8';
 
-const WASM_URL = POSE_WASM_URL;
-const MODEL_URL = POSE_LITE_MODEL_URL;
-const HEAVY_URL = POSE_HEAVY_MODEL_URL;
-
 const RECORD_MS = 5000;
 // An uploaded clip is analysed from the start up to this length
 // An uploaded clip can be a stretch of a net session with several shots in it
@@ -524,9 +520,9 @@ export function AnalyseClient() {
     try {
       if (!heavyRef.current) {
         const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-        const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+        const vision = await FilesetResolver.forVisionTasks(POSE_WASM_URL);
         heavyRef.current = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: { modelAssetPath: HEAVY_URL, delegate: 'GPU' },
+          baseOptions: { modelAssetPath: POSE_HEAVY_MODEL_URL, delegate: 'GPU' },
           runningMode: 'IMAGE',
           numPoses: 1,
         });
@@ -718,9 +714,9 @@ export function AnalyseClient() {
   async function loadLandmarker() {
     if (landmarkerRef.current) return;
     const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-    const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+    const vision = await FilesetResolver.forVisionTasks(POSE_WASM_URL);
     landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
+      baseOptions: { modelAssetPath: POSE_LITE_MODEL_URL, delegate: 'GPU' },
       runningMode: 'VIDEO',
       numPoses: 3,
     });
