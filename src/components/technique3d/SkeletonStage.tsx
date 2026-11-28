@@ -33,14 +33,14 @@ const JOINTS: Array<{ index: number; side: 'left' | 'right' | 'center'; radius: 
   { index: 28, side: 'right', radius: 0.04 },
 ];
 
-function CameraRig({ bounds, focusX }: { bounds: { min: Vec3; max: Vec3 }; focusX: number }) {
+function CameraRig({ bounds }: { bounds: { min: Vec3; max: Vec3 } }) {
   const { camera, gl, size } = useThree();
   const orbit = useRef<OrbitControls | null>(null);
   const target = useRef(new THREE.Vector3());
-  const key = `${bounds.min.join(',')}:${bounds.max.join(',')}:${focusX}`;
+  const key = `${bounds.min.join(',')}:${bounds.max.join(',')}`;
 
   useLayoutEffect(() => {
-    const [minText, maxText, focusText] = key.split(':');
+    const [minText, maxText] = key.split(':');
     const read = (text: string): Vec3 => {
       const [x, y, z] = text.split(',').map(Number);
       return [x || 0, y || 0, z || 0];
@@ -48,7 +48,7 @@ function CameraRig({ bounds, focusX }: { bounds: { min: Vec3; max: Vec3 }; focus
     const min = read(minText);
     const max = read(maxText);
     const aspect = size.width / Math.max(1, size.height);
-    const fit = frameCamera({ min, max }, aspect, 40, Number(focusText));
+    const fit = frameCamera({ min, max }, aspect);
     target.current.set(fit.target[0], fit.target[1], fit.target[2]);
     camera.position.set(fit.position[0], fit.position[1], fit.position[2]);
     camera.lookAt(target.current);
@@ -154,7 +154,7 @@ export function SkeletonStage({
       <color attach="background" args={['#07111f']} />
       <ambientLight intensity={0.65} />
       <directionalLight position={[2, 4, 3]} intensity={1.1} />
-      <CameraRig bounds={framing.bounds} focusX={framing.focusX} />
+      <CameraRig bounds={framing.bounds} />
       <Ground bounds={framing.bounds} ground={framing.ground} />
       {placedPlayer && <Figure frame={placedPlayer} ghost={false} />}
       {placedReference && <Figure frame={placedReference} ghost={layout === 'overlay'} />}

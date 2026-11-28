@@ -34,6 +34,7 @@ export function TechniquePanel({
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(1);
+  const [showInset, setShowInset] = useState(true);
   const reference = referenceById(referenceId);
 
   useEffect(() => {
@@ -173,11 +174,17 @@ export function TechniquePanel({
           muted
           playsInline
           preload="auto"
-          className="pointer-events-none absolute bottom-3 right-3 z-10 aspect-[3/4] w-20 rounded-lg bg-black object-cover shadow-lg ring-1 ring-white/40 lg:pointer-events-auto lg:static lg:aspect-auto lg:w-full lg:rounded-xl lg:shadow-none lg:ring-0"
+          className={`absolute top-3 right-3 z-10 aspect-[3/4] w-20 cursor-pointer rounded-lg bg-black object-cover shadow-lg ring-1 ring-white/40 lg:static lg:aspect-auto lg:w-full lg:cursor-default lg:rounded-xl lg:shadow-none lg:ring-0 ${showInset ? '' : 'max-lg:h-px max-lg:w-px max-lg:opacity-0'}`}
+          onClick={() => { if (window.matchMedia('(max-width: 1023px)').matches) setShowInset((open) => !open); }}
           onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)}
           onTimeUpdate={(event) => { if (playing) setTime(event.currentTarget.currentTime); }}
           onEnded={() => setPlaying(false)}
         />
+        {!showInset && (
+          <button type="button" className="absolute top-3 right-3 z-10 rounded-full border border-white/20 bg-neutral-950/80 px-3 py-1 text-xs lg:hidden" onClick={() => setShowInset(true)}>
+            Show video
+          </button>
+        )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="rounded-full bg-sky-500 px-3 py-1 text-sm font-medium text-neutral-950" onClick={() => void estimate()} disabled={busy}>

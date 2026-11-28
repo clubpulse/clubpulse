@@ -9,9 +9,8 @@ import type { PoseFrame, Vec3 } from './types';
  * anatomical left and right on their own indices.
  */
 
-/** Share of the panel height the body should fill. Portrait panels back off if the width would clip. */
-export const VIEW_FILL = 0.85;
-const VIEW_WIDTH_LIMIT = 0.92;
+/** Empty margin on each edge of the panel. The figure stays inside it. */
+export const VIEW_PAD = 0.08;
 export const VIEW_FOV = 40;
 
 export type LayoutMode = 'player' | 'reference' | 'side' | 'overlay';
@@ -24,7 +23,6 @@ export type Framing = {
   referenceDrop: number;
   bounds: Bounds;
   ground: number;
-  focusX: number;
 };
 export type Projected = { vertical: number; horizontal: number; centerX: number; centerY: number };
 
@@ -302,10 +300,15 @@ export function clipFraming(playerClip: PoseFrame[] | null, referenceClip: PoseF
   const placed: PoseFrame[] = [];
   if (showPlayer && playerClip) placed.push(...playerClip.map((frame) => shiftFrame(frame, playerShift, playerDrop)));
   if (showReference && referenceClip) placed.push(...referenceClip.map((frame) => shiftFrame(frame, referenceShift, referenceDrop)));
-  const bounds = boundsOf(placed);
-  const hips = placed.map((frame) => ((frame[23]?.[0] ?? 0) + (frame[24]?.[0] ?? 0)) / 2).sort((a, b) => a - b);
-  const focusX = layout === 'side' ? (bounds.min[0] + bounds.max[0]) / 2 : (hips[Math.floor(hips.length / 2)] ?? 0);
-  return { playerShift, referenceShift, playerDrop, referenceDrop, bounds, ground: 0, focusX };
+  const raw = boundsOf(placed);
+  const cx = centerX(raw);
+  playerShift -= cx;
+  referenceShift -= cx;
+  const bounds: Bounds = {
+    min: [raw.min[0] - cx, raw.min[1], raw.min[2]],
+    max: [raw.max[0] - cx, raw.max[1], raw.max[2]],
+  };
+  return { playerShift, referenceShift, playerDrop, referenceDrop, bounds, ground: 0 };
 }
 
 export function placeFrame(frame: PoseFrame | null, shiftX: number, drop = 0): PoseFrame | null {
@@ -335,61 +338,61 @@ function projectAt(point: Vec3, fit: CameraFit, aspect: number, fovDeg: number):
   };
 }
 
-/** Height and width of the body at the camera's focus depth. Depth does not shrink the figure. */
+function boxCorners(bounds: Bounds): Vec3[] {
+  const corners: Vec3[] = [];
+  for (const x of [bounds.min[0], bounds.max[0]]) {
+    for (const y of [bounds.min[1], bounds.max[1]]) {
+      for (const z of [bounds.min[2], bounds.max[2]]) corners.push([x, y, z]);
+    }
+  }
+  return corners;
+}
+
+/** Every corner of the box, in view space. The centre is the middle of that box. */
 export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): Projected {
   const fit = frameCamera(bounds, aspect, fovDeg);
-  const z = (bounds.min[2] + bounds.max[2]) / 2;
-  const top = projectAt([(bounds.min[0] + bounds.max[0]) / 2, bounds.max[1], z], fit, aspect, fovDeg);
-  const bottom = projectAt([(bounds.min[0] + bounds.max[0]) / 2, bounds.min[1], z], fit, aspect, fovDeg);
-  const left = projectAt([bounds.min[0], (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
-  const right = projectAt([bounds.max[0], (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
-  const center = projectAt([(bounds.min[0] + bounds.max[0]) / 2, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
+  const points = boxCorners(bounds).map((corner) => projectAt(corner, fit, aspect, fovDeg));
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const center = projectAt(fit.target, fit, aspect, fovDeg);
   return {
-    vertical: Math.abs(top.y - bottom.y) / 2,
-    horizontal: Math.abs(right.x - left.x) / 2,
+    vertical: (Math.max(...ys) - Math.min(...ys)) / 2,
+    horizontal: (Math.max(...xs) - Math.min(...xs)) / 2,
     centerX: center.x,
     centerY: center.y,
   };
+}
+
+/** Where each joint lands. Used to prove a lean or a reach stays inside the panel. */
+export function projectJoints(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV): Array<{ x: number; y: number }> {
+  const fit = frameCamera(boundsOf(frames), aspect, fovDeg);
+  return frames.flatMap((frame) => frame.map((point) => projectAt(point, fit, aspect, fovDeg)));
 }
 
 /**
- * Distance is chosen so the body height fills VIEW_FILL.
- * On a portrait panel the camera centres on `focusX` (the hips) and ignores arm reach
- * that would otherwise shrink the body and shove it to one side.
+ * The camera frames the whole box, in width and in height, and leaves VIEW_PAD clear on every edge.
+ * The look-at point is the middle of the box, not the hips.
  */
-export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV, focusX?: number): CameraFit {
-  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
-  const fullWidth = Math.max(0.2, bounds.max[0] - bounds.min[0]);
-  const vFov = (fovDeg * Math.PI) / 180;
-  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * Math.max(0.2, aspect));
-  const portrait = aspect < 1 && Number.isFinite(focusX);
-  const widthBudget = height * Math.max(0.2, aspect) * (VIEW_WIDTH_LIMIT / VIEW_FILL);
-  const width = portrait ? Math.min(fullWidth, widthBudget) : fullWidth;
+export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): CameraFit {
   const target: Vec3 = [
-    portrait ? (focusX as number) : (bounds.min[0] + bounds.max[0]) / 2,
+    (bounds.min[0] + bounds.max[0]) / 2,
     (bounds.min[1] + bounds.max[1]) / 2,
     (bounds.min[2] + bounds.max[2]) / 2,
   ];
-  const forHeight = (height / 2) / Math.tan(vFov / 2) / VIEW_FILL;
-  const forWidth = (width / 2) / Math.tan(hFov / 2) / VIEW_WIDTH_LIMIT;
-  const distance = Math.max(forHeight, forWidth, 0.4);
-  const direction = normalize([0, height * 0.015, 1]);
-  return { target, position: add(target, scale(direction, distance)), distance };
-}
-
-/** Where the hips land in a portrait view. `centerX` is that point, not the wide bounding box. */
-export function portraitFocus(bounds: Bounds, aspect: number, focusX: number, fovDeg = VIEW_FOV): Projected {
-  const fit = frameCamera(bounds, aspect, fovDeg, focusX);
-  const z = (bounds.min[2] + bounds.max[2]) / 2;
-  const top = projectAt([focusX, bounds.max[1], z], fit, aspect, fovDeg);
-  const bottom = projectAt([focusX, bounds.min[1], z], fit, aspect, fovDeg);
-  const center = projectAt([focusX, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
-  const left = projectAt([focusX - 0.25, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
-  const right = projectAt([focusX + 0.25, (bounds.min[1] + bounds.max[1]) / 2, z], fit, aspect, fovDeg);
-  return {
-    vertical: Math.abs(top.y - bottom.y) / 2,
-    horizontal: Math.abs(right.x - left.x) / 2,
-    centerX: center.x,
-    centerY: center.y,
-  };
+  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
+  const direction = normalize([0, height * 0.02, 1]);
+  const limit = 1 - 2 * VIEW_PAD;
+  let lo = 0.2;
+  let hi = 80;
+  for (let step = 0; step < 28; step++) {
+    const mid = (lo + hi) / 2;
+    const fit: CameraFit = { target, position: add(target, scale(direction, mid)), distance: mid };
+    const outside = boxCorners(bounds).some((corner) => {
+      const point = projectAt(corner, fit, aspect, fovDeg);
+      return Math.abs(point.x) > limit || Math.abs(point.y) > limit;
+    });
+    if (outside) lo = mid;
+    else hi = mid;
+  }
+  return { target, position: add(target, scale(direction, hi)), distance: hi };
 }
