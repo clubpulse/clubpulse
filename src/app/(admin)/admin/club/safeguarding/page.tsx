@@ -4,6 +4,11 @@ import ChildrenList from '@/components/club/ChildrenList';
 import IncidentList from '@/components/club/IncidentList';
 import DbsCheckList from '@/components/club/DbsCheckList';
 import DobConfirmList from '@/components/club/DobConfirmList';
+import { DobCorrectionForm } from '@/components/club/DobCorrectionForm';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { listFlagsForClubWithoutOfficer, listOpenSquadFlags, type FallbackFlags, type OpenFlag } from '@/lib/age-verification/flags';
+import { NoWelfareOfficerPanel } from '@/components/club/NoWelfareOfficerPanel';
+import { SquadFlagList } from '@/components/club/SquadFlagList';
 import { listDobToConfirm } from '@/lib/admin/dob-confirmation';
 import { h1, card, muted } from '@/components/play/ui';
 import type { Metadata } from 'next';
@@ -11,14 +16,17 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { title: 'Safeguarding' };
 
 export default async function SafeguardingPage() {
-  const { clubId, ctx } = await requireClubAdminPage();
+  const { user, clubId, ctx } = await requireClubAdminPage();
 
-  const [dashboard, children, incidents, dbsChecks, dobs] = await Promise.all([
+  const noFallback: FallbackFlags = { noWelfareOfficer: false, items: [], purges: [], alertTo: '' };
+  const [dashboard, children, incidents, dbsChecks, dobs, flags, fallback] = await Promise.all([
     getSafeguardingDashboard(clubId),
     listChildren(clubId),
     listIncidents(clubId),
     listDbsChecks(clubId),
-    listDobToConfirm(ctx.adminClubIds),
+    listDobToConfirm(ctx.adminClubIds, 200, user.id),
+    ageVerificationEnabled() ? listOpenSquadFlags(user.id, clubId) : Promise.resolve({ items: [] as OpenFlag[], error: undefined as string | undefined }),
+    ageVerificationEnabled() ? listFlagsForClubWithoutOfficer(user.id, clubId) : Promise.resolve(noFallback),
   ]);
 
   return (
@@ -47,7 +55,10 @@ export default async function SafeguardingPage() {
 
       {/* Dates of birth waiting for a club admin to confirm them */}
       <div style={{ marginBottom: '2rem' }}>
-        <DobConfirmList items={dobs.items} confirmed={dobs.confirmed} error={dobs.error} />
+        <DobConfirmList items={dobs.items} confirmed={dobs.confirmed} error={dobs.error} askMethod={ageVerificationEnabled()} />
+        {ageVerificationEnabled() && <div style={{ marginTop: '1.5rem' }}><DobCorrectionForm clubId={clubId} /></div>}
+        {ageVerificationEnabled() && !fallback.noWelfareOfficer && <div style={{ marginTop: '1.5rem' }}><SquadFlagList clubId={clubId} items={flags.items} error={flags.error} /></div>}
+        {ageVerificationEnabled() && fallback.noWelfareOfficer && <div style={{ marginTop: '1.5rem' }}><NoWelfareOfficerPanel data={fallback} /></div>}
       </div>
 
       {/* Children registry */}

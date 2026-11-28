@@ -6,6 +6,8 @@ import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { backfillDateOfBirth, ensureProfileAndRoles } from '@/lib/auth/onboarding';
+import { ageVerificationEnabled } from '@/lib/age-verification/flag';
+import { dobBlockPath } from '@/lib/age-verification/rules';
 
 // Memoised per request, so layouts and pages can both call it without extra round trips.
 export const getCurrentUser = cache(async () => {
@@ -26,7 +28,8 @@ export const getCurrentUser = cache(async () => {
 export const ensureProfile = cache(async (user: User): Promise<{ needsDob: boolean }> => {
   try {
     const admin = createAdminClient();
-    const { data } = await admin.from('profiles').select('id, date_of_birth').eq('id', user.id).maybeSingle();
+    const { data, error } = await admin.from('profiles').select('id, date_of_birth').eq('id', user.id).maybeSingle();
+    if (error) return { needsDob: ageVerificationEnabled() };
     if (!data) {
       await ensureProfileAndRoles(user);
     } else if (!data.date_of_birth) {
@@ -38,7 +41,7 @@ export const ensureProfile = cache(async (user: User): Promise<{ needsDob: boole
     return { needsDob: !!after && !after.date_of_birth };
   } catch (e) {
     console.error('[auth] could not ensure profile:', e instanceof Error ? e.message : e);
-    return { needsDob: false };
+    return { needsDob: ageVerificationEnabled() };
   }
 });
 
@@ -48,6 +51,9 @@ export async function requireUser() {
     const path = safeRedirect((await headers()).get('x-pathname'), '');
     redirect(path ? `/auth/sign-in?redirectTo=${encodeURIComponent(path)}` : '/auth/sign-in');
   }
-  await ensureProfile(user);
+  const { needsDob } = await ensureProfile(user);
+  const path = (await headers()).get('x-pathname') ?? '';
+  const block = dobBlockPath(path, needsDob, ageVerificationEnabled());
+  if (block) redirect(block);
   return user;
 }

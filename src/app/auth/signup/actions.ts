@@ -5,6 +5,8 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { xiCreateUser } from "@/lib/xi/client";
 import { ageOn, isPlausibleDob } from "@/lib/community/age";
 import { requestGuardianConsent } from "@/lib/community/guardian-consent";
+import { ageVerificationEnabled } from "@/lib/age-verification/flag";
+import { signupDobError } from "@/lib/age-verification/rules";
 
 type Role = "player" | "volunteer" | "parent" | "coach";
 
@@ -52,6 +54,10 @@ export async function completeSignup({
   if (!user || user.id !== userId) {
     return { success: false, error: "Unauthorized" };
   }
+
+  const rulesOn = ageVerificationEnabled();
+  const dobError = signupDobError(dateOfBirth, rulesOn);
+  if (dobError) return { success: false, error: dobError };
 
   let admin: ReturnType<typeof createAdminClient>;
   try {

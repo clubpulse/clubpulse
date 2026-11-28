@@ -3,12 +3,14 @@
 import { useState, useTransition } from 'react';
 import { confirmDobAction } from '@/lib/actions/dob-confirmation';
 import type { DobCandidate } from '@/lib/admin/dob-confirmation';
+import { DOB_METHOD_LABELS, type DobMethod } from '@/lib/age-verification/rules';
 import { cardTitle, muted } from '@/components/play/ui';
 
-export default function DobConfirmList({ items, confirmed, error }: { items: DobCandidate[]; confirmed: number; error?: string }) {
+export default function DobConfirmList({ items, confirmed, error, askMethod = false }: { items: DobCandidate[]; confirmed: number; error?: string; askMethod?: boolean }) {
   const [left, setLeft] = useState(items);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const [method, setMethod] = useState<DobMethod>('existing_registration');
   const fmt = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
   return (
@@ -19,13 +21,21 @@ export default function DobConfirmList({ items, confirmed, error }: { items: Dob
       </p>
       {error && <p role="alert" style={{ color: '#ff5252' }}>{error}</p>}
       {msg && <p role="status" style={{ color: '#00C853' }}>{msg}</p>}
+      {askMethod && (
+        <label style={{ display: 'grid', gap: 4, marginBottom: 8 }}>
+          How you checked it, with no document number
+          <select value={method} onChange={(event) => setMethod(event.target.value as DobMethod)}>
+            {Object.entries(DOB_METHOD_LABELS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+        </label>
+      )}
       {left.length === 0 && !error && <p style={muted}>Nothing waiting.</p>}
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
         {left.map((c) => (
           <li key={c.userId} style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <span>{c.name} · born {fmt(c.dob)} (age {c.age}){c.markedJunior ? ' · marked junior' : ''}</span>
             <button type="button" disabled={pending} onClick={() => start(async () => {
-              const r = await confirmDobAction(c.userId, c.dob);
+              const r = await confirmDobAction(c.userId, c.dob, askMethod ? method : undefined);
               if (r.success) { setLeft((l) => l.filter((x) => x.userId !== c.userId)); setMsg(r.message ?? 'Confirmed.'); } else setMsg(r.error ?? 'Could not confirm.');
             })}>Confirm</button>
           </li>

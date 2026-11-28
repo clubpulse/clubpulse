@@ -8,7 +8,7 @@
 // mistakes and makes lying a deliberate act; it cannot stop a child who gives a false date. A club admin marking
 // someone as a junior still counts, and always wins over a date that says 18 or over.
 
-export type AgeStatus = 'needs_dob' | 'pending_parent' | 'needs_guardian' | 'needs_dob_confirmation' | 'junior' | 'adult';
+export type AgeStatus = 'needs_dob' | 'unverified' | 'pending_parent' | 'needs_guardian' | 'needs_dob_confirmation' | 'junior' | 'adult';
 
 export type AgeInfo = {
   status: AgeStatus;
