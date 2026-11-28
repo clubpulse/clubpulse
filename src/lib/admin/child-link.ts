@@ -2,6 +2,7 @@
 // account as a junior and tell the child's parents about new connections. Service role; callers must already have
 // resolved the caller's admin clubs (getAdminContext).
 
+import { changeMemberStanding } from '@/lib/admin/member-standing';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { dbsIsCurrent, type DbsRow } from '@/lib/community/rules';
 import { ukToday } from '@/lib/utils/uk-date';
@@ -40,7 +41,7 @@ export async function hasCurrentDbsAt(userId: string, clubId: string): Promise<b
   return (await clubsWithCurrentDbs(userId, [clubId])).length > 0;
 }
 
-export async function linkChildToAccount(adminClubIds: string[], childId: unknown, email: unknown): Promise<LinkResult> {
+export async function linkChildToAccount(adminClubIds: string[], childId: unknown, email: unknown, actorId: string): Promise<LinkResult> {
   const child = await ownChild(adminClubIds, childId);
   if (!child) return { success: false, error: 'Child record not found.' };
   if (typeof email !== 'string' || !email.includes('@')) return { success: false, error: 'Enter the email address the child signed up with.' };
@@ -60,7 +61,10 @@ export async function linkChildToAccount(adminClubIds: string[], childId: unknow
   const { error } = await admin.from('child_profiles').update({ linked_user_id: profile.id as string }).eq('id', child.id as string);
   if (error) return { success: false, error: 'Could not link the account.' };
   // A child record is under 18 by definition, so the member is a junior in this club
-  await admin.from('club_members').update({ is_junior: true }).eq('club_id', child.club_id as string).eq('user_id', profile.id as string);
+  const { data: mem } = await admin.from('club_members').select('id, role').eq('club_id', child.club_id as string).eq('user_id', profile.id as string).maybeSingle();
+  if (mem) {
+    await changeMemberStanding({ actorId }, mem.id as string, mem.role as string, true, 'Linked to a child record, so a junior', 'child_link');
+  }
   return { success: true, name: (profile.display_name as string | null) || (profile.full_name as string | null) || 'Member' };
 }
 

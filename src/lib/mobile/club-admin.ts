@@ -1,4 +1,5 @@
 import 'server-only';
+import { addMember } from '@/lib/admin/member-standing';
 
 // Joining a club with a code, and the admin tools the app's Club tab needs: the invite code,
 // join requests, and posting a shift. Every function checks who is asking.
@@ -122,16 +123,11 @@ export async function decideJoinRequest(userId: string, requestId: string, appro
   if (!request || !clubIds.includes(request.club_id as string)) return { success: false, error: 'Request not found' };
 
   if (approve) {
-    // A person who was a member before and was switched off is switched back on, keeping their role
-    const { data: existing } = await sb
-      .from('club_members')
-      .select('id')
-      .eq('club_id', request.club_id)
-      .eq('user_id', request.user_id)
-      .maybeSingle();
-    const { error } = existing
-      ? await sb.from('club_members').update({ is_active: true }).eq('id', existing.id)
-      : await sb.from('club_members').insert({ club_id: request.club_id, user_id: request.user_id, role: 'player', is_active: true });
+    // Goes through the checked path: a lapsed member is switched back on keeping their role, a new one joins
+    // as a player, and a date of birth under 18 marks them a junior. The change is audited.
+    const added = await addMember({ actorId: userId }, request.club_id as string, request.user_id as string, 'player',
+      'Join request approved', 'join_request');
+    const error = added.success ? null : added.error;
     if (error) return { success: false, error: 'Could not add this member' };
   }
   await sb.from('club_join_requests').delete().eq('id', requestId);

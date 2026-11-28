@@ -392,6 +392,110 @@ END $$;
 
 RESET ROLE;
 
+-- A club admin cannot change role or is_junior through the database API. The checked function can, and it is audited.
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+DECLARE
+  member uuid;
+BEGIN
+  SELECT id INTO member FROM public.club_members
+  WHERE user_id = '22222222-2222-2222-2222-222222222222' AND club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  BEGIN
+    UPDATE public.club_members SET role = 'coach' WHERE id = member;
+    RAISE EXCEPTION 'a club admin changed a role through the API';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  BEGIN
+    UPDATE public.club_members SET is_junior = TRUE WHERE id = member;
+    RAISE EXCEPTION 'a club admin changed is_junior through the API';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  IF (SELECT role FROM public.club_members WHERE id = member) IS DISTINCT FROM 'player'
+     OR (SELECT is_junior FROM public.club_members WHERE id = member) THEN
+    RAISE EXCEPTION 'role or junior status changed through the API';
+  END IF;
+END $$;
+
+RESET ROLE;
+SET ROLE service_role;
+DO $$
+DECLARE
+  member uuid;
+BEGIN
+  SELECT id INTO member FROM public.club_members
+  WHERE user_id = '22222222-2222-2222-2222-222222222222' AND club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  PERFORM public.set_club_member_standing(member, 'coach', false, '55555555-5555-5555-5555-555555555555', 'Test promotion');
+  IF NOT EXISTS (
+    SELECT 1 FROM public.club_member_role_log
+    WHERE member_id = member AND previous_role = 'player' AND new_role = 'coach'
+      AND changed_by = '55555555-5555-5555-5555-555555555555' AND reason = 'Test promotion' AND source = 'club_admin'
+  ) THEN
+    RAISE EXCEPTION 'role change was not audited';
+  END IF;
+  PERFORM public.set_club_member_standing(member, 'player', false, '55555555-5555-5555-5555-555555555555', 'Test undo');
+END $$;
+RESET ROLE;
+
+-- A reason is required, and clearing junior status needs a confirmed date of birth showing 18 or over.
+SET ROLE service_role;
+-- the test setup edits profiles as the owner, since the service role has no UPDATE on that table
+DO $$
+DECLARE
+  member uuid;
+  admin_user uuid := '55555555-5555-5555-5555-555555555555';
+  kid uuid := '22222222-2222-2222-2222-222222222222';
+BEGIN
+  SELECT id INTO member FROM public.club_members WHERE user_id = kid AND club_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  BEGIN
+    PERFORM public.set_club_member_standing(member, 'player', false, admin_user, '');
+    RAISE EXCEPTION 'a change without a reason was accepted';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM LIKE 'a change without%' THEN RAISE; END IF;
+  END;
+  PERFORM public.set_club_member_standing(member, 'player', true, admin_user, 'Mark as junior for the test');
+  EXECUTE 'RESET ROLE';
+  UPDATE public.profiles SET date_of_birth = NULL, dob_confirmed_by = NULL, dob_confirmed_at = NULL WHERE id = kid;
+  EXECUTE 'SET ROLE service_role';
+  BEGIN
+    PERFORM public.set_club_member_standing(member, 'player', false, admin_user, 'Try to clear with no date of birth');
+    RAISE EXCEPTION 'junior status was cleared with no date of birth';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM LIKE 'junior status was cleared%' THEN RAISE; END IF;
+  END;
+  EXECUTE 'RESET ROLE';
+  UPDATE public.profiles SET date_of_birth = (CURRENT_DATE - INTERVAL '30 years')::date WHERE id = kid;
+  EXECUTE 'SET ROLE service_role';
+  BEGIN
+    PERFORM public.set_club_member_standing(member, 'player', false, admin_user, 'Try to clear, date not confirmed');
+    RAISE EXCEPTION 'junior status was cleared with an unconfirmed date of birth';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM LIKE 'junior status was cleared%' THEN RAISE; END IF;
+  END;
+  EXECUTE 'RESET ROLE';
+  UPDATE public.profiles SET dob_confirmed_by = admin_user, dob_confirmed_at = NOW() WHERE id = kid;
+  EXECUTE 'SET ROLE service_role';
+  PERFORM public.set_club_member_standing(member, 'player', false, admin_user, 'Date of birth confirmed, now an adult');
+  IF NOT EXISTS (SELECT 1 FROM public.club_member_role_log
+                 WHERE member_id = member AND previous_junior AND NOT new_junior AND changed_by = admin_user
+                   AND reason = 'Date of birth confirmed, now an adult') THEN
+    RAISE EXCEPTION 'clearing junior status was not audited';
+  END IF;
+  -- a direct service-role write is still logged, as unchecked
+  EXECUTE 'RESET ROLE';
+  UPDATE public.club_members SET role = 'coach' WHERE id = member;
+  EXECUTE 'SET ROLE service_role';
+  IF NOT EXISTS (SELECT 1 FROM public.club_member_role_log
+                 WHERE member_id = member AND new_role = 'coach' AND source = 'unchecked_direct_write') THEN
+    RAISE EXCEPTION 'a direct write was not flagged';
+  END IF;
+  EXECUTE 'RESET ROLE';
+  UPDATE public.club_members SET role = 'player' WHERE id = member;
+  EXECUTE 'SET ROLE service_role';
+END $$;
+RESET ROLE;
+
 -- Calling resolve_pitch_votes twice credits each winner once (75), and leaves the miss unchanged.
 DO $$
 DECLARE

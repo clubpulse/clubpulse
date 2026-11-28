@@ -17,6 +17,7 @@ export type ClubMember = {
   role:      ClubMemberRole;
   joined_at: string;
   is_active: boolean;
+  is_junior?: boolean;
 };
 
 export type ClubAdmin = ClubMember & { role: 'club_admin' };

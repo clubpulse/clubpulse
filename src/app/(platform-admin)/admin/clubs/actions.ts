@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth/admin';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { addMember, changeMemberStanding } from '@/lib/admin/member-standing';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const BASE = '/admin/clubs';
@@ -31,7 +32,7 @@ export async function createClub(formData: FormData) {
 
 /** Makes someone who has signed up the admin of a club, by their email. */
 export async function addClubAdmin(formData: FormData) {
-  await requireAdmin();
+  const staff = await requireAdmin();
   const clubId = text(formData.get('clubId'));
   const email = text(formData.get('email')).toLowerCase();
   if (!UUID.test(clubId)) back('error', 'That club was not found.');
@@ -52,23 +53,32 @@ export async function addClubAdmin(formData: FormData) {
   }
   if (!userId) back('error', `No account with ${email}. They need to sign up first.`);
 
-  const { data: existing } = await service.from('club_members').select('id').eq('club_id', clubId).eq('user_id', userId!).maybeSingle();
-  const { error } = existing
-    ? await service.from('club_members').update({ role: 'club_admin', is_active: true }).eq('id', existing.id)
-    : await service.from('club_members').insert({ club_id: clubId, user_id: userId, role: 'club_admin', is_active: true });
-  if (error) back('error', `Could not make them an admin: ${error.message}`);
+  const { data: existing } = await service.from('club_members').select('id, is_junior').eq('club_id', clubId).eq('user_id', userId!).maybeSingle();
+  const who = { actorId: staff.id, platform: true };
+  const reason = `Platform admin made ${email} a club admin`;
+  if (existing?.is_junior) back('error', 'A junior cannot be made a club admin.');
+  // Both writes go through the checked path, so each leaves an audit row
+  const added = await addMember(who, clubId, userId!, 'club_admin', reason, 'platform_admin');
+  if (!added.success) back('error', `Could not make them an admin: ${added.error}`);
+  const { data: row } = await service.from('club_members').select('id, is_junior').eq('club_id', clubId).eq('user_id', userId!).maybeSingle();
+  if (row?.is_junior) back('error', 'A junior cannot be made a club admin.');
+  const made = await changeMemberStanding(who, row!.id as string, 'club_admin', false, reason, 'platform_admin');
+  if (!made.success) back('error', `Could not make them an admin: ${made.error}`);
   back('done', `${email} is now an admin of ${club!.name}.`);
 }
 
 /** Takes admin off someone. They stay in the club as a player. */
 export async function removeClubAdmin(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const clubId = text(formData.get('clubId'));
   const userId = text(formData.get('userId'));
   if (!UUID.test(clubId) || !UUID.test(userId)) back('error', 'That admin was not found.');
 
-  const { error } = await createAdminClient()
-    .from('club_members').update({ role: 'player' }).eq('club_id', clubId).eq('user_id', userId).eq('role', 'club_admin');
-  if (error) back('error', `Could not remove them: ${error.message}`);
+  const { data: row } = await createAdminClient().from('club_members').select('id, is_junior')
+    .eq('club_id', clubId).eq('user_id', userId).eq('role', 'club_admin').maybeSingle();
+  if (!row) back('error', 'That admin was not found.');
+  const removed = await changeMemberStanding({ actorId: admin.id, platform: true }, row!.id as string, 'player', row!.is_junior === true,
+    'Platform admin removed club admin', 'platform_admin');
+  if (!removed.success) back('error', `Could not remove them: ${removed.error}`);
   back('done', 'Admin removed. They are still a member of the club.');
 }
