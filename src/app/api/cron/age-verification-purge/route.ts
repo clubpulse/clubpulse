@@ -6,6 +6,7 @@ import { safeguardingLeadEmail } from '@/lib/age-verification/alert';
 import { ageVerificationEnabled } from '@/lib/age-verification/flag';
 import { purgeDecision } from '@/lib/age-verification/rules';
 import { sendEmail } from '@/lib/email/resend';
+import { markPurged, recordPurge, sendPurgeAlerts } from '@/lib/age-verification/purge';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,13 +65,19 @@ export async function GET(req: Request) {
       else alerted += 1;
       continue;
     }
+    // The lasting record comes first. Without it the account stays, because the deletion could not be shown afterwards.
+    const record = await recordPurge(admin, userId);
+    if (!record) continue;
     const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
     if (deleteError) {
       console.error('[age-verification] could not delete an unconfirmed under-13 account', { userId });
       continue;
     }
-    console.info('[age-verification] deleted unconfirmed under-13 account', { userId });
+    await markPurged(admin, record.id, now);
+    console.info('[age-verification] deleted unconfirmed under-13 account', { userId, recordId: record.id });
     deleted += 1;
   }
-  return NextResponse.json({ deleted, alerted });
+  // Tell the clubs. Alerts that failed earlier are retried here until they go out.
+  const purgeAlerts = await sendPurgeAlerts(admin);
+  return NextResponse.json({ deleted, alerted, purgeAlertsSent: purgeAlerts.sent, purgeAlertsFailed: purgeAlerts.failed });
 }

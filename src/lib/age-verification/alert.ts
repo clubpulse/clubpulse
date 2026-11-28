@@ -19,3 +19,18 @@ export function squadAlert(input: { playerName: string; ageGroup: string; reason
     ].join('\n'),
   };
 }
+
+/** Sent to the club after an unconfirmed under-13 account is deleted. No name, no email address, no date of birth. */
+export function purgeAlert(input: { recordId: string; purgedAt: string }) {
+  return {
+    subject: 'SHIFTUP safeguarding: an under-13 account was deleted',
+    text: [
+      'An under-13 account linked to this club was deleted because no parent or guardian confirmed it within 14 days.',
+      `Reference: ${input.recordId}`,
+      `Deleted on: ${input.purgedAt.slice(0, 10)}`,
+      '',
+      'This message does not include a name, an email address or a date of birth.',
+      'A permanent record of the deletion is kept in SHIFTUP.',
+    ].join('\n'),
+  };
+}

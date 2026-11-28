@@ -12,9 +12,17 @@ When it is on:
 6. After sign-in, someone with no date of birth is sent to `/auth/date-of-birth` and cannot continue until it is saved.
 7. Someone with no club can be verified as an adult only by the third-party stub, and only when `AGE_VERIFICATION_PROVIDER_ENABLED` is exactly `true` and `AGE_VERIFICATION_PROVIDER` is `mock`. The stub stores a pass or fail. It does not store a document or a date of birth. Under-18s with no club need a verified guardian. A junior's date of birth is not shown to other people.
 
-Migrations, both repo-only until the flag is turned on:
+Purges leave a trail (flag-gated, built now):
+
+- Before an unconfirmed under-13 account is deleted, a row is written to `age_verification_purges` (the id, the clubs the person belonged to, the reason and the date). It has no name, email address or date of birth, and it is kept after the account is gone. If the row cannot be saved, the account is not deleted.
+- The club's welfare officers are emailed a reference and the date. If a club has no welfare officer, or the person had no club, the email goes to `SAFEGUARDING_LEAD_EMAIL`. An alert that fails stays unsent and is retried on the next run of the job.
+- A club with no welfare officer gets a read-only screen on the Safeguarding page for its DBS-checked club admin: open squad flags, deletion records and where alerts go. Nobody at such a club can close a flag, so a welfare officer has to be added first.
+- Closing a squad flag also closes its safeguarding incident.
+
+Migrations, all repo-only until the flag is turned on:
 
 - `supabase/migrations/20261130000001_age_verification.sql`
+- `supabase/migrations/20261130000005_age_verification_purge_record.sql` adds the purge record table (service role writes, DBS-checked club staff read their own club's rows).
 - `supabase/migrations/20261130000002_age_verification_followup.sql` locks squad-flag reads to DBS-checked staff, stores the correction in one database function, and removes unconfirmed people from the public cards and the club leaderboard.
 
 The mock provider fails closed in production (`VERCEL_ENV` or `NODE_ENV` is `production`): the age-check route answers 404, and a stored mock pass is never treated as verified. `SAFEGUARDING_LEAD_EMAIL` defaults to hello@shiftup.club. A third-party pass stops counting once the person joins a club.

@@ -520,3 +520,42 @@ BEGIN
   END;
 END $$;
 RESET ROLE;
+
+-- Purge records: one record names a club. Players and other members cannot read it, anon cannot, and a DBS-checked club admin can.
+INSERT INTO public.age_verification_purges (purged_user_id, club_ids, purged_at)
+VALUES ('99999999-9999-9999-9999-999999999999', ARRAY['aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa']::uuid[], NOW());
+
+SELECT set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', false);
+SELECT set_config('request.jwt.claim.role', 'authenticated', false);
+SET ROLE authenticated;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.age_verification_purges) THEN
+    RAISE EXCEPTION 'a player can read a purge record';
+  END IF;
+  BEGIN
+    INSERT INTO public.age_verification_purges (purged_user_id) VALUES ('88888888-8888-8888-8888-888888888888');
+    RAISE EXCEPTION 'a signed-in user wrote a purge record';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+
+SELECT set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', false);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.age_verification_purges) THEN
+    RAISE EXCEPTION 'a DBS-checked club admin cannot see the purge record for their club';
+  END IF;
+END $$;
+RESET ROLE;
+
+SET ROLE anon;
+DO $$
+BEGIN
+  BEGIN
+    PERFORM 1 FROM public.age_verification_purges;
+    RAISE EXCEPTION 'anon read a purge record';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+RESET ROLE;

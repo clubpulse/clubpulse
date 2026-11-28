@@ -8,6 +8,8 @@ const migrations = path.join(root, 'supabase/migrations');
 const bootstrap = path.join(__dirname, 'sql/view-rls-bootstrap.sql');
 const assertions = path.join(__dirname, 'sql/view-rls.sql');
 const followUp = '20261125000001_view_rls_followup.sql';
+// Migrations after the follow-up that are allowed to redefine the locked views, and are checked above.
+const viewRedefiners = ['20261130000002_age_verification_followup.sql'];
 
 function psql(database: string, args: string[]) {
   const command = ['-u', 'postgres', 'psql', '-d', database, '-v', 'ON_ERROR_STOP=1', '-q'];
@@ -37,6 +39,16 @@ describe('view RLS against local Postgres', () => {
       const sql = fs.readFileSync(path.join(migrations, name), 'utf8');
       const grants = sql.split(';').filter((statement) => /^\s*GRANT\b/i.test(statement));
       for (const grant of grants) expect(grant).not.toMatch(/\b(anon|PUBLIC)\b/);
+      if (viewRedefiners.includes(name)) {
+        // These migrations may redefine the two views (to leave out unconfirmed people), but only if they keep the lock:
+        // owner-run views, no access for anon or PUBLIC, and no switch to security_invoker.
+        for (const view of ['public_profile_cards', 'club_scores_leaderboard']) {
+          expect(sql).toMatch(new RegExp(`REVOKE ALL ON public\\.${view} FROM PUBLIC, anon`, 'i'));
+          expect(sql).toMatch(new RegExp(`GRANT SELECT ON public\\.${view} TO authenticated, service_role`, 'i'));
+        }
+        expect(sql).not.toMatch(/security_invoker\s*=\s*(true|on)\b/i);
+        continue;
+      }
       expect(sql).not.toMatch(/public_profile_cards|club_scores_leaderboard|security_invoker/i);
     }
   });
