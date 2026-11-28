@@ -34,7 +34,6 @@ export function TechniquePanel({
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(1);
-  const [showInset, setShowInset] = useState(true);
   const reference = referenceById(referenceId);
 
   useEffect(() => {
@@ -160,7 +159,7 @@ export function TechniquePanel({
       <p className="mt-2 text-sm text-neutral-400">
         The angles are read from one camera. Drag the view to rotate it. The reference actions are drawn by SHIFTUP and are not a real player.
       </p>
-      <div className="relative mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-4">
+      <div className="mt-4 flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_280px] md:gap-4">
         <SkeletonStage
           player={(pose ? layout : 'reference') === 'reference' ? null : shownPlayer}
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
@@ -177,17 +176,11 @@ export function TechniquePanel({
           muted
           playsInline
           preload="auto"
-          className={`absolute top-3 right-3 z-10 aspect-[3/4] w-20 cursor-pointer rounded-lg bg-black object-cover shadow-lg ring-1 ring-white/40 lg:static lg:aspect-auto lg:w-full lg:cursor-default lg:rounded-xl lg:shadow-none lg:ring-0 ${showInset ? '' : 'max-lg:h-px max-lg:w-px max-lg:opacity-0'}`}
-          onClick={() => { if (window.matchMedia('(max-width: 1023px)').matches) setShowInset((open) => !open); }}
+          className="h-28 w-full rounded-lg bg-black object-contain md:h-auto md:rounded-xl"
           onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 1)}
           onTimeUpdate={(event) => { if (playing) setTime(event.currentTarget.currentTime); }}
           onEnded={() => setPlaying(false)}
         />
-        {!showInset && (
-          <button type="button" className="absolute top-3 right-3 z-10 rounded-full border border-white/20 bg-neutral-950/80 px-3 py-1 text-xs lg:hidden" onClick={() => setShowInset(true)}>
-            Show video
-          </button>
-        )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="rounded-full bg-sky-500 px-3 py-1 text-sm font-medium text-neutral-950" onClick={() => void estimate()} disabled={busy}>
