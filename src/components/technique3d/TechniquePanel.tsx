@@ -162,7 +162,7 @@ export function TechniquePanel({
         The angles are read from one camera. Drag the view to rotate it. The reference actions are drawn by SHIFTUP and are not a real player.
       </p>
       </div>
-      <div className="mt-4 flex w-full min-w-0 flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_280px] md:gap-4">
+      <div className="mt-4 flex w-full min-w-0 flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_280px] md:items-start md:gap-4">
         <SkeletonStage
           player={(pose ? layout : 'reference') === 'reference' ? null : shownPlayer}
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
@@ -179,7 +179,7 @@ export function TechniquePanel({
           muted
           playsInline
           preload="auto"
-          className="mx-auto block h-auto w-auto max-h-36 max-w-full self-center rounded-lg bg-black object-contain md:mx-0 md:h-auto md:max-h-none md:w-full md:max-w-none md:self-stretch md:rounded-xl"
+          className="mx-auto block h-auto w-auto max-h-36 max-w-full self-center rounded-lg bg-black object-contain md:mx-0 md:h-auto md:max-h-none md:w-full md:max-w-none md:self-start md:rounded-xl"
           style={clipAspect ? { aspectRatio: String(clipAspect) } : undefined}
           onLoadedMetadata={(event) => {
             const video = event.currentTarget;

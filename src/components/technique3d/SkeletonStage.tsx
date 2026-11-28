@@ -9,6 +9,7 @@ import {
   REFERENCE_COLOR,
   SIDE_COLOR,
   VIEW_SAFE_FILL,
+  centerAtDistance,
   clipFraming,
   framesAround,
   placeFrame,
@@ -42,6 +43,9 @@ function CameraRig({ frames, live }: { frames: PoseFrame[]; live: PoseFrame[] })
   const needed = useRef(3);
   const safe = useRef(3);
   const seen = useRef(false);
+  const pose = useRef(frames);
+  const aspectRef = useRef(1);
+  const portraitRef = useRef(false);
   const key = [...frames, ...live].map((frame) => `${frame[0]?.[0] ?? 0},${frame[16]?.[0] ?? 0},${frame[27]?.[1] ?? 0}`).join('|');
 
   useLayoutEffect(() => {
@@ -49,13 +53,19 @@ function CameraRig({ frames, live }: { frames: PoseFrame[]; live: PoseFrame[] })
     const offset = camera.position.clone().sub(target.current);
     const haveOrbit = seen.current && offset.length() > 0.05;
     const direction: Vec3 = haveOrbit ? [offset.x, offset.y, offset.z] : [0, 0.12, 1];
-    const fit = screenFit(frames, aspect, 40, direction);
-    const guard = screenFit(live.length > 0 ? live : frames, aspect, 40, direction, aspect < 1 ? undefined : VIEW_SAFE_FILL);
+    const portrait = aspect < 1;
+    const shown = live.length > 0 ? live : frames;
+    pose.current = shown;
+    aspectRef.current = aspect;
+    portraitRef.current = portrait;
+    const fit = screenFit(portrait ? shown : frames, aspect, 40, direction);
+    const guard = screenFit(shown, aspect, 40, direction, portrait ? undefined : VIEW_SAFE_FILL);
     needed.current = fit.distance;
     safe.current = guard.distance;
-    target.current.set(fit.target[0], fit.target[1], fit.target[2]);
     const distance = haveOrbit ? Math.max(offset.length(), guard.distance) : Math.max(fit.distance, guard.distance);
     const dir = offset.length() > 0.05 ? offset.normalize() : new THREE.Vector3(direction[0], direction[1], direction[2]).normalize();
+    const look = portrait ? centerAtDistance(shown, aspect, 40, [dir.x, dir.y, dir.z], distance) : fit.target;
+    target.current.set(look[0], look[1], look[2]);
     camera.position.copy(target.current).addScaledVector(dir, distance);
     camera.lookAt(target.current);
     camera.updateProjectionMatrix();
@@ -75,8 +85,12 @@ function CameraRig({ frames, live }: { frames: PoseFrame[]; live: PoseFrame[] })
     const step = 1 - Math.exp(-Math.min(delta, 0.05) / 0.2);
     let next = length + (goal - length) * step;
     if (next < safe.current) next = safe.current;
-    offset.multiplyScalar(next / length);
-    camera.position.copy(target.current).add(offset);
+    const dir = offset.normalize();
+    if (portraitRef.current) {
+      const look = centerAtDistance(pose.current, aspectRef.current, 40, [dir.x, dir.y, dir.z], next);
+      target.current.set(look[0], look[1], look[2]);
+    }
+    camera.position.copy(target.current).addScaledVector(dir, next);
     camera.lookAt(target.current);
     const controls = orbit.current;
     if (!controls) return;

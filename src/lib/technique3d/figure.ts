@@ -489,6 +489,50 @@ export function screenFit(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV
   return { target, position: add(target, scale(dir, distance)), distance };
 }
 
+/**
+ * Look-at point that puts this frame's drawn box in the middle at a fixed camera distance.
+ * Scale can ease toward a new distance; the centre is solved for the distance in use.
+ */
+export function centerAtDistance(frames: PoseFrame[], aspect: number, fovDeg: number, direction: Vec3, distance: number, includeRadii = true): Vec3 {
+  const marks = marksOf(frames, includeRadii);
+  const safeAspect = Math.max(0.2, aspect);
+  const tan = Math.tan((fovDeg * Math.PI) / 360);
+  if (marks.length === 0) return [0, 0.8, 0];
+  let target = meanPoint(marks.map((mark) => mark.point));
+  const dir = normalize(direction);
+  for (let step = 0; step < 10; step++) {
+    const position = add(target, scale(dir, distance));
+    const box = screenBox(marks, { target, position, distance }, safeAspect, fovDeg);
+    if (!box) break;
+    const cx = (box.minX + box.maxX) / 2;
+    const cy = (box.minY + box.maxY) / 2;
+    if (Math.abs(cx) < 1e-4 && Math.abs(cy) < 1e-4) break;
+    const forward = normalize(sub(target, position));
+    const right = normalize(cross(forward, [0, 1, 0]));
+    const up = cross(right, forward);
+    target = add(target, add(scale(right, cx * distance * tan * safeAspect), scale(up, cy * distance * tan)));
+  }
+  return target;
+}
+
+/** Where the drawn box sits when the camera is held at `distance` and recentred. */
+export function readingAtDistance(frames: PoseFrame[], aspect: number, direction: Vec3, distance: number, fovDeg = VIEW_FOV): { centerX: number; centerY: number; horizontal: number; vertical: number } {
+  const target = centerAtDistance(frames, aspect, fovDeg, direction, distance);
+  const dir = normalize(direction);
+  const position = add(target, scale(dir, distance));
+  const box = screenBox(marksOf(frames), { target, position, distance }, aspect, fovDeg);
+  const minX = box?.minX ?? 0;
+  const maxX = box?.maxX ?? 0;
+  const minY = box?.minY ?? 0;
+  const maxY = box?.maxY ?? 0;
+  return {
+    centerX: (minX + maxX) / 2,
+    centerY: (minY + maxY) / 2,
+    horizontal: (maxX - minX) / 2,
+    vertical: (maxY - minY) / 2,
+  };
+}
+
 export type ScreenReading = Projected & {
   limiting: number;
   minX: number;
