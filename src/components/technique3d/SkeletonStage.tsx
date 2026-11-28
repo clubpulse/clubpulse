@@ -9,8 +9,9 @@ import {
   REFERENCE_COLOR,
   SIDE_COLOR,
   clipFraming,
-  frameCamera,
+  framesAround,
   placeFrame,
+  screenFit,
   type LayoutMode,
 } from '@/lib/technique3d/figure';
 import type { PoseFrame, Vec3 } from '@/lib/technique3d/types';
@@ -33,22 +34,17 @@ const JOINTS: Array<{ index: number; side: 'left' | 'right' | 'center'; radius: 
   { index: 28, side: 'right', radius: 0.04 },
 ];
 
-function CameraRig({ bounds }: { bounds: { min: Vec3; max: Vec3 } }) {
+function CameraRig({ frames }: { frames: PoseFrame[] }) {
   const { camera, gl, size } = useThree();
   const orbit = useRef<OrbitControls | null>(null);
   const target = useRef(new THREE.Vector3());
-  const key = `${bounds.min.join(',')}:${bounds.max.join(',')}`;
+  const key = frames.map((frame) => `${frame[0]?.[0] ?? 0},${frame[16]?.[0] ?? 0},${frame[27]?.[1] ?? 0}`).join('|');
 
   useLayoutEffect(() => {
-    const [minText, maxText] = key.split(':');
-    const read = (text: string): Vec3 => {
-      const [x, y, z] = text.split(',').map(Number);
-      return [x || 0, y || 0, z || 0];
-    };
-    const min = read(minText);
-    const max = read(maxText);
     const aspect = size.width / Math.max(1, size.height);
-    const fit = frameCamera({ min, max }, aspect);
+    const offset = camera.position.clone().sub(target.current);
+    const direction: Vec3 = offset.length() > 0.05 ? [offset.x, offset.y, offset.z] : [0, 0.12, 1];
+    const fit = screenFit(frames, aspect, 40, direction);
     target.current.set(fit.target[0], fit.target[1], fit.target[2]);
     camera.position.set(fit.position[0], fit.position[1], fit.position[2]);
     camera.lookAt(target.current);
@@ -134,12 +130,18 @@ export function SkeletonStage({
   reference,
   playerClip,
   referenceClip,
+  playerTimes,
+  referenceTimes,
+  time,
   layout,
 }: {
   player: PoseFrame | null;
   reference: PoseFrame | null;
   playerClip: PoseFrame[] | null;
   referenceClip: PoseFrame[] | null;
+  playerTimes: number[] | null;
+  referenceTimes: number[] | null;
+  time: number;
   layout: LayoutMode;
 }) {
   const framing = useMemo(
@@ -148,13 +150,27 @@ export function SkeletonStage({
   );
   const placedPlayer = player && layout !== 'reference' ? placeFrame(player, framing.playerShift, framing.playerDrop) : null;
   const placedReference = reference && layout !== 'player' ? placeFrame(reference, framing.referenceShift, framing.referenceDrop) : null;
+  const fitFrames = useMemo(() => {
+    const out: PoseFrame[] = [];
+    if (layout !== 'reference' && playerClip) {
+      out.push(...framesAround(playerClip, playerTimes, time).map((frame) => placeFrame(frame, framing.playerShift, framing.playerDrop)!));
+    }
+    if (layout !== 'player' && referenceClip) {
+      out.push(...framesAround(referenceClip, referenceTimes, time).map((frame) => placeFrame(frame, framing.referenceShift, framing.referenceDrop)!));
+    }
+    if (out.length === 0) {
+      if (placedPlayer) out.push(placedPlayer);
+      if (placedReference) out.push(placedReference);
+    }
+    return out;
+  }, [layout, playerClip, referenceClip, playerTimes, referenceTimes, time, framing, placedPlayer, placedReference]);
   return (
     <div className="h-[60vh] min-h-[320px] w-full lg:h-[min(70vh,720px)]">
     <Canvas camera={{ fov: 40, near: 0.05, far: 80 }} style={{ width: '100%', height: '100%', background: '#07111f', borderRadius: 12 }}>
       <color attach="background" args={['#07111f']} />
       <ambientLight intensity={0.65} />
       <directionalLight position={[2, 4, 3]} intensity={1.1} />
-      <CameraRig bounds={framing.bounds} />
+      <CameraRig frames={fitFrames} />
       <Ground bounds={framing.bounds} ground={framing.ground} />
       {placedPlayer && <Figure frame={placedPlayer} ghost={false} />}
       {placedReference && <Figure frame={placedReference} ghost={layout === 'overlay'} />}

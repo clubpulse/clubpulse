@@ -4,7 +4,7 @@ import { authoredReferences } from '@/lib/technique3d/author';
 import { sampleClip, sampleTimes } from '@/lib/technique3d/capture';
 import { detectEvents } from '@/lib/technique3d/events';
 import { technique3dEnabled } from '@/lib/technique3d/flag';
-import { VIEW_PAD, limbLength, lowestFootY, prepareClip, projectJoints, projectedShare, trunkLeanDegrees } from '@/lib/technique3d/figure';
+import { framesAround, limbLength, lowestFootY, poseOnScreen, prepareClip, trunkLeanDegrees } from '@/lib/technique3d/figure';
 import { alignedReferenceIndex, anglesAt, frameIndexAt, orientFrames, scrubToIndex, yawDelta } from '@/lib/technique3d/math';
 import { parseTechniquePose } from '@/lib/technique3d/payload';
 import { canReadTechniquePose } from '@/lib/technique3d/privacy';
@@ -169,15 +169,28 @@ describe('3D figure framing and limb lengths', () => {
     }
   });
 
-  it('fills most of the panel height in landscape and stays inside a portrait panel', () => {
-    const box = { min: [-0.4, 0, -0.2] as Vec3, max: [0.4, 1.75, 0.2] as Vec3 };
-    for (const aspect of [1.6, 2.8, 0.5]) {
-      const share = projectedShare(box, aspect);
-      expect(Math.max(share.vertical, share.horizontal)).toBeGreaterThan(0.75);
-      expect(Math.max(share.vertical, share.horizontal)).toBeLessThanOrEqual(1 - VIEW_PAD + 0.02);
-      expect(Math.abs(share.centerX)).toBeLessThan(0.08);
-      expect(Math.abs(share.centerY)).toBeLessThan(0.12);
+  it('fits the on-screen box of a lean and a reach, centred, on a phone and on 16:9', () => {
+    const lean = standing();
+    lean[0] = [-1.05, 1.25, 0.45];
+    const reach = standing();
+    reach[16] = [1.45, 1.15, -0.4];
+    const poses = [standing(), lean, reach];
+    for (const pose of poses) {
+      for (const aspect of [390 / 520, 16 / 9]) {
+        const reading = poseOnScreen([pose], aspect);
+        expect(reading.limiting).toBeGreaterThan(0.75);
+        expect(reading.limiting).toBeLessThan(0.9);
+        expect(Math.abs(reading.centerX)).toBeLessThan(0.05);
+        expect(Math.abs(reading.centerY)).toBeLessThan(0.05);
+        for (const point of reading.points) {
+          expect(Math.abs(point.x)).toBeLessThan(1);
+          expect(Math.abs(point.y)).toBeLessThan(1);
+        }
+      }
     }
+    const times = [0, 0.2, 0.4];
+    expect(framesAround(poses, times, 0.2, 0.5)).toHaveLength(3);
+    expect(framesAround(poses, times, 0, 0.5).length).toBeLessThan(3);
   });
 
   it('puts the lowest foot on the ground and keeps a forward trunk lean', () => {
@@ -197,26 +210,6 @@ describe('3D figure framing and limb lengths', () => {
     const shoulderZ = (frontal[11][2] + frontal[12][2]) / 2;
     expect(shoulderZ).toBeGreaterThan(hipZ + 0.15);
     expect(Math.abs(((frontal[11][0] + frontal[12][0]) / 2) - ((frontal[23][0] + frontal[24][0]) / 2))).toBeLessThan(0.08);
-  });
-
-  it('keeps a lean and a reach inside the phone and desktop views, centred on the box', () => {
-    const lean = standing();
-    lean[0] = [-1.05, 1.25, 0.35];
-    const reach = standing();
-    reach[16] = [1.35, 1.05, -0.2];
-    const poses = [standing(), lean, reach];
-    for (const aspect of [390 / 520, 16 / 9]) {
-      const points = projectJoints(poses, aspect);
-      for (const point of points) {
-        expect(Math.abs(point.x)).toBeLessThanOrEqual(1 - VIEW_PAD + 0.01);
-        expect(Math.abs(point.y)).toBeLessThanOrEqual(1 - VIEW_PAD + 0.01);
-      }
-      const share = projectedShare({
-        min: [-1.05, -0.9, -0.2],
-        max: [1.35, 1.25, 0.35],
-      }, aspect);
-      expect(Math.abs(share.centerX)).toBeLessThan(0.08);
-    }
   });
 
   it('maps a scrub across the whole clip, not only the opening', () => {

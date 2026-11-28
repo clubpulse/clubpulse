@@ -166,6 +166,9 @@ export function TechniquePanel({
           reference={(pose ? layout : 'reference') === 'player' ? null : shownReference}
           playerClip={pose?.frames ?? null}
           referenceClip={referenceClip}
+          playerTimes={pose?.times ?? null}
+          referenceTimes={reference ? reference.frames.map((_, index) => index / reference.fps) : null}
+          time={pose ? time : (reference && referenceIndex != null ? referenceIndex / reference.fps : 0)}
           layout={pose ? layout : 'reference'}
         />
         <video

@@ -9,8 +9,10 @@ import type { PoseFrame, Vec3 } from './types';
  * anatomical left and right on their own indices.
  */
 
-/** Empty margin on each edge of the panel. The figure stays inside it. */
-export const VIEW_PAD = 0.08;
+/** The on-screen box of the pose should cover this much of the tighter panel edge. */
+export const VIEW_FILL = 0.85;
+/** About 8% left clear on each side when the box is centred at that fill. */
+export const VIEW_PAD = (1 - VIEW_FILL) / 2;
 export const VIEW_FOV = 40;
 
 export type LayoutMode = 'player' | 'reference' | 'side' | 'overlay';
@@ -348,51 +350,108 @@ function boxCorners(bounds: Bounds): Vec3[] {
   return corners;
 }
 
-/** Every corner of the box, in view space. The centre is the middle of that box. */
-export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): Projected {
-  const fit = frameCamera(bounds, aspect, fovDeg);
-  const points = boxCorners(bounds).map((corner) => projectAt(corner, fit, aspect, fovDeg));
+function jointsOf(frames: PoseFrame[]): Vec3[] {
+  return frames.flatMap((frame) => frame.filter((point) => point?.every((value) => Number.isFinite(value))));
+}
+
+function meanPoint(points: Vec3[]): Vec3 {
+  const sum = points.reduce((acc, point) => add(acc, point), [0, 0, 0] as Vec3);
+  return scale(sum, 1 / points.length);
+}
+
+/** Poses within half a second of the playhead, so the framing does not jump every frame. */
+export function framesAround(frames: PoseFrame[], times: number[] | null, time: number, span = 0.5): PoseFrame[] {
+  if (frames.length === 0) return [];
+  if (!times || times.length !== frames.length) return [frames[0]];
+  const half = span / 2;
+  const picked = frames.filter((_, index) => Math.abs((times[index] ?? 0) - time) <= half);
+  if (picked.length > 0) return picked;
+  let best = 0;
+  let dist = Infinity;
+  for (let index = 0; index < times.length; index++) {
+    const next = Math.abs(times[index] - time);
+    if (next < dist) { dist = next; best = index; }
+  }
+  return [frames[best]];
+}
+
+/**
+ * Frames the joints as they appear on screen.
+ * The look-at point is the centre of that flat box, not the hips and not the 3D middle.
+ * `direction` is from the look-at point toward the camera, so a dragged view keeps its angle.
+ */
+export function screenFit(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV, direction?: Vec3): CameraFit {
+  const joints = jointsOf(frames);
+  const safeAspect = Math.max(0.2, aspect);
+  const tan = Math.tan((fovDeg * Math.PI) / 360);
+  if (joints.length === 0) {
+    return { target: [0, 0.8, 0], position: [0, 0.9, 3], distance: 3 };
+  }
+  let target = meanPoint(joints);
+  let reach = 0.4;
+  for (const point of joints) reach = Math.max(reach, Math.hypot(point[0] - target[0], point[1] - target[1], point[2] - target[2]));
+  let distance = reach / tan / VIEW_FILL;
+  const dir = normalize(direction ?? [0, reach * 0.04, 1]);
+  for (let step = 0; step < 10; step++) {
+    const position = add(target, scale(dir, distance));
+    const fit: CameraFit = { target, position, distance };
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    let seen = 0;
+    for (const joint of joints) {
+      const forward = normalize(sub(target, position));
+      if (dot(sub(joint, position), forward) < 1e-3) continue;
+      const point = projectAt(joint, fit, safeAspect, fovDeg);
+      if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) continue;
+      seen += 1;
+      minX = Math.min(minX, point.x);
+      maxX = Math.max(maxX, point.x);
+      minY = Math.min(minY, point.y);
+      maxY = Math.max(maxY, point.y);
+    }
+    if (seen === 0) break;
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    const forward = normalize(sub(target, position));
+    const right = normalize(cross(forward, [0, 1, 0]));
+    const up = cross(right, forward);
+    target = add(target, add(scale(right, cx * distance * tan * safeAspect), scale(up, cy * distance * tan)));
+    const limiting = Math.max((maxX - minX) / 2, (maxY - minY) / 2);
+    if (limiting > 1e-3) distance *= limiting / VIEW_FILL;
+    distance = Math.min(80, Math.max(0.25, distance));
+  }
+  return { target, position: add(target, scale(dir, distance)), distance };
+}
+
+export type ScreenReading = Projected & { limiting: number; points: Array<{ x: number; y: number }> };
+
+/** The flat box of these joints after the screen-space fit. */
+export function poseOnScreen(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV): ScreenReading {
+  const fit = screenFit(frames, aspect, fovDeg);
+  const points = jointsOf(frames).map((joint) => projectAt(joint, fit, aspect, fovDeg)).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y));
   const xs = points.map((point) => point.x);
   const ys = points.map((point) => point.y);
-  const center = projectAt(fit.target, fit, aspect, fovDeg);
+  const vertical = points.length ? (Math.max(...ys) - Math.min(...ys)) / 2 : 0;
+  const horizontal = points.length ? (Math.max(...xs) - Math.min(...xs)) / 2 : 0;
   return {
-    vertical: (Math.max(...ys) - Math.min(...ys)) / 2,
-    horizontal: (Math.max(...xs) - Math.min(...xs)) / 2,
-    centerX: center.x,
-    centerY: center.y,
+    vertical,
+    horizontal,
+    limiting: Math.max(vertical, horizontal),
+    centerX: points.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : 0,
+    centerY: points.length ? (Math.min(...ys) + Math.max(...ys)) / 2 : 0,
+    points,
   };
+}
+
+/** Every corner of the box, in view space. The centre is the middle of that flat box. */
+export function projectedShare(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): Projected {
+  const reading = poseOnScreen([boxCorners(bounds)], aspect, fovDeg);
+  return { vertical: reading.vertical, horizontal: reading.horizontal, centerX: reading.centerX, centerY: reading.centerY };
 }
 
 /** Where each joint lands. Used to prove a lean or a reach stays inside the panel. */
 export function projectJoints(frames: PoseFrame[], aspect: number, fovDeg = VIEW_FOV): Array<{ x: number; y: number }> {
-  const fit = frameCamera(boundsOf(frames), aspect, fovDeg);
-  return frames.flatMap((frame) => frame.map((point) => projectAt(point, fit, aspect, fovDeg)));
-}
-
-/**
- * The camera frames the whole box, in width and in height, and leaves VIEW_PAD clear on every edge.
- * The look-at point is the middle of the box, not the hips.
- */
-export function frameCamera(bounds: Bounds, aspect: number, fovDeg = VIEW_FOV): CameraFit {
-  const target: Vec3 = [
-    (bounds.min[0] + bounds.max[0]) / 2,
-    (bounds.min[1] + bounds.max[1]) / 2,
-    (bounds.min[2] + bounds.max[2]) / 2,
-  ];
-  const height = Math.max(0.2, bounds.max[1] - bounds.min[1]);
-  const direction = normalize([0, height * 0.02, 1]);
-  const limit = 1 - 2 * VIEW_PAD;
-  let lo = 0.2;
-  let hi = 80;
-  for (let step = 0; step < 28; step++) {
-    const mid = (lo + hi) / 2;
-    const fit: CameraFit = { target, position: add(target, scale(direction, mid)), distance: mid };
-    const outside = boxCorners(bounds).some((corner) => {
-      const point = projectAt(corner, fit, aspect, fovDeg);
-      return Math.abs(point.x) > limit || Math.abs(point.y) > limit;
-    });
-    if (outside) lo = mid;
-    else hi = mid;
-  }
-  return { target, position: add(target, scale(direction, hi)), distance: hi };
+  return poseOnScreen(frames, aspect, fovDeg).points;
 }
