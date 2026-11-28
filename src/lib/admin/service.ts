@@ -1,3 +1,4 @@
+import { changeMemberStanding } from '@/lib/admin/member-standing';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isClubAdmin, isPlatformAdmin } from '@/lib/auth/admin';
 import { isUuid } from '@/lib/utils/validate';
@@ -125,26 +126,28 @@ export async function updateClubMember(
 
   if (typeof patch !== 'object' || patch === null) return { success: false, error: 'Invalid request body' };
   const input = patch as Record<string, unknown>;
-  const update: { role?: ClubMemberRole; is_active?: boolean } = {};
+  const update: { is_active?: boolean } = {};
+  let newRole: ClubMemberRole | undefined;
 
   if (input.role !== undefined) {
     if (!MEMBER_ROLES.includes(input.role as ClubMemberRole)) {
       return { success: false, error: `Role must be one of: ${MEMBER_ROLES.join(', ')}` };
     }
-    update.role = input.role as ClubMemberRole;
+    newRole = input.role as ClubMemberRole;
   }
   if (input.is_active !== undefined) {
     if (typeof input.is_active !== 'boolean') return { success: false, error: 'is_active must be true or false' };
     update.is_active = input.is_active;
   }
-  if (Object.keys(update).length === 0) return { success: false, error: 'Nothing to update' };
+  if (newRole === undefined && Object.keys(update).length === 0) return { success: false, error: 'Nothing to update' };
+  const reason = typeof input.reason === 'string' ? input.reason : '';
 
   const admin = createAdminClient();
 
   // Never leave a club with no active admin
   const losesAdmin =
     member.role === 'club_admin' && member.is_active &&
-    ((update.role !== undefined && update.role !== 'club_admin') || update.is_active === false);
+    ((newRole !== undefined && newRole !== 'club_admin') || update.is_active === false);
   if (losesAdmin) {
     const { count } = await admin
       .from('club_members')
@@ -156,7 +159,16 @@ export async function updateClubMember(
     if (!count) return { success: false, error: 'A club needs at least one active admin' };
   }
 
-  const { data, error } = await admin.from('club_members').update(update).eq('id', memberId).select('*').maybeSingle();
+  // A role change goes through the checked path (admin check, reason, audit row). Only is_active is written here.
+  if (newRole !== undefined && newRole !== member.role) {
+    const changed = await changeMemberStanding({ actorId: userId }, memberId, newRole, member.is_junior === true, reason, 'club_admin');
+    if (!changed.success) return { success: false, error: changed.error };
+  }
+  if (Object.keys(update).length > 0) {
+    const { error: activeError } = await admin.from('club_members').update(update).eq('id', memberId);
+    if (activeError) return { success: false, error: 'Could not update member' };
+  }
+  const { data, error } = await admin.from('club_members').select('*').eq('id', memberId).maybeSingle();
   if (error || !data) return { success: false, error: 'Could not update member' };
   return { success: true, data: data as ClubMember };
 }

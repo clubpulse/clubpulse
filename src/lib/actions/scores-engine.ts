@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth/server';
 import { isClubAdmin } from '@/lib/auth/admin';
+import { changeMemberStanding } from '@/lib/admin/member-standing';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { totalBalance } from '@/lib/types/scores';
 import type { ActionResult } from '@/lib/types/action';
@@ -313,12 +314,16 @@ export async function saveScoresSettings(clubId: string, values: ClubScoresSetti
   return { success: true, data: undefined };
 }
 
-export async function setMemberJunior(clubId: string, memberUserId: string, isJunior: boolean): Promise<ActionResult<void>> {
+export async function setMemberJunior(clubId: string, memberUserId: string, isJunior: boolean, reason?: string): Promise<ActionResult<void>> {
   const user = await requireUser();
   if (!(await isClubAdmin(user.id, clubId))) return { success: false, error: 'Not authorised' };
-  const { error } = await createAdminClient().from('club_members')
-    .update({ is_junior: !!isJunior }).eq('club_id', clubId).eq('user_id', memberUserId);
-  if (error) return { success: false, error: 'Could not update this member.' };
+  const { data: member } = await createAdminClient().from('club_members').select('id, role')
+    .eq('club_id', clubId).eq('user_id', memberUserId).maybeSingle();
+  if (!member) return { success: false, error: 'Could not update this member.' };
+  // Goes through the checked path: needs a confirmed date of birth to clear junior status, and is audited.
+  const res = await changeMemberStanding({ actorId: user.id }, member.id as string, member.role as string, !!isJunior,
+    reason?.trim() || (isJunior ? 'Marked as junior from the Scores rules page' : 'Junior status cleared from the Scores rules page'), 'club_admin');
+  if (!res.success) return { success: false, error: res.error };
   revalidatePath('/admin/club/scores-rules');
   return { success: true, data: undefined };
 }

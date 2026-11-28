@@ -1,9 +1,11 @@
 type Op = [string, ...unknown[]];
 const writes: Array<{ table: string; op: string; args: unknown[] }> = [];
+const rpcs: Array<{ name: string; args: Record<string, unknown> }> = [];
 let db: Record<string, (ops: Op[]) => unknown[]> = {};
 const has = (ops: Op[], m: string, col: string, val?: unknown) => ops.some((o) => o[0] === m && o[1] === col && (val === undefined || o[2] === val));
 jest.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => ({
+    rpc: async (name: string, args: Record<string, unknown>) => { rpcs.push({ name, args }); return { error: null }; },
     from: (table: string) => {
       const ops: Op[] = [];
       const c: Record<string, unknown> = {};
@@ -18,7 +20,7 @@ import { clubsWithCurrentDbs, linkChildToAccount, unlinkChildAccount } from '@/l
 
 const kid = { id: 'k1', club_id: 'c1', first_name: 'Kit', date_of_birth: '2013-05-01', linked_user_id: null };
 const world = (o: { child?: Record<string, unknown> | null; profile?: boolean; member?: boolean; taken?: boolean } = {}) => {
-  writes.length = 0;
+  writes.length = 0; rpcs.length = 0;
   db = {
     child_profiles: (ops) => has(ops, 'neq', 'id') ? (o.taken ? [{ id: 'other' }] : []) : (o.child === null ? [] : [o.child ?? kid]),
     profiles: () => (o.profile === false ? [] : [{ id: 'u1', full_name: 'Kit Smith', display_name: 'Kit' }]),
@@ -29,41 +31,43 @@ const world = (o: { child?: Record<string, unknown> | null; profile?: boolean; m
 describe('linkChildToAccount', () => {
   it('links, and marks the member as a junior in that club', async () => {
     world();
-    const r = await linkChildToAccount(['c1'], 'k1', 'kit@example.com');
+    const r = await linkChildToAccount(['c1'], 'k1', 'kit@example.com', 'admin1');
     expect(r).toEqual({ success: true, name: 'Kit' });
     expect(writes).toContainEqual({ table: 'child_profiles', op: 'update', args: [{ linked_user_id: 'u1' }] });
-    expect(writes).toContainEqual({ table: 'club_members', op: 'update', args: [{ is_junior: true }] });
+    // the junior mark goes through the checked function, never a direct write
+    expect(writes.filter((w) => w.table === 'club_members')).toEqual([]);
+    expect(rpcs).toEqual([expect.objectContaining({ name: 'set_club_member_standing', args: expect.objectContaining({ p_junior: true, p_actor: 'admin1', p_source: 'child_link' }) })]);
   });
   it('will not touch a child at a club the admin does not run', async () => {
     world();
-    const r = await linkChildToAccount(['other-club'], 'k1', 'kit@example.com');
+    const r = await linkChildToAccount(['other-club'], 'k1', 'kit@example.com', 'admin1');
     expect(r.success).toBe(false);
     expect(writes).toHaveLength(0);
   });
   it('refuses a record for someone aged 18 or over', async () => {
     world({ child: { ...kid, date_of_birth: '2000-01-01' } });
-    expect((await linkChildToAccount(['c1'], 'k1', 'a@b.com')).success).toBe(false);
+    expect((await linkChildToAccount(['c1'], 'k1', 'a@b.com', 'admin1')).success).toBe(false);
     expect(writes).toHaveLength(0);
   });
   it('says the same thing for an unknown email and for someone outside the club', async () => {
     world({ profile: false });
-    const a = await linkChildToAccount(['c1'], 'k1', 'nobody@example.com');
+    const a = await linkChildToAccount(['c1'], 'k1', 'nobody@example.com', 'admin1');
     world({ member: false });
-    const b = await linkChildToAccount(['c1'], 'k1', 'outsider@example.com');
+    const b = await linkChildToAccount(['c1'], 'k1', 'outsider@example.com', 'admin1');
     expect(a).toEqual(b);
     expect(a.success).toBe(false);
     expect(writes).toHaveLength(0);
   });
   it('refuses an account already linked to another child record', async () => {
     world({ taken: true });
-    const r = await linkChildToAccount(['c1'], 'k1', 'kit@example.com');
+    const r = await linkChildToAccount(['c1'], 'k1', 'kit@example.com', 'admin1');
     expect(r.success).toBe(false);
     expect(writes).toHaveLength(0);
   });
   it('rejects a bad email or child id without writing', async () => {
     world();
-    expect((await linkChildToAccount(['c1'], 'k1', 'not-an-email')).success).toBe(false);
-    expect((await linkChildToAccount(['c1'], 5, 'a@b.com')).success).toBe(false);
+    expect((await linkChildToAccount(['c1'], 'k1', 'not-an-email', 'admin1')).success).toBe(false);
+    expect((await linkChildToAccount(['c1'], 5, 'a@b.com', 'admin1')).success).toBe(false);
     expect(writes).toHaveLength(0);
   });
 });
