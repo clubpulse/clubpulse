@@ -12,7 +12,7 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   const { data, error } = await supabase.from('technique_pose_frames')
-    .select('id, mode, hand, key_event, key_event_frame, times, frames, analysis_id, created_at')
+    .select('id, mode, hand, key_event, key_event_frame, times, frames, analysis_id, quality, coverage, source_fps, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -44,6 +44,9 @@ export async function POST(req: Request) {
     key_event_frame: pose.keyEventFrame,
     times: pose.times,
     frames: pose.frames,
+    quality: pose.quality ?? null,
+    coverage: pose.coverage ?? null,
+    source_fps: pose.sourceFps ?? null,
   }).select('id').single();
   if (error) return NextResponse.json({ error: 'Could not save the 3D estimate.' }, { status: 500 });
   return NextResponse.json({ id: data.id });

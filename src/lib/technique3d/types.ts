@@ -29,6 +29,11 @@ export type TechniquePose = {
   times: number[];
   frames: PoseFrame[];
   analysisId: string | null;
+  /** One code per frame: m measured, l low confidence (kept, flagged), f filled by interpolation (not measured). */
+  quality?: string;
+  /** Share of the action the model saw, 0 to 1. Filled frames do not count. */
+  coverage?: number | null;
+  sourceFps?: number | null;
 };
 
 export const ESTIMATE_NOTE = 'Estimate from one phone video, not a lab measurement.';

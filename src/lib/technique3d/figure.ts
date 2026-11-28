@@ -152,7 +152,7 @@ function turn180X(frame: PoseFrame): PoseFrame {
  * for a left-hander or a front-on camera. World depth is only the toward-camera axis.
  * Limb lengths are repaired only when a joint collapses or stretches. A normal pose is not pulled upright.
  */
-export function prepareClip(worldFrames: PoseFrame[], imageFrames?: Array<PoseFrame | null> | null): PoseFrame[] {
+export function prepareClip(worldFrames: PoseFrame[], imageFrames?: Array<PoseFrame | null> | null, plant = true): PoseFrame[] {
   if (worldFrames.length === 0) return [];
   let frames = worldFrames.map((frame) => hipCenter(cloneFrame(frame)));
   const images = imageFrames && imageFrames.length === frames.length ? imageFrames : null;
@@ -171,7 +171,9 @@ export function prepareClip(worldFrames: PoseFrame[], imageFrames?: Array<PoseFr
   } else if (frames.filter(noseAboveHips).length < frames.length / 2) {
     frames = frames.map(turn180X);
   }
-  return repairOutliers(frames).map(plantFeet);
+  const repaired = repairOutliers(frames);
+  // Planting puts the lower foot at zero on every frame, which flattens the back foot's dip. Event timing reads the unplanted frames.
+  return plant ? repaired.map(plantFeet) : repaired;
 }
 
 function depthSign(world: PoseFrame, image: PoseFrame): number {
