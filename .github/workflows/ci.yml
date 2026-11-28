@@ -2,8 +2,17 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [main]
+    branches:
+      - main
+      # A pull request that cannot be merged does not start the pull_request job,
+      # because GitHub has no merge commit to test. Pushes to these branches still run the suite.
+      - 'cursor/**'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   web:
